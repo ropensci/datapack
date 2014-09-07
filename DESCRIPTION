@@ -12,6 +12,8 @@ Description: The datapackage provides a flexible container to transport and
     structured zip files following the BagIt specification.
 Depends:
     R (>= 3.1.0)
+Imports:
+    dataone
 Suggests:
     testthat,
     knitr

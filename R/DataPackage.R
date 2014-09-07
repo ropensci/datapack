@@ -18,9 +18,14 @@
 #   limitations under the License.
 #
 
-setClass("DataPackage",
-         representation(packageId = "character",
-                        jDataPackage = "jobjRef")
+library(dataone)
+
+setClass("DataPackage", slots = c(
+    packageId               = "character",
+    metadataMap             = "character", # private Map<Identifier, List<Identifier>> 
+    objectStore             = "character", # private HashMap<Identifier, D1Object> 
+    systemMetadata          = "character"
+    ), 
 )
 
 ###########################
@@ -29,10 +34,11 @@ setClass("DataPackage",
 
 ## generic
 setGeneric("DataPackage", function(...) { standardGeneric("DataPackage")} )
-##setGeneric("DataPackage", function(identifier, jDataPackage, ...) {
-##standardGeneric("DataPackage")
-##})
 
+setMethod("DataPackage", signature(), function() {
+    dpkg <- new("DataPackage")
+    return(dpkg)
+})
 
 setMethod("initialize", "DataPackage", function(.Object, packageId, jDataPackage) {
 	message("@@ DataPackage-class.R initialize")
@@ -87,8 +93,6 @@ setMethod("getData", signature("DataPackage", "character"), function(x, id) {
     return(databytes)
   }
 })
-
-
 
 
 ## Get the Count of Objects in the Package
