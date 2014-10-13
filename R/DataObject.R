@@ -18,33 +18,33 @@
 #   limitations under the License.
 #
 
-setClass("D1Object", slots = c(
+setClass("DataObject", slots = c(
     jD1o                    = "jobjRef",
     packageId               = "character",
     metadataMap             = "character", # private Map<Identifier, List<Identifier>> 
-    objectStore             = "character", # private HashMap<Identifier, D1Object> 
+    objectStore             = "character", # private HashMap<Identifier, DataObject> 
     systemMetadata          = "character"
     ), 
 )
 
 #####################
-## D1Object constructors
+## DataObject constructors
 #####################
 
 ## generic
-setGeneric("D1Object", function(...) { standardGeneric("D1Object")} )
+setGeneric("DataObject", function(...) { standardGeneric("DataObject")} )
 
 ## no arguments in the signature
-## setMethod("D1Object", , function() {
-##   result <- new("D1Object")
+## setMethod("DataObject", , function() {
+##   result <- new("DataObject")
 ##   return(result)
 ## })
 
 
-setMethod("initialize", "D1Object", function(.Object, id, data, format, mnNodeId) {
+setMethod("initialize", "DataObject", function(.Object, id, data, format, mnNodeId) {
 
   if (typeof(id) == "character") {
-    message("@@ D1Object-class:R initialize as character")
+    message("@@ DataObject-class:R initialize as character")
     
     ## build identifier to be used in system metadata
     pid <- .jnew("org/dataone/service/types/v1/Identifier")
@@ -82,9 +82,9 @@ setMethod("initialize", "D1Object", function(.Object, id, data, format, mnNodeId
     }
   }
   else {
-    message("@@ D1Object-class:R initialize as something else")
+    message("@@ DataObject-class:R initialize as something else")
     if (.jinstanceof(id,"org/dataone/client/D1Object")) {
-      message("@@ D1Object-class:R initialize with jobjRef")
+      message("@@ DataObject-class:R initialize with jobjRef")
       jd1o <- id
     }
   }
@@ -98,15 +98,15 @@ setMethod("initialize", "D1Object", function(.Object, id, data, format, mnNodeId
 ### MNRead and MNStorage methods
 #########################################################
 
-## buildD1Object, implemented as a static way of constructing an object
+## buildDataObject, implemented as a static way of constructing an object
 # TODO: Consider making this into a real constructor
 # Currently this is just a copy from the D1Client class, needs to be
 # refactored.
-#setGeneric("buildD1Object", function(id, data, format, mn_nodeid, ...) { 
-#  standardGeneric("buildD1Object")
+#setGeneric("buildDataObject", function(id, data, format, mn_nodeid, ...) { 
+#  standardGeneric("buildDataObject")
 #})
 #
-#setMethod("buildD1Object",
+#setMethod("buildDataObject",
 #          signature("character", "character", "character", "character"),
 #	  function(id, data, format, mn_nodeid) {
 #
@@ -165,7 +165,7 @@ setMethod("initialize", "D1Object", function(.Object, id, data, format, mnNodeId
 
 #' Get the Contents of the Specified Data Object
 #' 
-#' @param x  D1Object or DataPackage: the data structure from where to get the data
+#' @param x  DataObject or DataPackage: the data structure from where to get the data
 #' @param id Missing or character: if @code{x} is DataPackage, the identifier of the
 #' package member to get data from
 #' @param ... (not yet used)
@@ -178,7 +178,7 @@ setGeneric("getData", function(x, id, ...) {
     standardGeneric("getData")
 })
  
-setMethod("getData", signature("D1Object"), function(x, fileName=NA) {
+setMethod("getData", signature("DataObject"), function(x, fileName=NA) {
 	jD1Object = x@jD1o
 	if(!is.jnull(jD1Object)) {
 		databytes <- jD1Object$getData()
@@ -212,8 +212,8 @@ setMethod("getData", signature("D1Object"), function(x, fileName=NA) {
 
 
 
-#' Get the Identifier of the D1Object
-#' @param x D1Object
+#' Get the Identifier of the DataObject
+#' @param x DataObject
 #' @param ... (not yet used)
 #' @returnType character
 #' @return the identifier
@@ -224,7 +224,7 @@ setGeneric("getIdentifier", function(x, ...) {
     standardGeneric("getIdentifier")
 })
 
-setMethod("getIdentifier", signature("D1Object"), function(x) {
+setMethod("getIdentifier", signature("DataObject"), function(x) {
     jD1Object = x@jD1o
 	if(!is.jnull(jD1Object)) {
 		jPid <- jD1Object$getIdentifier()
@@ -236,8 +236,8 @@ setMethod("getIdentifier", signature("D1Object"), function(x) {
 })
 
 
-#' Get the FormatId of the D1Object
-#' @param x D1Object
+#' Get the FormatId of the DataObject
+#' @param x DataObject
 #' @param ... (not yet used)
 #' @returnType character
 #' @return the formatId
@@ -248,7 +248,7 @@ setGeneric("getFormatId", function(x, ...) {
 			standardGeneric("getFormatId")
 		})
 
-setMethod("getFormatId", signature("D1Object"), function(x) {
+setMethod("getFormatId", signature("DataObject"), function(x) {
 			jD1Object = x@jD1o
 			if(!is.jnull(jD1Object)) {
 				jFormatId <- jD1Object$getFormatId()
@@ -266,7 +266,7 @@ setMethod("getFormatId", signature("D1Object"), function(x) {
 #' creating the object, adds a rule to the access policy that makes this object
 #' publicly readable.  If called after creation, it will only change the system
 #' metadata locally, and will not have any affect. 
-#' @param x D1Object
+#' @param x DataObject
 #' @param ... (not yet used)
 #' @returnType NULL
 #' @return NULL
@@ -278,7 +278,7 @@ setGeneric("setPublicAccess", function(x, ...) {
 })
 
 
-setMethod("setPublicAccess", signature("D1Object"), function(x) {
+setMethod("setPublicAccess", signature("DataObject"), function(x) {
     jD1Object = x@jD1o
 	if(!is.jnull(jD1Object)) {
 		
@@ -314,7 +314,7 @@ setGeneric("canRead", function(x, subject, ...) {
 
 ## TODO: is this method really necessary? Can it be implemented more fully? (looking at rightsHolder)
 ## (want to be able to work prior to submission)
-setMethod("canRead", signature("D1Object", "character"), function(x, subject) {
+setMethod("canRead", signature("DataObject", "character"), function(x, subject) {
     jD1Object = x@jD1o
 	if(!is.jnull(jD1Object)) {
 		jPolicyEditor <- jD1Object$getAccessPolicyEditor()
@@ -340,13 +340,13 @@ setGeneric("asDataFrame", function(x, reference, ...) {
 ##
 ## this method uses the provided metadata reference object for instructions on
 ## how to parse the data table (which parameters to set)
-## 'reference' is the metadata D1Object that gives instruction on how to read the data
+## 'reference' is the metadata DataObject that gives instruction on how to read the data
 ## into the dataFrame
 ##
 ## @rdname asDataFrame-methods
-## aliases asDataFrame,D1Object,D1Object-method
-setMethod("asDataFrame", signature("D1Object", "D1Object"), function(x, reference, ...) {
-            ## reference is a metadata D1Object
+## aliases asDataFrame,DataObject,DataObject-method
+setMethod("asDataFrame", signature("DataObject", "DataObject"), function(x, reference, ...) {
+            ## reference is a metadata DataObject
             mdFormat <- getFormatId(reference)
             
             dtdClassName <- tableDescriber.registry[[ mdFormat ]]
@@ -363,10 +363,10 @@ setMethod("asDataFrame", signature("D1Object", "D1Object"), function(x, referenc
 
 
 ## @rdname asDataFrame-methods
-## aliases asDataFrame,D1Object,AbstractTableDescriber
-setMethod("asDataFrame", signature("D1Object", "AbstractTableDescriber"), function(x, reference, ...) {
+## aliases asDataFrame,DataObject,AbstractTableDescriber
+setMethod("asDataFrame", signature("DataObject", "AbstractTableDescriber"), function(x, reference, ...) {
             
-            message("asDataFrame / D1Object-dtd",class(reference))
+            message("asDataFrame / DataObject-dtd",class(reference))
             ## reference is a TableDescriber
             pids <- documented.d1Identifiers(reference)
             jDataId <- x@jD1o$getIdentifier()$getValue()
@@ -427,13 +427,13 @@ setMethod("asDataFrame", signature("D1Object", "AbstractTableDescriber"), functi
         })
 
 ##
-##  this method performs a read.csv on the D1Object data.  As with read.csv, you 
+##  this method performs a read.csv on the DataObject data.  As with read.csv, you 
 ##  can use any of the parameters from read.table to override default behavior 
 ##  (see read.csv and read.table)
 ##
 ## @rdname asDataFrame-methods
-## aliases asDataFrame,D1Object,ANY-method
-setMethod("asDataFrame", signature("D1Object"), function(x, ...) {
+## aliases asDataFrame,DataObject,ANY-method
+setMethod("asDataFrame", signature("DataObject"), function(x, ...) {
             ## Load the data into a dataframe
             
             dataBytes <- getData(x)
