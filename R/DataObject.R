@@ -18,7 +18,14 @@
 #   limitations under the License.
 #
 
-setClass("D1Object", representation(jD1o = "jobjRef") )
+setClass("D1Object", slots = c(
+    jD1o                    = "jobjRef",
+    packageId               = "character",
+    metadataMap             = "character", # private Map<Identifier, List<Identifier>> 
+    objectStore             = "character", # private HashMap<Identifier, D1Object> 
+    systemMetadata          = "character"
+    ), 
+)
 
 #####################
 ## D1Object constructors
