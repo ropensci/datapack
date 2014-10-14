@@ -36,7 +36,7 @@
 #' @slot sysmeta value of type \code{"SystemMetadata"}, containing the metadata about the object
 #' @slot data value of type \code{"raw"}, containing the data represented in this object
 #' @author Matthew Jones
-#' @rdname DataObject-class
+#' @aliases DataObject, DataObject-class
 #' @keywords classes
 #' @importFrom dataone SystemMetadata
 #' @import methods
@@ -55,13 +55,14 @@ setClass("DataObject", slots = c(
 ## DataObject constructors
 ##########################
 
+#' Construct a DataObject instance.
+#' @param ... Additional arguments
+#' @return a DataObject
 #' @export
-#' @rdname DataObject
 setGeneric("DataObject", function(...) { 
     standardGeneric("DataObject")
 })
 
-#' @describeIn DataObject
 #' @import digest
 setMethod("initialize", "DataObject", function(.Object, id, data=NULL, format=NA, user=NA, mnNodeId=NA) {
 
@@ -85,15 +86,17 @@ setMethod("initialize", "DataObject", function(.Object, id, data=NULL, format=NA
 #' @param x  DataObject or DataPackage: the data structure from where to get the data
 #' @param id Missing or character: if \code{'x'} is DataPackage, the identifier of the
 #' package member to get data from
+#' @param ... Additional arguments
 #' @return raw representation of the data
-#' @rdname DataObject
+#' @aliases getData
 #' @export
 setGeneric("getData", function(x, id=NA, ...) {
     standardGeneric("getData")
 })
 
-#' @describeIn DataObject
-setMethod("getData", signature("DataObject"), function(x, fileName=NA) {
+#' @describeIn getData
+#' @aliases getData
+setMethod("getData", signature("DataObject"), function(x) {
 	return(x@data)
 })
 
@@ -101,33 +104,33 @@ setMethod("getData", signature("DataObject"), function(x, fileName=NA) {
 #' @param x DataObject
 #' @param ... (not yet used)
 #' @return the identifier
-#' @rdname DataObject
+#' @aliases getIdentifier
 #' @export
 setGeneric("getIdentifier", function(x, ...) {
     standardGeneric("getIdentifier")
 })
 
-#' @describeIn DataObject
+#' @describeIn getIdentifier
+#' @aliases getIdentifier
 setMethod("getIdentifier", signature("DataObject"), function(x) {
 	return(x@sysmeta@identifier)
 })
-
 
 #' Get the FormatId of the DataObject
 #' @param x DataObject
 #' @param ... (not yet used)
 #' @return the formatId
-#' @rdname DataObject
+#' @aliases getFormatId
 #' @export
 setGeneric("getFormatId", function(x, ...) {
 			standardGeneric("getFormatId")
 		})
 
-#' @describeIn DataObject
+#' @describeIn getFormatId
+#' @aliases getFormatId
 setMethod("getFormatId", signature("DataObject"), function(x) {
     return(x@sysmeta@formatId)
 })
-
 
 #' Add a Rule to the AccessPolicy to make the object publicly readable
 #' 
@@ -138,13 +141,14 @@ setMethod("getFormatId", signature("DataObject"), function(x) {
 #' @param x DataObject
 #' @param ... (not yet used)
 #' @return NULL
-#' @rdname DataObject
+#' @aliases setPublicAccess
 #' @export
 setGeneric("setPublicAccess", function(x, ...) {
   standardGeneric("setPublicAccess")
 })
 
-#' @describeIn DataObject
+#' @describeIn setPublicAccess
+#' @aliases setPublicAccess
 setMethod("setPublicAccess", signature("DataObject"), function(x) {
     jD1Object = x@jD1o
 	if(!is.jnull(jD1Object)) {
@@ -159,25 +163,27 @@ setMethod("setPublicAccess", signature("DataObject"), function(x) {
 	}
 })
 
-#' Test whether the provided subject can read the object
+#' Test whether the provided subject can read an object.
 #' 
 #' Using the AccessPolicy, tests whether the subject has read permission
 #' for the object.  This method is meant work prior to submission, so uses
 #' only the AccessPolicy to determine who can read (Not the rightsHolder field,
 #' which always can read.)
+#' @details The subject name used in both the AccessPolicy and in the \code{'subject'}
+#' argument to this method is a string value, but is generally formatted as an X.509
+#' name formatted according to RFC 2253.
 #' @param x DataObject
-#' @param subject : character
-#' @param ... (not yet used)
+#' @param subject : the subject name of the person/system to check for read permissions
+#' @param ... Additional arguments
 #' @return TRUE or FALSE
-#' @rdname DataObject
+#' @aliases canRead
 #' @export
 setGeneric("canRead", function(x, subject, ...) {
   standardGeneric("canRead")
 })
 
-## TODO: is this method really necessary? Can it be implemented more fully? (looking at rightsHolder)
-## (want to be able to work prior to submission)
-#' @describeIn DataObject
+#' @describeIn canRead
+#' @export
 setMethod("canRead", signature("DataObject", "character"), function(x, subject) {
     jD1Object = x@jD1o
 	if(!is.jnull(jD1Object)) {
@@ -194,125 +200,3 @@ setMethod("canRead", signature("DataObject", "character"), function(x, subject) 
 	}
 	return(result)
 })
-
-#' @rdname DataObject
-setGeneric("asDataFrame", function(x, reference, ...) { 
-            standardGeneric("asDataFrame")
-        })
-
-##
-## this method uses the provided metadata reference object for instructions on
-## how to parse the data table (which parameters to set)
-## 'reference' is the metadata DataObject that gives instruction on how to read the data
-## into the dataFrame
-##
-## @rdname asDataFrame-methods
-## aliases asDataFrame,DataObject,DataObject-method
-#' @describeIn DataObject
-setMethod("asDataFrame", signature("DataObject", "DataObject"), function(x, reference, ...) {
-            ## reference is a metadata DataObject
-            mdFormat <- getFormatId(reference)
-            
-            dtdClassName <- tableDescriber.registry[[ mdFormat ]]
-            dmsg(paste("@@ asDataFrame/Object", getIdentifier(reference), dtdClassName))
-            if (!is.na(dtdClassName)) {
-                dtd <-	do.call(dtdClassName, list(reference))
-                df <- asDataFrame(x,dtd)
-            } else {
-                print("Could not find metadata parser, trying as plain csv...")
-                df <-  asDataFrame(x)
-            }
-            return( df )
-        })
-
-
-## @rdname asDataFrame-methods
-## aliases asDataFrame,DataObject,AbstractTableDescriber
-#' @describeIn DataObject
-setMethod("asDataFrame", signature("DataObject", "AbstractTableDescriber"), function(x, reference, ...) {
-            
-            dmsg("asDataFrame / DataObject-dtd",class(reference))
-            ## reference is a TableDescriber
-            pids <- documented.d1Identifiers(reference)
-            jDataId <- x@jD1o$getIdentifier()$getValue()
-            index <- which(pids == jDataId)
-            dmsg(paste("Index of data item is",index))
-            
-            ## is this a datatype that we can handle?
-			## trust the metadata, not the d1FormatId of the object
-            dataFormat <- data.formatFamily(reference,index)
-            if (dataFormat != "text/simpleDelimited") {
-				dmsg("cannot process data of type", dataFormat)
-                return()
-            } else if (data.tableAttributeOrientation(reference, index) == 'row') {
-				dmsg("cannot process text/simpleDelimited file where attributes are by row")
-            }
-            
-            fieldSeparator <- data.tableFieldDelimiter(reference, index)
-            if (is.na(fieldSeparator))
-                fieldSeparator <- ","
-            
-            quoteChar <- data.tableQuoteCharacter(reference, index)
-            if (is.na(quoteChar))
-                quotChar <- "\""
-            
-            missingValues <- data.tableMissingValueCodes(reference,index)
-            missingValues <- subset(missingValues, !is.na(missingValues))
-            if(length(missingValues)==0)
-                missingValues <- "NA"
-            
-            encoding <- data.characterEncoding(reference, index)
-            if (is.na(encoding))
-                encoding <- "unknown"
-            
-            skip <- data.tableSkipLinesHeader(reference, index)
-            if (is.na(skip))
-                skip <- 0
-            
-            
-            ## TODO: add the colClasses logic
-            
-            ## as.is = !stringsAsFactors,
-            ##  colClasses = NA, nrows = -1,
-            ## check.names = TRUE, 
-            ## fill = !blank.lines.skip,
-            ## strip.white = FALSE, 
-            ## blank.lines.skip = TRUE,
-            ## comment.char = "#",
-            ## allowEscapes = FALSE, flush = FALSE,
-            ## stringsAsFactors = default.stringsAsFactors(),
-            dmsg("@@ skip ",skip)
-            dmsg("@@ sep ",fieldSeparator)
-            dmsg("@@ quote ",quoteChar)
-            dmsg("@@ na.strings ",missingValues)
-            dmsg("@@ encoding ",encoding)
-            df <- asDataFrame(x, skip=skip, header=TRUE, sep=fieldSeparator, quote=quoteChar, 
-                    na.strings=missingValues, encoding=encoding)
-            return(df)
-        })
-
-##
-##  this method performs a read.csv on the DataObject data.  As with read.csv, you 
-##  can use any of the parameters from read.table to override default behavior 
-##  (see read.csv and read.table)
-##
-## @rdname asDataFrame-methods
-## aliases asDataFrame,DataObject,ANY-method
-#' @describeIn DataObject
-setMethod("asDataFrame", signature("DataObject"), function(x, ...) {
-            ## Load the data into a dataframe
-            
-            dataBytes <- getData(x)
-            theData <- textConnection(dataBytes)
-            dmsg("theData is ", class(theData))
-            ## using read.csv instead of read.table, because it exposes the defaults we want
-            ## while also allowing them to be overriden
-            df <- read.csv(theData, ...)
-            return(df)
-        })
-
-###########################################
-## Private functions, not to be called by outside callers
-###########################################
-
-

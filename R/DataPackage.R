@@ -76,9 +76,13 @@ setMethod("initialize", "DataPackage", function(.Object, packageId, jDataPackage
    return(.Object)
 })
 
-
-##  getData returns the actual data of an object contained in the package
-##  given the identifier string
+#' Get the data content of a specified data object
+#' 
+#' @param x DataPackage: the data structure from where to get the data
+#' @param id if \code{'x'} is DataPackage, the identifier of the package member to get data from
+#' @return raw representation of the data
+#' @aliases getData,DataPackage-methods
+#' @export
 setMethod("getData", signature("DataPackage", "character"), function(x, id) {
   
   jIdentifier <- .jnew("org/dataone/service/types/v1/Identifier")
@@ -277,26 +281,4 @@ setMethod("getMember", signature("DataPackage", "character"), function(x, identi
   rD1o <- new(Class="D1Object",jD1Object)
   return(rD1o)
 })
-
-
-## returns a DataFrame from the specified data object
-## 
-## Given the identifier of a member of the data package, return a data frame
-## using any parsing instructions contained in its describing science metadata
-## 
-## @rdname asDataFrame-methods
-## @aliases asDataFrame,DataPackage,character-method
-setMethod("asDataFrame", signature("DataPackage", "character"), function(x, reference) {
-            
-            ## find the dataObject and the metadata that Documents it
-            d1o <- getMember(x,reference)
-            jMetadataId <- x@jDataPackage$getDocumentedBy(d1o@jD1o$getIdentifier())
-            documenterObject <- getMember(x,jMetadataId$getValue())
-            dmsg("@@ asDataFrame / DP")
-            ##	dmsg(documenterObject)
-            df <- asDataFrame(d1o,documenterObject)
-            return(df)
-        })
-
-
 
