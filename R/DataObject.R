@@ -17,24 +17,25 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+
 setClass("DataObject", slots = c(
     sysmeta                 = "SystemMetadata",
     data                    = "raw"
     )
 )
 
-#####################
+##########################
 ## DataObject constructors
-#####################
+##########################
 
-## generic
+#' @export
 setGeneric("DataObject", function(...) { 
     standardGeneric("DataObject")
 })
 
 #' @import digest
 #' @export
-setMethod("initialize", "DataObject", function(.Object, id, data, format, user, mnNodeId) {
+setMethod("initialize", "DataObject", function(.Object, id, data=NULL, format, user, mnNodeId) {
 
   if (typeof(id) == "character") {
     dmsg("@@ DataObject-class:R initialize as character")
@@ -51,51 +52,20 @@ setMethod("initialize", "DataObject", function(.Object, id, data, format, user, 
   return(.Object)
 })
 
-#' Get the Contents of the Specified Data Object
+#' Get the data content of a specified data object
 #' 
 #' @param x  DataObject or DataPackage: the data structure from where to get the data
 #' @param id Missing or character: if \code{'x'} is DataPackage, the identifier of the
 #' package member to get data from
-#' @param ... (not yet used)
-#' @return character representation of the data
+#' @return raw representation of the data
 #' @export
-setGeneric("getData", function(x, id, ...) {
+setGeneric("getData", function(x, id=NA, ...) {
     standardGeneric("getData")
 })
- 
+
 setMethod("getData", signature("DataObject"), function(x, fileName=NA) {
-	jD1Object = x@jD1o
-	if(!is.jnull(jD1Object)) {
-		databytes <- jD1Object$getData()
-		if(is.null(databytes)) {
-			print(paste("Didn't find data in:", id))
-			return()
-		}
-        
-        if (!is.na(fileName)) {
-            ## Write data to file
-            jFileOutputStream <- .jnew("java/io/FileOutputStream", fileName)
-            jInputStream <- .jnew("java/io/ByteArrayInputStream", databytes)
-            ioUtils <- .jnew("org/apache/commons/io/IOUtils")
-            ioUtils$copy(jInputStream, jFileOutputStream)
-            returnVal = fileName
-        } else {
-            ## return data as string
-            jDataString <- .jnew("java/lang/String",databytes,"UTF-8")
-            if (!is.null(e<-.jgetEx())) {
-                print("Java exception was raised")
-                print(e)
-                print(.jcheck(silent=FALSE))
-            }
-            dataString <- jDataString$toString()
-            returnVal = dataString
-        }
-        
-		return(returnVal)
-	}
+	return(x@data)
 })
-
-
 
 #' Get the Identifier of the DataObject
 #' @param x DataObject
@@ -107,14 +77,7 @@ setGeneric("getIdentifier", function(x, ...) {
 })
 
 setMethod("getIdentifier", signature("DataObject"), function(x) {
-    jD1Object = x@jD1o
-	if(!is.jnull(jD1Object)) {
-		jPid <- jD1Object$getIdentifier()
-		if(is.null(jPid)) {
-			return()
-		}
-		return(jPid$getValue())
-	}
+	return(x@sysmeta@identifier)
 })
 
 
@@ -128,15 +91,8 @@ setGeneric("getFormatId", function(x, ...) {
 		})
 
 setMethod("getFormatId", signature("DataObject"), function(x) {
-			jD1Object = x@jD1o
-			if(!is.jnull(jD1Object)) {
-				jFormatId <- jD1Object$getFormatId()
-				if(is.null(jFormatId)) {
-					return()
-				}
-				return(jFormatId$getValue())
-			}
-		})
+    return(x@sysmeta@formatId)
+})
 
 
 #' Add a Rule to the AccessPolicy to Make the Object Publicly Readable
@@ -176,7 +132,7 @@ setMethod("setPublicAccess", signature("DataObject"), function(x) {
 #' for the object.  This method is meant work prior to submission, so uses
 #' only the AccessPolicy to determine who can read (Not the rightsHolder field,
 #' which always can read.)
-#' @param x D1Client
+#' @param x DataObject
 #' @param subject : character
 #' @param ... (not yet used)
 #' @return TRUE or FALSE
