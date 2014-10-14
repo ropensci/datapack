@@ -17,14 +17,10 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-
 setClass("DataObject", slots = c(
-    jD1o                    = "jobjRef",
-    packageId               = "character",
-    metadataMap             = "character", # private Map<Identifier, List<Identifier>> 
-    objectStore             = "character", # private HashMap<Identifier, DataObject> 
-    systemMetadata          = "character"
-    ), 
+    sysmeta                 = "SystemMetadata",
+    data                    = "raw"
+    )
 )
 
 #####################
@@ -32,147 +28,36 @@ setClass("DataObject", slots = c(
 #####################
 
 ## generic
-setGeneric("DataObject", function(...) { standardGeneric("DataObject")} )
-
-## no arguments in the signature
-## setMethod("DataObject", , function() {
-##   result <- new("DataObject")
-##   return(result)
-## })
-
-
-setMethod("initialize", "DataObject", function(.Object, id, data, format, mnNodeId) {
-
-  if (typeof(id) == "character") {
-    message("@@ DataObject-class:R initialize as character")
-    
-    ## build identifier to be used in system metadata
-    pid <- .jnew("org/dataone/service/types/v1/Identifier")
-    pid$setValue(id)
-    
-    ## Convert incoming data to byte array (byte[])
-    ioUtils <- .jnew("org/apache/commons/io/IOUtils") 
-    byteArray <- ioUtils$toByteArray(data)
-    
-    ## build the ObjectFormatIdentifier.
-    formatId <- .jnew("org/dataone/service/types/v1/ObjectFormatIdentifier")
-    formatId$setValue(format)
-    
-    
-    ## build a submitter Subject from the certificate
-    certman <- J("org/dataone/client/auth/CertificateManager")$getInstance()
-    cert <- certman$loadCertificate()
-    submitter <- .jnew("org/dataone/service/types/v1/Subject")
-    submitter$setValue(certman$getSubjectDN(cert))
-    
-    ## build the NodeReference
-    mnNodeRef <- .jnew("org/dataone/service/types/v1/NodeReference")
-    mnNodeRef$setValue(mnNodeId)
-    
-    jd1o <- .jnew("org/dataone/client/D1Object",
-                  pid, byteArray, formatId, submitter, mnNodeRef,
-                  check=FALSE)
-    
-    if (!is.null(e <- .jgetEx())) {
-      print("Java exception was raised")
-      print(.jcheck(silent=TRUE))
-      print(.jcheck(silent=TRUE))
-      print(e)
-      jd1o = .jnull("org/dataone/client/D1Object")
-    }
-  }
-  else {
-    message("@@ DataObject-class:R initialize as something else")
-    if (.jinstanceof(id,"org/dataone/client/D1Object")) {
-      message("@@ DataObject-class:R initialize with jobjRef")
-      jd1o <- id
-    }
-  }
-  
-  .Object@jD1o <- jd1o
-  return(.Object)
+setGeneric("DataObject", function(...) { 
+    standardGeneric("DataObject")
 })
 
+#' @import digest
+#' @export
+setMethod("initialize", "DataObject", function(.Object, id, data, format, user, mnNodeId) {
 
-#########################################################
-### MNRead and MNStorage methods
-#########################################################
-
-## buildDataObject, implemented as a static way of constructing an object
-# TODO: Consider making this into a real constructor
-# Currently this is just a copy from the D1Client class, needs to be
-# refactored.
-#setGeneric("buildDataObject", function(id, data, format, mn_nodeid, ...) { 
-#  standardGeneric("buildDataObject")
-#})
-#
-#setMethod("buildDataObject",
-#          signature("character", "character", "character", "character"),
-#	  function(id, data, format, mn_nodeid) {
-#
-  # build identifier to be used in system metadata
-#  pid <- .jnew("org/dataone/service/types/v1/Identifier")
-#  pid$setValue(id)
-
-  # Set up/convert additional system metadata fields
-  # get the submitter from the certificate
-#  certman <- J("org/dataone/client/auth/CertificateManager")$getInstance()
-#  cert <- certman$loadCertificate()
-#  submitter <- .jnew("org/dataone/service/types/v1/Subject")
-#  submitter$setValue(certman$getSubjectDN(cert))
-
-  # Convert incoming data to byte array (byte[])
-#  ioUtils <- .jnew("org/apache/commons/io/IOUtils") 
-#  byteArray <- ioUtils$toByteArray(data)
-
-  # build the ObjectFormatIdentifier.
-#  format.id <- .jnew("org/dataone/service/types/v1/ObjectFormatIdentifier")
-#  format.id$setValue(format)
-
-  # build the NodeReference from the mn_nodeid.
-#  if(is.null(mn_nodeid) || (mn_nodeid == "")) {
-#    print("ERROR: A Member Node must be defined to create an object.")
-#    return(.jnull("org/dataone/client/D1Object"))
-#  }
-#  mn.noderef <- .jnew("org/dataone/service/types/v1/NodeReference")
-#  mn.noderef$setValue(mn_nodeid)
-
-  # Now build the object with the sysmeta values
-#  d1object <- .jnew("org/dataone/client/D1Object", pid, byteArray, format.id,
-#                    submitter, mn.noderef, check=FALSE)
-  #message("building object")
-#  if (!is.null(e <- .jgetEx())) {
-#    print("Java exception was raised")
-#    print(.jcheck(silent=TRUE))
-#    print(.jcheck(silent=TRUE))
-#    print(e)
-#  }
-
-#  return(d1object)
-#})
-
-#########################################################
-### Accessor methods
-#########################################################
-
-# Need accessors for sysmeta and data contained in the 
-# internal java D1Object instance
-
-#########################################################
-### Utility methods
-#########################################################
-
+  if (typeof(id) == "character") {
+    dmsg("@@ DataObject-class:R initialize as character")
+    
+    # Build a SystemMetadata object describing the data
+    size <- length(data) # file.info(csvfile)$size
+    sha1 <- digest(data, algo="sha1", serialize=FALSE, file=FALSE)
+    .Object@sysmeta <- new("SystemMetadata", identifier=id, formatId=format, size=size, submitter=user, rightsHolder=user, checksum=sha1, originMemberNode=mnNodeId, authoritativeMemberNode=mnNodeId)
+    .Object@data <- data
+  } else {
+      .Object <- NULL
+  }
+  
+  return(.Object)
+})
 
 #' Get the Contents of the Specified Data Object
 #' 
 #' @param x  DataObject or DataPackage: the data structure from where to get the data
-#' @param id Missing or character: if @code{x} is DataPackage, the identifier of the
+#' @param id Missing or character: if \code{'x'} is DataPackage, the identifier of the
 #' package member to get data from
 #' @param ... (not yet used)
-#' @returnType character 
 #' @return character representation of the data
-#' 
-#' @author rnahf
 #' @export
 setGeneric("getData", function(x, id, ...) {
     standardGeneric("getData")
@@ -215,10 +100,7 @@ setMethod("getData", signature("DataObject"), function(x, fileName=NA) {
 #' Get the Identifier of the DataObject
 #' @param x DataObject
 #' @param ... (not yet used)
-#' @returnType character
 #' @return the identifier
-#' 
-#' @author rnahf
 #' @export
 setGeneric("getIdentifier", function(x, ...) {
     standardGeneric("getIdentifier")
@@ -239,10 +121,7 @@ setMethod("getIdentifier", signature("DataObject"), function(x) {
 #' Get the FormatId of the DataObject
 #' @param x DataObject
 #' @param ... (not yet used)
-#' @returnType character
 #' @return the formatId
-#' 
-#' @author rnahf
 #' @export
 setGeneric("getFormatId", function(x, ...) {
 			standardGeneric("getFormatId")
@@ -268,10 +147,7 @@ setMethod("getFormatId", signature("DataObject"), function(x) {
 #' metadata locally, and will not have any affect. 
 #' @param x DataObject
 #' @param ... (not yet used)
-#' @returnType NULL
 #' @return NULL
-#' 
-#' @author rnahf
 #' @export
 setGeneric("setPublicAccess", function(x, ...) {
   standardGeneric("setPublicAccess")
@@ -284,7 +160,7 @@ setMethod("setPublicAccess", signature("DataObject"), function(x) {
 		
 		jPolicyEditor <- jD1Object$getAccessPolicyEditor()
 		if (!is.jnull(jPolicyEditor)) {
-			message("setPublicAccess: got policy editor")
+			dmsg("setPublicAccess: got policy editor")
 			jPolicyEditor$setPublicAccess()
 		} else {
 			print("policy editor is null")
@@ -303,10 +179,7 @@ setMethod("setPublicAccess", signature("DataObject"), function(x) {
 #' @param x D1Client
 #' @param subject : character
 #' @param ... (not yet used)
-#' @returnType logical
 #' @return TRUE or FALSE
-#' 
-#' @author rnahf
 #' @export
 setGeneric("canRead", function(x, subject, ...) {
   standardGeneric("canRead")
@@ -319,7 +192,7 @@ setMethod("canRead", signature("DataObject", "character"), function(x, subject) 
 	if(!is.jnull(jD1Object)) {
 		jPolicyEditor <- jD1Object$getAccessPolicyEditor()
 		if (!is.jnull(jPolicyEditor)) {
-			message("canRead: got policy editor")
+			dmsg("canRead: got policy editor")
 			jSubject <- J("org/dataone/client/D1TypeBuilder", "buildSubject", subject)
 			jPermission <- J("org/dataone/service/types/v1/Permission", "convert", "read")
 			result <- jPolicyEditor$hasAccess(jSubject,jPermission)
@@ -350,7 +223,7 @@ setMethod("asDataFrame", signature("DataObject", "DataObject"), function(x, refe
             mdFormat <- getFormatId(reference)
             
             dtdClassName <- tableDescriber.registry[[ mdFormat ]]
-            message(paste("@@ asDataFrame/Object", getIdentifier(reference), dtdClassName))
+            dmsg(paste("@@ asDataFrame/Object", getIdentifier(reference), dtdClassName))
             if (!is.na(dtdClassName)) {
                 dtd <-	do.call(dtdClassName, list(reference))
                 df <- asDataFrame(x,dtd)
@@ -366,21 +239,21 @@ setMethod("asDataFrame", signature("DataObject", "DataObject"), function(x, refe
 ## aliases asDataFrame,DataObject,AbstractTableDescriber
 setMethod("asDataFrame", signature("DataObject", "AbstractTableDescriber"), function(x, reference, ...) {
             
-            message("asDataFrame / DataObject-dtd",class(reference))
+            dmsg("asDataFrame / DataObject-dtd",class(reference))
             ## reference is a TableDescriber
             pids <- documented.d1Identifiers(reference)
             jDataId <- x@jD1o$getIdentifier()$getValue()
             index <- which(pids == jDataId)
-            message(paste("Index of data item is",index))
+            dmsg(paste("Index of data item is",index))
             
             ## is this a datatype that we can handle?
 			## trust the metadata, not the d1FormatId of the object
             dataFormat <- data.formatFamily(reference,index)
             if (dataFormat != "text/simpleDelimited") {
-				message("cannot process data of type", dataFormat)
+				dmsg("cannot process data of type", dataFormat)
                 return()
             } else if (data.tableAttributeOrientation(reference, index) == 'row') {
-				message("cannot process text/simpleDelimited file where attributes are by row")
+				dmsg("cannot process text/simpleDelimited file where attributes are by row")
             }
             
             fieldSeparator <- data.tableFieldDelimiter(reference, index)
@@ -416,11 +289,11 @@ setMethod("asDataFrame", signature("DataObject", "AbstractTableDescriber"), func
             ## comment.char = "#",
             ## allowEscapes = FALSE, flush = FALSE,
             ## stringsAsFactors = default.stringsAsFactors(),
-            message("@@ skip ",skip)
-            message("@@ sep ",fieldSeparator)
-            message("@@ quote ",quoteChar)
-            message("@@ na.strings ",missingValues)
-            message("@@ encoding ",encoding)
+            dmsg("@@ skip ",skip)
+            dmsg("@@ sep ",fieldSeparator)
+            dmsg("@@ quote ",quoteChar)
+            dmsg("@@ na.strings ",missingValues)
+            dmsg("@@ encoding ",encoding)
             df <- asDataFrame(x, skip=skip, header=TRUE, sep=fieldSeparator, quote=quoteChar, 
                     na.strings=missingValues, encoding=encoding)
             return(df)
@@ -438,11 +311,17 @@ setMethod("asDataFrame", signature("DataObject"), function(x, ...) {
             
             dataBytes <- getData(x)
             theData <- textConnection(dataBytes)
-            message("theData is ", class(theData))
+            dmsg("theData is ", class(theData))
             ## using read.csv instead of read.table, because it exposes the defaults we want
             ## while also allowing them to be overriden
             df <- read.csv(theData, ...)
             return(df)
         })
 
+dmsg <- function(msg) {
+    dbg <- getOption("datapackage.debugging_mode", default = FALSE)
+    if (dbg) {
+        message(msg)
+    }
+}
 
