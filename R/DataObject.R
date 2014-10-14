@@ -55,7 +55,10 @@ setClass("DataObject", slots = c(
 ## DataObject constructors
 ##########################
 
-#' Construct a DataObject instance.
+#' Construct a DataObject instance. When initializing a DataObject using passed in data, one can either pass 
+#' in the \code{'id'} param as a \code{'SystemMetadata'} object, or as a \code{'character'} string 
+#' representing the identifier for an object along with parameters for format, user,and associated member node.
+#' In either case, the \code{'data'} param holds the \code{'raw'} data.
 #' @param ... Additional arguments
 #' @return a DataObject
 #' @export
@@ -64,21 +67,24 @@ setGeneric("DataObject", function(...) {
 })
 
 #' @import digest
-setMethod("initialize", "DataObject", function(.Object, id, data=NULL, format=NA, user=NA, mnNodeId=NA) {
-
-  if (typeof(id) == "character") {
-    dmsg("@@ DataObject-class:R initialize as character")
+setMethod("initialize", "DataObject", function(.Object, id, data, format=NA, user=NA, mnNodeId=NA) {
     
-    # Build a SystemMetadata object describing the data
-    size <- length(data) # file.info(csvfile)$size
-    sha1 <- digest(data, algo="sha1", serialize=FALSE, file=FALSE)
-    .Object@sysmeta <- new("SystemMetadata", identifier=id, formatId=format, size=size, submitter=user, rightsHolder=user, checksum=sha1, originMemberNode=mnNodeId, authoritativeMemberNode=mnNodeId)
-    .Object@data <- data
-  } else {
-      .Object <- NULL
-  }
-  
-  return(.Object)
+    if (typeof(id) == "character") {
+        dmsg("@@ DataObject-class:R initialize as character")
+        
+        # Build a SystemMetadata object describing the data
+        size <- length(data) # file.info(csvfile)$size
+        sha1 <- digest(data, algo="sha1", serialize=FALSE, file=FALSE)
+        .Object@sysmeta <- new("SystemMetadata", identifier=id, formatId=format, size=size, submitter=user, rightsHolder=user, checksum=sha1, originMemberNode=mnNodeId, authoritativeMemberNode=mnNodeId)
+        .Object@data <- data
+    } else if (typeof(id) == "S4" && class(id) == "SystemMetadata") {
+        .Object@sysmeta <- id
+        .Object@data <- data
+    } else {
+        .Object <- NULL
+    }
+    
+    return(.Object)
 })
 
 #' Get the data content of a specified data object
