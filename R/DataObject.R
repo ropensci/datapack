@@ -18,6 +18,33 @@
 #   limitations under the License.
 #
 
+#' DataObject is a wrapper for raw data to include important system-level metadata about the object.
+#' @description DataObject is a wrapper class that associates raw data with system-level metadata 
+#' describing the object.  The system metadata includes attributes such as the object's identifier, 
+#' type, size, owner, version relationship to other objects, access rules, and other critical metadata.
+#' The SystemMetadata is compliant with the DataONE federated network's definition of SystemMetadata, and
+#' is encapsulated as a separate object that can be manipulated as needed. 
+#' @details   
+#' A DataObject can be constructed by passing the data and system metadata to the new() method, or by passing
+#' an identifier, data, format, user, and DataONE node identifier, in which case a SystemMetadata instance will
+#' be generated with these fields and others that are calculated (such as size and checksum).
+#' 
+#' An obvious limitation of the current implementation is that all data are stored in memory, which limits
+#' the effective size of objects.  It would be useful to add a data cache that stores larger objects on the file
+#' system.
+#' 
+#' @slot sysmeta value of type \code{"SystemMetadata"}, containing the metadata about the object
+#' @slot data value of type \code{"raw"}, containing the data represented in this object
+#' @author Matthew Jones
+#' @rdname DataObject-class
+#' @keywords classes
+#' @importFrom dataone SystemMetadata
+#' @import methods
+#' @include dmsg.R
+#' @examples
+#' do <- new("DataObject", "id1", charToRaw("1,2,3\n4,5,6\n"), "text/csv", "matt", "urn:node:KNB")
+#' id <- getIdentifier(do)
+#' fmt <- getFormatId(do)
 setClass("DataObject", slots = c(
     sysmeta                 = "SystemMetadata",
     data                    = "raw"
@@ -29,13 +56,14 @@ setClass("DataObject", slots = c(
 ##########################
 
 #' @export
+#' @rdname DataObject
 setGeneric("DataObject", function(...) { 
     standardGeneric("DataObject")
 })
 
+#' @describeIn DataObject
 #' @import digest
-#' @export
-setMethod("initialize", "DataObject", function(.Object, id, data=NULL, format, user, mnNodeId) {
+setMethod("initialize", "DataObject", function(.Object, id, data=NULL, format=NA, user=NA, mnNodeId=NA) {
 
   if (typeof(id) == "character") {
     dmsg("@@ DataObject-class:R initialize as character")
@@ -58,11 +86,13 @@ setMethod("initialize", "DataObject", function(.Object, id, data=NULL, format, u
 #' @param id Missing or character: if \code{'x'} is DataPackage, the identifier of the
 #' package member to get data from
 #' @return raw representation of the data
+#' @rdname DataObject
 #' @export
 setGeneric("getData", function(x, id=NA, ...) {
     standardGeneric("getData")
 })
 
+#' @describeIn DataObject
 setMethod("getData", signature("DataObject"), function(x, fileName=NA) {
 	return(x@data)
 })
@@ -71,11 +101,13 @@ setMethod("getData", signature("DataObject"), function(x, fileName=NA) {
 #' @param x DataObject
 #' @param ... (not yet used)
 #' @return the identifier
+#' @rdname DataObject
 #' @export
 setGeneric("getIdentifier", function(x, ...) {
     standardGeneric("getIdentifier")
 })
 
+#' @describeIn DataObject
 setMethod("getIdentifier", signature("DataObject"), function(x) {
 	return(x@sysmeta@identifier)
 })
@@ -85,17 +117,19 @@ setMethod("getIdentifier", signature("DataObject"), function(x) {
 #' @param x DataObject
 #' @param ... (not yet used)
 #' @return the formatId
+#' @rdname DataObject
 #' @export
 setGeneric("getFormatId", function(x, ...) {
 			standardGeneric("getFormatId")
 		})
 
+#' @describeIn DataObject
 setMethod("getFormatId", signature("DataObject"), function(x) {
     return(x@sysmeta@formatId)
 })
 
 
-#' Add a Rule to the AccessPolicy to Make the Object Publicly Readable
+#' Add a Rule to the AccessPolicy to make the object publicly readable
 #' 
 #' To be called prior to creating the object in DataONE.  When called before 
 #' creating the object, adds a rule to the access policy that makes this object
@@ -104,12 +138,13 @@ setMethod("getFormatId", signature("DataObject"), function(x) {
 #' @param x DataObject
 #' @param ... (not yet used)
 #' @return NULL
+#' @rdname DataObject
 #' @export
 setGeneric("setPublicAccess", function(x, ...) {
   standardGeneric("setPublicAccess")
 })
 
-
+#' @describeIn DataObject
 setMethod("setPublicAccess", signature("DataObject"), function(x) {
     jD1Object = x@jD1o
 	if(!is.jnull(jD1Object)) {
@@ -124,8 +159,6 @@ setMethod("setPublicAccess", signature("DataObject"), function(x) {
 	}
 })
 
-
-
 #' Test whether the provided subject can read the object
 #' 
 #' Using the AccessPolicy, tests whether the subject has read permission
@@ -136,6 +169,7 @@ setMethod("setPublicAccess", signature("DataObject"), function(x) {
 #' @param subject : character
 #' @param ... (not yet used)
 #' @return TRUE or FALSE
+#' @rdname DataObject
 #' @export
 setGeneric("canRead", function(x, subject, ...) {
   standardGeneric("canRead")
@@ -143,6 +177,7 @@ setGeneric("canRead", function(x, subject, ...) {
 
 ## TODO: is this method really necessary? Can it be implemented more fully? (looking at rightsHolder)
 ## (want to be able to work prior to submission)
+#' @describeIn DataObject
 setMethod("canRead", signature("DataObject", "character"), function(x, subject) {
     jD1Object = x@jD1o
 	if(!is.jnull(jD1Object)) {
@@ -160,8 +195,7 @@ setMethod("canRead", signature("DataObject", "character"), function(x, subject) 
 	return(result)
 })
 
-
-
+#' @rdname DataObject
 setGeneric("asDataFrame", function(x, reference, ...) { 
             standardGeneric("asDataFrame")
         })
@@ -174,6 +208,7 @@ setGeneric("asDataFrame", function(x, reference, ...) {
 ##
 ## @rdname asDataFrame-methods
 ## aliases asDataFrame,DataObject,DataObject-method
+#' @describeIn DataObject
 setMethod("asDataFrame", signature("DataObject", "DataObject"), function(x, reference, ...) {
             ## reference is a metadata DataObject
             mdFormat <- getFormatId(reference)
@@ -193,6 +228,7 @@ setMethod("asDataFrame", signature("DataObject", "DataObject"), function(x, refe
 
 ## @rdname asDataFrame-methods
 ## aliases asDataFrame,DataObject,AbstractTableDescriber
+#' @describeIn DataObject
 setMethod("asDataFrame", signature("DataObject", "AbstractTableDescriber"), function(x, reference, ...) {
             
             dmsg("asDataFrame / DataObject-dtd",class(reference))
@@ -262,6 +298,7 @@ setMethod("asDataFrame", signature("DataObject", "AbstractTableDescriber"), func
 ##
 ## @rdname asDataFrame-methods
 ## aliases asDataFrame,DataObject,ANY-method
+#' @describeIn DataObject
 setMethod("asDataFrame", signature("DataObject"), function(x, ...) {
             ## Load the data into a dataframe
             
@@ -274,10 +311,8 @@ setMethod("asDataFrame", signature("DataObject"), function(x, ...) {
             return(df)
         })
 
-dmsg <- function(msg) {
-    dbg <- getOption("datapackage.debugging_mode", default = FALSE)
-    if (dbg) {
-        message(msg)
-    }
-}
+###########################################
+## Private functions, not to be called by outside callers
+###########################################
+
 

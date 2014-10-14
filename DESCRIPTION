@@ -13,7 +13,9 @@ Description: The datapackage provides a flexible container to transport and
 Depends:
     R (>= 3.1.1)
 Imports:
-    dataone
+    dataone,
+    digest,
+    methods
 Suggests:
     testthat,
     knitr
@@ -21,3 +23,8 @@ License: Apache License (== 2.0)
 BugReports: https://github.com/ropensci/datapackage/issues
 LazyData: true
 VignetteBuilder: knitr
+Collate:
+    'dmsg.R'
+    'DataObject.R'
+    'DataPackage.R'
+    'datapackage-package.r'

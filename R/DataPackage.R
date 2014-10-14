@@ -20,6 +20,7 @@
 
 library(dataone)
 
+#' @include dmsg.R
 setClass("DataPackage", slots = c(
     packageId               = "character",
     metadataMap             = "character", # private Map<Identifier, List<Identifier>> 
@@ -41,12 +42,12 @@ setMethod("DataPackage", signature(), function() {
 })
 
 setMethod("initialize", "DataPackage", function(.Object, packageId, jDataPackage) {
-	message("@@ DataPackage-class.R initialize")
+	dmsg("@@ DataPackage-class.R initialize")
 	## verify the jDataPackage
 	if (missing("jDataPackage")) {
-        message("@@ DataPackage-class.R - (missing jDataPackage)...")
+        dmsg("@@ DataPackage-class.R - (missing jDataPackage)...")
 		if (!missing("packageId")) {
-            message("@@ DataPackage-class.R - (have packageId)...")
+            dmsg("@@ DataPackage-class.R - (have packageId)...")
 			## set the packageId and instantiate a new jDataPackage
 			.Object@packageId <- packageId
 			jPid <- .jnew("org/dataone/service/types/v1/Identifier")
@@ -62,11 +63,11 @@ setMethod("initialize", "DataPackage", function(.Object, packageId, jDataPackage
 			.Object@jDataPackage <- jDataPackage
 		}
 	} else {
-        message("@@ DataPackage-class.R - (have a jDataPackage...)")
+        dmsg("@@ DataPackage-class.R - (have a jDataPackage...)")
 		## check that jDataPackage is indeed one
 		## then set the packageId from that one
 		if (.jinstanceof(jDataPackage,"org/dataone/client/DataPackage")) {
-            message("@@ DataPackage-class.R - (jDataPackage is a DataPackage instance)...")
+            dmsg("@@ DataPackage-class.R - (jDataPackage is a DataPackage instance)...")
 			jPid <- jDataPackage$getPackageId()
 			.Object@packageId <- jPid$getValue()
 			.Object@jDataPackage <- jDataPackage
@@ -291,8 +292,8 @@ setMethod("asDataFrame", signature("DataPackage", "character"), function(x, refe
             d1o <- getMember(x,reference)
             jMetadataId <- x@jDataPackage$getDocumentedBy(d1o@jD1o$getIdentifier())
             documenterObject <- getMember(x,jMetadataId$getValue())
-            message("@@ asDataFrame / DP")
-            ##	message(documenterObject)
+            dmsg("@@ asDataFrame / DP")
+            ##	dmsg(documenterObject)
             df <- asDataFrame(d1o,documenterObject)
             return(df)
         })
