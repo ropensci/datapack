@@ -18,13 +18,12 @@
 #   limitations under the License.
 #
 
-library(dataone)
-
 #' @include dmsg.R
+#' @include DataObject.R
 setClass("DataPackage", slots = c(
     packageId               = "character",
     metadataMap             = "character", # private Map<Identifier, List<Identifier>> 
-    objectStore             = "character", # private HashMap<Identifier, D1Object> 
+    objectStore             = "character", # private HashMap<Identifier, DataObject> 
     systemMetadata          = "character"
     ), 
 )
@@ -142,13 +141,13 @@ setMethod("getIdentifiers", "DataPackage", function(x) {
 
 
 
-## Add a D1Object to the DataPackage
+## Add a DataObject to the DataPackage
 ## 
-## Includes the D1Object in the DataPackage data Map, making it available for
+## Includes the DataObject in the DataPackage data Map, making it available for
 ## retrieval and eventual upload (via createPackage)
 ## 
 ## @param x : DataPackage
-## @param d1object : D1Object
+## @param d1object : DataObject
 ## @param ... : (not yet used)
 ## 
 ## @author rnahf
@@ -157,7 +156,7 @@ setGeneric("addData", function(x, d1object, ...) {
     standardGeneric("addData")
 })
 
-setMethod("addData", signature("DataPackage", "D1Object"), function(x, d1object) {
+setMethod("addData", signature("DataPackage", "DataObject"), function(x, d1object) {
   jD1object <- d1object@jD1o
   x@jDataPackage$addData(jD1object)
 })
@@ -167,7 +166,7 @@ setMethod("addData", signature("DataPackage", "D1Object"), function(x, d1object)
 
 ## Add a Pre-Existing Object to the Package
 ## 
-## addAndDownloadData downloads a D1Object to the DataPackage, using the provided identifier
+## addAndDownloadData downloads a DataObject to the DataPackage, using the provided identifier
 ## string to retrieve from the DataONE system.
 ## 
 ## @param x : DataPackage
@@ -249,7 +248,7 @@ setMethod("contains", signature("DataPackage", "character"), function(x, identif
 
 ## Remove the Specified Member from the Package
 ## 
-## Given the identifier of a member of the data package, return the D1Object
+## Given the identifier of a member of the data package, delete the DataObject
 ## representation of the member.
 ## 
 setGeneric("removeMember", function(x, identifier, ...) {
@@ -266,7 +265,7 @@ setMethod("removeMember", signature("DataPackage", "character"), function(x, ide
 
 ## Return the Package Member by Identifier
 ## 
-## Given the identifier of a member of the data package, return the D1Object
+## Given the identifier of a member of the data package, return the DataObject
 ## representation of the member.
 ## 
 setGeneric("getMember", function(x, identifier, ...) {
@@ -278,7 +277,7 @@ setMethod("getMember", signature("DataPackage", "character"), function(x, identi
   jPid$setValue(identifier)
   
   jD1Object <- x@jDataPackage$get(jPid)
-  rD1o <- new(Class="D1Object",jD1Object)
+  rD1o <- new(Class="DataObject",jD1Object)
   return(rD1o)
 })
 
