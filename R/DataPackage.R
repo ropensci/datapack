@@ -20,12 +20,13 @@
 
 #' @include dmsg.R
 #' @include DataObject.R
+#' @include SystemMetadata.R
+#' @import hash
 setClass("DataPackage", slots = c(
-    packageId               = "character",
-    metadataMap             = "character", # private Map<Identifier, List<Identifier>> 
-    objectStore             = "character", # private HashMap<Identifier, DataObject> 
-    systemMetadata          = "character"
-    ), 
+    relations               = "data.frame",    # subjectID, predicate, objectID
+    objects                 = "hash",          # key=identifier, value=DataObject
+    sysmeta                 = "SystemMetadata" # system metadata about the package
+    )
 )
 
 ###########################
@@ -37,41 +38,19 @@ setGeneric("DataPackage", function(...) { standardGeneric("DataPackage")} )
 
 setMethod("DataPackage", signature(), function() {
     dpkg <- new("DataPackage")
+    dpkg@relations = data.frame()
+    dpkg@objects = hash()
     return(dpkg)
 })
 
-setMethod("initialize", "DataPackage", function(.Object, packageId, jDataPackage) {
-	dmsg("@@ DataPackage-class.R initialize")
-	## verify the jDataPackage
-	if (missing("jDataPackage")) {
-        dmsg("@@ DataPackage-class.R - (missing jDataPackage)...")
-		if (!missing("packageId")) {
-            dmsg("@@ DataPackage-class.R - (have packageId)...")
-			## set the packageId and instantiate a new jDataPackage
-			.Object@packageId <- packageId
-			jPid <- .jnew("org/dataone/service/types/v1/Identifier")
-			jPid$setValue(packageId)
-			jDataPackage <- .jnew("org/dataone/client/DataPackage",jPid, check=FALSE)
-			if (!is.null(e <- .jgetEx())) {
-				print("Java exception was raised")
-				print(.jcheck(silent=TRUE))
-				print(.jcheck(silent=TRUE))
-				print(e)
-				jDataPackage <- .jnull("org/dataone/client/DataPackage")
-			}
-			.Object@jDataPackage <- jDataPackage
-		}
-	} else {
-        dmsg("@@ DataPackage-class.R - (have a jDataPackage...)")
-		## check that jDataPackage is indeed one
-		## then set the packageId from that one
-		if (.jinstanceof(jDataPackage,"org/dataone/client/DataPackage")) {
-            dmsg("@@ DataPackage-class.R - (jDataPackage is a DataPackage instance)...")
-			jPid <- jDataPackage$getPackageId()
-			.Object@packageId <- jPid$getValue()
-			.Object@jDataPackage <- jDataPackage
-		}
-	}
+setMethod("initialize", "DataPackage", function(.Object, packageId) {
+    dmsg("DataPackage-class.R initialize")
+    
+    .Object@sysmeta <- new("SystemMetadata")
+    if (!missing("packageId")) {
+        ## set the packageId and instantiate a new SystemMetadata
+        .Object@sysmeta@identifier <- packageId
+    }
    return(.Object)
 })
 
@@ -83,21 +62,15 @@ setMethod("initialize", "DataPackage", function(.Object, packageId, jDataPackage
 #' @aliases getData,DataPackage-methods
 #' @export
 setMethod("getData", signature("DataPackage", "character"), function(x, id) {
-  
-  jIdentifier <- .jnew("org/dataone/service/types/v1/Identifier")
-  jIdentifier$setValue(id)
-
-  jD1Object <- x@jDataPackage$get(jIdentifier)
-  if(!is.jnull(jD1Object)) {
-    databytes <- jD1Object$getData()
-    if(is.null(databytes)) {
-      print(paste("Didn't find data in object", id))
-      return()
+    databytes <- as.raw(NULL)
+    if (containsId(x, id)) {
+        do <- x@objects[[id]]
+        databytes <- getData(do)
+        return(databytes)
+    } else {
+        return(NULL)
     }
-    return(databytes)
-  }
 })
-
 
 ## Get the Count of Objects in the Package
 ## @param x DataPackage
@@ -105,15 +78,16 @@ setMethod("getData", signature("DataPackage", "character"), function(x, id) {
 ## @returnType numeric
 ## @return the number of object in the Package
 ## 
-## @author rnahf
 ## @export
 setGeneric("getSize", function(x, ...) { standardGeneric("getSize")} )
 
 setMethod("getSize", "DataPackage", function(x) {
-  return(x@jDataPackage$size())
+  return(length(x@objects))
 })
 
-
+#setMethod("length", "DataPackage", function(x) {
+#    return(length(x@objects))
+#})
 
 ## Get the Identifiers of Package Members
 ## 
@@ -128,18 +102,8 @@ setMethod("getSize", "DataPackage", function(x) {
 setGeneric("getIdentifiers", function(x, ...) { standardGeneric("getIdentifiers")} )
 
 setMethod("getIdentifiers", "DataPackage", function(x) {
-  jSet <- x@jDataPackage$identifiers()
-  identifiers <- character(0)
-  jIt <- jSet$iterator()
-  while(jIt$hasNext()) {
-    jPid <- .jrcall(jIt,"next")
-    identifiers <- append(identifiers, jPid$getValue())
-  }
-  return(identifiers)
+    return(keys(x@objects))
 })
-
-
-
 
 ## Add a DataObject to the DataPackage
 ## 
@@ -152,41 +116,13 @@ setMethod("getIdentifiers", "DataPackage", function(x) {
 ## 
 ## @author rnahf
 ## @export
-setGeneric("addData", function(x, d1object, ...) { 
+setGeneric("addData", function(x, do, ...) { 
     standardGeneric("addData")
 })
 
-setMethod("addData", signature("DataPackage", "DataObject"), function(x, d1object) {
-  jD1object <- d1object@jD1o
-  x@jDataPackage$addData(jD1object)
+setMethod("addData", signature("DataPackage", "DataObject"), function(x, do) {
+  x@objects[[do@sysmeta@identifier]] <- do
 })
-
-
-
-
-## Add a Pre-Existing Object to the Package
-## 
-## addAndDownloadData downloads a DataObject to the DataPackage, using the provided identifier
-## string to retrieve from the DataONE system.
-## 
-## @param x : DataPackage
-## @param identifier : character - the identifier of the object to act upon
-## @param ... (not yet used)
-## 
-## @author rnahf
-## @export
-setGeneric("addAndDownloadData", function(x, identifier, ...) { 
-    standardGeneric("addAndDownloadData")
-})
-
-setMethod("addAndDownloadData", signature("DataPackage", "character"), function(x, identifier) {
-  jPid <- .jnew("org/dataone/service/types/v1/Identifier")
-  jPid$setValue(identifier)
-  x@jDataPackage$addAndDownloadData(jPid)
-})
-
-
-
 
 ## Associates Data Objects to the Science Metadata Objects that Describe Them
 ## 
@@ -196,7 +132,6 @@ setMethod("addAndDownloadData", signature("DataPackage", "character"), function(
 setGeneric("insertRelationship", function(x, subjectID, objectIDs, predicateNS, predicateURI, ...) {
   standardGeneric("insertRelationship")
 })
-
 
 setMethod("insertRelationship", signature("DataPackage", "character", "character"), function(x, subjectID, objectIDs, ...) {
   jMetaPid <- .jnew("org/dataone/service/types/v1/Identifier")
@@ -234,17 +169,15 @@ setMethod("insertRelationship", signature("DataPackage", "character", "character
 
 ## Returns true if the specified object is a member of the package
 ##  
-setGeneric("contains", function(x, identifier, ...) {
-  standardGeneric("contains")
+setGeneric("containsId", function(x, identifier, ...) {
+    standardGeneric("containsId")
 })
 
-setMethod("contains", signature("DataPackage", "character"), function(x, identifier) {
-  jPid <- .jnew("org/dataone/service/types/v1/Identifier")
-  jPid$setValue(identifier)
-  
-  return(x@jDataPackage$contains(jPid))
+setMethod("containsId", signature("DataPackage", "character"), function(x, identifier) {
+    obj <- x@objects[[identifier]]
+    found <- !is.null(obj)
+    return(found)
 })
-
 
 ## Remove the Specified Member from the Package
 ## 
@@ -256,12 +189,10 @@ setGeneric("removeMember", function(x, identifier, ...) {
 })
 
 setMethod("removeMember", signature("DataPackage", "character"), function(x, identifier) {
-  jPid <- .jnew("org/dataone/service/types/v1/Identifier")
-  jPid$setValue(identifier)
-  
-  x@jDataPackage$remove(jPid)
+    if (containsId(x, identifier)) {
+        x@objects[[identifier]] <- NULL
+    }
 })
-
 
 ## Return the Package Member by Identifier
 ## 
@@ -269,15 +200,14 @@ setMethod("removeMember", signature("DataPackage", "character"), function(x, ide
 ## representation of the member.
 ## 
 setGeneric("getMember", function(x, identifier, ...) {
-  standardGeneric("getMember")
+    standardGeneric("getMember")
 })
 
 setMethod("getMember", signature("DataPackage", "character"), function(x, identifier) {
-  jPid <- .jnew("org/dataone/service/types/v1/Identifier")
-  jPid$setValue(identifier)
-  
-  jD1Object <- x@jDataPackage$get(jPid)
-  rD1o <- new(Class="DataObject",jD1Object)
-  return(rD1o)
+    if (containsId(x, identifier)) {
+        return(x@objects[[identifier]])
+    } else {
+        return(NULL)
+    }
 })
 

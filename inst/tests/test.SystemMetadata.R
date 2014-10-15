@@ -1,4 +1,4 @@
-context("SystemMetadata tests")
+context("SystemMetadata")
 test_that("datapackage library loads", {
 	library(datapackage)
 })

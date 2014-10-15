@@ -16,7 +16,8 @@ Depends:
 Imports:
     digest,
     methods,
-    XML
+    XML,
+    hash
 Suggests:
     testthat,
     knitr
