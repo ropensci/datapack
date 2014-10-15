@@ -6,16 +6,17 @@ Authors@R: c( person("Matthew", "Jones", email="jones@nceas.ucsb.edu",
     role=c("aut", "cre")))
 Description: The datapackage provides a flexible container to transport and
     manipulate complex sets of data that consist of multiple data files and
-    associated metadata and ancillary files.  The files are linked together
-    using the OAI-ORE standard resource map, which describes the relationships
+    associated metadata and ancillary files.  Individual data objects have
+    associated system level metadata, and data files are linked together using
+    the OAI-ORE standard resource map, which describes the relationships
     between the files. Data packages can be serialized and transported as
     structured zip files following the BagIt specification.
 Depends:
     R (>= 3.1.1)
 Imports:
-    dataone,
     digest,
-    methods
+    methods,
+    XML
 Suggests:
     testthat,
     knitr
@@ -25,6 +26,7 @@ LazyData: true
 VignetteBuilder: knitr
 Collate:
     'dmsg.R'
+    'SystemMetadata.R'
     'DataObject.R'
     'DataPackage.R'
     'datapackage-package.r'

@@ -38,9 +38,9 @@
 #' @author Matthew Jones
 #' @aliases DataObject, DataObject-class
 #' @keywords classes
-#' @importFrom dataone SystemMetadata
 #' @import methods
 #' @include dmsg.R
+#' @include SystemMetadata.R
 #' @examples
 #' do <- new("DataObject", "id1", charToRaw("1,2,3\n4,5,6\n"), "text/csv", "matt", "urn:node:KNB")
 #' id <- getIdentifier(do)
@@ -55,10 +55,7 @@ setClass("DataObject", slots = c(
 ## DataObject constructors
 ##########################
 
-#' Construct a DataObject instance. When initializing a DataObject using passed in data, one can either pass 
-#' in the \code{'id'} param as a \code{'SystemMetadata'} object, or as a \code{'character'} string 
-#' representing the identifier for an object along with parameters for format, user,and associated member node.
-#' In either case, the \code{'data'} param holds the \code{'raw'} data.
+#' Construct a DataObject instance.
 #' @param ... Additional arguments
 #' @return a DataObject
 #' @export
@@ -66,6 +63,11 @@ setGeneric("DataObject", function(...) {
     standardGeneric("DataObject")
 })
 
+#' Intialize a DataObject instance with values passed to the constructor function.
+#' When initializing a DataObject using passed in data, one can either pass 
+#' in the \code{'id'} param as a \code{'SystemMetadata'} object, or as a \code{'character'} string 
+#' representing the identifier for an object along with parameters for format, user,and associated member node.
+#' In either case, the \code{'data'} param holds the \code{'raw'} data.
 #' @import digest
 setMethod("initialize", "DataObject", function(.Object, id, data, format=NA, user=NA, mnNodeId=NA) {
     

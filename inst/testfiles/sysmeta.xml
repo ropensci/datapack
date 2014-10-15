@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ns1:systemMetadata xmlns:ns1="http://ns.dataone.org/service/types/v1">
+  <serialVersion>1</serialVersion>
+  <identifier>doi:10.xxyy/AA/tesdoc123456789</identifier>
+  <formatId>eml://ecoinformatics.org/eml-2.1.0</formatId>
+  <size>36281</size>
+  <checksum algorithm="SHA-1">24426711d5385a9ffa583a13d07af2502884932f</checksum>
+  <submitter>CN=Matt Jones A729,O=Google,C=US,DC=cilogon,DC=org</submitter>
+  <rightsHolder>CN=Matt Jones A729,O=Google,C=US,DC=cilogon,DC=org</rightsHolder>
+  <accessPolicy>
+  	<allow>
+		<subject>public</subject>
+		<permission>read</permission>
+	</allow>
+    <allow>
+      <subject>CN=Matt Jones A729,O=Google,C=US,DC=cilogon,DC=org</subject>
+      <subject>CN=Subject2,O=Google,C=US,DC=cilogon,DC=org</subject>
+      <permission>write</permission>
+      <permission>changePermission</permission>
+    </allow>
+  </accessPolicy>
+  <replicationPolicy replicationAllowed="true" numberReplicas="2">
+        <preferredMemberNode>urn:node:KNB</preferredMemberNode>
+        <preferredMemberNode>urn:node:mnUNM1</preferredMemberNode>
+        <blockedMemberNode>urn:node:BADNODE</blockedMemberNode>
+  </replicationPolicy>
+  <archived>true</archived>
+  <dateUploaded>2011-08-31T15:59:50.071163</dateUploaded>
+  <dateSysMetadataModified>2011-08-31T15:59:50.072921</dateSysMetadataModified>
+  <originMemberNode>urn:node:KNB</originMemberNode>
+  <authoritativeMemberNode>urn:node:KNB</authoritativeMemberNode>
+</ns1:systemMetadata>
