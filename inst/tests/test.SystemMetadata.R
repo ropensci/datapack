@@ -1,9 +1,9 @@
 context("SystemMetadata tests")
-test_that("dataone library loads", {
-	library(dataone)
+test_that("datapackage library loads", {
+	library(datapackage)
 })
 test_that("SystemMetadata constructors", {
-    library(dataone)
+    library(datapackage)
     sysmeta <- SystemMetadata()
     expect_that(sysmeta@serialVersion, equals(1))
     expect_that(is.na(sysmeta@identifier), is_true())
@@ -12,7 +12,7 @@ test_that("SystemMetadata constructors", {
     expect_that(sysmeta@formatId, equals("text/csv"))
 })
 test_that("XML SystemMetadata parsing works", {
-  library(dataone)
+  library(datapackage)
   testid <- "doi:10.xxyy/AA/tesdoc123456789"
   sysmeta <- SystemMetadata()
   expect_that(sysmeta@serialVersion, equals(1))
@@ -33,7 +33,7 @@ test_that("XML SystemMetadata parsing works", {
 })
 
 test_that("XML SystemMetadata serialization works", {
-    library(dataone)
+    library(datapackage)
     testid <- "doi:10.xxyy/AA/tesdoc123456789"
     sysmeta <- SystemMetadata()
     expect_that(sysmeta@serialVersion, equals(1))
@@ -59,7 +59,7 @@ test_that("XML SystemMetadata serialization works", {
     # TODO: check tree equivalence with original XML document
 })
 test_that("SystemMetadata XML constructor works", {
-    library(dataone)
+    library(datapackage)
     testid <- "doi:10.xxyy/AA/tesdoc123456789"
     doc <- xmlParseDoc("../testfiles/sysmeta.xml", asText=FALSE)
     expect_that(xmlValue(xmlRoot(doc)[["identifier"]]), matches(testid))
@@ -76,7 +76,7 @@ test_that("SystemMetadata XML constructor works", {
     expect_that(grep("urn:node:BADNODE", sysmeta@blockedNodes) > 0, is_true())
 })
 test_that("SystemMetadata validation works", {
-    library(dataone)
+    library(datapackage)
     sysmeta <- new("SystemMetadata", identifier="foo", formatId="text/csv", size=59, checksum="jdhdjhfd", rightsHolder="ff")
     isValid <- validate(sysmeta)
     expect_that(isValid, is_true())
