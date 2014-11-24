@@ -22,8 +22,9 @@
 #' @include DataObject.R
 #' @include SystemMetadata.R
 #' @import hash
+#' @export
 setClass("DataPackage", slots = c(
-    relations               = "data.frame",    # subjectID, predicate, objectID
+    relations               = "hash",          # key=subjectID, value=hash(key=predicate, value=list[objectIDs])
     objects                 = "hash",          # key=identifier, value=DataObject
     sysmeta                 = "SystemMetadata" # system metadata about the package
     )
@@ -33,19 +34,23 @@ setClass("DataPackage", slots = c(
 ## DataPackage constructors
 ###########################
 
-## generic
+#'
+#' @export
 setGeneric("DataPackage", function(...) { standardGeneric("DataPackage")} )
 
-setMethod("DataPackage", signature(), function() {
+#'
+#' @export
+setMethod("DataPackage", signature(), function(x) {
     dpkg <- new("DataPackage")
-    dpkg@relations = data.frame()
+    dpkg@relations = hash()
     dpkg@objects = hash()
     return(dpkg)
 })
 
+#' @export
 setMethod("initialize", "DataPackage", function(.Object, packageId) {
     dmsg("DataPackage-class.R initialize")
-    
+
     .Object@sysmeta <- new("SystemMetadata")
     if (!missing("packageId")) {
         ## set the packageId and instantiate a new SystemMetadata
@@ -124,48 +129,112 @@ setMethod("addData", signature("DataPackage", "DataObject"), function(x, do) {
   x@objects[[do@sysmeta@identifier]] <- do
 })
 
-## Associates Data Objects to the Science Metadata Objects that Describe Them
-## 
-## @note Since the resource map that defines a package is separate from the items
-## it associates, it is possible to use identifiers that have not been defined 
-## as members of the package.
-setGeneric("insertRelationship", function(x, subjectID, objectIDs, predicateNS, predicateURI, ...) {
+
+#' Record relationships between objects in a DataPackage
+#' @description Record a relationship of the form "subject -> predicate -> object", as defined by the Resource Description Framework (RDF), i.e.
+#' an RDF triple. For use with DataONE, a best practice is to specifiy the subject and predicate as DataONE persistent identifiers 
+#' (https://mule1.dataone.org/ArchitectureDocs-current/design/PIDs.html). If the objects are not known to DataONE, then local identifiers can be
+#' used, and these local identifiers may be promoted to DataONE PIDs when the package is uploaded to a DataONE member node.
+#' The predicate is typically an RDF property (as a IRI) from a schema supported by DataONE, i.e. "http://www.w3.org/ns/prov#wasGeneratedBy"
+#' @details A relationship is created for each value in the list "objectIDs". See examples for more information.
+#' #' @param x a DataPackage object
+#' @param subjectID the identifier of the object that will be the subject of the relationship
+#' @param predicate the IRI of the predicate of the relationship
+#' @param objectIDS a list of identifiers of the object of the relationship (a relationship is recorded for each objectID)
+#' @examples
+#' \dontrun{
+#' dp <- DataPackage()
+#' insertRelationship(dp, "/Users/smith/scripts/genFields.R",
+#'                        "http://www.w3.org/ns/prov#used",
+#'                        "https://knb.ecoinformatics.org/knb/d1/mn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1")
+#'                        
+#' }
+#' 
+
+setGeneric("insertRelationship", function(x, subjectID, objectIDs, predicate, ...) {
   standardGeneric("insertRelationship")
 })
 
-setMethod("insertRelationship", signature("DataPackage", "character", "character"), function(x, subjectID, objectIDs, ...) {
-  jMetaPid <- .jnew("org/dataone/service/types/v1/Identifier")
-  jMetaPid$setValue(subjectID)
+# Associate a metadata object with a list of dataobjects that
+# This method is used to maintain backward compatibility with rdataone v1.0.
+setMethod("insertRelationship",  signature("DataPackage", "character", "character"), function(x, subjectID, objectIDs, ...) {
   
-  jList <- .jnew("java/util/LinkedList")
-  for (id in objectIDs) {
-    jPid <- .jnew("org/dataone/service/types/v1/Identifier")
-    jPid$setValue(id)
-    jList$add(jPid)
-  }
-  x@jDataPackage$insertRelationship(jMetaPid, jList)
-  if (!is.jnull(e <- .jgetEx())) {
-      print("    ** Java exception was raised")
-      print(.jcheck(silent=FALSE))
+  insertRelationship(x, subjectID, objectIDs, "http://purl.org/spar/cito/documents")
+  
+  for (obj in objectIDs) {
+    insertRelationship(x, obj, subjectID, "http://purl.org/spar/cito/isDocumentedBy")
   }
 })
 
-setMethod("insertRelationship", signature("DataPackage", "character", "character", "character", "character"), function(x, subjectID, objectIDs, predicateNS, predicateURI) {
-  jSubjPid <- .jnew("org/dataone/service/types/v1/Identifier")
-  jSubjPid$setValue(subjectID)
+#' @export
+setMethod("insertRelationship", signature("DataPackage", "character", "character", "character"), function(x, subjectID, objectIDs, predicate, ...) {
   
-  jList <- .jnew("java/util/LinkedList")
-  for (id in objectIDs) {
-    jPid <- .jnew("org/dataone/service/types/v1/Identifier")
-    jPid$setValue(id)
-    jList$add(jPid)
+  # Store triples in a complex data structure based on a hash. 
+  # This structure is: hash(key=subjectID, value=hash(key=predicate, value=list[objectIDs]))
+  # Check if this subject has been stored previously. Build a temporary hash based on the subject.
+  if (has.key(subjectID, x@relations)) {
+    subject <- x@relations[[subjectID]]
+  } else {
+    subject <- hash()
   }
-  x@jDataPackage$insertRelationship(jSubjPid, jList, predicateNS, predicateURI)
-  if (!is.jnull(e <- .jgetEx())) {
-    print("    ** Java exception was raised")
-    print(.jcheck(silent=FALSE))
+  
+  # Have we previously stored the predicate for this subject?
+  if (has.key(predicate, subject)) {
+    objects <- subject[[predicate]]
+    # Add each object to the list
+    for (obj in objectIDs) {
+      if (! is.element(obj, objects)) {
+        objects <- c(objects, obj)
+      }
+    }
+  } else {
+    objects <- objectIDs
   }
+  
+  # Update the list of objects associated with this predicate
+  subject[predicate] <- objects
+  # Insert the new or updated subject hash back into the relations slot
+  x@relations[subjectID] <- subject
 })
+
+#' Return relationships between package objects
+#' @description Relationships between objects in a package are defined using the \code{'insertRelationship'} call and retrieved
+#' using \code(getRetaionships). These relationships are returned in a data frame with \code{'subject'}, \code{'predicate'}, \code{'objects'}
+#' as the columns, ordered by "subject"
+setGeneric("getRelationships", function(x, ...) {
+  standardGeneric("getRelationships")
+})
+
+#' @export
+setMethod("getRelationships", signature("DataPackage"), function(x, quiet = TRUE, ...) {
+  
+  # Create an empty data frame to store relationships in.
+  relationships <- data.frame(subject=character(), predicate=character(), object=character(), row.names = NULL, stringsAsFactors = FALSE)
+  
+  # The slot 'relations' has the structure: hash(key=subjectID, value=hash(key=predicate, value=list[objectIDs]))
+  # Loop through the subjectID hash, where each member is another hash
+  for (subjectIDkey in keys(x@relations)) {
+    predicateHash <- x@relations[[subjectIDkey]]
+    # Loop through each predicate for this subject
+    for (predicateKey in keys(predicateHash)) {
+      objectList <- predicateHash[[predicateKey]]
+      # Loop through each object for this predicate
+      for (objectID in objectList) {
+          # Add the subject, predicate, object triple to the output data frame
+          relationships <- rbind(relationships, data.frame(subject=subjectIDkey, predicate=predicateKey, object=objectID, row.names = NULL, stringsAsFactors = FALSE))
+        if (!quiet) {
+          cat(sprintf("%s %s %s\n", subjectIDkey, predicateKey, objectID))
+        }
+      }
+    }
+  }
+  
+  # Reorder output data frame by "subject" column
+  relationships <- relationships[order(relationships$subject, relationships$predicate, relationships$object),]
+  
+  return(relationships)
+})
+
 
 ## Returns true if the specified object is a member of the package
 ##  

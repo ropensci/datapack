@@ -38,3 +38,52 @@ test_that("DataPackage methods work", {
     expect_that(getSize(dpkg), equals(1))
     expect_that(containsId(dpkg, id1), equals(FALSE))    
 })
+
+test_that("InsertRelationship methods work", {
+  
+  # Test the 'insertRelationships' method that uses the hardwired 'documents', 'isDocumentedBy' relationship
+  dp <- DataPackage()
+  doId1 <- "id1"
+  doId2 <- "id2" 
+  user <- "smith"
+  data <- charToRaw("1,2,3\n4,5,6")
+  format <- "text/csv"
+  node <- "urn:node:KNB"
+  do1 <- new("DataObject", id=doId1, data, format, user, node)
+  do2 <- new("DataObject", id=doId2, data, format, user, node)
+  mdId <- "md1"
+  md1 <- new("DataObject", id=mdId, data, format="eml://ecoinformatics.org/eml-2.1.1", user, node)
+  addData(dp, do1)
+  addData(dp, do2)
+  
+  insertRelationship(dp, subjectID=mdId, objectIDs=c(doId1, doId2))
+  relations <- getRelationships(dp)
+  # Test if the data frame with relationships was constructed correctly
+  expect_that(nrow(relations), equals(4))
+  expect_that(relations[relations$object == doId1, 'subject'], equals(mdId))
+  expect_that(relations[relations$object == doId2, 'subject'], equals(mdId))
+  expect_that(relations[relations$subject == mdId, 'predicate'], matches('documents'))
+  expect_that(relations[relations$subject == doId1, 'predicate'], matches('isDocumentedBy'))
+  rm(dp)
+  
+  # Now test the second 'insertRelationships' that allows specifying the predicate of the relationship
+  dp <- DataPackage()
+  doId1 <- "id1"
+  doId2 <- "id2" 
+  user <- "smith"
+  data <- charToRaw("1,2,3\n4,5,6")
+  format <- "text/csv"
+  node <- "urn:node:KNB"
+  do1 <- new("DataObject", id=doId1, data, format, user, node)
+  do2 <- new("DataObject", id=doId2, data, format, user, node)
+  addData(dp, do1)
+  addData(dp, do2)
+  
+  # Insert a typical provenance relationship
+  insertRelationship(dp, subjectID=doId1, objectIDs=doId2, predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
+  relations <- getRelationships(dp)
+  # Test if the data frame with retrieved relationships was constructed correctly
+  expect_that(nrow(relations), equals(1))
+  expect_that(relations[relations$subject == doId1, 'predicate'], matches("wasDerivedFrom"))
+  expect_that(relations[relations$subject == doId1, 'object'], equals(doId2))
+})
