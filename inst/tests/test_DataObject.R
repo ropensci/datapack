@@ -6,6 +6,7 @@ test_that("datapackage library loads", {
 
 test_that("DataObject constructors work", {
     library(datapackage)
+    library(digest)
     identifier <- "id1"
     user <- "matt"
     data <- charToRaw("1,2,3\n4,5,6")

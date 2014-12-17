@@ -34,7 +34,7 @@ setClass("DataPackage", slots = c(
 ## DataPackage constructors
 ###########################
 
-#'
+#' Construct a DataPackage object
 #' @export
 setGeneric("DataPackage", function(...) { standardGeneric("DataPackage")} )
 
@@ -77,13 +77,12 @@ setMethod("getData", signature("DataPackage", "character"), function(x, id) {
     }
 })
 
-## Get the Count of Objects in the Package
-## @param x DataPackage
-## @param ... (not yet used)
-## @returnType numeric
-## @return the number of object in the Package
-## 
-## @export
+#' Get the Count of Objects in the Package
+#' @param x DataPackage
+#' @param ... (not yet used)
+#' @return the number of object in the Package
+#' 
+#' @export
 setGeneric("getSize", function(x, ...) { standardGeneric("getSize")} )
 
 setMethod("getSize", "DataPackage", function(x) {
@@ -94,33 +93,31 @@ setMethod("getSize", "DataPackage", function(x) {
 #    return(length(x@objects))
 #})
 
-## Get the Identifiers of Package Members
-## 
-## Return the identifiers of the package members, as defined by the ResourceMap
-## @param x : DataPackage
-## @param ... (not yet used)
-## @returnType character
-## @return list of identifiers
-## 
-## @author rnahf
-## @export
+#' Get the Identifiers of Package Members
+#' 
+#' Return the identifiers of the package members, as defined by the ResourceMap
+#' @param x : DataPackage
+#' @param ... (not yet used)
+#' @return list of identifiers
+#' 
+#' @author rnahf
+#' @export
 setGeneric("getIdentifiers", function(x, ...) { standardGeneric("getIdentifiers")} )
 
 setMethod("getIdentifiers", "DataPackage", function(x) {
     return(keys(x@objects))
 })
 
-## Add a DataObject to the DataPackage
-## 
-## Includes the DataObject in the DataPackage data Map, making it available for
-## retrieval and eventual upload (via createPackage)
-## 
-## @param x : DataPackage
-## @param d1object : DataObject
-## @param ... : (not yet used)
-## 
-## @author rnahf
-## @export
+#' Add a DataObject to the DataPackage
+#' @description Includes the DataObject in the DataPackage data Map, making it available for
+#' retrieval and eventual upload (via createPackage).
+#' 
+#' @param x : DataPackage
+#' @param d1object : DataObject
+#' @param ... : (not yet used)
+#' 
+#' @author rnahf
+#' @export
 setGeneric("addData", function(x, do, ...) { 
     standardGeneric("addData")
 })
@@ -149,8 +146,7 @@ setMethod("addData", signature("DataPackage", "DataObject"), function(x, do) {
 #'                        "https://knb.ecoinformatics.org/knb/d1/mn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1")
 #'                        
 #' }
-#' 
-
+#' @export
 setGeneric("insertRelationship", function(x, subjectID, objectIDs, predicate, ...) {
   standardGeneric("insertRelationship")
 })
@@ -166,7 +162,6 @@ setMethod("insertRelationship",  signature("DataPackage", "character", "characte
   }
 })
 
-#' @export
 setMethod("insertRelationship", signature("DataPackage", "character", "character", "character"), function(x, subjectID, objectIDs, predicate, ...) {
   
   # Store triples in a complex data structure based on a hash. 
@@ -201,6 +196,7 @@ setMethod("insertRelationship", signature("DataPackage", "character", "character
 #' @description Relationships between objects in a package are defined using the \code{'insertRelationship'} call and retrieved
 #' using \code(getRetaionships). These relationships are returned in a data frame with \code{'subject'}, \code{'predicate'}, \code{'objects'}
 #' as the columns, ordered by "subject"
+#' @export
 setGeneric("getRelationships", function(x, ...) {
   standardGeneric("getRelationships")
 })
@@ -237,7 +233,7 @@ setMethod("getRelationships", signature("DataPackage"), function(x, quiet = TRUE
 
 
 ## Returns true if the specified object is a member of the package
-##  
+#' @export
 setGeneric("containsId", function(x, identifier, ...) {
     standardGeneric("containsId")
 })
@@ -267,7 +263,7 @@ setMethod("removeMember", signature("DataPackage", "character"), function(x, ide
 ## 
 ## Given the identifier of a member of the data package, return the DataObject
 ## representation of the member.
-## 
+#' @export
 setGeneric("getMember", function(x, identifier, ...) {
     standardGeneric("getMember")
 })

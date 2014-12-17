@@ -13,6 +13,7 @@ test_that("SystemMetadata constructors", {
 })
 test_that("XML SystemMetadata parsing works", {
   library(datapackage)
+  library(XML)
   testid <- "doi:10.xxyy/AA/tesdoc123456789"
   sysmeta <- SystemMetadata()
   expect_that(sysmeta@serialVersion, equals(1))
@@ -34,6 +35,7 @@ test_that("XML SystemMetadata parsing works", {
 
 test_that("XML SystemMetadata serialization works", {
     library(datapackage)
+    library(XML)
     testid <- "doi:10.xxyy/AA/tesdoc123456789"
     sysmeta <- SystemMetadata()
     expect_that(sysmeta@serialVersion, equals(1))
