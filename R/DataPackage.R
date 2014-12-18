@@ -38,8 +38,6 @@ setClass("DataPackage", slots = c(
 #' @export
 setGeneric("DataPackage", function(...) { standardGeneric("DataPackage")} )
 
-#'
-#' @export
 setMethod("DataPackage", signature(), function(x) {
     dpkg <- new("DataPackage")
     dpkg@relations = hash()
@@ -194,7 +192,7 @@ setMethod("insertRelationship", signature("DataPackage", "character", "character
 
 #' Return relationships between package objects
 #' @description Relationships between objects in a package are defined using the \code{'insertRelationship'} call and retrieved
-#' using \code(getRetaionships). These relationships are returned in a data frame with \code{'subject'}, \code{'predicate'}, \code{'objects'}
+#' using \code{getRetaionships}. These relationships are returned in a data frame with \code{'subject'}, \code{'predicate'}, \code{'objects'}
 #' as the columns, ordered by "subject"
 #' @export
 setGeneric("getRelationships", function(x, ...) {
@@ -232,7 +230,7 @@ setMethod("getRelationships", signature("DataPackage"), function(x, quiet = TRUE
 })
 
 
-## Returns true if the specified object is a member of the package
+#' Returns true if the specified object is a member of the package
 #' @export
 setGeneric("containsId", function(x, identifier, ...) {
     standardGeneric("containsId")
@@ -244,11 +242,12 @@ setMethod("containsId", signature("DataPackage", "character"), function(x, ident
     return(found)
 })
 
-## Remove the Specified Member from the Package
-## 
-## Given the identifier of a member of the data package, delete the DataObject
-## representation of the member.
-## 
+#' Remove the Specified Member from the Package
+#' @description Given the identifier of a member of the data package, delete the DataObject
+#' representation of the member.
+#' @param x a Datapackage object
+#' @param identifier an identifier for a DataObject
+#' @export 
 setGeneric("removeMember", function(x, identifier, ...) {
   standardGeneric("removeMember")
 })
