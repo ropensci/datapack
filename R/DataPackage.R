@@ -275,3 +275,30 @@ setMethod("getMember", signature("DataPackage", "character"), function(x, identi
     }
 })
 
+#' Serialize the DataPackage object
+#' @description Datapackage relationships are serialized as a OAI-ORE ResourceMap
+#' @param .Object the DataPackage object
+#' @param file the file to which the ResourceMap will be serialized
+#' @param syntaxName name of the syntax to use for serialization - default is "rdfxml"
+#' @param mimetype the mimetype of the serialized output - the default is "application/rdf+xml"
+#' @param namespaces a data frame containing one or more namespaces and their associated prefix
+#' @param syntaxURI URI of the serialization syntax
+#' @export
+setGeneric("serializePackage", function(.Object, file, ...) {
+  standardGeneric("serializePackage")
+})
+
+setMethod("serializePackage", signature("DataPackage"), function(.Object, file, syntaxName="rdfxml", 
+                                                                           mimeType="application/rdf+xml", 
+                                                                           namespaces=data.frame(namespace=character(), prefix=character(), stringsAsFactors=FALSE),
+                                                                           syntaxURI=as.character(NA)) {
+  # Get the relationships stored in this datapackage.
+  relations <- getRelationships(dp)
+  
+  # Create a ResourceMap object and serialize it to the specified file
+  resMap <- new("ResourceMap")
+  resMap <- createFromTriples(resMap, relations, getIdentifiers(.Object))  
+  status <- serializeRDF(resMap, file, syntaxName, mimeType, namespaces, syntaxURI)
+})
+
+

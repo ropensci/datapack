@@ -87,3 +87,39 @@ test_that("InsertRelationship methods work", {
   expect_that(relations[relations$subject == doId1, 'predicate'], matches("wasDerivedFrom"))
   expect_that(relations[relations$subject == doId1, 'object'], equals(doId2))
 })
+
+test_that("Package serialization works", {
+  
+  dp <- DataPackage()
+  mdId <- "scimeta_id"
+  doInId <- "scidataId"
+  doOutId <- "sciProductId"
+  executionId <- "execution1"
+  
+  user <- "smith"
+  data <- charToRaw("1,2,3\n4,5,6")
+  format <- "text/csv"
+  node <- "urn:node:KNB"
+  md1 <- new("DataObject", id=mdId, data, format="eml://ecoinformatics.org/eml-2.1.1", user, node)
+  doIn <- new("DataObject", id=doInId, data, format, user, node)
+  doOut <- new("DataObject", id=doOutId, data, format, user, node)
+  addData(dp, md1)
+  addData(dp, doIn)
+  addData(dp, doOut)
+  
+  # Insert metadata document <-> relationships
+  insertRelationship(dp, subjectID=mdId, objectIDs=c(doOutId))
+  
+  # Insert a typical provenance relationship
+  insertRelationship(dp, subjectID=doOutId, objectIDs=doInId, predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
+  insertRelationship(dp, subjectID=executionId, objectIDs=doInId, predicate="http://www.w3.org/ns/prov#used")
+  insertRelationship(dp, subjectID=doOutId, objectIDs=executionId, predicate="http://www.w3.org/ns/prov#wasGeneratedBy")
+  
+  # Serialize the ResourceMap to a file.
+  #filePath <- tempfile(pattern = "file", tmpdir = tempdir(), fileext = ".rdf")
+  filePath <- "/tmp/test-serialization.rdf"
+  status <- serializePackage(dp, filePath)
+  found <- grep("<prov:wasDerivedFrom rdf:resource=\"scidataId\"", readLines(filePath))
+  expect_that(found, is_more_than(0))
+  #unlink(filePath)
+})
