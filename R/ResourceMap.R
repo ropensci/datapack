@@ -48,14 +48,19 @@ setClass("ResourceMap", slots = c(relations = "data.frame",
 #' @description Create the objects used by the ResourceMap object to store and process
 #' relationships (RDF triples) of the DataPackage.
 #' @param .Object a ResourceMap object
+#' @param id a unique identifier to identify this ResourceMap. This id will be used internally in the ResourceMap.
 #' @return the ResourceMap object
 #' @export
-setMethod("initialize", "ResourceMap", function(.Object) {
+setMethod("initialize", "ResourceMap", function(.Object, id = as.character(NA)) {
   .Object@relations <- data.frame()
   .Object@world   <- new("World")
   .Object@storage <- new("Storage", .Object@world, "hashes", name="", options="hash-type='memory'")
   .Object@model   <- new("Model", .Object@world, .Object@storage, options="")
-  .Object@id <- sprintf("resourceMap_%s", UUIDgenerate())
+  if (is.na(id)) {
+    .Object@id <- sprintf("%s_%s", "resourceMap_", UUIDgenerate())
+  } else {
+    .Object@id <- id
+  }
   return(.Object)
 })
 
@@ -153,7 +158,8 @@ setMethod("createFromTriples", signature("ResourceMap", "data.frame", "character
 #' @export
 setGeneric("serializeRDF", function(.Object, file, ...) { standardGeneric("serializeRDF")})
 
-setMethod("serializeRDF", signature("ResourceMap", "character"), function(.Object, file, 
+setMethod("serializeRDF", signature("ResourceMap", "character"), function(.Object, 
+                                                                          file, 
                                                                           syntaxName="rdfxml", 
                                                                           mimeType="application/rdf+xml", 
                                                                           namespaces=data.frame(namespace=character(), prefix=character(), stringsAsFactors=FALSE),

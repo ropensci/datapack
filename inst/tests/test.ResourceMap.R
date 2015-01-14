@@ -42,13 +42,13 @@ test_that("ResourceMap creation from DataPackage triples", {
   expect_that(relations[relations$subject == mdId, 'predicate'], matches("documents"))
   
   # Now initialize a ResourceMap with the relationships.
-  resMap <- new("ResourceMap")
+  resMapId <- sprintf("%s%s", "resourceMap_", UUIDgenerate())  
+  resMap <- new("ResourceMap", id=resMapId)
   expect_that(class(resMap)[[1]], equals("ResourceMap"))
   resMap <- createFromTriples(resMap, relations, getIdentifiers(dp))
   
   # Serialize the ResourceMap to a file.
-  #filePath <- tempfile(pattern = "file", tmpdir = tempdir(), fileext = ".rdf")
-  filePath <- "/tmp/test.rdf"
+  filePath <- sprintf("/tmp/%s.rdf", resMapId)
   status <- serializeRDF(resMap, filePath)
   found <- grep("<prov:wasDerivedFrom rdf:resource=\"scidataId\"", readLines(filePath))
   expect_that(found, is_more_than(0))

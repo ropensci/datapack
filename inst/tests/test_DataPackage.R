@@ -90,6 +90,7 @@ test_that("InsertRelationship methods work", {
 
 test_that("Package serialization works", {
   
+  library(uuid)
   dp <- DataPackage()
   mdId <- "scimeta_id"
   doInId <- "scidataId"
@@ -116,9 +117,10 @@ test_that("Package serialization works", {
   insertRelationship(dp, subjectID=doOutId, objectIDs=executionId, predicate="http://www.w3.org/ns/prov#wasGeneratedBy")
   
   # Serialize the ResourceMap to a file.
-  #filePath <- tempfile(pattern = "file", tmpdir = tempdir(), fileext = ".rdf")
-  filePath <- "/tmp/test-serialization.rdf"
-  status <- serializePackage(dp, filePath)
+  serializationId <- sprintf("%s%s", "resourceMap_", UUIDgenerate())
+  filePath <- sprintf("/tmp/%s.rdf", serializationId)
+  status <- serializePackage(dp, filePath, id=serializationId)
+  expect_that(file.exists(filePath), is_true())
   found <- grep("<prov:wasDerivedFrom rdf:resource=\"scidataId\"", readLines(filePath))
   expect_that(found, is_more_than(0))
   #unlink(filePath)
