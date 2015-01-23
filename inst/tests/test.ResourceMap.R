@@ -10,6 +10,7 @@ test_that("ResourceMap initialization", {
 test_that("ResourceMap creation from DataPackage triples", {
   library(datapackage)
   library(redland)
+  library(uuid)
   
   dp <- DataPackage()
   mdId <- "scimeta_id"
@@ -52,7 +53,7 @@ test_that("ResourceMap creation from DataPackage triples", {
   status <- serializeRDF(resMap, filePath)
   found <- grep("<prov:wasDerivedFrom rdf:resource=\"scidataId\"", readLines(filePath))
   expect_that(found, is_more_than(0))
-  #unlink(filePath)
+  unlink(filePath)
   
 })
 
