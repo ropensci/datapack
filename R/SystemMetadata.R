@@ -22,6 +22,7 @@
 #' @description A class representing DataONE SystemMetadata, which is core information about objects stored in a repository
 #' and needed to manage those objects across systems.  SystemMetadata contains basic identification, ownership,
 #' access policy, replication policy, and related metadata.
+#' @exportClass SystemMetadata
 setClass("SystemMetadata", slots = c(
     serialVersion           = "numeric",
     identifier              = "character",
