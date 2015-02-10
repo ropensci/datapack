@@ -31,7 +31,7 @@ setClass("SystemMetadata", slots = c(
     checksumAlgorithm       = "character",
     submitter               = "character",
     rightsHolder            = "character",
-    accessPolicy            = "data.frame",  # accessPolicy (allow+ (subject+, permission+))
+    accessPolicy            = "data.frame",  # accessPolicy tuples (subject, permission)
     replicationAllowed       = "logical",
     numberReplicas          = "numeric",
     preferredNodes          = "list",
@@ -61,6 +61,7 @@ setClass("SystemMetadata", slots = c(
 #' @param checksumAlgorithm value of type \code{"character"}, the name of the hash function used to generate a checksum, from the DataONE controlled list.
 #' @param submitter value of type \code{"character"}, the Distinguished Name or identifier of the person submitting the object.
 #' @param rightsHolder value of type \code{"character"}, the Distinguished Name or identifier of the person who holds access rights to the object.
+#' @param accessPolicy value of type \code{"data.frame"} containing (subject, permission) tuples to constitute the access authorization rules.
 #' @param obsoletes value of type \code{"character"}, the identifier of an object which this object replaces.
 #' @param obsoletedBy value of type \code{"character"}, the identifier of an object that replaces this object.
 #' @param archived value of type \code{"logical"}, a boolean flag indicating whether the object has been archived and thus hidden.
@@ -76,8 +77,8 @@ setClass("SystemMetadata", slots = c(
 #' 
 setMethod("initialize", signature = "SystemMetadata", definition = function(.Object,
     identifier=as.character(NA), formatId=as.character(NA), size=as.numeric(NA), checksum=as.character(NA), 
-    checksumAlgorithm="SHA-1", submitter=as.character(NA), rightsHolder=as.character(NA), replicationAllowed=TRUE, 
-    numberReplicas=3, obsoletes=as.character(NA), obsoletedBy=as.character(NA), archived=FALSE, 
+    checksumAlgorithm="SHA-1", submitter=as.character(NA), rightsHolder=as.character(NA), accessPolicy=data.frame(subject = character(), permission=character()),
+    replicationAllowed=TRUE, numberReplicas=3, obsoletes=as.character(NA), obsoletedBy=as.character(NA), archived=FALSE, 
     dateUploaded=as.character(NA), dateSysMetadataModified=as.character(NA), 
     originMemberNode=as.character(NA), authoritativeMemberNode=as.character(NA)) {
     # defaults here
@@ -89,7 +90,7 @@ setMethod("initialize", signature = "SystemMetadata", definition = function(.Obj
     .Object@checksumAlgorithm <- as.character(checksumAlgorithm)
     .Object@submitter <- as.character(submitter)
     .Object@rightsHolder <- as.character(rightsHolder)
-    #accessList <- xmlChildren(xml[["accessPolicy"]])
+    .Object@accessPolicy <- as.data.frame(accessPolicy)
     .Object@replicationAllowed = as.logical(replicationAllowed)
     .Object@numberReplicas = as.numeric(numberReplicas)
     .Object@obsoletes <- as.character(obsoletes)
@@ -119,7 +120,7 @@ setMethod("initialize", signature = "SystemMetadata", definition = function(.Obj
 #' @slot checksumAlgorithm value of type \code{"character"}, the name of the hash function used to generate a checksum, from the DataONE controlled list.
 #' @slot submitter value of type \code{"character"}, the Distinguished Name or identifier of the person submitting the object.
 #' @slot rightsHolder value of type \code{"character"}, the Distinguished Name or identifier of the person who holds access rights to the object.
-#' @slot accessPolicy value of type \code{"data.frame"}, a list of access rules to be applied to the object.
+#' @slot accessPolicy value of type \code{"data.frame"}, a list of access rules as (subject, permission) tuples to be applied to the object.
 #' @slot obsoletes value of type \code{"character"}, the identifier of an object which this object replaces.
 #' @slot obsoletedBy value of type \code{"character"}, the identifier of an object that replaces this object.
 #' @slot archived value of type \code{"logical"}, a boolean flag indicating whether the object has been archived and thus hidden.
@@ -334,6 +335,34 @@ setGeneric("validate", function(object, ...) {
 #' @rdname validate-methods
 #' @aliases validate,SystemMetadata-method
 setMethod("validate", signature("SystemMetadata"), function(object, ...) validate_function(object))
+
+#' @title add access rules to system metadata 
+#' @description
+#' Add one or more access rules to a SystemMetadata object.
+#' @param sysmeta the SystemMetadata instance to which to add the rules
+#' @param x the subject of the rule to be added, or a data frame of subject/permission tuples
+#' @param permission the permission to be applied to subject if x is character
+#' 
+#' @rdname SystemMetadata-methods
+#' @docType methods
+#' @author jones
+#' @export
+setGeneric("addAccessRule", function(sysmeta, x, ...) {
+    standardGeneric("addAccessRule")
+})
+#' @rdname SystemMetadata-methods
+#' @aliases addAccessRule,SystemMetadata-method
+setMethod("addAccessRule", signature("SystemMetadata", "character"), function(sysmeta, x, permission) {
+    accessRecord <- data.frame(subject=x, permission=permission)
+    sysmeta@accessPolicy <- rbind(sysmeta@accessPolicy, accessRecord)
+    return(sysmeta)
+})
+#' @rdname SystemMetadata-methods
+#' @aliases addAccessRule,SystemMetadata-method
+setMethod("addAccessRule", signature("SystemMetadata", "data.frame"), function(sysmeta, x) {
+    sysmeta@accessPolicy <- rbind(sysmeta@accessPolicy, x)
+    return(sysmeta)
+})
 
 ########################################################################################
 # Private methods; not intended to be called by external applications

@@ -89,3 +89,22 @@ test_that("SystemMetadata validation works", {
     expect_that(length(errors), equals(2))
 })
 
+test_that("SystemMetadata accessPolicy can be constructed and changed", {
+    apolicy=data.frame(list("public", "read"))
+    colnames(apolicy) <- c("subject", "permission")
+    sysmeta <- new("SystemMetadata", identifier="foo", formatId="text/csv", size=59, checksum="jdhdjhfd", rightsHolder="ff", accessPolicy=apolicy)
+    expect_that(sysmeta@serialVersion, equals(1))
+    expect_that(nrow(sysmeta@accessPolicy), equals(1))
+    expect_that(as.character(sysmeta@accessPolicy$permission[[1]]), matches("read"))
+    
+    sysmeta <- addAccessRule(sysmeta, "foo", "write")
+    expect_that(nrow(sysmeta@accessPolicy), equals(2))
+    expect_that(as.character(sysmeta@accessPolicy$permission[[2]]), matches("write"))
+    
+    apolicy=data.frame(subject=c("bar", "baz"), permission= c("changePermission", "write"))
+    sysmeta <- addAccessRule(sysmeta, apolicy)
+    expect_that(nrow(sysmeta@accessPolicy), equals(4))
+    expect_that(as.character(sysmeta@accessPolicy$permission[[4]]), matches("write"))
+    expect_that(as.character(sysmeta@accessPolicy$subject[[4]]), matches("baz"))
+})
+
