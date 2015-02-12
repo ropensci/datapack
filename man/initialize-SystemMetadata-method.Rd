@@ -50,9 +50,13 @@
 \item{originMemberNode}{value of type \code{"character"}, the node identifier of the node on which the object was originally registered.}
 
 \item{authoritativeMemberNode}{value of type \code{"character"}, the node identifier of the node which currently is authoritative for the object.}
+
+\item{preferredNodes}{list of \code{"character"}, each of which is the node identifier for a node to which a replica should be sent.}
+
+\item{blockedNodes}{list of \code{"character"}, each of which is the node identifier for a node blocked from housing replicas.}
 }
 \value{
-the SystemMetadata object representing an object
+the SystemMetadata instance representing an object
 }
 \description{
 Initialize a SystemMetadata object by providing default values for core information
@@ -61,5 +65,8 @@ access policy, replication policy, and related metadata.
 }
 \author{
 jones
+}
+\seealso{
+http://mule1.dataone.org/ArchitectureDocs-current/apis/Types.html#Types.SystemMetadata
 }
 

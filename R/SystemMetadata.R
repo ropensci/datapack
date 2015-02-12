@@ -54,8 +54,6 @@ setClass("SystemMetadata", slots = c(
 #' access policy, replication policy, and related metadata.
 #'
 #' @param identifier value of type \code{"character"}, the identifier of the object that this system metadata describes.
-#' @param replicationAllowed value of type \code{"logical"}, for replication policy allows replicants.
-#' @param numberReplicas value of type \code{"numeric"}, for number of supported replicas.
 #' @param formatId value of type \code{"character"}, the DataONE object format for the object.
 #' @param size value of type \code{"numeric"}, the size of the object in bytes.
 #' @param checksum value of type \code{"character"}, the checksum for the object using the designated checksum algorithm.
@@ -63,6 +61,10 @@ setClass("SystemMetadata", slots = c(
 #' @param submitter value of type \code{"character"}, the Distinguished Name or identifier of the person submitting the object.
 #' @param rightsHolder value of type \code{"character"}, the Distinguished Name or identifier of the person who holds access rights to the object.
 #' @param accessPolicy value of type \code{"data.frame"} containing (subject, permission) tuples to constitute the access authorization rules.
+#' @param replicationAllowed value of type \code{"logical"}, for replication policy allows replicants.
+#' @param numberReplicas value of type \code{"numeric"}, for number of supported replicas.
+#' @param preferredNodes list of \code{"character"}, each of which is the node identifier for a node to which a replica should be sent.
+#' @param blockedNodes list of \code{"character"}, each of which is the node identifier for a node blocked from housing replicas.
 #' @param obsoletes value of type \code{"character"}, the identifier of an object which this object replaces.
 #' @param obsoletedBy value of type \code{"character"}, the identifier of an object that replaces this object.
 #' @param archived value of type \code{"logical"}, a boolean flag indicating whether the object has been archived and thus hidden.
@@ -71,7 +73,8 @@ setClass("SystemMetadata", slots = c(
 #' @param originMemberNode value of type \code{"character"}, the node identifier of the node on which the object was originally registered.
 #' @param authoritativeMemberNode value of type \code{"character"}, the node identifier of the node which currently is authoritative for the object.
 #'
-#' @return the SystemMetadata object representing an object
+#' @return the SystemMetadata instance representing an object
+#' @seealso http://mule1.dataone.org/ArchitectureDocs-current/apis/Types.html#Types.SystemMetadata
 #' @author jones
 #' 
 #' @export
