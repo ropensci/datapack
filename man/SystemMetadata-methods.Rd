@@ -8,6 +8,9 @@
 \alias{addAccessRule,SystemMetadata,character-method}
 \alias{addAccessRule,SystemMetadata,data.frame-method}
 \alias{addAccessRule,SystemMetadata-method}
+\alias{hasAccessRule}
+\alias{hasAccessRule,SystemMetadata,character-method}
+\alias{hasAccessRule,SystemMetadata-method}
 \title{Create DataONE SystemMetadata object}
 \usage{
 SystemMetadata(sysmeta, ...)
@@ -19,6 +22,10 @@ addAccessRule(sysmeta, x, ...)
 \S4method{addAccessRule}{SystemMetadata,character}(sysmeta, x, permission)
 
 \S4method{addAccessRule}{SystemMetadata,data.frame}(sysmeta, x)
+
+hasAccessRule(sysmeta, subject, ...)
+
+\S4method{hasAccessRule}{SystemMetadata,character}(sysmeta, subject, permission)
 }
 \arguments{
 \item{sysmeta}{the SystemMetadata instance to which to add the rules}
@@ -26,9 +33,17 @@ addAccessRule(sysmeta, x, ...)
 \item{x}{the subject of the rule to be added, or a data frame of subject/permission tuples}
 
 \item{permission}{the permission to be applied to subject if x is character}
+
+\item{subject}{the subject of the rule to be checked}
+
+\item{sysmeta}{the SystemMetadata instance to which to add the rules}
+
+\item{permission}{the permission to be applied to subject if x is character}
 }
 \value{
 the SystemMetadata object representing an object
+
+boolean TRUE if the access rule exists already, FALSE otherwise
 }
 \description{
 A class representing DataONE SystemMetadata, which is core information about objects stored in a repository
@@ -36,6 +51,10 @@ and needed to manage those objects across systems.  SystemMetadata contains basi
 access policy, replication policy, and related metadata.
 
 Add one or more access rules to a SystemMetadata object.
+
+Each SystemMetadata document may contain a set of (subject, permission) tuples
+that represent the access rules for its associated object. This method determines
+whether a particular access rule already exists within the set.
 }
 \section{Slots}{
 
@@ -84,5 +103,7 @@ Add one or more access rules to a SystemMetadata object.
 jones
 
 jones
+
+Matt Jones
 }
 

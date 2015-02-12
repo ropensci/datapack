@@ -14,6 +14,9 @@ setPublicAccess(x, ...)
 
 \item{...}{(not yet used)}
 }
+\value{
+DataObject with modified access rules
+}
 \description{
 To be called prior to creating the object in DataONE.  When called before
 creating the object, adds a rule to the access policy that makes this object

@@ -365,6 +365,29 @@ setMethod("addAccessRule", signature("SystemMetadata", "data.frame"), function(s
     return(sysmeta)
 })
 
+#' @title Determine if a particular access rules exists within SystemMetadata.
+#' @description Each SystemMetadata document may contain a set of (subject, permission) tuples
+#' that represent the access rules for its associated object. This method determines
+#' whether a particular access rule already exists within the set.
+#' @param sysmeta the SystemMetadata instance to which to add the rules
+#' @param subject the subject of the rule to be checked
+#' @param permission the permission to be applied to subject if x is character
+#' @return boolean TRUE if the access rule exists already, FALSE otherwise
+#' 
+#' @rdname SystemMetadata-methods
+#' @docType methods
+#' @author Matt Jones
+#' @export
+setGeneric("hasAccessRule", function(sysmeta, subject, ...) {
+    standardGeneric("hasAccessRule")
+})
+#' @rdname SystemMetadata-methods
+#' @aliases hasAccessRule,SystemMetadata-method
+setMethod("hasAccessRule", signature("SystemMetadata", "character"), function(sysmeta, subject, permission) {
+    found <- any(grepl("public", sysmeta@accessPolicy$subject) & grepl("read", sysmeta@accessPolicy$permission))
+    return(found)
+})
+
 ########################################################################################
 # Private methods; not intended to be called by external applications
 ########################################################################################

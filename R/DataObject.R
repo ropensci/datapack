@@ -148,7 +148,7 @@ setMethod("getFormatId", signature("DataObject"), function(x) {
 #' metadata locally, and will not have any affect. 
 #' @param x DataObject
 #' @param ... (not yet used)
-#' @return NULL
+#' @return DataObject with modified access rules
 #' @aliases setPublicAccess
 #' @export
 setGeneric("setPublicAccess", function(x, ...) {
@@ -158,17 +158,11 @@ setGeneric("setPublicAccess", function(x, ...) {
 #' @describeIn setPublicAccess
 #' @aliases setPublicAccess
 setMethod("setPublicAccess", signature("DataObject"), function(x) {
-    jD1Object = x@jD1o
-	if(!is.jnull(jD1Object)) {
-		
-		jPolicyEditor <- jD1Object$getAccessPolicyEditor()
-		if (!is.jnull(jPolicyEditor)) {
-			dmsg("setPublicAccess: got policy editor")
-			jPolicyEditor$setPublicAccess()
-		} else {
-			print("policy editor is null")
-		}
-	}
+    # Check if public: read is already set, and if not, set it
+    if (!hasAccessRule(x@sysmeta, "public", "read")) {
+        x@sysmeta <- addAccessRule(x@sysmeta, "public", "read")
+    }
+    return(x)
 })
 
 #' Test whether the provided subject can read an object.
