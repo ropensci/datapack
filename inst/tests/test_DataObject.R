@@ -50,10 +50,20 @@ test_that("DataObject accessPolicy methods", {
     format <- "text/csv"
     node <- "urn:node:KNB"
     
-    # Test the constructor that builds a DataObject object
     do <- new("DataObject", identifier, data, format, user, node)
     expect_that(class(do)[[1]], equals("DataObject"))
+    
+    # Public access should not be present at first
+    canRead <- canRead(do, "uid=anybody,DC=somedomain,DC=org")
+    expect_that(canRead, is_false())
+    
+    # Test that setting public access works
     do <- setPublicAccess(do)
     isPublic <- hasAccessRule(do@sysmeta, "public", "read")
     expect_that(isPublic, is_true())
+    
+    # Public access should now be possible
+    canRead <- canRead(do, "uid=anybody,DC=somedomain,DC=org")
+    expect_that(canRead, is_true())
+    
 })
