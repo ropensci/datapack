@@ -7,12 +7,14 @@
 \description{
 DataObject is a wrapper class that associates raw data with system-level metadata
 describing the object.  The system metadata includes attributes such as the object's identifier,
-type, size, owner, version relationship to other objects, access rules, and other critical metadata.
-The SystemMetadata is compliant with the DataONE federated network's definition of SystemMetadata, and
-is encapsulated as a separate object that can be manipulated as needed.
+type, size, checksum, owner, version relationship to other objects, access rules, and other critical metadata.
+The SystemMetadata is compliant with the DataONE federated repository network's definition of SystemMetadata, and
+is encapsulated as a separate object that can be manipulated as needed. Additional science-level and
+domain-specific metadata is out-of-scope for SystemMetadata, which is intended only for critical metadata for
+managing objects in a repository system.
 }
 \details{
-A DataObject can be constructed by passing the data and system metadata to the new() method, or by passing
+A DataObject can be constructed by passing the data and SystemMetadata to the new() method, or by passing
 an identifier, data, format, user, and DataONE node identifier, in which case a SystemMetadata instance will
 be generated with these fields and others that are calculated (such as size and checksum).
 
@@ -28,9 +30,14 @@ system.
 \item{\code{data}}{value of type \code{"raw"}, containing the data represented in this object}
 }}
 \examples{
-do <- new("DataObject", "id1", charToRaw("1,2,3\\n4,5,6\\n"), "text/csv", "matt", "urn:node:KNB")
-id <- getIdentifier(do)
-fmt <- getFormatId(do)
+do <- new("DataObject", "id1", charToRaw("1,2,3\\n4,5,6\\n"), "text/csv", "uid=jones,DC=example,DC=com", "urn:node:KNB")
+getIdentifier(do)
+getFormatId(do)
+getData(do)
+canRead(do, "uid=anybody,DC=example,DC=com")
+do <- setPublicAccess(do)
+canRead(do, "public")
+canRead(do, "uid=anybody,DC=example,DC=com")
 }
 \author{
 Matthew Jones
