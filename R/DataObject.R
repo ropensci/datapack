@@ -89,8 +89,6 @@ setMethod("initialize", "DataObject", function(.Object, id, data, format=NA, use
     } else if (typeof(id) == "S4" && class(id) == "SystemMetadata") {
         .Object@sysmeta <- id
         .Object@data <- data
-    } else {
-        .Object <- NULL
     }
     
     return(.Object)
