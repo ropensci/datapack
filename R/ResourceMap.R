@@ -3,7 +3,7 @@
 #   jointly copyrighted by participating institutions in DataONE. For
 #   more information on DataONE, see our web site at http://dataone.org.
 #
-#     Copyright 2011-2014
+#     Copyright 2015
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.

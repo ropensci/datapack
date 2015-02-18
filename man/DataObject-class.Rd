@@ -35,7 +35,8 @@ contents of the data or file as a raw value (but this will read all of the data 
 \item{\code{filename}}{contains the fully-qualified path to the object data on disk}
 }}
 \examples{
-do <- new("DataObject", "id1", charToRaw("1,2,3\\n4,5,6\\n"), "text/csv", "uid=jones,DC=example,DC=com", "urn:node:KNB")
+data <- charToRaw("1,2,3\\n4,5,6\\n")
+do <- new("DataObject", "id1", dataobj=data, "text/csv", "uid=jones,DC=example,DC=com", "urn:node:KNB")
 getIdentifier(do)
 getFormatId(do)
 getData(do)
@@ -43,6 +44,13 @@ canRead(do, "uid=anybody,DC=example,DC=com")
 do <- setPublicAccess(do)
 canRead(do, "public")
 canRead(do, "uid=anybody,DC=example,DC=com")
+#
+# Also can create using a file for storage, rather than memory
+tf <- tempfile()
+con <- file(tf, "wb")
+writeBin(data, con)
+close(con)
+do <- new("DataObject", "id1", format="text/csv", user="uid=jones,DC=example,DC=com", mnNodeId="urn:node:KNB", filename=tf)
 }
 \author{
 Matthew Jones

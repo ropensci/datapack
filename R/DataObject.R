@@ -3,7 +3,7 @@
 #   jointly copyrighted by participating institutions in DataONE. For
 #   more information on DataONE, see our web site at http://dataone.org.
 #
-#     Copyright 2011-2014
+#     Copyright 2011-2015
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -48,7 +48,8 @@
 #' @include dmsg.R
 #' @include SystemMetadata.R
 #' @examples
-#' do <- new("DataObject", "id1", charToRaw("1,2,3\n4,5,6\n"), "text/csv", "uid=jones,DC=example,DC=com", "urn:node:KNB")
+#' data <- charToRaw("1,2,3\n4,5,6\n")
+#' do <- new("DataObject", "id1", dataobj=data, "text/csv", "uid=jones,DC=example,DC=com", "urn:node:KNB")
 #' getIdentifier(do)
 #' getFormatId(do)
 #' getData(do)
@@ -56,6 +57,13 @@
 #' do <- setPublicAccess(do)
 #' canRead(do, "public")
 #' canRead(do, "uid=anybody,DC=example,DC=com")
+#' #
+#' # Also can create using a file for storage, rather than memory
+#' tf <- tempfile()
+#' con <- file(tf, "wb")
+#' writeBin(data, con)
+#' close(con)
+#' do <- new("DataObject", "id1", format="text/csv", user="uid=jones,DC=example,DC=com", mnNodeId="urn:node:KNB", filename=tf)
 setClass("DataObject", slots = c(
     sysmeta                 = "SystemMetadata",
     data                    = "raw",
@@ -116,7 +124,7 @@ setMethod("initialize", "DataObject", function(.Object, id, dataobj=NA, format=N
         
         # Build a SystemMetadata object describing the data
         if (is.na(dataobj[[1]])) {
-            size <- finfo$size
+            size <- fileinfo$size
             sha1 <- digest(filename, algo="sha1", serialize=FALSE, file=TRUE)
         } else {
             size <- length(dataobj)
