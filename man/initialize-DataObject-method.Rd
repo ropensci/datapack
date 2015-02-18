@@ -2,20 +2,42 @@
 \docType{methods}
 \name{initialize,DataObject-method}
 \alias{initialize,DataObject-method}
-\title{Intialize a DataObject instance with values passed to the constructor function.
+\title{Intialize a DataObject
 When initializing a DataObject using passed in data, one can either pass
 in the \code{'id'} param as a \code{'SystemMetadata'} object, or as a \code{'character'} string
 representing the identifier for an object along with parameters for format, user,and associated member node.
-In either case, the \code{'data'} param holds the \code{'raw'} data.}
+If \code{'data'} is not missing, the \code{'data'} param holds the \code{'raw'} data.  Otherwise, the
+\code{'filename'} parameter must be provided, and points at a file containing the bytes of the data.}
 \usage{
-\S4method{initialize}{DataObject}(.Object, id, data, format = NA, user = NA,
-  mnNodeId = NA)
+\S4method{initialize}{DataObject}(.Object, id, dataobj = NA, format = NA,
+  user = NA, mnNodeId = NA, filename = as.character(NA))
+}
+\arguments{
+\item{.Object}{the DataObject instance to be initialized}
+
+\item{id}{the identifier for the DataObject, unique within its repository}
+
+\item{dataobj}{the bytes of the data for this object in \code{'raw'} format, optional if \code{'filename'} is provided}
+
+\item{format}{the format identifier for the object (see \url{'http://cn.dataone.org/cn/v1/formats'})}
+
+\item{user}{the identity of the user owning the package, typically in X.509 format}
+
+\item{mnNodeId}{the node identifier for the repository to which this object belings}
+
+\item{filename}{the filename for the fully qualified path to the data on disk, optional if \code{'data'} is provided}
 }
 \description{
-Intialize a DataObject instance with values passed to the constructor function.
+Intialize a DataObject
 When initializing a DataObject using passed in data, one can either pass
 in the \code{'id'} param as a \code{'SystemMetadata'} object, or as a \code{'character'} string
 representing the identifier for an object along with parameters for format, user,and associated member node.
-In either case, the \code{'data'} param holds the \code{'raw'} data.
+If \code{'data'} is not missing, the \code{'data'} param holds the \code{'raw'} data.  Otherwise, the
+\code{'filename'} parameter must be provided, and points at a file containing the bytes of the data.
+}
+\details{
+If filesystem storage is used for the data associated with a DataObject, care must be
+taken to not modify or remove that file in R or via other facilities while the DataObject exists in the R session.
+Changes to the object are not detected and will result in unexpected results.
 }
 

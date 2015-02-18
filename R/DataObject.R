@@ -18,7 +18,7 @@
 #   limitations under the License.
 #
 
-#' DataObject is a wrapper for raw data to include important system-level metadata about the object.
+#' DataObject wraps raw data with system-level metadata
 #' @description DataObject is a wrapper class that associates raw data with system-level metadata 
 #' describing the object.  The system metadata includes attributes such as the object's identifier, 
 #' type, size, checksum, owner, version relationship to other objects, access rules, and other critical metadata.
@@ -31,12 +31,16 @@
 #' an identifier, data, format, user, and DataONE node identifier, in which case a SystemMetadata instance will
 #' be generated with these fields and others that are calculated (such as size and checksum).
 #' 
-#' An obvious limitation of the current implementation is that all data are stored in memory, which limits
-#' the effective size of objects.  It would be useful to add a data cache that stores larger objects on the file
-#' system.
+#' Data are associated with the DataObject either by passing it as a \code{'raw'} value to the \code{'dataobj'}
+#' parameter in the constructor, which is then stored in memory, or by passing a fully qualified file path to the 
+#' data in the \code{'filename'} parameter, which is then stored on disk.  One of dataobj or filename is required.
+#' Use the \code{'filename'} approach when data are too large to be managed effectively in memory.  Callers can
+#' access the \code{'filename'} slot to get direct access to the file, or can call \code{'getData()'} to retrieve the
+#' contents of the data or file as a raw value (but this will read all of the data into memory).
 #' 
 #' @slot sysmeta value of type \code{"SystemMetadata"}, containing the metadata about the object
 #' @slot data value of type \code{"raw"}, containing the data represented in this object
+#' @slot filename contains the fully-qualified path to the object data on disk
 #' @author Matthew Jones
 #' @aliases DataObject, DataObject-class
 #' @keywords classes
@@ -54,7 +58,8 @@
 #' canRead(do, "uid=anybody,DC=example,DC=com")
 setClass("DataObject", slots = c(
     sysmeta                 = "SystemMetadata",
-    data                    = "raw"
+    data                    = "raw",
+    filename                = "character"
     )
 )
 
@@ -70,25 +75,64 @@ setGeneric("DataObject", function(...) {
     standardGeneric("DataObject")
 })
 
-#' Intialize a DataObject instance with values passed to the constructor function.
+#' Intialize a DataObject
 #' When initializing a DataObject using passed in data, one can either pass 
 #' in the \code{'id'} param as a \code{'SystemMetadata'} object, or as a \code{'character'} string 
 #' representing the identifier for an object along with parameters for format, user,and associated member node.
-#' In either case, the \code{'data'} param holds the \code{'raw'} data.
+#' If \code{'data'} is not missing, the \code{'data'} param holds the \code{'raw'} data.  Otherwise, the
+#' \code{'filename'} parameter must be provided, and points at a file containing the bytes of the data.
+#' @details If filesystem storage is used for the data associated with a DataObject, care must be
+#' taken to not modify or remove that file in R or via other facilities while the DataObject exists in the R session.
+#' Changes to the object are not detected and will result in unexpected results.
+#' @param .Object the DataObject instance to be initialized
+#' @param id the identifier for the DataObject, unique within its repository
+#' @param dataobj the bytes of the data for this object in \code{'raw'} format, optional if \code{'filename'} is provided
+#' @param format the format identifier for the object (see \url{'http://cn.dataone.org/cn/v1/formats'})
+#' @param user the identity of the user owning the package, typically in X.509 format
+#' @param mnNodeId the node identifier for the repository to which this object belings
+#' @param filename the filename for the fully qualified path to the data on disk, optional if \code{'data'} is provided
 #' @import digest
-setMethod("initialize", "DataObject", function(.Object, id, data, format=NA, user=NA, mnNodeId=NA) {
+setMethod("initialize", "DataObject", function(.Object, id, dataobj=NA, format=NA, user=NA, mnNodeId=NA, filename=as.character(NA)) {
+    
+    # Validate: either dataobj or filename must be provided
+    if (is.na(dataobj[[1]]) && is.na(filename)) {
+        message("Either the dataobj parameter containing raw data or the file parameter with a file reference to the data must be provided.")
+        return(NULL)
+    }
+    
+    # Validate: dataobj must be raw if provided
+    if (!is.na(dataobj[[1]])) {
+        stopifnot(is.raw(dataobj))    
+    }
+    
+    # Validate: file must have content if provided
+    if (!is.na(filename)) {
+        fileinfo <- file.info(filename)
+        stopifnot(fileinfo$size > 0)    
+    }
     
     if (typeof(id) == "character") {
         dmsg("@@ DataObject-class:R initialize as character")
         
         # Build a SystemMetadata object describing the data
-        size <- length(data) # file.info(csvfile)$size
-        sha1 <- digest(data, algo="sha1", serialize=FALSE, file=FALSE)
+        if (is.na(dataobj[[1]])) {
+            size <- finfo$size
+            sha1 <- digest(filename, algo="sha1", serialize=FALSE, file=TRUE)
+        } else {
+            size <- length(dataobj)
+            sha1 <- digest(dataobj, algo="sha1", serialize=FALSE, file=FALSE)
+        }
         .Object@sysmeta <- new("SystemMetadata", identifier=id, formatId=format, size=size, submitter=user, rightsHolder=user, checksum=sha1, originMemberNode=mnNodeId, authoritativeMemberNode=mnNodeId)
-        .Object@data <- data
+        if (!is.na(dataobj[[1]])) { 
+            .Object@data <- dataobj
+        }
+        .Object@filename <- filename
     } else if (typeof(id) == "S4" && class(id) == "SystemMetadata") {
         .Object@sysmeta <- id
-        .Object@data <- data
+        if (!is.na(dataobj[[1]])) { 
+            .Object@data <- dataobj
+        }
+        .Object@filename <- filename
     }
     
     return(.Object)
@@ -110,7 +154,17 @@ setGeneric("getData", function(x, id=NA, ...) {
 #' @describeIn getData
 #' @aliases getData
 setMethod("getData", signature("DataObject"), function(x) {
-	return(x@data)
+    if (is.na(x@filename)) {
+        return(x@data)
+    } else {
+        # TODO: read the file from disk and return the contents
+        stopifnot(!is.na(x@filename))
+        fileinfo <- file.info(x@filename)
+        con <- file(x@filename, "rb")
+        temp <- readBin(con, raw(), x@sysmeta@size)
+        close(con)
+        return(temp)
+    }
 })
 
 #' Get the Identifier of the DataObject
