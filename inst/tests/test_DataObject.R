@@ -13,7 +13,7 @@ test_that("DataObject constructors work", {
     format <- "text/csv"
     node <- "urn:node:KNB"
     
-    # Test the constructor that builds a SystemMetadata object
+    # Test the constructor that builds a DataObject object
     do <- new("DataObject", identifier, data, format, user, node)
     expect_that(class(do)[[1]], equals("DataObject"))
     expect_that(do@sysmeta@serialVersion, equals(1))
@@ -40,4 +40,30 @@ test_that("DataObject constructors work", {
     expect_that(id, equals(identifier))
     fmt <- getFormatId(do)
     expect_that(fmt, equals(format))    
+})
+test_that("DataObject accessPolicy methods", {
+    library(datapackage)
+    library(digest)
+    identifier <- "id1"
+    user <- "matt"
+    data <- charToRaw("1,2,3\n4,5,6")
+    format <- "text/csv"
+    node <- "urn:node:KNB"
+    
+    do <- new("DataObject", identifier, data, format, user, node)
+    expect_that(class(do)[[1]], equals("DataObject"))
+    
+    # Public access should not be present at first
+    canRead <- canRead(do, "uid=anybody,DC=somedomain,DC=org")
+    expect_that(canRead, is_false())
+    
+    # Test that setting public access works
+    do <- setPublicAccess(do)
+    isPublic <- hasAccessRule(do@sysmeta, "public", "read")
+    expect_that(isPublic, is_true())
+    
+    # Public access should now be possible
+    canRead <- canRead(do, "uid=anybody,DC=somedomain,DC=org")
+    expect_that(canRead, is_true())
+    
 })

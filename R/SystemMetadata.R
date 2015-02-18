@@ -22,6 +22,7 @@
 #' @description A class representing DataONE SystemMetadata, which is core information about objects stored in a repository
 #' and needed to manage those objects across systems.  SystemMetadata contains basic identification, ownership,
 #' access policy, replication policy, and related metadata.
+#' @exportClass SystemMetadata
 setClass("SystemMetadata", slots = c(
     serialVersion           = "numeric",
     identifier              = "character",
@@ -53,8 +54,6 @@ setClass("SystemMetadata", slots = c(
 #' access policy, replication policy, and related metadata.
 #'
 #' @param identifier value of type \code{"character"}, the identifier of the object that this system metadata describes.
-#' @param replicationAllowed value of type \code{"logical"}, for replication policy allows replicants.
-#' @param numberReplicas value of type \code{"numeric"}, for number of supported replicas.
 #' @param formatId value of type \code{"character"}, the DataONE object format for the object.
 #' @param size value of type \code{"numeric"}, the size of the object in bytes.
 #' @param checksum value of type \code{"character"}, the checksum for the object using the designated checksum algorithm.
@@ -62,6 +61,10 @@ setClass("SystemMetadata", slots = c(
 #' @param submitter value of type \code{"character"}, the Distinguished Name or identifier of the person submitting the object.
 #' @param rightsHolder value of type \code{"character"}, the Distinguished Name or identifier of the person who holds access rights to the object.
 #' @param accessPolicy value of type \code{"data.frame"} containing (subject, permission) tuples to constitute the access authorization rules.
+#' @param replicationAllowed value of type \code{"logical"}, for replication policy allows replicants.
+#' @param numberReplicas value of type \code{"numeric"}, for number of supported replicas.
+#' @param preferredNodes list of \code{"character"}, each of which is the node identifier for a node to which a replica should be sent.
+#' @param blockedNodes list of \code{"character"}, each of which is the node identifier for a node blocked from housing replicas.
 #' @param obsoletes value of type \code{"character"}, the identifier of an object which this object replaces.
 #' @param obsoletedBy value of type \code{"character"}, the identifier of an object that replaces this object.
 #' @param archived value of type \code{"logical"}, a boolean flag indicating whether the object has been archived and thus hidden.
@@ -70,7 +73,8 @@ setClass("SystemMetadata", slots = c(
 #' @param originMemberNode value of type \code{"character"}, the node identifier of the node on which the object was originally registered.
 #' @param authoritativeMemberNode value of type \code{"character"}, the node identifier of the node which currently is authoritative for the object.
 #'
-#' @return the SystemMetadata object representing an object
+#' @return the SystemMetadata instance representing an object
+#' @seealso http://mule1.dataone.org/ArchitectureDocs-current/apis/Types.html#Types.SystemMetadata
 #' @author jones
 #' 
 #' @export
@@ -362,6 +366,29 @@ setMethod("addAccessRule", signature("SystemMetadata", "character"), function(sy
 setMethod("addAccessRule", signature("SystemMetadata", "data.frame"), function(sysmeta, x) {
     sysmeta@accessPolicy <- rbind(sysmeta@accessPolicy, x)
     return(sysmeta)
+})
+
+#' @title Determine if a particular access rules exists within SystemMetadata.
+#' @description Each SystemMetadata document may contain a set of (subject, permission) tuples
+#' that represent the access rules for its associated object. This method determines
+#' whether a particular access rule already exists within the set.
+#' @param sysmeta the SystemMetadata instance to which to add the rules
+#' @param subject the subject of the rule to be checked
+#' @param permission the permission to be applied to subject if x is character
+#' @return boolean TRUE if the access rule exists already, FALSE otherwise
+#' 
+#' @rdname SystemMetadata-methods
+#' @docType methods
+#' @author Matt Jones
+#' @export
+setGeneric("hasAccessRule", function(sysmeta, subject, ...) {
+    standardGeneric("hasAccessRule")
+})
+#' @rdname SystemMetadata-methods
+#' @aliases hasAccessRule,SystemMetadata-method
+setMethod("hasAccessRule", signature("SystemMetadata", "character"), function(sysmeta, subject, permission) {
+    found <- any(grepl("public", sysmeta@accessPolicy$subject) & grepl("read", sysmeta@accessPolicy$permission))
+    return(found)
 })
 
 ########################################################################################

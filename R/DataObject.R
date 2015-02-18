@@ -21,11 +21,13 @@
 #' DataObject is a wrapper for raw data to include important system-level metadata about the object.
 #' @description DataObject is a wrapper class that associates raw data with system-level metadata 
 #' describing the object.  The system metadata includes attributes such as the object's identifier, 
-#' type, size, owner, version relationship to other objects, access rules, and other critical metadata.
-#' The SystemMetadata is compliant with the DataONE federated network's definition of SystemMetadata, and
-#' is encapsulated as a separate object that can be manipulated as needed. 
+#' type, size, checksum, owner, version relationship to other objects, access rules, and other critical metadata.
+#' The SystemMetadata is compliant with the DataONE federated repository network's definition of SystemMetadata, and
+#' is encapsulated as a separate object that can be manipulated as needed. Additional science-level and
+#' domain-specific metadata is out-of-scope for SystemMetadata, which is intended only for critical metadata for
+#' managing objects in a repository system.
 #' @details   
-#' A DataObject can be constructed by passing the data and system metadata to the new() method, or by passing
+#' A DataObject can be constructed by passing the data and SystemMetadata to the new() method, or by passing
 #' an identifier, data, format, user, and DataONE node identifier, in which case a SystemMetadata instance will
 #' be generated with these fields and others that are calculated (such as size and checksum).
 #' 
@@ -42,9 +44,14 @@
 #' @include dmsg.R
 #' @include SystemMetadata.R
 #' @examples
-#' do <- new("DataObject", "id1", charToRaw("1,2,3\n4,5,6\n"), "text/csv", "matt", "urn:node:KNB")
-#' id <- getIdentifier(do)
-#' fmt <- getFormatId(do)
+#' do <- new("DataObject", "id1", charToRaw("1,2,3\n4,5,6\n"), "text/csv", "uid=jones,DC=example,DC=com", "urn:node:KNB")
+#' getIdentifier(do)
+#' getFormatId(do)
+#' getData(do)
+#' canRead(do, "uid=anybody,DC=example,DC=com")
+#' do <- setPublicAccess(do)
+#' canRead(do, "public")
+#' canRead(do, "uid=anybody,DC=example,DC=com")
 setClass("DataObject", slots = c(
     sysmeta                 = "SystemMetadata",
     data                    = "raw"
@@ -82,8 +89,6 @@ setMethod("initialize", "DataObject", function(.Object, id, data, format=NA, use
     } else if (typeof(id) == "S4" && class(id) == "SystemMetadata") {
         .Object@sysmeta <- id
         .Object@data <- data
-    } else {
-        .Object <- NULL
     }
     
     return(.Object)
@@ -148,7 +153,7 @@ setMethod("getFormatId", signature("DataObject"), function(x) {
 #' metadata locally, and will not have any affect. 
 #' @param x DataObject
 #' @param ... (not yet used)
-#' @return NULL
+#' @return DataObject with modified access rules
 #' @aliases setPublicAccess
 #' @export
 setGeneric("setPublicAccess", function(x, ...) {
@@ -158,32 +163,28 @@ setGeneric("setPublicAccess", function(x, ...) {
 #' @describeIn setPublicAccess
 #' @aliases setPublicAccess
 setMethod("setPublicAccess", signature("DataObject"), function(x) {
-    jD1Object = x@jD1o
-	if(!is.jnull(jD1Object)) {
-		
-		jPolicyEditor <- jD1Object$getAccessPolicyEditor()
-		if (!is.jnull(jPolicyEditor)) {
-			dmsg("setPublicAccess: got policy editor")
-			jPolicyEditor$setPublicAccess()
-		} else {
-			print("policy editor is null")
-		}
-	}
+    # Check if public: read is already set, and if not, set it
+    if (!hasAccessRule(x@sysmeta, "public", "read")) {
+        x@sysmeta <- addAccessRule(x@sysmeta, "public", "read")
+    }
+    return(x)
 })
 
 #' Test whether the provided subject can read an object.
 #' 
 #' Using the AccessPolicy, tests whether the subject has read permission
-#' for the object.  This method is meant work prior to submission, so uses
-#' only the AccessPolicy to determine who can read (Not the rightsHolder field,
-#' which always can read.)
+#' for the object.  This method is meant work prior to submission to a repository, 
+#' and will show the permissions that would be enfirced by the repository on submission.
+#' Currently it only uses the AccessPolicy to determine who can read (and not the rightsHolder field,
+#' which always can read an object).  If an object has been granted read access by the
+#' special "public" subject, then all subjects have read access.
 #' @details The subject name used in both the AccessPolicy and in the \code{'subject'}
 #' argument to this method is a string value, but is generally formatted as an X.509
 #' name formatted according to RFC 2253.
 #' @param x DataObject
 #' @param subject : the subject name of the person/system to check for read permissions
 #' @param ... Additional arguments
-#' @return TRUE or FALSE
+#' @return boolean TRUE if the subject has read permission, or FALSE otherwise
 #' @aliases canRead
 #' @export
 setGeneric("canRead", function(x, subject, ...) {
@@ -193,18 +194,7 @@ setGeneric("canRead", function(x, subject, ...) {
 #' @describeIn canRead
 #' @export
 setMethod("canRead", signature("DataObject", "character"), function(x, subject) {
-    jD1Object = x@jD1o
-	if(!is.jnull(jD1Object)) {
-		jPolicyEditor <- jD1Object$getAccessPolicyEditor()
-		if (!is.jnull(jPolicyEditor)) {
-			dmsg("canRead: got policy editor")
-			jSubject <- J("org/dataone/client/D1TypeBuilder", "buildSubject", subject)
-			jPermission <- J("org/dataone/service/types/v1/Permission", "convert", "read")
-			result <- jPolicyEditor$hasAccess(jSubject,jPermission)
-		} else {
-			print("policy editor is null")
-			result <- FALSE
-		}
-	}
-	return(result)
+
+    canRead <- hasAccessRule(x@sysmeta, "public", "read") | hasAccessRule(x@sysmeta, subject, "read")
+	return(canRead)
 })
