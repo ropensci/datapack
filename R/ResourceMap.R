@@ -77,7 +77,7 @@ setMethod("createFromTriples", signature("ResourceMap", "data.frame", "character
 
   #xsdString <- "^^http://www.w3.org/2001/XMLSchema#string"
   xsdString <- "^^xsd:string"
-  DCidentifer <- "http://purl.org/dc/terms/identifier"
+  DCidentifier <- "http://purl.org/dc/terms/identifier"
   RDFtype <- "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
   OREresourceMap <- "http://www.openarchives.org/ore/terms/ResourceMap"
   OREdescribes <- "http://www.openarchives.org/ore/terms/describes"
@@ -89,57 +89,34 @@ setMethod("createFromTriples", signature("ResourceMap", "data.frame", "character
   # Add each triple from the input data.frame into the Redland RDF model.
   for(i in 1:nrow(relations)) {
     triple <- relations[i,]
-    # TODO: use 'redland' package utility function (when available) to automatically detect if
-    # a string is a URI, litteral or blank node and create the corresponding node type.
-    subject <- new("Node", .Object@world, uri = triple['subject'])
-    predicate <- new("Node", .Object@world, uri = triple['predicate'])
-    object <- new("Node", .Object@world, uri = triple['object'])
-    statement <- new("Statement", .Object@world, subject, predicate, object)
+    statement <- new("Statement", .Object@world, triple[['subject']], triple[['predicate']], triple[['object']], triple[['subjectType']], triple[['objectType']])
     addStatement(.Object@model, statement)
   }
   
   # Loop through the datapackage object and add the required ORE properties for each id.
   for(id in identifiers) {
     # Add the Dublic Core identifier relation for each object added to the data package
-    subject <- new("Node", .Object@world, uri = id)
-    predicate <- new("Node", .Object@world, uri = DCidentifer)
-    object <- new("Node", .Object@world, literal = sprintf("%s%s", id, xsdString))
-    statement <- new("Statement", .Object@world, subject, predicate, object)
+    statement <- new("Statement", .Object@world, subject=id, predicate=DCidentifier, object=sprintf("%s%s", id, xsdString))
     addStatement(.Object@model, statement)
     
     # Add triples for each object that is aggregated
-    subject <- new("Node", .Object@world, uri = id)
-    predicate <- new("Node", .Object@world, uri = aggregatedBy)
-    object <- new("Node", .Object@world, uri = aggregationId)
-    statement <- new("Statement", .Object@world, subject, predicate, object)
+    statement <- new("Statement", .Object@world, subject=id, predicate=aggregatedBy, object=aggregationId)
     addStatement(.Object@model, statement)
     
     # Add triples identifying the ids that this aggregation aggregates
-    subject <- new("Node", .Object@world, uri = aggregationId)
-    predicate <- new("Node", .Object@world, uri = aggregates)
-    object <- new("Node", .Object@world, uri = id)
-    statement <- new("Statement", .Object@world, subject, predicate, object)
+    statement <- new("Statement", .Object@world, subject=aggregationId, predicate=aggregates, object=id)
     addStatement(.Object@model, statement)
   }
   
   # Add the triple identifying the ResourceMap
-  subject <- new("Node", .Object@world, uri = .Object@id)
-  predicate <- new("Node", .Object@world, uri = RDFtype)
-  object <- new("Node", .Object@world, uri = OREresourceMap)
-  statement <- new("Statement", .Object@world, subject, predicate, object)
+  statement <- new("Statement", .Object@world, subject=.Object@id, predicate=RDFtype, object=OREresourceMap)
   addStatement(.Object@model, statement)
   
   # Add the triples identifying the Aggregation
-  subject <- new("Node", .Object@world, uri = aggregationId)
-  predicate <- new("Node", .Object@world, uri = RDFtype)
-  object <- new("Node", .Object@world, uri = aggregationType)
-  statement <- new("Statement", .Object@world, subject, predicate, object)
+  statement <- new("Statement", .Object@world, subject=aggregationId, predicate=RDFtype, object=aggregationType)
   addStatement(.Object@model, statement)
   
-  subject <- new("Node", .Object@world, uri = .Object@id)
-  predicate <- new("Node", .Object@world, uri = OREdescribes)
-  object <- new("Node", .Object@world, uri = aggregationId)
-  statement <- new("Statement", .Object@world, subject, predicate, object)
+  statement <- new("Statement", .Object@world, subject=.Object@id, predicate=OREdescribes, object=aggregationId)
   addStatement(.Object@model, statement)
 
   return(.Object)

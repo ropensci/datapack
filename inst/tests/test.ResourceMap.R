@@ -51,7 +51,7 @@ test_that("ResourceMap creation from DataPackage triples", {
   # Serialize the ResourceMap to a file.
   filePath <- sprintf("/tmp/%s.rdf", resMapId)
   status <- serializeRDF(resMap, filePath)
-  found <- grep("<prov:wasDerivedFrom rdf:resource=\"scidataId\"", readLines(filePath))
+  found <- grep("<prov:wasDerivedFrom>", readLines(filePath))
   expect_that(found, is_more_than(0))
   unlink(filePath)
   
