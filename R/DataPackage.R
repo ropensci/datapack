@@ -111,10 +111,10 @@ setMethod("getIdentifiers", "DataPackage", function(x) {
 #' retrieval and eventual upload (via createPackage).
 #' 
 #' @param x : DataPackage
-#' @param d1object : DataObject
+#' @param do : DataObject, or identifier of an object on the DataONE network
 #' @param ... : (not yet used)
 #' 
-#' @author rnahf
+#' @author Matt Jones
 #' @export
 setGeneric("addData", function(x, do, ...) { 
     standardGeneric("addData")

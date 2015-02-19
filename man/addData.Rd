@@ -8,15 +8,15 @@ addData(x, do, ...)
 \arguments{
 \item{x}{: DataPackage}
 
-\item{...}{: (not yet used)}
+\item{do}{: DataObject, or identifier of an object on the DataONE network}
 
-\item{d1object}{: DataObject}
+\item{...}{: (not yet used)}
 }
 \description{
 Includes the DataObject in the DataPackage data Map, making it available for
 retrieval and eventual upload (via createPackage).
 }
 \author{
-rnahf
+Matt Jones
 }
 
