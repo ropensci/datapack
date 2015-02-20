@@ -41,6 +41,7 @@ test_that("DataPackage methods work", {
 
 test_that("InsertRelationship methods work", {
   
+  quietOn <- TRUE
   # Test the 'insertRelationships' method that uses the hardwired 'documents', 'isDocumentedBy' relationship
   dp <- DataPackage()
   doId1 <- "id1"
@@ -57,7 +58,7 @@ test_that("InsertRelationship methods work", {
   addData(dp, do2)
   
   insertRelationship(dp, subjectID=mdId, objectIDs=c(doId1, doId2))
-  relations <- getRelationships(dp)
+  relations <- getRelationships(dp, quiet=quietOn)
   # Test if the data frame with relationships was constructed correctly
   expect_that(nrow(relations), equals(4))
   expect_that(relations[relations$object == doId1, 'subject'], equals(mdId))
@@ -81,11 +82,42 @@ test_that("InsertRelationship methods work", {
   
   # Insert a typical provenance relationship
   insertRelationship(dp, subjectID=doId1, objectIDs=doId2, predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
-  relations <- getRelationships(dp)
+  # No subjectType, objectType passed in, getRelations will set these to 'NA' in the data.frame it creates, to allow auto RDF type determination
+  # by redland Statement
+  insertRelationship(dp, subjectID="urn:uuid:1234", objectIDs="2015-01-01T10:52:00", predicate="http://www.w3.org/ns/prov#executedAt")
+  # Multiple objectIDs passed in, multiple objectTypes specified, also objectTypes list shorter than objectIDs list
+  insertRelationship(dp, subjectID="_:bl1", objectIDs=c("thing1", "thing2", "thing3"), predicate="http://www.myns.org/hadThing", subjectType="blank",
+                     objectTypes=c("literal", "literal"))
+  # Multiple objectTypes, first one 'NA'
+  insertRelationship(dp, subjectID="_:bl2", objectIDs=c("thing4", "thing5"), predicate="http://www.myns.org/hadThing", subjectType="blank",
+                     objectTypes=c(NA, "literal"))
+  
+  relations <- getRelationships(dp, quiet=quietOn)
   # Test if the data frame with retrieved relationships was constructed correctly
-  expect_that(nrow(relations), equals(1))
+  expect_that(nrow(relations), equals(7))
   expect_that(relations[relations$subject == doId1, 'predicate'], matches("wasDerivedFrom"))
   expect_that(relations[relations$subject == doId1, 'object'], equals(doId2))
+  expect_that(relations[relations$subject == doId1, 'subjectType'], equals(as.character(NA)))
+  expect_that(relations[relations$subject == doId1, 'objectType'], equals(as.character(NA)))
+  
+  expect_that(relations[relations$subject == "urn:uuid:1234", 'object'], equals("2015-01-01T10:52:00"))
+  expect_that(relations[relations$subject == "urn:uuid:1234", 'predicate'], matches("executedAt"))
+  expect_that(relations[relations$subject == "urn:uuid:1234", 'subjectType'], equals(as.character(NA)))
+  expect_that(relations[relations$subject == "urn:uuid:1234", 'objectType'], equals(as.character(NA)))
+  
+  expect_that(relations[relations$object == "thing1", 'subjectType'], equals("blank"))
+  expect_that(relations[relations$object == "thing1", 'objectType'], equals("literal"))
+  expect_that(relations[relations$object == "thing2", 'subjectType'], equals("blank"))
+  expect_that(relations[relations$object == "thing2", 'objectType'], equals("literal"))
+  
+  # Test that an unspecified objectType (where length(objetIDs) > length(objectTypes)) is set to as.character(NA)
+  expect_that(relations[relations$object == "thing3", 'objectType'], equals(as.character(NA)))
+  
+  # Test objectTypes list where first element is 'NA'
+  expect_that(relations[relations$object == "thing4", 'objectType'], equals(as.character(NA)))
+  expect_that(relations[relations$object == "thing5", 'objectType'], equals("literal"))
+  
+  
 })
 
 test_that("Package serialization works", {
@@ -117,11 +149,11 @@ test_that("Package serialization works", {
   insertRelationship(dp, subjectID=doOutId, objectIDs=executionId, predicate="http://www.w3.org/ns/prov#wasGeneratedBy")
   
   # Serialize the ResourceMap to a file.
-  serializationId <- sprintf("%s%s", "resourceMap_", UUIDgenerate())
+  serializationId <- sprintf("%s%s", "resourceMap1_", UUIDgenerate())
   filePath <- sprintf("/tmp/%s.rdf", serializationId)
   status <- serializePackage(dp, filePath, id=serializationId)
   expect_that(file.exists(filePath), is_true())
-  found <- grep("<prov:wasDerivedFrom rdf:resource=\"scidataId\"", readLines(filePath))
+  found <- grep("<prov:wasDerivedFrom>", readLines(filePath))
   expect_that(found, is_more_than(0))
-  #unlink(filePath)
+  unlink(filePath)
 })

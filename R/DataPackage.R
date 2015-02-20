@@ -160,28 +160,80 @@ setMethod("insertRelationship",  signature("DataPackage", "character", "characte
   }
 })
 
-setMethod("insertRelationship", signature("DataPackage", "character", "character", "character"), function(x, subjectID, objectIDs, predicate, ...) {
+setMethod("insertRelationship", signature("DataPackage", "character", "character", "character"), 
+          function(x, subjectID, objectIDs, predicate, subjectType=as.character(NA), objectTypes=as.character(NA))
+  {
   
   # Store triples in a complex data structure based on a hash. 
-  # This structure is: hash(key=subjectID, value=hash(key=predicate, value=list[objectIDs]))
-  # Check if this subject has been stored previously. Build a temporary hash based on the subject.
+  # This structure for 'relations' is: hash(key=subjectID, value=hash(key=predicate, value=list[objectIDs]))
+  #
+  # The RDF term type (i.e. "uri", "literal", "blank") are stored as attributes for the subject (a hash) 
+  # and the objectIDs (a character vector). In R, when a character vector is modified, all user defined
+  # attributes are stripped away and silently discarded, so attributes have to be retained by saving them
+  # objectIDs, adding the new ids, then resetting the attribute vector of the RDF term types.
+  #
+  # Check if the passed in subject has been stored previously. Build a temporary hash based on the subject.  
   if (has.key(subjectID, x@relations)) {
     subject <- x@relations[[subjectID]]
   } else {
     subject <- hash()
+    # The RDF term type for this subject is stored as an attribute. Set it to the passed in value, or if
+    # none was specified, set it to "as.character(NA)", meaning have the redlands package determine the appropriate type for the string.
+    if (is.na(subjectType)) {
+      attr(subject, "RDFtermType") <- subjectType
+    } else {
+      if (!is.element(subjectType, c("uri", "blank"))) {
+        stop(sprintf("Invalid subjectType specified %s\n", subjectType))
+      }
+      attr(subject, "RDFtermType") <- subjectType
+    }
   }
   
-  # Have we previously stored the predicate for this subject?
+  # Have we previously stored the passed in predicate for this subject?
   if (has.key(predicate, subject)) {
     objects <- subject[[predicate]]
-    # Add each object to the list
-    for (obj in objectIDs) {
+    RDFtermTypes <- attr(objects, "RDFtermTypes")
+    # Add each passed in objectId to the list for this subject/predicate
+    for (i in 1:length(objectIDs)) {
+      obj <- objectIDs[i]
       if (! is.element(obj, objects)) {
         objects <- c(objects, obj)
+        # 'objectTypes=" was passed in. The parameter objectTypes can be multiple values, so have to check 'all' because 
+        # user could have passed in for example c(NA, "literal") and is.na checks only the first value, so then '!is.na(objectTypes)' would be false
+        if (!all(is.na(objectTypes))) {
+          # Not enough type values specified for number of objectIDs passed in, set to "NA"
+          if (length(objectTypes) < i) {
+            RDFtermTypes <- c(RDFtermTypes, as.character(NA))
+          } else {
+            if (!is.element(termType, c("uri", "literal", "blank"))) {
+              stop(sprintf("Invalid objectType specified %s\n", termType))
+            }
+            RDFtermTypes <- c(RDFtermTypes, objectTypes[i])
+          }
+        } else {
+          # 'objectTypes' not passed in, set to default of "NA"
+          RDFtermTypes <- c(RDFtermTypes, as.character(NA))
+        }
       }
     }
   } else {
+    # Haven't seen this predicate for this subject, so create new predicate.
+    # Initialize attr list as all "uri"
+    RDFtermTypes <- rep(as.character(NA), length(objectIDs))
     objects <- objectIDs
+    # Object RDF term types passed in ('objectTypes')
+    if (!all(is.na(objectTypes))) {
+      # Replace default initial attr list with passed in values. If passed in values
+      # list is shorter, then remaining elements at the end of this list will be "uri"
+      for (i in 1:length(objectTypes)) {
+        termType <- objectTypes[i]
+        if (!is.element(termType, c("uri", "literal", "blank", as.character(NA)))) {
+          stop(sprintf("Invalid objectType specified %s\n", termType))
+        }
+        RDFtermTypes[i] <- termType
+      }
+    }
+    attr(objects, "RDFtermTypes") <- RDFtermTypes
   }
   
   # Update the list of objects associated with this predicate
@@ -203,22 +255,29 @@ setGeneric("getRelationships", function(x, ...) {
 setMethod("getRelationships", signature("DataPackage"), function(x, quiet = TRUE, ...) {
   
   # Create an empty data frame to store relationships in.
-  relationships <- data.frame(subject=character(), predicate=character(), object=character(), row.names = NULL, stringsAsFactors = FALSE)
+  relationships <- data.frame(subject=character(), predicate=character(), object=character(), 
+                              subjectType=character(), objectType=character(), row.names = NULL, stringsAsFactors = FALSE)
   
   # The slot 'relations' has the structure: hash(key=subjectID, value=hash(key=predicate, value=list[objectIDs]))
   # Loop through the subjectID hash, where each member is another hash
-  for (subjectIDkey in keys(x@relations)) {
-    predicateHash <- x@relations[[subjectIDkey]]
+  for (subjectId in keys(x@relations)) {
+    predicateHash <- x@relations[[subjectId]]
+    subjectType <- attr(predicateHash, "RDFtermType")
     # Loop through each predicate for this subject
     for (predicateKey in keys(predicateHash)) {
       objectList <- predicateHash[[predicateKey]]
+      objectTypes <- attr(objectList, "RDFtermType")
       # Loop through each object for this predicate
-      for (objectID in objectList) {
-          # Add the subject, predicate, object triple to the output data frame
-          relationships <- rbind(relationships, data.frame(subject=subjectIDkey, predicate=predicateKey, object=objectID, row.names = NULL, stringsAsFactors = FALSE))
+      for (oid in 1:length(objectList)) {
+        objectId <- objectList[[oid]]
+        objectType <- objectTypes[[oid]]
         if (!quiet) {
-          cat(sprintf("%s %s %s\n", subjectIDkey, predicateKey, objectID))
+          cat(sprintf("%s %s %s %s %s\n", subjectId, predicateKey, objectId, subjectType, objectType))
         }
+        # Add the subject, predicate, object triple to the output data frame
+        relationships <- rbind(relationships, data.frame(subject=subjectId, predicate=predicateKey, object=objectId, 
+                                                         subjectType=subjectType,
+                                                         objectType=objectType, row.names = NULL, stringsAsFactors = FALSE))
       }
     }
   }
