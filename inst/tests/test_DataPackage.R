@@ -41,6 +41,8 @@ test_that("DataPackage methods work", {
 
 test_that("InsertRelationship methods work", {
   
+  D1ResolveURI <- "https://cn.dataone.org/cn/v1/resolve/"
+  
   quietOn <- TRUE
   # Test the 'insertRelationships' method that uses the hardwired 'documents', 'isDocumentedBy' relationship
   dp <- DataPackage()
@@ -61,10 +63,10 @@ test_that("InsertRelationship methods work", {
   relations <- getRelationships(dp, quiet=quietOn)
   # Test if the data frame with relationships was constructed correctly
   expect_that(nrow(relations), equals(4))
-  expect_that(relations[relations$object == doId1, 'subject'], equals(mdId))
-  expect_that(relations[relations$object == doId2, 'subject'], equals(mdId))
-  expect_that(relations[relations$subject == mdId, 'predicate'], matches('documents'))
-  expect_that(relations[relations$subject == doId1, 'predicate'], matches('isDocumentedBy'))
+  expect_that(relations[relations$object == paste(D1ResolveURI, doId1, sep=""), 'subject'], equals(paste(D1ResolveURI, mdId, sep="")))
+  expect_that(relations[relations$object == paste(D1ResolveURI, doId2, sep=""), 'subject'], equals(paste(D1ResolveURI, mdId, sep="")))
+  expect_that(relations[relations$subject == paste(D1ResolveURI, mdId, sep=""), 'predicate'], matches('documents'))
+  expect_that(relations[relations$subject == paste(D1ResolveURI, doId1, sep=""), 'predicate'], matches('isDocumentedBy'))
   rm(dp)
   
   # Now test the second 'insertRelationships' that allows specifying the predicate of the relationship
@@ -149,11 +151,33 @@ test_that("Package serialization works", {
   insertRelationship(dp, subjectID=doOutId, objectIDs=executionId, predicate="http://www.w3.org/ns/prov#wasGeneratedBy")
   
   # Serialize the ResourceMap to a file.
-  serializationId <- sprintf("%s%s", "resourceMap1_", UUIDgenerate())
+  serializationId <- sprintf("%s%s", "resourceMap1", UUIDgenerate())
   filePath <- sprintf("/tmp/%s.rdf", serializationId)
   status <- serializePackage(dp, filePath, id=serializationId)
   expect_that(file.exists(filePath), is_true())
   found <- grep("<prov:wasDerivedFrom>", readLines(filePath))
   expect_that(found, is_more_than(0))
   unlink(filePath)
+  
+  # Use R serialize/unserialize functions on entire datapackage
+  dpFile <- tempfile(pattern = "file", tmpdir = tempdir(), fileext = ".rds")
+  saveRDS(dp, file=dpFile)
+  dpNew <-readRDS(file=dpFile)
+  # Test that the deserialized object is the same as the original. For some
+  # reason, comparing the entire datapackage objects fails, so test
+  # the individual components
+  # First compare ids
+  dpIds <- getIdentifiers(dp)
+  dpNewIds <- getIdentifiers(dpNew)
+  expect_that(identical(dpIds, dpNewIds, ignore.environment = TRUE), is_true())
+  # Compare relationships
+  dpRelations <- getRelationships(dp)
+  dpNewRelations <-getRelationships(dpNew)
+  expect_that(identical(dpRelations, dpNewRelations, ignore.environment = TRUE), is_true())
+  # Compare each data object
+  for (id in getIdentifiers(dp)) {
+    expect_that(identical(getData(dp, id), getData(dpNew, id)), is_true())
+  }
+  unlink(dpFile)
+  
 })

@@ -152,6 +152,10 @@ setGeneric("insertRelationship", function(x, subjectID, objectIDs, predicate, ..
 # Associate a metadata object with a list of dataobjects that
 # This method is used to maintain backward compatibility with rdataone v1.0.
 setMethod("insertRelationship",  signature("DataPackage", "character", "character"), function(x, subjectID, objectIDs, ...) {
+  D1ResolveURI <- "https://cn.dataone.org/cn/v1/resolve/"
+  
+  objectIDs <- paste(D1ResolveURI, objectIDs, sep="")
+  subjectID <- paste(D1ResolveURI, subjectID, sep="")
   
   insertRelationship(x, subjectID, objectIDs, "http://purl.org/spar/cito/documents")
   

@@ -75,6 +75,9 @@ setGeneric("createFromTriples", function(.Object, relations, identifiers) { stan
 setMethod("createFromTriples", signature("ResourceMap", "data.frame", "character"), function(.Object, relations, identifiers) {
   .Object@relations <- relations
 
+  # Hard coded for now, get this from dataone package in future
+  D1ResolveURI <- "https://cn.dataone.org/cn/v1/resolve/"
+  
   #xsdString <- "^^http://www.w3.org/2001/XMLSchema#string"
   xsdString <- "^^xsd:string"
   DCidentifier <- "http://purl.org/dc/terms/identifier"
@@ -84,7 +87,8 @@ setMethod("createFromTriples", signature("ResourceMap", "data.frame", "character
   aggregatedBy <- "http://www.openarchives.org/ore/terms/isAggregatedBy"
   aggregates <- "http://www.openarchives.org/ore/terms/aggregates"
   aggregationType <- "http://www.openarchives.org/ore/terms/Aggregation"
-  aggregationId <- sprintf("%s#aggregation", .Object@id)
+  aggregationId <- sprintf("%s%s#aggregation", D1ResolveURI, .Object@id)
+  resMapURI <- paste(D1ResolveURI, .Object@id, sep="")
   
   # Add each triple from the input data.frame into the Redland RDF model.
   for(i in 1:nrow(relations)) {
@@ -95,6 +99,7 @@ setMethod("createFromTriples", signature("ResourceMap", "data.frame", "character
   
   # Loop through the datapackage object and add the required ORE properties for each id.
   for(id in identifiers) {
+    id <- sprintf("%s%s", D1ResolveURI, id)
     # Add the Dublic Core identifier relation for each object added to the data package
     statement <- new("Statement", .Object@world, subject=id, predicate=DCidentifier, object=sprintf("%s%s", id, xsdString))
     addStatement(.Object@model, statement)
@@ -107,16 +112,16 @@ setMethod("createFromTriples", signature("ResourceMap", "data.frame", "character
     statement <- new("Statement", .Object@world, subject=aggregationId, predicate=aggregates, object=id)
     addStatement(.Object@model, statement)
   }
-  
+
   # Add the triple identifying the ResourceMap
-  statement <- new("Statement", .Object@world, subject=.Object@id, predicate=RDFtype, object=OREresourceMap)
+  statement <- new("Statement", .Object@world, subject=resMapURI, predicate=RDFtype, object=OREresourceMap)
   addStatement(.Object@model, statement)
   
   # Add the triples identifying the Aggregation
   statement <- new("Statement", .Object@world, subject=aggregationId, predicate=RDFtype, object=aggregationType)
   addStatement(.Object@model, statement)
   
-  statement <- new("Statement", .Object@world, subject=.Object@id, predicate=OREdescribes, object=aggregationId)
+  statement <- new("Statement", .Object@world, subject=resMapURI, predicate=OREdescribes, object=aggregationId)
   addStatement(.Object@model, statement)
 
   return(.Object)
