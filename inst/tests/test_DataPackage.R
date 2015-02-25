@@ -63,10 +63,10 @@ test_that("InsertRelationship methods work", {
   relations <- getRelationships(dp, quiet=quietOn)
   # Test if the data frame with relationships was constructed correctly
   expect_that(nrow(relations), equals(4))
-  expect_that(relations[relations$object == paste(D1ResolveURI, doId1, sep=""), 'subject'], equals(paste(D1ResolveURI, mdId, sep="")))
-  expect_that(relations[relations$object == paste(D1ResolveURI, doId2, sep=""), 'subject'], equals(paste(D1ResolveURI, mdId, sep="")))
-  expect_that(relations[relations$subject == paste(D1ResolveURI, mdId, sep=""), 'predicate'], matches('documents'))
-  expect_that(relations[relations$subject == paste(D1ResolveURI, doId1, sep=""), 'predicate'], matches('isDocumentedBy'))
+  expect_that(relations[relations$object == doId1, 'subject'], equals(mdId))
+  expect_that(relations[relations$object == doId2, 'subject'], equals(mdId))
+  expect_that(relations[relations$subject == mdId, 'predicate'], matches('documents'))
+  expect_that(relations[relations$subject == doId1, 'predicate'], matches('isDocumentedBy'))
   rm(dp)
   
   # Now test the second 'insertRelationships' that allows specifying the predicate of the relationship
@@ -155,7 +155,7 @@ test_that("Package serialization works", {
   filePath <- sprintf("/tmp/%s.rdf", serializationId)
   status <- serializePackage(dp, filePath, id=serializationId)
   expect_that(file.exists(filePath), is_true())
-  found <- grep("<prov:wasDerivedFrom>", readLines(filePath))
+  found <- grep("wasDerivedFrom", readLines(filePath))
   expect_that(found, is_more_than(0))
   unlink(filePath)
   

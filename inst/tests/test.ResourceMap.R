@@ -18,6 +18,8 @@ test_that("ResourceMap creation from DataPackage triples", {
   doInId <- "scidataId"
   doOutId <- "sciProductId"
   executionId <- "execution1"
+  # See if the resolve URI is added only once to serialized id
+  doId2 <- paste(D1ResolveURI, "id2", sep="")
  
   user <- "smith"
   data <- charToRaw("1,2,3\n4,5,6")
@@ -37,11 +39,13 @@ test_that("ResourceMap creation from DataPackage triples", {
   insertRelationship(dp, subjectID=doOutId, objectIDs=doInId, predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
   insertRelationship(dp, subjectID=executionId, objectIDs=doInId, predicate="http://www.w3.org/ns/prov#used")
   insertRelationship(dp, subjectID=doOutId, objectIDs=executionId, predicate="http://www.w3.org/ns/prov#wasGeneratedBy")
+  insertRelationship(dp, subjectID=doId2, objectIDs=doOutId, predicate="http://www.w3.org/ns/prov#wasInformedBy")
+  insertRelationship(dp, subjectID=executionId, objectIDs="2015-01-01T10:02:00", predicate="http://www.w3.org/ns/prov#executedAt")
   
   relations <- getRelationships(dp)
   # Test if the data frame with retrieved relationships was constructed correctly
-  expect_that(nrow(relations), equals(5))
-  #expect_that(relations[relations$subject == md1, 'predicate'], matches("documents"))
+  expect_that(nrow(relations), equals(7))
+  expect_that(relations[relations$subject == mdId, 'predicate'], matches("documents"))
   
   # Now initialize a ResourceMap with the relationships.
   resMapId <- sprintf("%s%s", "resourceMap_", UUIDgenerate())  
@@ -52,7 +56,7 @@ test_that("ResourceMap creation from DataPackage triples", {
   # Serialize the ResourceMap to a file.
   filePath <- sprintf("/tmp/%s.rdf", resMapId)
   status <- serializeRDF(resMap, filePath)
-  found <- grep("<prov:wasDerivedFrom>", readLines(filePath))
+  found <- grep("wasDerivedFrom", readLines(filePath))
   expect_that(found, is_more_than(0))
   #unlink(filePath)
   

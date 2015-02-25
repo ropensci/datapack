@@ -93,13 +93,28 @@ setMethod("createFromTriples", signature("ResourceMap", "data.frame", "character
   # Add each triple from the input data.frame into the Redland RDF model.
   for(i in 1:nrow(relations)) {
     triple <- relations[i,]
-    statement <- new("Statement", .Object@world, triple[['subject']], triple[['predicate']], triple[['object']], triple[['subjectType']], triple[['objectType']])
+    subjectId <- triple[['subject']]
+    objectId <- triple[['object']]
+    
+    # Prepend the DataONE Production CN resolve URI to each identifier in the datapackage, when
+    # that identifier appears in the subject or object of a triple.
+    if (is.element(subjectId, identifiers) && ! grepl(D1ResolveURI, subjectId)) {
+      subjectId <- paste(D1ResolveURI, subjectId, sep="")
+    }
+    
+    if (is.element(objectId, identifiers) && ! grepl(D1ResolveURI, objectId)) {
+      objectId <- paste(D1ResolveURI, objectId, sep="")
+    }
+    
+    statement <- new("Statement", .Object@world, subjectId, triple[['predicate']], objectId, triple[['subjectType']], triple[['objectType']])
     addStatement(.Object@model, statement)
   }
   
-  # Loop through the datapackage object and add the required ORE properties for each id.
+  # Loop through the datapackage objects and add the required ORE properties for each id.
   for(id in identifiers) {
-    id <- sprintf("%s%s", D1ResolveURI, id)
+    if (! grepl(D1ResolveURI, id)) {
+      id <- sprintf("%s%s", D1ResolveURI, id)
+    }
     # Add the Dublic Core identifier relation for each object added to the data package
     statement <- new("Statement", .Object@world, subject=id, predicate=DCidentifier, object=sprintf("%s%s", id, xsdString))
     addStatement(.Object@model, statement)
