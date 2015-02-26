@@ -119,7 +119,16 @@ test_that("InsertRelationship methods work", {
   expect_that(relations[relations$object == "thing4", 'objectType'], equals(as.character(NA)))
   expect_that(relations[relations$object == "thing5", 'objectType'], equals("literal"))
   
+  # Insert derivation relationships
+  source <- "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1"
+  derived <- "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.45.1"
+  recordDerivation(dp, sourceID=source, derivedIDs=derived)
+  relations <- getRelationships(dp, quiet=quietOn)
   
+  # Test if the data frame with retrieved relationships was constructed correctly
+  expect_that(nrow(relations), equals(8))
+  expect_that(relations[relations$subject == derived, 'predicate'], matches("wasDerivedFrom"))
+  expect_that(relations[relations$subject == derived, 'object'], equals(source))
 })
 
 test_that("Package serialization works", {
