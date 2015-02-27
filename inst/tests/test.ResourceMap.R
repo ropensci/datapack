@@ -16,8 +16,8 @@ test_that("ResourceMap creation from DataPackage triples", {
   dp <- DataPackage()
   mdId <- "scimeta_id"
   doInId <- "scidataId"
-  doOutId <- "sciProductId"
-  executionId <- "execution1"
+  doOutId <- paste0("urn:uuid:", UUIDgenerate())
+  executionId <- paste(D1ResolveURI, "execution1", sep="")
   # See if the resolve URI is added only once to serialized id
   doId2 <- paste(D1ResolveURI, "id2", sep="")
  
@@ -40,7 +40,7 @@ test_that("ResourceMap creation from DataPackage triples", {
   insertRelationship(dp, subjectID=executionId, objectIDs=doInId, predicate="http://www.w3.org/ns/prov#used")
   insertRelationship(dp, subjectID=doOutId, objectIDs=executionId, predicate="http://www.w3.org/ns/prov#wasGeneratedBy")
   insertRelationship(dp, subjectID=doId2, objectIDs=doOutId, predicate="http://www.w3.org/ns/prov#wasInformedBy")
-  insertRelationship(dp, subjectID=executionId, objectIDs="2015-01-01T10:02:00", predicate="http://www.w3.org/ns/prov#executedAt")
+  insertRelationship(dp, subjectID=executionId, objectIDs="2015-01-01T10:02:00", predicate="http://www.w3.org/ns/prov#startedAtTime")
   
   relations <- getRelationships(dp)
   # Test if the data frame with retrieved relationships was constructed correctly

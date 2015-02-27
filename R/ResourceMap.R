@@ -78,9 +78,14 @@ setMethod("createFromTriples", signature("ResourceMap", "data.frame", "character
   # Hard coded for now, get this from dataone package in future
   D1ResolveURI <- "https://cn.dataone.org/cn/v1/resolve/"
   
+  # TODO: use constants for base URIs
   #xsdString <- "^^http://www.w3.org/2001/XMLSchema#string"
   xsdString <- "^^xsd:string"
+  xsdStringURI <- "http://www.w3.org/2001/XMLSchema#string"
+  xsdDateTimeURI <- "http://www.w3.org/2001/XMLSchema#dateTime"
   DCidentifier <- "http://purl.org/dc/terms/identifier"
+  DCmodified <- "http://purl.org/dc/terms/modified"
+  DCtitle      <- "http://purl.org/dc/elements/1.1/title"
   RDFtype <- "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
   OREresourceMap <- "http://www.openarchives.org/ore/terms/ResourceMap"
   OREdescribes <- "http://www.openarchives.org/ore/terms/describes"
@@ -113,18 +118,19 @@ setMethod("createFromTriples", signature("ResourceMap", "data.frame", "character
   # Loop through the datapackage objects and add the required ORE properties for each id.
   for(id in identifiers) {
     if (! grepl(D1ResolveURI, id)) {
-      id <- sprintf("%s%s", D1ResolveURI, id)
+      URIid <- sprintf("%s%s", D1ResolveURI, id)
     }
     # Add the Dublic Core identifier relation for each object added to the data package
-    statement <- new("Statement", .Object@world, subject=id, predicate=DCidentifier, object=sprintf("%s%s", id, xsdString))
+    statement <- new("Statement", .Object@world, subject=URIid, predicate=DCidentifier, object=id, objectType="literal", datatype_uri=xsdStringURI)
+    
     addStatement(.Object@model, statement)
     
     # Add triples for each object that is aggregated
-    statement <- new("Statement", .Object@world, subject=id, predicate=aggregatedBy, object=aggregationId)
+    statement <- new("Statement", .Object@world, subject=URIid, predicate=aggregatedBy, object=aggregationId)
     addStatement(.Object@model, statement)
     
     # Add triples identifying the ids that this aggregation aggregates
-    statement <- new("Statement", .Object@world, subject=aggregationId, predicate=aggregates, object=id)
+    statement <- new("Statement", .Object@world, subject=aggregationId, predicate=aggregates, object=URIid)
     addStatement(.Object@model, statement)
   }
 
@@ -132,8 +138,20 @@ setMethod("createFromTriples", signature("ResourceMap", "data.frame", "character
   statement <- new("Statement", .Object@world, subject=resMapURI, predicate=RDFtype, object=OREresourceMap)
   addStatement(.Object@model, statement)
   
+  # Not sure if this is needed by D1 to parse resourceMap
+  #currentTime <- format(Sys.time(), "%Y-%m-%dT%H:%M:%S.000%z")
+  #statement <- new("Statement", .Object@world, subject=resMapURI, predicate=DCmodified, object=currentTime, objectType="literal", datatype_uri=xsdDateTimeURI)
+    
+  # Add the identifier for the ResourceMap
+  statement <- new("Statement", .Object@world, subject=resMapURI, predicate=DCidentifier, object=.Object@id, objectType="literal", datatype_uri=xsdStringURI)
+  
+  addStatement(.Object@model, statement)
+  
   # Add the triples identifying the Aggregation
   statement <- new("Statement", .Object@world, subject=aggregationId, predicate=RDFtype, object=aggregationType)
+  addStatement(.Object@model, statement)
+  
+  statement <- new("Statement", .Object@world, subject=aggregationId, predicate=DCtitle, object="DataONE Aggregation")
   addStatement(.Object@model, statement)
   
   statement <- new("Statement", .Object@world, subject=resMapURI, predicate=OREdescribes, object=aggregationId)

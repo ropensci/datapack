@@ -137,7 +137,7 @@ test_that("Package serialization works", {
   dp <- DataPackage()
   mdId <- "scimeta_id"
   doInId <- "scidataId"
-  doOutId <- "sciProductId"
+  doOutId <- paste0("urn:uuid:", UUIDgenerate())
   executionId <- "execution1"
   
   user <- "smith"
