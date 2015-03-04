@@ -389,6 +389,8 @@ setMethod("serializePackage", signature("DataPackage"), function(.Object, file,
   resMap <- new("ResourceMap", id)
   resMap <- createFromTriples(resMap, relations, getIdentifiers(.Object))  
   status <- serializeRDF(resMap, file, syntaxName, mimeType, namespaces, syntaxURI)
+  freeResourceMap(resMap)
+  rm(resMap)
 })
 
 

@@ -58,7 +58,11 @@ test_that("ResourceMap creation from DataPackage triples", {
   status <- serializeRDF(resMap, filePath)
   found <- grep("wasDerivedFrom", readLines(filePath))
   expect_that(found, is_more_than(0))
-  #unlink(filePath)
+  
+  freeResourceMap(resMap)
+  rm(resMap)
+  
+  unlink(filePath)
   
 })
 

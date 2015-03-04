@@ -205,13 +205,30 @@ setMethod("serializeRDF", signature("ResourceMap", "character"), function(.Objec
   }
   
   status <- serializeToFile(serializer, .Object@world, .Object@model, file)
+  freeSerializer(serializer)
+  rm(serializer)
   return(status)
   
 })
 
+#' Free memory used by a ResouceMap.
+#' @description The resources allocated by the redland RDF package are freed. The ResourceMap
+#' object should be deleted immediately following this call.
+#' @param .Object a ResourceMap
+#' @export
+setGeneric("freeResourceMap", function(.Object) { 
+  standardGeneric("freeResourceMap")
+})
+
+setMethod("freeResourceMap", signature("ResourceMap"), function(.Object) {
+  freeModel(.Object@model)
+  freeStorage(.Object@storage)
+  freeWorld(.Object@world)
+})
+
 # #' Parse an RDF/XML resource map from a file
 # #' @description parseRDF_XML reads a file containing an RDF model in RDF/XML format and initializes
-# #' a ResourceMap based on this content.
+# #' a ResourceMap based on this content
 # #' @details This method resets the slot ResourceMap@world so any previously stored triples are discarded, allowing
 # #' for a clean model object in which to parse the new RDF content into. It is assumed that the content is a 
 # #' valid ORE resource map and no validation checks specific to the OAI-ORE content model are not performed.
