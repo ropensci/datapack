@@ -82,43 +82,71 @@ test_that("InsertRelationship methods work", {
   addData(dp, do1)
   addData(dp, do2)
   
+  # Test invalid argument values
+  err <- try(insertRelationship(dp, subjectID=doId1, objectIDs=doId2, predicate="http://www.w3.org/ns/prov#wasDerivedFrom", subjectType='literal'), silent=TRUE)
+  expect_that(class(err), (matches("try-error")))
+  err <- try(insertRelationship(dp, subjectID=doId1, objectIDs=doId2, predicate="http://www.w3.org/ns/prov#wasDerivedFrom", objectType='foo'), silent=TRUE)
+  expect_that(class(err), (matches("try-error")))
+  
+  nrel <- 1
   # Insert a typical provenance relationship
   insertRelationship(dp, subjectID=doId1, objectIDs=doId2, predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
-  # No subjectType, objectType passed in, getRelations will set these to 'NA' in the data.frame it creates, to allow auto RDF type determination
-  # by redland Statement
-  insertRelationship(dp, subjectID="urn:uuid:1234", objectIDs="2015-01-01T10:52:00", predicate="http://www.w3.org/ns/prov#executedAt")
-  # Multiple objectIDs passed in, multiple objectTypes specified, also objectTypes list shorter than objectIDs list
-  insertRelationship(dp, subjectID="_:bl1", objectIDs=c("thing1", "thing2", "thing3"), predicate="http://www.myns.org/hadThing", subjectType="blank",
-                     objectTypes=c("literal", "literal"))
-  # Multiple objectTypes, first one 'NA'
-  insertRelationship(dp, subjectID="_:bl2", objectIDs=c("thing4", "thing5"), predicate="http://www.myns.org/hadThing", subjectType="blank",
-                     objectTypes=c(NA, "literal"))
-  
-  relations <- getRelationships(dp, quiet=quietOn)
   # Test if the data frame with retrieved relationships was constructed correctly
-  expect_that(nrow(relations), equals(7))
+  relations <- getRelationships(dp, quiet=quietOn)
+  expect_that(nrow(relations), equals(nrel))
   expect_that(relations[relations$subject == doId1, 'predicate'], matches("wasDerivedFrom"))
   expect_that(relations[relations$subject == doId1, 'object'], equals(doId2))
   expect_that(relations[relations$subject == doId1, 'subjectType'], equals(as.character(NA)))
   expect_that(relations[relations$subject == doId1, 'objectType'], equals(as.character(NA)))
   
-  expect_that(relations[relations$subject == "urn:uuid:1234", 'object'], equals("2015-01-01T10:52:00"))
-  expect_that(relations[relations$subject == "urn:uuid:1234", 'predicate'], matches("executedAt"))
-  expect_that(relations[relations$subject == "urn:uuid:1234", 'subjectType'], equals(as.character(NA)))
-  expect_that(relations[relations$subject == "urn:uuid:1234", 'objectType'], equals(as.character(NA)))
+  # Test assingment of subjectType, objectType
+  insertRelationship(dp, subjectID="orcid.org/0000-0002-2192-403X", objectIDs="http://www.example.com/home", predicate="http://www.example.com/hadHome",
+                     subjectType="uri", objectType="literal")  
+  relations <- getRelationships(dp, quiet=quietOn)
+  expect_that(nrow(relations), equals(nrel <- nrel + 1))
+  expect_that(relations[relations$subject == "orcid.org/0000-0002-2192-403X", 'predicate'], matches("hadHome"))
+  expect_that(relations[relations$subject == "orcid.org/0000-0002-2192-403X", 'object'], matches("www.example.com/home"))
+  expect_that(relations[relations$subject == "orcid.org/0000-0002-2192-403X", 'subjectType'], equals("uri"))
+  expect_that(relations[relations$subject == "orcid.org/0000-0002-2192-403X", 'objectType'], equals("literal"))
   
+  # Test that an unspecified objectType (where length(objetIDs) > length(objectTypes)) is set to as.character(NA)
+  insertRelationship(dp, subjectID="_:bl1", objectIDs=c("thing1", "thing2", "thing3"), predicate="http://www.myns.org/hadThing", subjectType="blank",
+                     objectTypes=c("literal", "literal"))
+  relations <- getRelationships(dp, quiet=quietOn)
+  expect_that(nrow(relations), equals(nrel<-nrel + 3))
+  expect_that(relations[relations$object == "thing1", 'predicate'], matches("hadThing"))
+  expect_that(relations[relations$object == "thing1", 'subject'], matches("_:bl1"))
   expect_that(relations[relations$object == "thing1", 'subjectType'], equals("blank"))
   expect_that(relations[relations$object == "thing1", 'objectType'], equals("literal"))
   expect_that(relations[relations$object == "thing2", 'subjectType'], equals("blank"))
   expect_that(relations[relations$object == "thing2", 'objectType'], equals("literal"))
-  
-  # Test that an unspecified objectType (where length(objetIDs) > length(objectTypes)) is set to as.character(NA)
   expect_that(relations[relations$object == "thing3", 'objectType'], equals(as.character(NA)))
   
-  # Test objectTypes list where first element is 'NA'
+  # Multiple objectTypes, first one 'NA'
+  insertRelationship(dp, subjectID="_:bl2", objectIDs=c("thing4", "thing5"), predicate="http://www.myns.org/hadThing", subjectType="blank",
+                     objectTypes=c(NA, "literal"))
+  relations <- getRelationships(dp, quiet=quietOn)
+  expect_that(nrow(relations), equals(nrel<-nrel + 2))
   expect_that(relations[relations$object == "thing4", 'objectType'], equals(as.character(NA)))
   expect_that(relations[relations$object == "thing5", 'objectType'], equals("literal"))
   
+  # Subject passed in as NULL, which means create an "anonymous" blank node for these (software assigns the blank node id, not user)
+  insertRelationship(dp, subjectID=NULL, objectIDs="thing6", predicate="http://www.myns.org/wasThing", objectTypes="literal")
+  relations <- getRelationships(dp, quiet=quietOn)
+  expect_that(nrow(relations), equals(nrel<-nrel + 1))
+  expect_that(relations[relations$object == "thing6", 'predicate'], matches("wasThing"))
+  expect_that(relations[relations$object == "thing6", 'subjectType'], equals("blank"))
+  expect_that(relations[relations$object == "thing6", 'subject'], matches("_:"))
+  
+  # No objectID specified
+  insertRelationship(dp, subjectID="urn:uuid5678", objectIDs=NULL, predicate="http://www.myns.org/gaveThing")
+  relations <- getRelationships(dp, quiet=quietOn)
+  expect_that(nrow(relations), equals(nrel <- nrel + 1))
+  
+  expect_that(relations[relations$subject == "urn:uuid5678", 'predicate'], matches("gaveThing"))
+  expect_that(relations[relations$subject == "urn:uuid5678", 'objectType'], equals("blank"))
+  expect_that(relations[relations$subject == "urn:uuid5678", 'object'], matches("_:"))
+
   # Insert derivation relationships
   source <- "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1"
   derived <- "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.45.1"
@@ -126,7 +154,7 @@ test_that("InsertRelationship methods work", {
   relations <- getRelationships(dp, quiet=quietOn)
   
   # Test if the data frame with retrieved relationships was constructed correctly
-  expect_that(nrow(relations), equals(8))
+  expect_that(nrow(relations), equals(nrel <- nrel + 1))
   expect_that(relations[relations$subject == derived, 'predicate'], matches("wasDerivedFrom"))
   expect_that(relations[relations$subject == derived, 'object'], equals(source))
 })
