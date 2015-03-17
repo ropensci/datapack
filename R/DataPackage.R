@@ -109,7 +109,6 @@ setMethod("getIdentifiers", "DataPackage", function(x) {
 #' Add a DataObject to the DataPackage
 #' @description Includes the DataObject in the DataPackage data Map, making it available for
 #' retrieval and eventual upload (via createPackage).
-#' 
 #' @param x : DataPackage
 #' @param do : DataObject, or identifier of an object on the DataONE network
 #' @param ... : (not yet used)
@@ -124,25 +123,39 @@ setMethod("addData", signature("DataPackage", "DataObject"), function(x, do) {
   x@objects[[do@sysmeta@identifier]] <- do
 })
 
-
 #' Record relationships between objects in a DataPackage
 #' @description Record a relationship of the form "subject -> predicate -> object", as defined by the Resource Description Framework (RDF), i.e.
-#' an RDF triple. For use with DataONE, a best practice is to specifiy the subject and predicate as DataONE persistent identifiers 
+#' an RDF triple. 
+#' @details For use with DataONE, a best practice is to specifiy the subject and predicate as DataONE persistent identifiers 
 #' (https://mule1.dataone.org/ArchitectureDocs-current/design/PIDs.html). If the objects are not known to DataONE, then local identifiers can be
 #' used, and these local identifiers may be promoted to DataONE PIDs when the package is uploaded to a DataONE member node.
 #' The predicate is typically an RDF property (as a IRI) from a schema supported by DataONE, i.e. "http://www.w3.org/ns/prov#wasGeneratedBy"
-#' @details A relationship is created for each value in the list "objectIDs". See examples for more information.
-#' #' @param x a DataPackage object
-#' @param subjectID the identifier of the object that will be the subject of the relationship
+#' If multiple values are specified for argument objectIDS, a relationship is created for each value in the list "objectIDs". IF a value
+#' is not specified for subjectType or objectType, then NA is assigned. Note that if these relationships are fetched via the getRelationships()
+#' function, and passed to the createFromTriples() function to initialize a ResourceMap object, the underlying redland package will assign
+#' appropriate values for subjects and objects.
+#' @param x a DataPackage object
+#' @param subjectID the identifier of the subject of the relationship
+#' @param objectIDS a list of identifiers of the object of the relationships (a relationship is recorded for each objectID)
 #' @param predicate the IRI of the predicate of the relationship
-#' @param objectIDS a list of identifiers of the object of the relationship (a relationship is recorded for each objectID)
+#' @param subjectType the type to assign the subject, values can be 'uri', 'blank'
+#' @param objectTypes the types to assign the objects (cal be single value or list), each value can be 'uri', 'blank', or 'literal'
 #' @examples
 #' \dontrun{
 #' dp <- DataPackage()
+#' # Create a relationship
 #' insertRelationship(dp, "/Users/smith/scripts/genFields.R",
 #'                        "http://www.w3.org/ns/prov#used",
 #'                        "https://knb.ecoinformatics.org/knb/d1/mn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1")
-#'                        
+#' # Create a relationshp with the subject as a blank node with an automatically assigned blank node id
+#' insertRelationship(dp, subjectID=NULL, objectIDs="thing6", predicate="http://www.myns.org/wasThing")
+#' # Create a relationshp with the subject as a blank node with a user assigned blank node id
+#' insertRelationship(dp, subjectID="_:BL1234, objectIDs="thing7", predicate="http://www.myns.org/hadThing")
+#' # Create multiple relationships with the same subject, predicate, but different objects
+#' insertRelationship(dp, subjectID="_:bl2", objectIDs=c("thing4", "thing5"), predicate="http://www.myns.org/hadThing")
+#' # Create multiple relationships with subject and object types specified
+#' insertRelationship(dp, subjectID="orcid.org/0000-0002-2192-403X", objectIDs="http://www.example.com/home", predicate="http://www.example.com/hadHome",
+#'                    subjectType="uri", objectType="literal")                
 #' }
 #' @export
 setGeneric("insertRelationship", function(x, subjectID, objectIDs, predicate, ...) {
@@ -150,8 +163,7 @@ setGeneric("insertRelationship", function(x, subjectID, objectIDs, predicate, ..
 })
 
 # Associate a metadata object with a list of dataobjects that
-# This method is used to maintain backward compatibility with rdataone v1.0.
-setMethod("insertRelationship",  signature("DataPackage", "character", "character"), function(x, subjectID, objectIDs, ...) {
+setMethod("insertRelationship",  signature("DataPackage", "character", "character", "missing"), function(x, subjectID, objectIDs) {
   
   insertRelationship(x, subjectID, objectIDs, "http://purl.org/spar/cito/documents")
   
@@ -160,9 +172,12 @@ setMethod("insertRelationship",  signature("DataPackage", "character", "characte
   }
 })
 
-setMethod("insertRelationship", signature("DataPackage", "character", "character", "character"), 
-          function(x, subjectID, objectIDs, predicate, subjectType=as.character(NA), objectTypes=as.character(NA))
-  {
+# Create a new class type so that insertRelationships can accept a character or null for certain arguments
+setClassUnion("charOrNULL", c("character", "NULL"))
+
+setMethod("insertRelationship", signature("DataPackage", "charOrNULL", "charOrNULL", "character"),
+          function(x, subjectID, objectIDs, predicate, 
+                   subjectType=as.character(NA), objectTypes=as.character(NA)) {
   
   # Store triples in a complex data structure based on a hash. 
   # This structure for 'relations' is: hash(key=subjectID, value=hash(key=predicate, value=list[objectIDs]))
@@ -171,8 +186,21 @@ setMethod("insertRelationship", signature("DataPackage", "character", "character
   # and the objectIDs (a character vector). In R, when a character vector is modified, all user defined
   # attributes are stripped away and silently discarded, so attributes have to be retained by saving them
   # objectIDs, adding the new ids, then resetting the attribute vector of the RDF term types.
+  # 
+  # IF the subjectID or objectIDs were not specified then the user is requesting that these be "anonymous"
+  # blank nodes, i.e. a blank node identifier is automatically assigned. Assign a uuid now vs having redland
+  # RDF package assign a node, so that we don't have to remember that this node is special.
+  if (is.null(subjectID)) {
+    subjectID <- sprintf("_:%s", UUIDgenerate())
+    subjectType <- "blank"
+  }
+  if (is.null(objectIDs)) {
+    objectIDs <- sprintf("_:%s", UUIDgenerate())
+    objectTypes <- "blank"
+  }
+  
   #
-  # Check if the passed in subject has been stored previously. Build a temporary hash based on the subject.  
+  # Check if the passed in subject has been stored previously. Build a temporary hash based on the subject.
   if (has.key(subjectID, x@relations)) {
     subject <- x@relations[[subjectID]]
   } else {
