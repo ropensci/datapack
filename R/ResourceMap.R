@@ -111,7 +111,8 @@ setMethod("createFromTriples", signature("ResourceMap", "data.frame", "character
       objectId <- paste(D1ResolveURI, objectId, sep="")
     }
     
-    statement <- new("Statement", .Object@world, subjectId, triple[['predicate']], objectId, triple[['subjectType']], triple[['objectType']])
+    statement <- new("Statement", .Object@world, subjectId, triple[['predicate']], objectId, 
+                     triple[['subjectType']], triple[['objectType']], triple[['dataTypeURI']])
     addStatement(.Object@model, statement)
   }
   

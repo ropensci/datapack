@@ -142,10 +142,21 @@ test_that("InsertRelationship methods work", {
   insertRelationship(dp, subjectID="urn:uuid5678", objectIDs=NULL, predicate="http://www.myns.org/gaveThing")
   relations <- getRelationships(dp, quiet=quietOn)
   expect_that(nrow(relations), equals(nrel <- nrel + 1))
-  
   expect_that(relations[relations$subject == "urn:uuid5678", 'predicate'], matches("gaveThing"))
   expect_that(relations[relations$subject == "urn:uuid5678", 'objectType'], equals("blank"))
   expect_that(relations[relations$subject == "urn:uuid5678", 'object'], matches("_:"))
+  
+  # Specify dataTypeURIs
+  insertRelationship(dp, subjectID="urn:uuid:abcd", objectIDs="Wed Mar 18 06:26:44 PDT 2015", 
+                     predicate="http://www.w3.org/ns/prov#startedAt", subjectType="uri", 
+                     objectTypes="literal",
+                     dataTypeURIs="http://www.w3.org/2001/XMLSchema#string")
+  relations <- getRelationships(dp, quiet=quietOn)
+  expect_that(nrow(relations), equals(nrel <- nrel + 1))
+  expect_that(relations[relations$subject == "urn:uuid:abcd", 'dataTypeURI'], matches("string"))
+  expect_that(relations[relations$subject == "urn:uuid:abcd", 'subjectType'], equals("uri"))
+  expect_that(relations[relations$subject == "urn:uuid:abcd", 'objectType'], equals("literal"))
+  expect_that(relations[relations$subject == "urn:uuid:abcd", 'predicate'], matches("startedAt"))
 
   # Insert derivation relationships
   source <- "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1"
@@ -186,6 +197,10 @@ test_that("Package serialization works", {
   insertRelationship(dp, subjectID=doOutId, objectIDs=doInId, predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
   insertRelationship(dp, subjectID=executionId, objectIDs=doInId, predicate="http://www.w3.org/ns/prov#used")
   insertRelationship(dp, subjectID=doOutId, objectIDs=executionId, predicate="http://www.w3.org/ns/prov#wasGeneratedBy")
+  insertRelationship(dp, subjectID="urn:uuid:abcd", objectIDs="Wed Mar 18 06:26:44 PDT 2015", 
+                     predicate="http://www.w3.org/ns/prov#startedAt", subjectType="uri", 
+                     objectTypes="literal",
+                     dataTypeURIs="http://www.w3.org/2001/XMLSchema#string")
   
   # Serialize the ResourceMap to a file.
   serializationId <- sprintf("%s%s", "resourceMap1", UUIDgenerate())
