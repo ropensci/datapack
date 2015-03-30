@@ -1,7 +1,7 @@
 Package: datapackage
-Title: datapackage: A flexible container to transport and manipulate data and
+Title: A flexible container to transport and manipulate data and
     associated resources
-Version: 0.1
+Version: 0.5
 Authors@R: c( person("Matthew", "Jones", email="jones@nceas.ucsb.edu",
     role=c("aut", "cre")), person("Peter", "Slaughter", role = "aut",
     email = "slaughter@nceas.ucsb.edu"))
@@ -12,6 +12,7 @@ Description: The datapackage provides a flexible container to transport and
     the OAI-ORE standard resource map, which describes the relationships
     between the files. Data packages can be serialized and transported as
     structured zip files following the BagIt specification.
+Date: 2015
 Depends:
     R (>= 3.1.1)
 Imports:
