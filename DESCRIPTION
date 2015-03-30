@@ -3,7 +3,8 @@ Title: datapackage: A flexible container to transport and manipulate data and
     associated resources
 Version: 0.1
 Authors@R: c( person("Matthew", "Jones", email="jones@nceas.ucsb.edu",
-    role=c("aut", "cre")))
+    role=c("aut", "cre")), person("Peter", "Slaughter", role = "aut",
+    email = "slaughter@nceas.ucsb.edu"))
 Description: The datapackage provides a flexible container to transport and
     manipulate complex sets of data that consist of multiple data files and
     associated metadata and ancillary files.  Individual data objects have
