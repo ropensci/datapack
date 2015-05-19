@@ -100,11 +100,15 @@ test_that("SystemMetadata accessPolicy can be constructed and changed", {
     sysmeta <- addAccessRule(sysmeta, "foo", "write")
     expect_that(nrow(sysmeta@accessPolicy), equals(2))
     expect_that(as.character(sysmeta@accessPolicy$permission[[2]]), matches("write"))
-    
+    expect_true(hasAccessRule(sysmeta, "foo", "write"))
     apolicy=data.frame(subject=c("bar", "baz"), permission= c("changePermission", "write"))
     sysmeta <- addAccessRule(sysmeta, apolicy)
+    expect_true(hasAccessRule(sysmeta, "foo", "write"))
+    expect_true(hasAccessRule(sysmeta, "bar", "changePermission"))
+    expect_true(hasAccessRule(sysmeta, "baz", "write"))
+    expect_true(!hasAccessRule(sysmeta, "baz", "changePermission"))
     expect_that(nrow(sysmeta@accessPolicy), equals(4))
     expect_that(as.character(sysmeta@accessPolicy$permission[[4]]), matches("write"))
-    expect_that(as.character(sysmeta@accessPolicy$subject[[4]]), matches("baz"))
+    expect_that(as.character(sysmeta@accessPolicy$subject[[4]]), matches("baz"))    
 })
 

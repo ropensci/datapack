@@ -387,7 +387,7 @@ setGeneric("hasAccessRule", function(sysmeta, subject, ...) {
 #' @rdname SystemMetadata-methods
 #' @aliases hasAccessRule,SystemMetadata-method
 setMethod("hasAccessRule", signature("SystemMetadata", "character"), function(sysmeta, subject, permission) {
-    found <- any(grepl("public", sysmeta@accessPolicy$subject) & grepl("read", sysmeta@accessPolicy$permission))
+    found <- any(grepl(subject, sysmeta@accessPolicy$subject) & grepl(permission, sysmeta@accessPolicy$permission))
     return(found)
 })
 
