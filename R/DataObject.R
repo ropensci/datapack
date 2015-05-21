@@ -232,6 +232,32 @@ setMethod("setPublicAccess", signature("DataObject"), function(x) {
     return(x)
 })
 
+#' Add a Rule to the AccessPolicy
+#' 
+#' To be called prior to creating the object in DataONE.  When called before 
+#' creating the object, adds a rule to the access policy that makes this object
+#' publicly readable.  If called after creation, it will only change the system
+#' metadata locally, and will not have any affect. 
+#' @param x DataObject
+#' @param accessRules A data frame containing one or more access rules
+#' @return DataObject with modified access rules
+#' @examples \dontrun{
+#' accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", "uid=slaughter,o=unaffiliated,dc=example,dc=org"), permission=c("write", "changePermission"))
+#' sciObj <- addAccessRules(sciObj, accessRules)
+#' }
+#' @export
+setGeneric("addAccessRules", function(x, accessRules) {
+  standardGeneric("addAccessRules")
+})
+
+#' @describeIn addAccessRule
+#' @aliases addAccessRule
+setMethod("addAccessRules", signature("DataObject", "data.frame"), function(x, accessRules) {
+  # Add the access rules to the DataObjects system metadata object    
+  x@sysmeta <- addAccessRule(x@sysmeta, accessRules)
+  return(x)
+})
+
 #' Test whether the provided subject can read an object.
 #' 
 #' Using the AccessPolicy, tests whether the subject has read permission
