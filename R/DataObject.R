@@ -93,15 +93,21 @@ setGeneric("DataObject", function(...) {
 #' taken to not modify or remove that file in R or via other facilities while the DataObject exists in the R session.
 #' Changes to the object are not detected and will result in unexpected results.
 #' @param .Object the DataObject instance to be initialized
-#' @param id the identifier for the DataObject, unique within its repository
+#' @param id the identifier for the DataObject, unique within its repository. Optionally this can be an existing SystemMetadata object
 #' @param dataobj the bytes of the data for this object in \code{'raw'} format, optional if \code{'filename'} is provided
-#' @param format the format identifier for the object (see \url{'http://cn.dataone.org/cn/v1/formats'})
+#' @param format the format identifier for the object (see \url{'http://cn.dataone.org/cn/v1/formats'})?
 #' @param user the identity of the user owning the package, typically in X.509 format
 #' @param mnNodeId the node identifier for the repository to which this object belings
-#' @param filename the filename for the fully qualified path to the data on disk, optional if \code{'data'} is provided
+#' @param filename the filename for the fully qualified path to the data on disk, optional if \code{'data'} is provide
 #' @import digest
-setMethod("initialize", "DataObject", function(.Object, id, dataobj=NA, format=NA, user=NA, mnNodeId=NA, filename=as.character(NA)) {
-    
+setMethod("initialize", "DataObject", function(.Object, id=as.character(NA), dataobj=NA, format=as.character(NA), user=as.character(NA), 
+                                               mnNodeId=as.character(NA), filename=as.character(NA)) {
+  
+    # If no value has been passed in for 'id', then create a UUID for it.
+    if (class(id) != "SystemMetadata" && is.na(id)) {
+      id <- paste0("urn:uuid:", UUIDgenerate())
+    }
+      
     # Validate: either dataobj or filename must be provided
     if (is.na(dataobj[[1]]) && is.na(filename)) {
         message("Either the dataobj parameter containing raw data or the file parameter with a file reference to the data must be provided.")
