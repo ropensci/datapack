@@ -358,13 +358,15 @@ setGeneric("addAccessRule", function(sysmeta, x, ...) {
 #' @aliases addAccessRule,SystemMetadata-method
 setMethod("addAccessRule", signature("SystemMetadata", "character"), function(sysmeta, x, permission) {
     accessRecord <- data.frame(subject=x, permission=permission)
-    sysmeta@accessPolicy <- rbind(sysmeta@accessPolicy, accessRecord)
+    sysmeta <- addAccessRule(sysmeta, accessRecord)
     return(sysmeta)
 })
 #' @rdname SystemMetadata-methods
 #' @aliases addAccessRule,SystemMetadata-method
 setMethod("addAccessRule", signature("SystemMetadata", "data.frame"), function(sysmeta, x) {
     sysmeta@accessPolicy <- rbind(sysmeta@accessPolicy, x)
+    # Remove duplicate access rules
+    sysmeta@accessPolicy <- unique(sysmeta@accessPolicy)
     return(sysmeta)
 })
 
