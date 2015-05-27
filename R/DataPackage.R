@@ -172,10 +172,7 @@ setMethod("insertRelationship",  signature("DataPackage", "character", "characte
   }
 })
 
-# Create a new class type so that insertRelationships can accept a character or null for certain arguments
-setClassUnion("charOrNULL", c("character", "NULL"))
-
-setMethod("insertRelationship", signature("DataPackage", "charOrNULL", "charOrNULL", "character"),
+setMethod("insertRelationship", signature("DataPackage", "character", "character", "character"),
           function(x, subjectID, objectIDs, predicate, 
                    subjectType=as.character(NA), objectTypes=as.character(NA), dataTypeURIs=as.character(NA)) {
   
@@ -189,12 +186,12 @@ setMethod("insertRelationship", signature("DataPackage", "charOrNULL", "charOrNU
   # If the subjectID or objectIDs were not specified or NULL then the user is requesting that these be "anonymous"
   # blank nodes, i.e. a blank node identifier is automatically assigned. Assign a uuid now vs having redland
   # RDF package assign a node, so that we don't have to remember that this node is special.
-  if (is.null(subjectID)) {
+  if (is.na(subjectID)) {
     subjectID <- sprintf("_:%s", UUIDgenerate())
     subjectType <- "blank"
   }
   
-  if (is.null(objectIDs)) {
+  if (is.na(objectIDs)) {
     objectIDs <- sprintf("_:%s", UUIDgenerate())
     objectTypes <- "blank"
   }

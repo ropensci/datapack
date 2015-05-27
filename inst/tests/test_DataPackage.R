@@ -130,8 +130,8 @@ test_that("InsertRelationship methods work", {
   expect_that(relations[relations$object == "thing4", 'objectType'], equals(as.character(NA)))
   expect_that(relations[relations$object == "thing5", 'objectType'], equals("literal"))
   
-  # Subject passed in as NULL, which means create an "anonymous" blank node for these (software assigns the blank node id, not user)
-  insertRelationship(dp, subjectID=NULL, objectIDs="thing6", predicate="http://www.myns.org/wasThing", objectTypes="literal")
+  # Subject passed in as NA, which means create an "anonymous" blank node for these (software assigns the blank node id, not user)
+  insertRelationship(dp, subjectID=as.character(NA), objectIDs="thing6", predicate="http://www.myns.org/wasThing", objectTypes="literal")
   relations <- getRelationships(dp, quiet=quietOn)
   expect_that(nrow(relations), equals(nrel<-nrel + 1))
   expect_that(relations[relations$object == "thing6", 'predicate'], matches("wasThing"))
@@ -139,7 +139,7 @@ test_that("InsertRelationship methods work", {
   expect_that(relations[relations$object == "thing6", 'subject'], matches("_:"))
   
   # No objectID specified
-  insertRelationship(dp, subjectID="urn:uuid5678", objectIDs=NULL, predicate="http://www.myns.org/gaveThing")
+  insertRelationship(dp, subjectID="urn:uuid5678", objectIDs=as.character(NA), predicate="http://www.myns.org/gaveThing")
   relations <- getRelationships(dp, quiet=quietOn)
   expect_that(nrow(relations), equals(nrel <- nrel + 1))
   expect_that(relations[relations$subject == "urn:uuid5678", 'predicate'], matches("gaveThing"))
