@@ -340,34 +340,39 @@ setGeneric("validate", function(object, ...) {
 #' @aliases validate,SystemMetadata-method
 setMethod("validate", signature("SystemMetadata"), function(object, ...) validate_function(object))
 
-#' @title add access rules to system metadata 
+#' @title Add access rules to an object such as system metadata 
 #' @description
 #' Add one or more access rules to a SystemMetadata object.
-#' @param sysmeta the SystemMetadata instance to which to add the rules
-#' @param x the subject of the rule to be added, or a data frame of subject/permission tuples
-#' @param permission the permission to be applied to subject if x is character
+#' @param x the object instance to which to add the rules
+#' @param y the subject of the rule to be added, or a data frame of subject/permission tuples
+#' @param permission the permission to be applied to subject if x is character (read, write, changePermission)
 #' 
 #' @rdname SystemMetadata-methods
 #' @docType methods
 #' @author jones
 #' @export
-setGeneric("addAccessRule", function(sysmeta, x, ...) {
+#' @examples \dontrun{
+#' sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
+#' accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", "uid=slaughter,o=unaffiliated,dc=example,dc=org"), permission=c("write", "changePermission"))
+#' sysmeta <- addAccessRule(sysmeta, accessRules)
+#' }
+setGeneric("addAccessRule", function(x, y, ...) {
     standardGeneric("addAccessRule")
 })
 #' @rdname SystemMetadata-methods
 #' @aliases addAccessRule,SystemMetadata-method
-setMethod("addAccessRule", signature("SystemMetadata", "character"), function(sysmeta, x, permission) {
-    accessRecord <- data.frame(subject=x, permission=permission)
-    sysmeta <- addAccessRule(sysmeta, accessRecord)
-    return(sysmeta)
+setMethod("addAccessRule", signature("SystemMetadata", "character"), function(x, y, permission) {
+    accessRecord <- data.frame(subject=y, permission=permission)
+    x <- addAccessRule(x, accessRecord)
+    return(x)
 })
 #' @rdname SystemMetadata-methods
 #' @aliases addAccessRule,SystemMetadata-method
-setMethod("addAccessRule", signature("SystemMetadata", "data.frame"), function(sysmeta, x) {
-    sysmeta@accessPolicy <- rbind(sysmeta@accessPolicy, x)
+setMethod("addAccessRule", signature("SystemMetadata", "data.frame"), function(x, y) {
+    x@accessPolicy <- rbind(x@accessPolicy, y)
     # Remove duplicate access rules
-    sysmeta@accessPolicy <- unique(sysmeta@accessPolicy)
-    return(sysmeta)
+    x@accessPolicy <- unique(x@accessPolicy)
+    return(x)
 })
 
 #' @title Determine if a particular access rules exists within SystemMetadata.

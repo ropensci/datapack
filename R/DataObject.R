@@ -213,12 +213,13 @@ setMethod("getFormatId", signature("DataObject"), function(x) {
     return(x@sysmeta@formatId)
 })
 
-#' Add a Rule to the AccessPolicy to make the object publicly readable
+#' Add a Rule to the AccessPolicy to make the object publicly readable.
 #' 
 #' To be called prior to creating the object in DataONE.  When called before 
 #' creating the object, adds a rule to the access policy that makes this object
 #' publicly readable.  If called after creation, it will only change the system
-#' metadata locally, and will not have any affect. 
+#' metadata locally, and will not have any effect on remotely uploaded copies of
+#' the DataObject. 
 #' @param x DataObject
 #' @param ... (not yet used)
 #' @return DataObject with modified access rules
@@ -241,26 +242,23 @@ setMethod("setPublicAccess", signature("DataObject"), function(x) {
 #' Add a Rule to the AccessPolicy
 #' 
 #' To be called prior to creating the object in DataONE.  When called before 
-#' creating the object, adds a rule to the access policy that makes this object
-#' publicly readable.  If called after creation, it will only change the system
-#' metadata locally, and will not have any affect. 
+#' creating the object, adds rules to the access policy for this object that
+#' control access when uploaded to DataONE.  If called after creation, it 
+#' will only change the system metadata locally, and will not have any effect
+#' on remotely uploaded copies of the DataObject. 
 #' @param x DataObject
-#' @param accessRules A data frame containing one or more access rules
+#' @param y A data frame containing one or more access rules
 #' @return DataObject with modified access rules
 #' @examples \dontrun{
 #' accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", "uid=slaughter,o=unaffiliated,dc=example,dc=org"), permission=c("write", "changePermission"))
-#' sciObj <- addAccessRules(sciObj, accessRules)
+#' sciObj <- addAccessRule(sciObj, accessRules)
 #' }
 #' @export
-setGeneric("addAccessRules", function(x, accessRules) {
-  standardGeneric("addAccessRules")
-})
-
 #' @describeIn addAccessRule
 #' @aliases addAccessRule
-setMethod("addAccessRules", signature("DataObject", "data.frame"), function(x, accessRules) {
+setMethod("addAccessRule", signature("DataObject", "data.frame"), function(x, y) {
   # Add the access rules to the DataObjects system metadata object    
-  x@sysmeta <- addAccessRule(x@sysmeta, accessRules)
+  x@sysmeta <- addAccessRule(x@sysmeta, y)
   return(x)
 })
 
