@@ -41,7 +41,6 @@
 #' @slot sysmeta value of type \code{"SystemMetadata"}, containing the metadata about the object
 #' @slot data value of type \code{"raw"}, containing the data represented in this object
 #' @slot filename contains the fully-qualified path to the object data on disk
-#' @author Matthew Jones
 #' @aliases DataObject, DataObject-class
 #' @keywords classes
 #' @import methods

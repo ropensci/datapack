@@ -38,4 +38,7 @@ expand to a common directory structure with a predictable set of metadata that
 describes the structure and content of the bag.  Conformance with the BagIt
 specification is handled by the DataPackage class.
 }
+\author{
+Matthew B. Jones (NCEAS), Peter Slaughter (NCEAS)
+}
 

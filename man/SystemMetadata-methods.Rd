@@ -107,11 +107,4 @@ accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", "u
 sysmeta <- addAccessRule(sysmeta, accessRules)
 }
 }
-\author{
-jones
-
-jones
-
-Matt Jones
-}
 

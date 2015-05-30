@@ -2,6 +2,7 @@
 #'
 #' @name datapackage
 #' @docType package
+#' @author Matthew B. Jones (NCEAS), Peter Slaughter (NCEAS)
 #' @description The datapackage classes provide an abstraction for collating 
 #' heterogeneous collections of data objects and metadata into a bundle that can 
 #' be transported aand loaded s a single composite file.  They are a convenient way

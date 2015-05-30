@@ -28,8 +28,5 @@ resMap <- new("ResourceMap", relations)
 resMap <- createFromTriples(resMap, relations, getIdentifiers(myDataPackage))
 serializeToRDF("ResourceMap", file="myResMap.rdf")
 }
-\author{
-Peter Slaughter
-}
 \keyword{resourceMap}
 

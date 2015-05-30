@@ -53,8 +53,5 @@ writeBin(data, con)
 close(con)
 do <- new("DataObject", "id1", format="text/csv", user="uid=jones,DC=example,DC=com", mnNodeId="urn:node:KNB", filename=tf)
 }
-\author{
-Matthew Jones
-}
 \keyword{classes}
 

@@ -75,7 +75,6 @@ setClass("SystemMetadata", slots = c(
 #'
 #' @return the SystemMetadata instance representing an object
 #' @seealso http://mule1.dataone.org/ArchitectureDocs-current/apis/Types.html#Types.SystemMetadata
-#' @author jones
 #' 
 #' @export
 #' 
@@ -134,7 +133,6 @@ setMethod("initialize", signature = "SystemMetadata", definition = function(.Obj
 #' @slot authoritativeMemberNode value of type \code{"character"}, the node identifier of the node which currently is authoritative for the object.
 #'
 #' @return the SystemMetadata object representing an object
-#' @author jones
 #' @rdname SystemMetadata-methods
 #' 
 #' @export
@@ -156,7 +154,6 @@ setMethod("SystemMetadata", signature(), function(...) {
 #' SystemMetadata.  The XML should be 
 #' @param sysmeta value of type \code{"XMLInternalElementNode"}, containing the parsed XML element with SystemMetadata fields.
 #' @return the SystemMetadata object representing an object
-#' @author jones
 #' @import XML
 #' @export
 #' 
@@ -182,7 +179,6 @@ setMethod("SystemMetadata", signature("XMLInternalElementNode"), function(sysmet
 #' @return the SystemMetadata object representing an object
 #' @rdname parseSystemMetadata-methods
 #' @docType methods
-#' @author jones
 #' @import XML
 #' @export
 setGeneric("parseSystemMetadata", function(sysmeta, xml, ...) {
@@ -264,7 +260,6 @@ setMethod("parseSystemMetadata", signature("SystemMetadata", "XMLInternalElement
 #' 
 #' @rdname serialize-methods
 #' @docType methods
-#' @author jones
 #' @import XML
 #' @export
 setGeneric("serializeSystemMetadata", function(sysmeta, ...) {
@@ -330,7 +325,6 @@ setMethod("serializeSystemMetadata", signature("SystemMetadata"), function(sysme
 #' @name validate-methods
 #' @rdname validate-methods
 #' @docType methods
-#' @author jones
 #' @export
 setGeneric("validate", function(object, ...) {
     standardGeneric("validate")
@@ -349,7 +343,6 @@ setMethod("validate", signature("SystemMetadata"), function(object, ...) validat
 #' 
 #' @rdname SystemMetadata-methods
 #' @docType methods
-#' @author jones
 #' @export
 #' @examples \dontrun{
 #' sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
@@ -386,7 +379,6 @@ setMethod("addAccessRule", signature("SystemMetadata", "data.frame"), function(x
 #' 
 #' @rdname SystemMetadata-methods
 #' @docType methods
-#' @author Matt Jones
 #' @export
 setGeneric("hasAccessRule", function(sysmeta, subject, ...) {
     standardGeneric("hasAccessRule")

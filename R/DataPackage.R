@@ -98,7 +98,6 @@ setMethod("getSize", "DataPackage", function(x) {
 #' @param ... (not yet used)
 #' @return list of identifiers
 #' 
-#' @author rnahf
 #' @export
 setGeneric("getIdentifiers", function(x, ...) { standardGeneric("getIdentifiers")} )
 
@@ -113,7 +112,6 @@ setMethod("getIdentifiers", "DataPackage", function(x) {
 #' @param do : DataObject, or identifier of an object on the DataONE network
 #' @param ... : (not yet used)
 #' 
-#' @author Matt Jones
 #' @export
 setGeneric("addData", function(x, do, ...) { 
     standardGeneric("addData")
