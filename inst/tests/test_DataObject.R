@@ -77,6 +77,13 @@ test_that("DataObject accessPolicy methods", {
     isPublic <- hasAccessRule(do@sysmeta, "public", "read")
     expect_that(isPublic, is_true())
     
+    # Test that custom access rules can be added to sysmeta of a DataObject
+    accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", "uid=wiggens,o=unaffiliated,dc=example,dc=org"), permission=c("write", "changePermission"))
+    do <- addAccessRule(do, accessRules)
+    expect_true(hasAccessRule(do@sysmeta, "smith", "write"))
+    expect_true(hasAccessRule(do@sysmeta, "wiggens", "changePermission"))
+    expect_false(hasAccessRule(do@sysmeta, "smith", "changePermission"))
+    
     # Public access should now be possible
     canRead <- canRead(do, "uid=anybody,DC=somedomain,DC=org")
     expect_that(canRead, is_true())
