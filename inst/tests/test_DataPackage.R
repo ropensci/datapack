@@ -4,6 +4,25 @@ test_that("datapackage library loads", {
     library(datapackage)
 })
 
+test_that("DataPackage initialization works", {
+  # Test that contructor bug is fix, i.e. internal structures being
+  # reused in newly created objects: https://github.com/ropensci/datapackage/issues/26)
+  library(datapackage)
+  testdf <- data.frame(x=1:10,y=11:20)
+  csvfile <- tempfile(pattern = "file", tmpdir = tempdir(), fileext = ".csv")
+  write.csv(testdf, csvfile, row.names=FALSE)
+  mnId <- "urn:node:mnSandboxUCSB2"
+  dp <- new("DataPackage")
+  sciObj <- new("DataObject", format="text/csv", user="uid=slaughter,ou=Account,dc=ecoinformatics,dc=org", mnNodeId=mnId, filename=csvfile)
+  addData(dp, sciObj)
+  ids <- getIdentifiers(dp)
+  expect_equal(length(ids), 1)
+  rm(dp)
+  newDP <- new("DataPackage")
+  ids <- getIdentifiers(newDP)
+  expect_equal(length(ids), 0)
+})
+
 test_that("DataPackage methods work", {
     library(datapackage)
     id1 <- "id1"

@@ -40,8 +40,6 @@ setGeneric("DataPackage", function(...) { standardGeneric("DataPackage")} )
 
 setMethod("DataPackage", signature(), function(x) {
     dpkg <- new("DataPackage")
-    dpkg@relations = hash()
-    dpkg@objects = hash()
     return(dpkg)
 })
 
@@ -54,6 +52,8 @@ setMethod("initialize", "DataPackage", function(.Object, packageId) {
         ## set the packageId and instantiate a new SystemMetadata
         .Object@sysmeta@identifier <- packageId
     }
+    .Object@relations = hash()
+    .Object@objects = hash()
    return(.Object)
 })
 
@@ -189,7 +189,7 @@ setMethod("insertRelationship", signature("DataPackage", "character", "character
     subjectType <- "blank"
   }
   
-  if (is.na(objectIDs)) {
+  if (all(is.na(objectIDs))) {
     objectIDs <- sprintf("_:%s", UUIDgenerate())
     objectTypes <- "blank"
   }
