@@ -17,7 +17,4 @@ the SystemMetadata object representing an object
 Construct a new SystemMetadata instance by using the fields from an XML representation of the
 SystemMetadata.  The XML should be
 }
-\author{
-jones
-}
 

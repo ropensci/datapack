@@ -20,7 +20,4 @@ the character string representing a SystemMetadata object
 \description{
 Serialize an XML representation of system metadata.
 }
-\author{
-jones
-}
 

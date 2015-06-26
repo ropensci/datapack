@@ -25,7 +25,4 @@ the SystemMetadata object representing an object
 \description{
 Parse an XML representation of system metadata, and set the object slots with obtained values.
 }
-\author{
-jones
-}
 

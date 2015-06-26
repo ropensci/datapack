@@ -17,7 +17,4 @@ list of identifiers
 \description{
 Return the identifiers of the package members, as defined by the ResourceMap
 }
-\author{
-rnahf
-}
 

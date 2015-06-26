@@ -27,7 +27,6 @@
 #' @slot storage a Redland RDF Storage object
 #' @slot model a Redland RDF Model object
 #' @slot id a unique identifier for a ResourceMap instance
-#' @author Peter Slaughter
 #' @rdname ResourceMap-class
 #' @keywords resourceMap
 #' @examples

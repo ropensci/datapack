@@ -17,7 +17,4 @@ addData(x, do, ...)
 Includes the DataObject in the DataPackage data Map, making it available for
 retrieval and eventual upload (via createPackage).
 }
-\author{
-Matt Jones
-}
 

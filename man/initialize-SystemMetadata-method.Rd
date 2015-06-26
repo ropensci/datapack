@@ -64,9 +64,6 @@ Initialize a SystemMetadata object by providing default values for core informat
 needed to manage objects across repository systems. SystemMetadata contains basic identification, ownership,
 access policy, replication policy, and related metadata.
 }
-\author{
-jones
-}
 \seealso{
 http://mule1.dataone.org/ArchitectureDocs-current/apis/Types.html#Types.SystemMetadata
 }
