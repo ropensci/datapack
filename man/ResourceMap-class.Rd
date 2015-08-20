@@ -22,11 +22,28 @@ in a DataPackage and the relationships between these objects.
 
 \item{\code{id}}{a unique identifier for a ResourceMap instance}
 }}
+\section{Methods}{
+
+\itemize{
+ \item{\code{\link[=initialize-ResourceMap]{initialize}}}{: Initialize a ResourceMap object}
+ \item{\code{\link{createFromTriples}}}{: Get the data content of a specified data object}
+ \item{\code{\link{serializeRDF}}}{: Get the Count of Objects in the Package}
+}
+}
 \examples{
-relations <- getRelationships(myDataPackage)
+\dontrun{
+dp <- new("DataPackage")
+insertRelationship(dp, "/Users/smith/scripts/genFields.R",
+    "http://www.w3.org/ns/prov#used",
+    "https://knb.ecoinformatics.org/knb/d1/mn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1")
+relations <- getRelationships(dp)
 resMap <- new("ResourceMap", relations)
-resMap <- createFromTriples(resMap, relations, getIdentifiers(myDataPackage))
+resMap <- createFromTriples(resMap, relations, getIdentifiers(dp))
 serializeToRDF("ResourceMap", file="myResMap.rdf")
+}
+}
+\seealso{
+\code{\link{datapackage}}{ package description.}
 }
 \keyword{resourceMap}
 

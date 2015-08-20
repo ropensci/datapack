@@ -22,7 +22,41 @@
 #' @description A class representing DataONE SystemMetadata, which is core information about objects stored in a repository
 #' and needed to manage those objects across systems.  SystemMetadata contains basic identification, ownership,
 #' access policy, replication policy, and related metadata.
-#' @exportClass SystemMetadata
+#' @rdname SystemMetadata-class
+#' @aliases SystemMetadata-class
+#' @slot serialVersion value of type \code{"numeric"}, the current version of this system metadata; only update the current version
+#' @slot identifier value of type \code{"character"}, the identifier of the object that this system metadata describes.
+#' @slot replicationAllowed value of type \code{"logical"}, for replication policy allows replicants.
+#' @slot numberReplicas value of type \code{"numeric"}, for number of supported replicas.
+#' @slot preferredNodes value of type \code{"list"}, of prefered member nodes.
+#' @slot blockedNodes value of type \code{"list"}, of blocked member nodes.
+#' @slot formatId value of type \code{"character"}, the DataONE object format for the object.
+#' @slot size value of type \code{"numeric"}, the size of the object in bytes.
+#' @slot checksum value of type \code{"character"}, the checksum for the object using the designated checksum algorithm.
+#' @slot checksumAlgorithm value of type \code{"character"}, the name of the hash function used to generate a checksum, from the DataONE controlled list.
+#' @slot submitter value of type \code{"character"}, the Distinguished Name or identifier of the person submitting the object.
+#' @slot rightsHolder value of type \code{"character"}, the Distinguished Name or identifier of the person who holds access rights to the object.
+#' @slot accessPolicy value of type \code{"data.frame"}, a list of access rules as (subject, permission) tuples to be applied to the object.
+#' @slot obsoletes value of type \code{"character"}, the identifier of an object which this object replaces.
+#' @slot obsoletedBy value of type \code{"character"}, the identifier of an object that replaces this object.
+#' @slot archived value of type \code{"logical"}, a boolean flag indicating whether the object has been archived and thus hidden.
+#' @slot dateUploaded value of type \code{"character"}, the date on which the object was uploaded to a member node.
+#' @slot dateSysMetadataModified value of type \code{"character"}, the last date on which this system metadata was modified.
+#' @slot originMemberNode value of type \code{"character"}, the node identifier of the node on which the object was originally registered.
+#' @slot authoritativeMemberNode value of type \code{"character"}, the node identifier of the node which currently is authoritative for the object.
+#' @section Methods:
+#' \itemize{
+#'  \item{\code{\link[=initialize-SystemMetadata]{initialize}}}{: Initialize a DataONE SystemMetadata object with default values or values passed in to the constructor object}
+#'  \item{\code{\link[=construct-SystemMetadata]{SystemMetadata}}}{: Create a SystemMetadata object with default values}
+#'  \item{\code{\link[=construct-SystemMetadata-XMLInternalElementNode]{SystemMetadata}}}{: Create a SystemMetadata object, with all fields set to the value found in an XML document}
+#'  \item{\code{\link{parseSystemMetadata}}}{: Parse an external XML document and populate a SystemMetadata object with the parsed data}
+#'  \item{\code{\link{serializeSystemMetadata}}}{: Get the Count of Objects in the Package}
+#'  \item{\code{\link{validate}}}{: Validate a SystemMetadata object}
+#'  \item{\code{\link{addAccessRule}}}{: Add access rules to an object such as system metadata}
+#'  \item{\code{\link{hasAccessRule}}}{: Determine if a particular access rules exists within SystemMetadata.}
+#' }
+#' @seealso \code{\link{datapackage}}{ package description.}
+#' @export
 setClass("SystemMetadata", slots = c(
     serialVersion           = "numeric",
     identifier              = "character",
@@ -52,7 +86,9 @@ setClass("SystemMetadata", slots = c(
 #' @description Initialize a SystemMetadata object by providing default values for core information 
 #' needed to manage objects across repository systems. SystemMetadata contains basic identification, ownership,
 #' access policy, replication policy, and related metadata.
-#'
+#' @rdname initialize-SystemMetadata
+#' @aliases initialize-SystemMetadata
+#' @param .Object The object being initialized
 #' @param identifier value of type \code{"character"}, the identifier of the object that this system metadata describes.
 #' @param formatId value of type \code{"character"}, the DataONE object format for the object.
 #' @param size value of type \code{"numeric"}, the size of the object in bytes.
@@ -75,7 +111,7 @@ setClass("SystemMetadata", slots = c(
 #'
 #' @return the SystemMetadata instance representing an object
 #' @seealso http://mule1.dataone.org/ArchitectureDocs-current/apis/Types.html#Types.SystemMetadata
-#' 
+#' @seealso \code{\link[=SystemMetadata-class]{SystemMetadata}}{ class description.}
 #' @export
 #' 
 setMethod("initialize", signature = "SystemMetadata", definition = function(.Object,
@@ -83,7 +119,7 @@ setMethod("initialize", signature = "SystemMetadata", definition = function(.Obj
     checksumAlgorithm="SHA-1", submitter=as.character(NA), rightsHolder=as.character(NA), accessPolicy=data.frame(subject = character(), permission=character()),
     replicationAllowed=TRUE, numberReplicas=3, obsoletes=as.character(NA), obsoletedBy=as.character(NA), archived=FALSE, 
     dateUploaded=as.character(NA), dateSysMetadataModified=as.character(NA), 
-    originMemberNode=as.character(NA), authoritativeMemberNode=as.character(NA)) {
+    originMemberNode=as.character(NA), authoritativeMemberNode=as.character(NA), preferredNodes=list(), blockedNodes=list()) {
     # defaults here
     .Object@serialVersion <- 1
     .Object@identifier <- as.character(identifier)
@@ -96,6 +132,8 @@ setMethod("initialize", signature = "SystemMetadata", definition = function(.Obj
     .Object@accessPolicy <- as.data.frame(accessPolicy)
     .Object@replicationAllowed = as.logical(replicationAllowed)
     .Object@numberReplicas = as.numeric(numberReplicas)
+    .Object@preferredNodes = preferredNodes
+    .Object@blockedNodes = blockedNodes
     .Object@obsoletes <- as.character(obsoletes)
     .Object@obsoletedBy <- as.character(obsoletedBy)
     .Object@archived <- as.logical(archived)
@@ -110,54 +148,34 @@ setMethod("initialize", signature = "SystemMetadata", definition = function(.Obj
 #' @description A class representing DataONE SystemMetadata, which is core information about objects stored in a repository
 #' and needed to manage those objects across systems.  SystemMetadata contains basic identification, ownership,
 #' access policy, replication policy, and related metadata.
-#'
-#' @slot serialVersion value of type \code{"numeric"}, the current version of this system metadata; only update the current version
-#' @slot identifier value of type \code{"character"}, the identifier of the object that this system metadata describes.
-#' @slot replicationAllowed value of type \code{"logical"}, for replication policy allows replicants.
-#' @slot numberReplicas value of type \code{"numeric"}, for number of supported replicas.
-#' @slot preferredNodes value of type \code{"list"}, of prefered member nodes.
-#' @slot blockedNodes value of type \code{"list"}, of blocked member nodes.
-#' @slot formatId value of type \code{"character"}, the DataONE object format for the object.
-#' @slot size value of type \code{"numeric"}, the size of the object in bytes.
-#' @slot checksum value of type \code{"character"}, the checksum for the object using the designated checksum algorithm.
-#' @slot checksumAlgorithm value of type \code{"character"}, the name of the hash function used to generate a checksum, from the DataONE controlled list.
-#' @slot submitter value of type \code{"character"}, the Distinguished Name or identifier of the person submitting the object.
-#' @slot rightsHolder value of type \code{"character"}, the Distinguished Name or identifier of the person who holds access rights to the object.
-#' @slot accessPolicy value of type \code{"data.frame"}, a list of access rules as (subject, permission) tuples to be applied to the object.
-#' @slot obsoletes value of type \code{"character"}, the identifier of an object which this object replaces.
-#' @slot obsoletedBy value of type \code{"character"}, the identifier of an object that replaces this object.
-#' @slot archived value of type \code{"logical"}, a boolean flag indicating whether the object has been archived and thus hidden.
-#' @slot dateUploaded value of type \code{"character"}, the date on which the object was uploaded to a member node.
-#' @slot dateSysMetadataModified value of type \code{"character"}, the last date on which this system metadata was modified.
-#' @slot originMemberNode value of type \code{"character"}, the node identifier of the node on which the object was originally registered.
-#' @slot authoritativeMemberNode value of type \code{"character"}, the node identifier of the node which currently is authoritative for the object.
-#'
-#' @return the SystemMetadata object representing an object
-#' @rdname SystemMetadata-methods
-#' 
+#' @rdname construct-SystemMetadata
+#' @aliases construct-SystemMetadata
+#' @param ... Additional arguments
+#' @seealso \code{\link[=SystemMetadata-class]{SystemMetadata}}{ class description.}
 #' @export
-#' 
-setGeneric("SystemMetadata", function(sysmeta, ...) {
+setGeneric("SystemMetadata", function(...) {
     standardGeneric("SystemMetadata")
 })
 
-#' @rdname SystemMetadata-methods
-#' @aliases SystemMetadata,SystemMetadata-method
+#' @rdname construct-SystemMetadata
+#' @aliases construct-SystemMetadata
+#' @return the SystemMetadata object
 setMethod("SystemMetadata", signature(), function(...) {
     ## create new SystemMetadata object
     sysmeta <- new("SystemMetadata")
     return(sysmeta)
 })
 
-#' @title Construct a SystemMetadata object, with all fields set to the value found in an XML document
+#' @title Create a SystemMetadata from an XML document
 #' @description Construct a new SystemMetadata instance by using the fields from an XML representation of the 
-#' SystemMetadata.  The XML should be 
-#' @param sysmeta value of type \code{"XMLInternalElementNode"}, containing the parsed XML element with SystemMetadata fields.
-#' @return the SystemMetadata object representing an object
+#' SystemMetadata.
+#' @rdname construct-SystemMetadata-XMLInternalElementNode
+#' @aliases construct-SystemMetadata-XMLInternalElementNode
+#' @param sysmeta A value of type \code{"XMLInternalElementNode"}, containing the parsed XML element with SystemMetadata fields.
+#' @param ... (Not implemented ye)
 #' @import XML
 #' @export
-#' 
-setMethod("SystemMetadata", signature("XMLInternalElementNode"), function(sysmeta) {
+setMethod("SystemMetadata", signature("XMLInternalElementNode"), function(sysmeta, ...) {
     
     ## create new SystemMetadata object, and parse the XML to populate fields
     sm_obj <- new("SystemMetadata")
@@ -170,23 +188,22 @@ setMethod("SystemMetadata", signature("XMLInternalElementNode"), function(sysmet
 ## Methods
 ##########################
 
-#' @title parse metadata 
+#' @title Parse an external XML document and populate a SystemMetadata object with the parsed data 
 #' @description
-#' Parse an XML representation of system metadata, and set the object slots with obtained values.
-#' @param sysmeta the \code{SystemMetadata} object
-#' @param xml the XML representation of the capabilities, as an XMLInternalElementNode
-#' @param ... additional arguments passed to other functions or methods
-#' @return the SystemMetadata object representing an object
-#' @rdname parseSystemMetadata-methods
-#' @docType methods
+#' Parse an XML representation of system metadata, and set the object slots of a SystemMetadata object 
+#' the with obtained values.
+#' @param sysmeta The \code{SystemMetadata} object
+#' @param xml The XML representation of the capabilities, as an XMLInternalElementNode
+#' @param ... Additional arguments passed to other functions or methods
 #' @import XML
+#' @seealso \code{\link[=SystemMetadata-class]{SystemMetadata}}{ class description.}
 #' @export
 setGeneric("parseSystemMetadata", function(sysmeta, xml, ...) {
   standardGeneric("parseSystemMetadata")
 })
 
-#' @rdname parseSystemMetadata-methods
-#' @aliases parseSystemMetadata,SystemMetadata-method
+#' @describeIn parseSystemMetadata
+#' @return the SystemMetadata object representing an object
 setMethod("parseSystemMetadata", signature("SystemMetadata", "XMLInternalElementNode"), function(sysmeta, xml, ...) {
   
   sysmeta@serialVersion <- as.numeric(xmlValue(xml[["serialVersion"]]))
@@ -252,21 +269,17 @@ setMethod("parseSystemMetadata", signature("SystemMetadata", "XMLInternalElement
 })
 
 
-#' @title serialize system metadata 
-#' @description
-#' Serialize an XML representation of system metadata.
-#' @param sysmeta the SystemMetadata instance to be serialized
-#' @return the character string representing a SystemMetadata object
-#' 
-#' @rdname serialize-methods
-#' @docType methods
+#' @title Serialize a SystemMetadata object to an XML representation 
+#' @param sysmeta The SystemMetadata instance to be serialized
+#' @param ... (Not currently used)
 #' @import XML
+#' @seealso \code{\link[=SystemMetadata-class]{SystemMetadata}}{ class description.}
 #' @export
 setGeneric("serializeSystemMetadata", function(sysmeta, ...) {
   standardGeneric("serializeSystemMetadata")
 })
-#' @rdname serialize-methods
-#' @aliases serialize,SystemMetadata-method
+#' @describeIn serializeSystemMetadata
+#' @return the character string representing a SystemMetadata object
 setMethod("serializeSystemMetadata", signature("SystemMetadata"), function(sysmeta) {
   
   root <- xmlNode("systemMetadata",
@@ -316,51 +329,47 @@ setMethod("serializeSystemMetadata", signature("SystemMetadata"), function(sysme
   return(xml)
 })
 
-#' @title validate system metadata 
+#' @title Validate a SystemMetadata object. 
 #' @description
-#' Validate an the system metadata object, ensuring that required fields are present and of the right type.
+#' Validate a system metadata object, ensuring that required fields are present and of the right type.
 #' @param object the instance to be validated
-#' @return logical, \code{TRUE} if the SystemMetadata object is valid, else a list of strings detailing errors
-#' 
-#' @name validate-methods
-#' @rdname validate-methods
-#' @docType methods
+#' @param ... (Additional parameters)
+#' @seealso \code{\link[=SystemMetadata-class]{SystemMetadata}}{ class description.}
 #' @export
 setGeneric("validate", function(object, ...) {
     standardGeneric("validate")
 })
 
-#' @rdname validate-methods
-#' @aliases validate,SystemMetadata-method
+#' @describeIn validate
+#' @return logical, \code{TRUE} if the SystemMetadata object is valid, else a list of strings detailing errors
 setMethod("validate", signature("SystemMetadata"), function(object, ...) validate_function(object))
 
 #' @title Add access rules to an object such as system metadata 
-#' @description
-#' Add one or more access rules to a SystemMetadata object.
-#' @param x the object instance to which to add the rules
-#' @param y the subject of the rule to be added, or a data frame of subject/permission tuples
-#' @param permission the permission to be applied to subject if x is character (read, write, changePermission)
-#' 
-#' @rdname SystemMetadata-methods
-#' @docType methods
+#' @description Add one or more access rules to a SystemMetadata object.
+#' @param x The object instance to which to add the rules
+#' @param y The subject of the rule to be added, or a data frame of subject/permission tuples
+#' @param ... (Not yet used)
+#' @seealso \code{\link[=SystemMetadata-class]{SystemMetadata}}{ class description.}
+#' @seealso \code{\link[=DataObject-class]{DataObject}}{ class description.}
 #' @export
-#' @examples \dontrun{
-#' sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
-#' accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", "uid=slaughter,o=unaffiliated,dc=example,dc=org"), permission=c("write", "changePermission"))
-#' sysmeta <- addAccessRule(sysmeta, accessRules)
-#' }
 setGeneric("addAccessRule", function(x, y, ...) {
     standardGeneric("addAccessRule")
 })
-#' @rdname SystemMetadata-methods
-#' @aliases addAccessRule,SystemMetadata-method
+#' @describeIn addAccessRule
+#' @param permission The permission to be applied to subject if x is character (read, write, changePermission)
+#' @examples \dontrun{
+#' sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
+#' accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", 
+#'   "uid=slaughter,o=unaffiliated,dc=example,dc=org"), permission=c("write", "changePermission"))
+#' sysmeta <- addAccessRule(sysmeta, accessRules)
+#' }
 setMethod("addAccessRule", signature("SystemMetadata", "character"), function(x, y, permission) {
     accessRecord <- data.frame(subject=y, permission=permission)
     x <- addAccessRule(x, accessRecord)
     return(x)
 })
-#' @rdname SystemMetadata-methods
-#' @aliases addAccessRule,SystemMetadata-method
+
+#' @describeIn addAccessRule
 setMethod("addAccessRule", signature("SystemMetadata", "data.frame"), function(x, y) {
     x@accessPolicy <- rbind(x@accessPolicy, y)
     # Remove duplicate access rules
@@ -374,17 +383,15 @@ setMethod("addAccessRule", signature("SystemMetadata", "data.frame"), function(x
 #' whether a particular access rule already exists within the set.
 #' @param sysmeta the SystemMetadata instance to which to add the rules
 #' @param subject the subject of the rule to be checked
-#' @param permission the permission to be applied to subject if x is character
-#' @return boolean TRUE if the access rule exists already, FALSE otherwise
-#' 
-#' @rdname SystemMetadata-methods
-#' @docType methods
+#' @param ... Additional arguments
+#' @seealso \code{\link[=SystemMetadata-class]{SystemMetadata}}{ class description.}
 #' @export
 setGeneric("hasAccessRule", function(sysmeta, subject, ...) {
     standardGeneric("hasAccessRule")
 })
-#' @rdname SystemMetadata-methods
-#' @aliases hasAccessRule,SystemMetadata-method
+#' @describeIn hasAccessRule
+#' @param permission the permission to be applied to subject if x is character
+#' @return boolean TRUE if the access rule exists already, FALSE otherwise
 setMethod("hasAccessRule", signature("SystemMetadata", "character"), function(sysmeta, subject, permission) {
     found <- any(grepl(subject, sysmeta@accessPolicy$subject) & grepl(permission, sysmeta@accessPolicy$permission))
     return(found)

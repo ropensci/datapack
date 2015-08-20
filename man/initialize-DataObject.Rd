@@ -3,12 +3,8 @@
 \docType{methods}
 \name{initialize,DataObject-method}
 \alias{initialize,DataObject-method}
-\title{Intialize a DataObject
-When initializing a DataObject using passed in data, one can either pass
-in the \code{'id'} param as a \code{'SystemMetadata'} object, or as a \code{'character'} string
-representing the identifier for an object along with parameters for format, user,and associated member node.
-If \code{'data'} is not missing, the \code{'data'} param holds the \code{'raw'} data.  Otherwise, the
-\code{'filename'} parameter must be provided, and points at a file containing the bytes of the data.}
+\alias{initialize-DataObject}
+\title{Initialize a DataObject}
 \usage{
 \S4method{initialize}{DataObject}(.Object, id = as.character(NA),
   dataobj = NA, format = as.character(NA), user = as.character(NA),
@@ -30,7 +26,6 @@ If \code{'data'} is not missing, the \code{'data'} param holds the \code{'raw'} 
 \item{filename}{the filename for the fully qualified path to the data on disk, optional if \code{'data'} is provide}
 }
 \description{
-Intialize a DataObject
 When initializing a DataObject using passed in data, one can either pass
 in the \code{'id'} param as a \code{'SystemMetadata'} object, or as a \code{'character'} string
 representing the identifier for an object along with parameters for format, user,and associated member node.
@@ -41,5 +36,13 @@ If \code{'data'} is not missing, the \code{'data'} param holds the \code{'raw'} 
 If filesystem storage is used for the data associated with a DataObject, care must be
 taken to not modify or remove that file in R or via other facilities while the DataObject exists in the R session.
 Changes to the object are not detected and will result in unexpected results.
+}
+\examples{
+data <- charToRaw("1,2,3\\n4,5,6\\n")
+do <- new("DataObject", "id1", dataobj=data, "text/csv",
+  "uid=jones,DC=example,DC=com", "urn:node:KNB")
+}
+\seealso{
+\code{\link[=DataObject-class]{DataObject}}{ class description.}
 }
 

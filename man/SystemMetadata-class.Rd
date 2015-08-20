@@ -9,4 +9,63 @@ A class representing DataONE SystemMetadata, which is core information about obj
 and needed to manage those objects across systems.  SystemMetadata contains basic identification, ownership,
 access policy, replication policy, and related metadata.
 }
+\section{Slots}{
+
+\describe{
+\item{\code{serialVersion}}{value of type \code{"numeric"}, the current version of this system metadata; only update the current version}
+
+\item{\code{identifier}}{value of type \code{"character"}, the identifier of the object that this system metadata describes.}
+
+\item{\code{replicationAllowed}}{value of type \code{"logical"}, for replication policy allows replicants.}
+
+\item{\code{numberReplicas}}{value of type \code{"numeric"}, for number of supported replicas.}
+
+\item{\code{preferredNodes}}{value of type \code{"list"}, of prefered member nodes.}
+
+\item{\code{blockedNodes}}{value of type \code{"list"}, of blocked member nodes.}
+
+\item{\code{formatId}}{value of type \code{"character"}, the DataONE object format for the object.}
+
+\item{\code{size}}{value of type \code{"numeric"}, the size of the object in bytes.}
+
+\item{\code{checksum}}{value of type \code{"character"}, the checksum for the object using the designated checksum algorithm.}
+
+\item{\code{checksumAlgorithm}}{value of type \code{"character"}, the name of the hash function used to generate a checksum, from the DataONE controlled list.}
+
+\item{\code{submitter}}{value of type \code{"character"}, the Distinguished Name or identifier of the person submitting the object.}
+
+\item{\code{rightsHolder}}{value of type \code{"character"}, the Distinguished Name or identifier of the person who holds access rights to the object.}
+
+\item{\code{accessPolicy}}{value of type \code{"data.frame"}, a list of access rules as (subject, permission) tuples to be applied to the object.}
+
+\item{\code{obsoletes}}{value of type \code{"character"}, the identifier of an object which this object replaces.}
+
+\item{\code{obsoletedBy}}{value of type \code{"character"}, the identifier of an object that replaces this object.}
+
+\item{\code{archived}}{value of type \code{"logical"}, a boolean flag indicating whether the object has been archived and thus hidden.}
+
+\item{\code{dateUploaded}}{value of type \code{"character"}, the date on which the object was uploaded to a member node.}
+
+\item{\code{dateSysMetadataModified}}{value of type \code{"character"}, the last date on which this system metadata was modified.}
+
+\item{\code{originMemberNode}}{value of type \code{"character"}, the node identifier of the node on which the object was originally registered.}
+
+\item{\code{authoritativeMemberNode}}{value of type \code{"character"}, the node identifier of the node which currently is authoritative for the object.}
+}}
+\section{Methods}{
+
+\itemize{
+ \item{\code{\link[=initialize-SystemMetadata]{initialize}}}{: Initialize a DataONE SystemMetadata object with default values or values passed in to the constructor object}
+ \item{\code{\link[=construct-SystemMetadata]{SystemMetadata}}}{: Create a SystemMetadata object with default values}
+ \item{\code{\link[=construct-SystemMetadata-XMLInternalElementNode]{SystemMetadata}}}{: Create a SystemMetadata object, with all fields set to the value found in an XML document}
+ \item{\code{\link{parseSystemMetadata}}}{: Parse an external XML document and populate a SystemMetadata object with the parsed data}
+ \item{\code{\link{serializeSystemMetadata}}}{: Get the Count of Objects in the Package}
+ \item{\code{\link{validate}}}{: Validate a SystemMetadata object}
+ \item{\code{\link{addAccessRule}}}{: Add access rules to an object such as system metadata}
+ \item{\code{\link{hasAccessRule}}}{: Determine if a particular access rules exists within SystemMetadata.}
+}
+}
+\seealso{
+\code{\link{datapackage}}{ package description.}
+}
 

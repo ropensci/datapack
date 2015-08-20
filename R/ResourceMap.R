@@ -28,27 +28,44 @@
 #' @slot model a Redland RDF Model object
 #' @slot id a unique identifier for a ResourceMap instance
 #' @rdname ResourceMap-class
+#' @aliases ResourceMap-class
 #' @keywords resourceMap
 #' @examples
-#' relations <- getRelationships(myDataPackage)
+#' \dontrun{
+#' dp <- new("DataPackage")
+#' insertRelationship(dp, "/Users/smith/scripts/genFields.R",
+#'     "http://www.w3.org/ns/prov#used",
+#'     "https://knb.ecoinformatics.org/knb/d1/mn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1")
+#' relations <- getRelationships(dp)
 #' resMap <- new("ResourceMap", relations)
-#' resMap <- createFromTriples(resMap, relations, getIdentifiers(myDataPackage))
+#' resMap <- createFromTriples(resMap, relations, getIdentifiers(dp))
 #' serializeToRDF("ResourceMap", file="myResMap.rdf")
+#' }
 #' @import redland
 #' @import uuid
+#' @section Methods:
+#' \itemize{
+#'  \item{\code{\link[=initialize-ResourceMap]{initialize}}}{: Initialize a ResourceMap object}
+#'  \item{\code{\link{createFromTriples}}}{: Get the data content of a specified data object}
+#'  \item{\code{\link{serializeRDF}}}{: Get the Count of Objects in the Package}
+#' }
+#' @seealso \code{\link{datapackage}}{ package description.}
 #' @export
+#' 
 setClass("ResourceMap", slots = c(relations = "data.frame",
                                   world = "World",
                                   storage = "Storage",
                                   model = "Model",
                                   id = "character"))
 
-#' Initialize a OAI-ORE ResourceMap object.
-#' @description Create the objects used by the ResourceMap object to store and process
-#' relationships (RDF triples) of the DataPackage.
+#' Initialize a ResourceMap object.
+#' @description Create a ResourceMap object that contains relationships (RDF triples) of objects in the DataPackage.
+#' @rdname initialize-ResourceMap
+#' @aliases initialize-ResourceMap
 #' @param .Object a ResourceMap object
 #' @param id a unique identifier to identify this ResourceMap. This id will be used internally in the ResourceMap.
 #' @return the ResourceMap object
+#' @seealso \code{\link[=ResourceMap-class]{ResourceMap}}{ class description.}
 #' @export
 setMethod("initialize", "ResourceMap", function(.Object, id = as.character(NA)) {
   .Object@relations <- data.frame()
@@ -63,14 +80,22 @@ setMethod("initialize", "ResourceMap", function(.Object, id = as.character(NA)) 
   return(.Object)
 })
 
-#' Populate a ResourceMap with RDF relationships.
+#' Populate a ResourceMap with RDF relationships from data.frame.
 #' @description RDF relationships are added to a ResourceMap object from a data.frame that
-#' contains RDF triples.
+#' contains RDF triples. For example, relationships can be exported from a DataPackage via
+#' \code{\link{getRelationships}}. The resulting data.frame is then read by \code{createFromTriples}
+#' to create the ResourceMap.
+#' @details The \code{identifiers} parameter contains the identifiers of all data objects in the DataPackage.
+#' For each data objects, additional relationships will be added that are required by the OAI-ORE specification,
+#' for example a Dublin Core identifier statement is added.
 #' @param .Object a ResourceMap
-#' @param file the file to which the ResourceMap will be serialized.
+#' @param relations A data.frame to read relationships from
+#' @param identifiers A list of the identifiers of data objects cotained in the associated data package
+#' @seealso \code{\link[=ResourceMap-class]{ResourceMap}}{ class description.}
 #' @export
 setGeneric("createFromTriples", function(.Object, relations, identifiers) { standardGeneric("createFromTriples")})
 
+#' @describeIn createFromTriples
 setMethod("createFromTriples", signature("ResourceMap", "data.frame", "character"), function(.Object, relations, identifiers) {
   .Object@relations <- relations
 
@@ -165,14 +190,17 @@ setMethod("createFromTriples", signature("ResourceMap", "data.frame", "character
 #' to a file as RDF/XML.
 #' @param .Object a ResourceMap
 #' @param file the file to which the ResourceMap will be serialized
-#' @param syntaxName name of the syntax to use for serialization - default is "rdfxml"
-#' @param mimetype the mimetype of the serialized output - the default is "application/rdf+xml"
-#' @param namespaces a data frame containing one or more namespaces and their associated prefix
-#' @param resourceMapURI URI of the serialized syntax
-#' @return status of the serialization (non)
+#' @param ... Additional parameters
+#' @seealso \code{\link[=ResourceMap-class]{ResourceMap}}{ class description.}
 #' @export
 setGeneric("serializeRDF", function(.Object, file, ...) { standardGeneric("serializeRDF")})
 
+#' @describeIn serializeRDF
+#' @param syntaxName name of the syntax to use for serialization - default is "rdfxml"
+#' @param mimeType the mimetype of the serialized output - the default is "application/rdf+xml"
+#' @param namespaces a data frame containing one or more namespaces and their associated prefix
+#' @param syntaxURI A URI of the serialized syntax
+#' @return status of the serialization (non)
 setMethod("serializeRDF", signature("ResourceMap", "character"), function(.Object, 
                                                                           file, 
                                                                           syntaxName="rdfxml", 
@@ -216,11 +244,13 @@ setMethod("serializeRDF", signature("ResourceMap", "character"), function(.Objec
 #' @description The resources allocated by the redland RDF package are freed. The ResourceMap
 #' object should be deleted immediately following this call.
 #' @param .Object a ResourceMap
+#' @seealso \code{\link[=ResourceMap-class]{ResourceMap}}{ class description.}
 #' @export
 setGeneric("freeResourceMap", function(.Object) { 
   standardGeneric("freeResourceMap")
 })
 
+#' @describeIn freeResourceMap
 setMethod("freeResourceMap", signature("ResourceMap"), function(.Object) {
   freeModel(.Object@model)
   freeStorage(.Object@storage)

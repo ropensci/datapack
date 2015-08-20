@@ -3,7 +3,8 @@
 \docType{methods}
 \name{initialize,ResourceMap-method}
 \alias{initialize,ResourceMap-method}
-\title{Initialize a OAI-ORE ResourceMap object.}
+\alias{initialize-ResourceMap}
+\title{Initialize a ResourceMap object.}
 \usage{
 \S4method{initialize}{ResourceMap}(.Object, id = as.character(NA))
 }
@@ -16,7 +17,9 @@
 the ResourceMap object
 }
 \description{
-Create the objects used by the ResourceMap object to store and process
-relationships (RDF triples) of the DataPackage.
+Create a ResourceMap object that contains relationships (RDF triples) of objects in the DataPackage.
+}
+\seealso{
+\code{\link[=ResourceMap-class]{ResourceMap}}{ class description.}
 }
 

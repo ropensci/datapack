@@ -18,10 +18,37 @@
 #   limitations under the License.
 #
 
+#' A class representing a data package, which can contain data objects
+#' @description The DataPackage class provides methods for added and extracting
+#' data objects from a datapackage. The contents of a package
+#' can be determined and the package can be prepared for transport before being
+#' uploaded to a data repository or archived.
 #' @include dmsg.R
 #' @include DataObject.R
 #' @include SystemMetadata.R
 #' @import hash
+#' @rdname DataPackage-class
+#' @aliases DataPackage-class
+#' @slot relations A hash containing provenance relationships of package objects
+#' @slot objects A hash containing identifiers for data object in the DataPackage
+#' @slot sysmeta A SystemMetadata class instance describing the package
+#' @section Methods:
+#' \itemize{
+#'  \item{\code{\link[=initialize-DataPackage]{initialize}}}{: Initialize a DataPackage object}
+#'  \item{\code{\link[=construct-DataPackage]{DataPackage}}}{: Alternative initialization for DataPackage object}
+#'  \item{\code{\link{getData}}}{: Get the data content of a specified data object}
+#'  \item{\code{\link{getSize}}}{: Get the Count of Objects in the Package}
+#'  \item{\code{\link{getIdentifiers}}}{: Get the Identifiers of Package Members}
+#'  \item{\code{\link{addData}}}{: Add a DataObject to the DataPackage}
+#'  \item{\code{\link{insertRelationship}}}{: Record relationships of objects in a DataPackage}
+#'  \item{\code{\link{recordDerivation}}}{: Record derivation relationships between objects in a DataPackage}
+#'  \item{\code{\link{getRelationships}}}{: Retrieve relationships of package objects}
+#'  \item{\code{\link{containsId}}}{: Returns true if the specified object is a member of the package}
+#'  \item{\code{\link{removeMember}}}{: Remove the Specified Member from the Package}
+#'  \item{\code{\link{getMember}}}{: Return the Package Member by Identifier}
+#'  \item{\code{\link{serializePackage}}}{: Create an OAI-ORE resource map from the package}
+#' }
+#' @seealso \code{\link{datapackage}}{ package description.}
 #' @export
 setClass("DataPackage", slots = c(
     relations               = "hash",
@@ -34,16 +61,36 @@ setClass("DataPackage", slots = c(
 ## DataPackage constructors
 ###########################
 
-#' Construct a DataPackage object
+#' Create a DataPackage object
+#' @rdname construct-DataPackage
+#' @description The DataPackage() method is a shortcut to creating a DataPackage object, as does
+#' not allow specifying any options that the \code{\link[=initialize-DataPackage]{initialize}} method allows.
+#' @param ... (Not yet used)
+#' @seealso \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
 #' @export
 setGeneric("DataPackage", function(...) { standardGeneric("DataPackage")} )
 
-setMethod("DataPackage", signature(), function(x) {
+#' @rdname construct-DataPackage
+#' @aliases construct-DataPackage
+#' @examples
+#' pkg <- DataPackage()
+setMethod("DataPackage", signature(), function() {
     dpkg <- new("DataPackage")
     return(dpkg)
 })
 
-#' @export
+#' Initialize a DataPackage object
+#' @rdname initialize-DataPackage
+#' @aliases initialize-DataPackage
+#' @import hash
+#' @param .Object The object being initialized
+#' @param packageId The package id to assign to the package
+#' @examples
+#' # Create a DataPackage with undefined package id (to be set manually later)
+#' pkg <- new("DataPackage")
+#' # Alternatively, assign the package id when the DataPackage object is created
+#' pkg <- new("DataPackage", "urn:uuid:4f953288-f593-49a1-adc2-5881f815e946")
+#' @seealso \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
 setMethod("initialize", "DataPackage", function(.Object, packageId) {
     dmsg("DataPackage-class.R initialize")
 
@@ -57,12 +104,7 @@ setMethod("initialize", "DataPackage", function(.Object, packageId) {
    return(.Object)
 })
 
-#' Get the data content of a specified data object
-#' 
-#' @param x DataPackage: the data structure from where to get the data
-#' @param id if \code{'x'} is DataPackage, the identifier of the package member to get data from
-#' @return raw representation of the data
-#' @aliases getData,DataPackage-methods
+#' @describeIn getData
 #' @export
 setMethod("getData", signature("DataPackage", "character"), function(x, id) {
     databytes <- as.raw(NULL)
@@ -76,13 +118,14 @@ setMethod("getData", signature("DataPackage", "character"), function(x, id) {
 })
 
 #' Get the Count of Objects in the Package
-#' @param x DataPackage
+#' @param x A DataPackage instance
 #' @param ... (not yet used)
-#' @return the number of object in the Package
-#' 
+#' @return The number of object in the Package
+#' @seealso \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
 #' @export
 setGeneric("getSize", function(x, ...) { standardGeneric("getSize")} )
 
+#' @describeIn getSize
 setMethod("getSize", "DataPackage", function(x) {
   return(length(x@objects))
 })
@@ -92,36 +135,37 @@ setMethod("getSize", "DataPackage", function(x) {
 #})
 
 #' Get the Identifiers of Package Members
-#' 
-#' Return the identifiers of the package members, as defined by the ResourceMap
-#' @param x : DataPackage
+#' @description The identifiers of the objects in the package are retrieved and returned as a list.
+#' @param x A DataPackage instance
 #' @param ... (not yet used)
-#' @return list of identifiers
-#' 
+#' @return A list of identifiers
+#' @seealso \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
 #' @export
 setGeneric("getIdentifiers", function(x, ...) { standardGeneric("getIdentifiers")} )
 
+#' @describeIn getIdentifiers
 setMethod("getIdentifiers", "DataPackage", function(x) {
     return(keys(x@objects))
 })
 
 #' Add a DataObject to the DataPackage
-#' @description Includes the DataObject in the DataPackage data Map, making it available for
-#' retrieval and eventual upload (via createPackage).
-#' @param x : DataPackage
-#' @param do : DataObject, or identifier of an object on the DataONE network
-#' @param ... : (not yet used)
-#' 
+#' @description The DataObject is added to the DataPackage, making it available for
+#' retrieval and eventual upload using the method \code{\link[dataone]{uploadDataPackage}}.
+#' @param x A DataPackage instance
+#' @param do A DataObject identifier
+#' @param ... (not yet used)
+#' @seealso \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
 #' @export
 setGeneric("addData", function(x, do, ...) { 
     standardGeneric("addData")
 })
 
+#' @describeIn addData
 setMethod("addData", signature("DataPackage", "DataObject"), function(x, do) {
   x@objects[[do@sysmeta@identifier]] <- do
 })
 
-#' Record relationships between objects in a DataPackage
+#' Record relationships of objects in a DataPackage
 #' @description Record a relationship of the form "subject -> predicate -> object", as defined by the Resource Description Framework (RDF), i.e.
 #' an RDF triple. 
 #' @details For use with DataONE, a best practice is to specifiy the subject and predicate as DataONE persistent identifiers 
@@ -132,34 +176,18 @@ setMethod("addData", signature("DataPackage", "DataObject"), function(x, do) {
 #' is not specified for subjectType or objectType, then NA is assigned. Note that if these relationships are fetched via the getRelationships()
 #' function, and passed to the createFromTriples() function to initialize a ResourceMap object, the underlying redland package will assign
 #' appropriate values for subjects and objects.
-#' @param x a DataPackage object
-#' @param subjectID the identifier of the subject of the relationship
-#' @param objectIDS a list of identifiers of the object of the relationships (a relationship is recorded for each objectID)
-#' @param predicate the IRI of the predicate of the relationship
-#' @param subjectType the type to assign the subject, values can be 'uri', 'blank'
-#' @param objectTypes the types to assign the objects (cal be single value or list), each value can be 'uri', 'blank', or 'literal'
-#' @examples
-#' \dontrun{
-#' dp <- DataPackage()
-#' # Create a relationship
-#' insertRelationship(dp, "/Users/smith/scripts/genFields.R",
-#'                        "http://www.w3.org/ns/prov#used",
-#'                        "https://knb.ecoinformatics.org/knb/d1/mn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1")
-#' # Create a relationshp with the subject as a blank node with an automatically assigned blank node id
-#' insertRelationship(dp, subjectID=NULL, objectIDs="thing6", predicate="http://www.myns.org/wasThing")
-#' # Create a relationshp with the subject as a blank node with a user assigned blank node id
-#' insertRelationship(dp, subjectID="_:BL1234, objectIDs="thing7", predicate="http://www.myns.org/hadThing")
-#' # Create multiple relationships with the same subject, predicate, but different objects
-#' insertRelationship(dp, subjectID="_:bl2", objectIDs=c("thing4", "thing5"), predicate="http://www.myns.org/hadThing")
-#' # Create multiple relationships with subject and object types specified
-#' insertRelationship(dp, subjectID="orcid.org/0000-0002-2192-403X", objectIDs="http://www.example.com/home", predicate="http://www.example.com/hadHome",
-#'                    subjectType="uri", objectType="literal")                
-#' }
+#' @param x A DataPackage object
+#' @param subjectID The identifier of the subject of the relationship
+#' @param objectIDs A list of identifiers of the object of the relationships (a relationship is recorded for each objectID)
+#' @param predicate The IRI of the predicate of the relationship
+#' @param ... (Additional parameters)
+#' @seealso \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
 #' @export
 setGeneric("insertRelationship", function(x, subjectID, objectIDs, predicate, ...) {
   standardGeneric("insertRelationship")
 })
 
+#' @describeIn insertRelationship
 # Associate a metadata object with a list of dataobjects that
 setMethod("insertRelationship",  signature("DataPackage", "character", "character", "missing"), function(x, subjectID, objectIDs) {
   
@@ -170,6 +198,30 @@ setMethod("insertRelationship",  signature("DataPackage", "character", "characte
   }
 })
 
+#' @describeIn insertRelationship
+#' @param subjectType the type to assign the subject, values can be 'uri', 'blank'
+#' @param objectTypes the types to assign the objects (cal be single value or list), each value can be 'uri', 'blank', or 'literal'
+#' @param dataTypeURIs An RDF data type that specifies the type of the object
+#' @examples
+#' \dontrun{
+#' dp <- DataPackage()
+#' # Create a relationship
+#' insertRelationship(dp, "/Users/smith/scripts/genFields.R",
+#'     "http://www.w3.org/ns/prov#used",
+#'     "https://knb.ecoinformatics.org/knb/d1/mn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1")
+#' # Create a relationshp with the subject as a blank node with an automatically assigned blank node id
+#' insertRelationship(dp, subjectID=NULL, objectIDs="thing6", predicate="http://www.myns.org/wasThing")
+#' # Create a relationshp with the subject as a blank node with a user assigned blank node id
+#' insertRelationship(dp, subjectID="_:BL1234", objectIDs="thing7", 
+#'     predicate="http://www.myns.org/hadThing")
+#' # Create multiple relationships with the same subject, predicate, but different objects
+#' insertRelationship(dp, subjectID="_:bl2", objectIDs=c("thing4", "thing5"), 
+#'     predicate="http://www.myns.org/hadThing")
+#' # Create multiple relationships with subject and object types specified
+#' insertRelationship(dp, subjectID="orcid.org/0000-0002-2192-403X", 
+#'     objectIDs="http://www.example.com/home", predicate="http://www.example.com/hadHome",
+#'                    subjectType="uri", objectType="literal")                
+#' }
 setMethod("insertRelationship", signature("DataPackage", "character", "character", "character"),
           function(x, subjectID, objectIDs, predicate, 
                    subjectType=as.character(NA), objectTypes=as.character(NA), dataTypeURIs=as.character(NA)) {
@@ -205,7 +257,7 @@ setMethod("insertRelationship", signature("DataPackage", "character", "character
     }
     # Check that the objectType is a valid type for an RDF object
     if(!is.element(objectTypes[i], c("uri", "literal", "blank", as.character(NA)))) {
-      stop(sprintf("Invalid object type: %s\n", objectTypes[i]))
+      stop(sprintf("Invalid objct type: %s\n", objectTypes[i]))
     }
     newRels <- data.frame(subject=subjectID, predicate=predicate, object=obj, 
                         subjectType=subjectType, objectType=objectTypes[i], 
@@ -233,51 +285,63 @@ setMethod("insertRelationship", signature("DataPackage", "character", "character
 #' added expressing that it was derived from the sourceId.  The predicate is will be an RDF property (as a IRI) from the W3C PROV
 #' specification, namely, "http://www.w3.org/ns/prov#wasDerivedFrom"
 #' @param x a DataPackage object
-#' @param sourceId the identifier of the source object in the relationship
-#' @param objectIDs an identifier or list of identifiers of objects that were derived from the source 
+#' @param ... Additional parameters
 #' @examples
 #' \dontrun{
 #' dp <- DataPackage()
 #' recordDerivation(dp, "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1",
 #'                      "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.45.1")
 #' }
+#' @seealso \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
 #' @export
 setGeneric("recordDerivation", function(x, ...) {
     standardGeneric("recordDerivation")
 })
 
+#' @describeIn recordDerivation
+#' @param sourceID the identifier of the source object in the relationship
+#' @param derivedIDs an identifier or list of identifiers of objects that were derived from the source 
 setMethod("recordDerivation",  signature("DataPackage"), function(x, sourceID, derivedIDs, ...) {
     for (obj in derivedIDs) {
         insertRelationship(x, subject=obj, object=sourceID, predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
     }
 })
 
-#' Return relationships between package objects
-#' @description Relationships between objects in a package are defined using the \code{'insertRelationship'} call and retrieved
+#' Retrieve relationships of package objects
+#' @description Relationships of objects in a package are defined using the \code{'insertRelationship'} call and retrieved
 #' using \code{getRetaionships}. These relationships are returned in a data frame with \code{'subject'}, \code{'predicate'}, \code{'objects'}
 #' as the columns, ordered by "subject"
+#' @param x A DataPackage object
+#' @param ... (Not yet used)
+#' @seealso \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
 #' @export
 setGeneric("getRelationships", function(x, ...) {
   standardGeneric("getRelationships")
 })
 
-#' @export
-setMethod("getRelationships", signature("DataPackage"), function(x, quiet = TRUE, ...) {
+#' @describeIn getRelationships
+setMethod("getRelationships", signature("DataPackage"), function(x, ...) {
   
   # Get the relationships stored by insertRelationship
   relationships <- x@relations[["relations"]]
   
   # Reorder output data frame by "subject" column
   relationships <- relationships[order(relationships$subject, relationships$predicate, relationships$object),]
-  return(relationships)
+  invisible(relationships)
 })
 
 #' Returns true if the specified object is a member of the package
+#' @param x A DataPackage object
+#' @param identifier The DataObject identifier to check for inclusion in the DataPackage
+#' @param ... (Not yet used)
+#' @seealso \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
 #' @export
 setGeneric("containsId", function(x, identifier, ...) {
     standardGeneric("containsId")
 })
 
+#' @describeIn containsId
+#' @return A logical - a value of TRUE indicates that the DataObject is in the DataPackage
 setMethod("containsId", signature("DataPackage", "character"), function(x, identifier) {
     obj <- x@objects[[identifier]]
     found <- !is.null(obj)
@@ -289,26 +353,34 @@ setMethod("containsId", signature("DataPackage", "character"), function(x, ident
 #' representation of the member.
 #' @param x a Datapackage object
 #' @param identifier an identifier for a DataObject
+#' @param ... (Not yet used)
+#' @seealso \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
 #' @export 
 setGeneric("removeMember", function(x, identifier, ...) {
   standardGeneric("removeMember")
 })
 
+#' @describeIn removeMember
 setMethod("removeMember", signature("DataPackage", "character"), function(x, identifier) {
     if (containsId(x, identifier)) {
         x@objects[[identifier]] <- NULL
     }
 })
 
-## Return the Package Member by Identifier
-## 
-## Given the identifier of a member of the data package, return the DataObject
-## representation of the member.
+#' Return the Package Member by Identifier
+#' @description Given the identifier of a member of the data package, return the DataObject
+#' representation of the member.
+#' @param x A DataPackage object
+#' @param identifier A DataObject identifier
+#' @param ... (Not yet used)
+#' @seealso \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
 #' @export
 setGeneric("getMember", function(x, identifier, ...) {
     standardGeneric("getMember")
 })
 
+#' @describeIn getMember
+#' @return A DataObject if the member is found, or NULL if not
 setMethod("getMember", signature("DataPackage", "character"), function(x, identifier) {
     if (containsId(x, identifier)) {
         return(x@objects[[identifier]])
@@ -317,20 +389,25 @@ setMethod("getMember", signature("DataPackage", "character"), function(x, identi
     }
 })
 
-#' Serialize the DataPackage object
-#' @description Datapackage relationships are serialized as a OAI-ORE ResourceMap
-#' @param .Object the DataPackage object
-#' @param file the file to which the ResourceMap will be serialized
-#' @param id a unique identifier for the serialization. If a value is not specified, one will be generated
-#' @param syntaxName name of the syntax to use for serialization - default is "rdfxml"
-#' @param mimetype the mimetype of the serialized output - the default is "application/rdf+xml"
-#' @param namespaces a data frame containing one or more namespaces and their associated prefix
-#' @param syntaxURI URI of the serialization syntax
+#' Create an OAI-ORE resource map from the package
+#' @description Datapackage relationships are serialized as a OAI-ORE resource map
+#' and returned as a \code{\link{ResourceMap-class}} object.
+#' @param .Object A DataPackage object
+#' @param ... Additional arguments
+#' @seealso \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
 #' @export
-setGeneric("serializePackage", function(.Object, file, ...) {
+setGeneric("serializePackage", function(.Object, ...) {
   standardGeneric("serializePackage")
 })
 
+#' @describeIn serializePackage
+#' @param file The file to which the ResourceMap will be serialized
+#' @param id A unique identifier for the serialization. If a value is not specified, one will be generated
+#' @param syntaxName The name of the syntax to use for serialization - default is "rdfxml"
+#' @param mimeType The mimetype of the serialized output - the default is "application/rdf+xml"
+#' @param namespaces A data frame containing one or more namespaces and their associated prefix
+#' @param syntaxURI URI of the serialization syntax
+#' @return A ResourceMap object
 setMethod("serializePackage", signature("DataPackage"), function(.Object, file, 
                                                                  id = as.character(NA),
                                                                  syntaxName="rdfxml", 
@@ -347,5 +424,3 @@ setMethod("serializePackage", signature("DataPackage"), function(.Object, file,
   freeResourceMap(resMap)
   rm(resMap)
 })
-
-

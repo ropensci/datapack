@@ -2,7 +2,6 @@
 % Please edit documentation in R/DataObject.R
 \docType{class}
 \name{DataObject-class}
-\alias{DataObject,}
 \alias{DataObject-class}
 \title{DataObject wraps raw data with system-level metadata}
 \description{
@@ -10,7 +9,7 @@ DataObject is a wrapper class that associates raw data with system-level metadat
 describing the object.  The system metadata includes attributes such as the object's identifier,
 type, size, checksum, owner, version relationship to other objects, access rules, and other critical metadata.
 The SystemMetadata is compliant with the DataONE federated repository network's definition of SystemMetadata, and
-is encapsulated as a separate object that can be manipulated as needed. Additional science-level and
+is encapsulated as a separate object of type \code{\link{SystemMetadata}} that can be manipulated as needed. Additional science-level and
 domain-specific metadata is out-of-scope for SystemMetadata, which is intended only for critical metadata for
 managing objects in a repository system.
 }
@@ -29,15 +28,29 @@ contents of the data or file as a raw value (but this will read all of the data 
 \section{Slots}{
 
 \describe{
-\item{\code{sysmeta}}{value of type \code{"SystemMetadata"}, containing the metadata about the object}
+\item{\code{sysmeta}}{A value of type \code{"SystemMetadata"}, containing the metadata about the object}
 
-\item{\code{data}}{value of type \code{"raw"}, containing the data represented in this object}
+\item{\code{data}}{A value of type \code{"raw"}, containing the data represented in this object}
 
-\item{\code{filename}}{contains the fully-qualified path to the object data on disk}
+\item{\code{filename}}{A character value that contains the fully-qualified path to the object data on disk}
 }}
+\section{Methods}{
+
+\itemize{
+  \item{\code{\link[=initialize-DataObject]{initialize}}}{: Initialize a DataObject}
+  \item{\code{\link[=construct-DataObject]{DataObject}}}{: Create a DataObject}
+  \item{\code{\link{getData}}}{: Get the data content of a specified data object}
+  \item{\code{\link{getIdentifier}}}{: Get the Identifier of the DataObject}
+  \item{\code{\link{getFormatId}}}{: Get the FormatId of the DataObject}
+  \item{\code{\link{setPublicAccess}}}{: Add a Rule to the AccessPolicy to make the object publicly readable.}
+  \item{\code{\link{addAccessRule}}}{: Add a Rule to the AccessPolicy}
+  \item{\code{\link{canRead}}}{: Test whether the provided subject can read an object.}
+}
+}
 \examples{
 data <- charToRaw("1,2,3\\n4,5,6\\n")
-do <- new("DataObject", "id1", dataobj=data, "text/csv", "uid=jones,DC=example,DC=com", "urn:node:KNB")
+do <- new("DataObject", "id1", dataobj=data, "text/csv",
+  "uid=jones,DC=example,DC=com", "urn:node:KNB")
 getIdentifier(do)
 getFormatId(do)
 getData(do)
@@ -45,13 +58,16 @@ canRead(do, "uid=anybody,DC=example,DC=com")
 do <- setPublicAccess(do)
 canRead(do, "public")
 canRead(do, "uid=anybody,DC=example,DC=com")
-#
 # Also can create using a file for storage, rather than memory
 tf <- tempfile()
 con <- file(tf, "wb")
 writeBin(data, con)
 close(con)
-do <- new("DataObject", "id1", format="text/csv", user="uid=jones,DC=example,DC=com", mnNodeId="urn:node:KNB", filename=tf)
+do <- new("DataObject", "id1", format="text/csv", user="uid=jones,DC=example,DC=com",
+  mnNodeId="urn:node:KNB", filename=tf)
+}
+\seealso{
+\code{\link{datapackage}}{ package description.}
 }
 \keyword{classes}
 

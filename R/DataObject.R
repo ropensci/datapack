@@ -23,7 +23,7 @@
 #' describing the object.  The system metadata includes attributes such as the object's identifier, 
 #' type, size, checksum, owner, version relationship to other objects, access rules, and other critical metadata.
 #' The SystemMetadata is compliant with the DataONE federated repository network's definition of SystemMetadata, and
-#' is encapsulated as a separate object that can be manipulated as needed. Additional science-level and
+#' is encapsulated as a separate object of type \code{\link{SystemMetadata}} that can be manipulated as needed. Additional science-level and
 #' domain-specific metadata is out-of-scope for SystemMetadata, which is intended only for critical metadata for
 #' managing objects in a repository system.
 #' @details   
@@ -37,18 +37,31 @@
 #' Use the \code{'filename'} approach when data are too large to be managed effectively in memory.  Callers can
 #' access the \code{'filename'} slot to get direct access to the file, or can call \code{'getData()'} to retrieve the
 #' contents of the data or file as a raw value (but this will read all of the data into memory).
-#' 
-#' @slot sysmeta value of type \code{"SystemMetadata"}, containing the metadata about the object
-#' @slot data value of type \code{"raw"}, containing the data represented in this object
-#' @slot filename contains the fully-qualified path to the object data on disk
-#' @aliases DataObject, DataObject-class
+#' @slot sysmeta A value of type \code{"SystemMetadata"}, containing the metadata about the object
+#' @slot data A value of type \code{"raw"}, containing the data represented in this object
+#' @slot filename A character value that contains the fully-qualified path to the object data on disk
+#' @rdname DataObject-class
 #' @keywords classes
 #' @import methods
 #' @include dmsg.R
 #' @include SystemMetadata.R
+#' @aliases DataObject-class
+#' @section Methods:
+#' \itemize{
+#'   \item{\code{\link[=initialize-DataObject]{initialize}}}{: Initialize a DataObject}
+#'   \item{\code{\link[=construct-DataObject]{DataObject}}}{: Create a DataObject}
+#'   \item{\code{\link{getData}}}{: Get the data content of a specified data object}
+#'   \item{\code{\link{getIdentifier}}}{: Get the Identifier of the DataObject}
+#'   \item{\code{\link{getFormatId}}}{: Get the FormatId of the DataObject}
+#'   \item{\code{\link{setPublicAccess}}}{: Add a Rule to the AccessPolicy to make the object publicly readable.}
+#'   \item{\code{\link{addAccessRule}}}{: Add a Rule to the AccessPolicy}
+#'   \item{\code{\link{canRead}}}{: Test whether the provided subject can read an object.}
+#' }
+#' @seealso \code{\link{datapackage}}{ package description.}
 #' @examples
 #' data <- charToRaw("1,2,3\n4,5,6\n")
-#' do <- new("DataObject", "id1", dataobj=data, "text/csv", "uid=jones,DC=example,DC=com", "urn:node:KNB")
+#' do <- new("DataObject", "id1", dataobj=data, "text/csv", 
+#'   "uid=jones,DC=example,DC=com", "urn:node:KNB")
 #' getIdentifier(do)
 #' getFormatId(do)
 #' getData(do)
@@ -56,13 +69,14 @@
 #' do <- setPublicAccess(do)
 #' canRead(do, "public")
 #' canRead(do, "uid=anybody,DC=example,DC=com")
-#' #
 #' # Also can create using a file for storage, rather than memory
 #' tf <- tempfile()
 #' con <- file(tf, "wb")
 #' writeBin(data, con)
 #' close(con)
-#' do <- new("DataObject", "id1", format="text/csv", user="uid=jones,DC=example,DC=com", mnNodeId="urn:node:KNB", filename=tf)
+#' do <- new("DataObject", "id1", format="text/csv", user="uid=jones,DC=example,DC=com", 
+#'   mnNodeId="urn:node:KNB", filename=tf)
+#' @export
 setClass("DataObject", slots = c(
     sysmeta                 = "SystemMetadata",
     data                    = "raw",
@@ -74,16 +88,21 @@ setClass("DataObject", slots = c(
 ## DataObject constructors
 ##########################
 
-#' Construct a DataObject instance.
+#' Create a DataObject object
+#' @rdname construct-DataObject
+#' @aliases construct-DataObject
 #' @param ... Additional arguments
 #' @return a DataObject
+#' @seealso \code{\link[=DataObject-class]{DataObject}}{ class description.}
 #' @export
 setGeneric("DataObject", function(...) { 
     standardGeneric("DataObject")
 })
 
-#' Intialize a DataObject
-#' When initializing a DataObject using passed in data, one can either pass 
+#' Initialize a DataObject
+#' @rdname initialize-DataObject
+#' @aliases initialize-DataObject
+#' @description When initializing a DataObject using passed in data, one can either pass 
 #' in the \code{'id'} param as a \code{'SystemMetadata'} object, or as a \code{'character'} string 
 #' representing the identifier for an object along with parameters for format, user,and associated member node.
 #' If \code{'data'} is not missing, the \code{'data'} param holds the \code{'raw'} data.  Otherwise, the
@@ -99,6 +118,11 @@ setGeneric("DataObject", function(...) {
 #' @param mnNodeId the node identifier for the repository to which this object belings
 #' @param filename the filename for the fully qualified path to the data on disk, optional if \code{'data'} is provide
 #' @import digest
+#' @examples
+#' data <- charToRaw("1,2,3\n4,5,6\n")
+#' do <- new("DataObject", "id1", dataobj=data, "text/csv", 
+#'   "uid=jones,DC=example,DC=com", "urn:node:KNB")
+#' @seealso \code{\link[=DataObject-class]{DataObject}}{ class description.}
 setMethod("initialize", "DataObject", function(.Object, id=as.character(NA), dataobj=NA, format=as.character(NA), user=as.character(NA), 
                                                mnNodeId=as.character(NA), filename=as.character(NA)) {
   
@@ -115,7 +139,7 @@ setMethod("initialize", "DataObject", function(.Object, id=as.character(NA), dat
     
     # Validate: dataobj must be raw if provided
     if (!is.na(dataobj[[1]])) {
-        stopifnot(is.raw(dataobj))    
+        stopifnot(is.raw(dataobj[[1]]))    
     }
     
     # Validate: file must have content if provided
@@ -157,14 +181,15 @@ setMethod("initialize", "DataObject", function(.Object, id=as.character(NA), dat
 #' @param id Missing or character: if \code{'x'} is DataPackage, the identifier of the
 #' package member to get data from
 #' @param ... Additional arguments
-#' @return raw representation of the data
 #' @aliases getData
+#' @seealso \code{\link[=DataObject-class]{DataObject}}{ class description.}
 #' @export
 setGeneric("getData", function(x, id=NA, ...) {
     standardGeneric("getData")
 })
 
 #' @describeIn getData
+#' @return raw representation of the data
 #' @aliases getData
 setMethod("getData", signature("DataObject"), function(x) {
     if (is.na(x@filename)) {
@@ -185,6 +210,7 @@ setMethod("getData", signature("DataObject"), function(x) {
 #' @param ... (not yet used)
 #' @return the identifier
 #' @aliases getIdentifier
+#' @seealso \code{\link[=DataObject-class]{DataObject}}{ class description.}
 #' @export
 setGeneric("getIdentifier", function(x, ...) {
     standardGeneric("getIdentifier")
@@ -201,6 +227,7 @@ setMethod("getIdentifier", signature("DataObject"), function(x) {
 #' @param ... (not yet used)
 #' @return the formatId
 #' @aliases getFormatId
+#' @seealso \code{\link[=DataObject-class]{DataObject}}{ class description.}
 #' @export
 setGeneric("getFormatId", function(x, ...) {
 			standardGeneric("getFormatId")
@@ -223,6 +250,7 @@ setMethod("getFormatId", signature("DataObject"), function(x) {
 #' @param ... (not yet used)
 #' @return DataObject with modified access rules
 #' @aliases setPublicAccess
+#' @seealso \code{\link[=DataObject-class]{DataObject}}{ class description.}
 #' @export
 setGeneric("setPublicAccess", function(x, ...) {
   standardGeneric("setPublicAccess")
@@ -239,17 +267,15 @@ setMethod("setPublicAccess", signature("DataObject"), function(x) {
 })
 
 #' Add a Rule to the AccessPolicy
-#' 
-#' To be called prior to creating the object in DataONE.  When called before 
+#' @details To be called prior to creating the object in DataONE.  When called before 
 #' creating the object, adds rules to the access policy for this object that
 #' control access when uploaded to DataONE.  If called after creation, it 
 #' will only change the system metadata locally, and will not have any effect
 #' on remotely uploaded copies of the DataObject. 
-#' @param x DataObject
-#' @param y A data frame containing one or more access rules
 #' @return DataObject with modified access rules
 #' @examples \dontrun{
-#' accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", "uid=slaughter,o=unaffiliated,dc=example,dc=org"), permission=c("write", "changePermission"))
+#' accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", 
+#'   "uid=slaughter,o=unaffiliated,dc=example,dc=org"), permission=c("write", "changePermission"))
 #' sciObj <- addAccessRule(sciObj, accessRules)
 #' }
 #' @export
@@ -277,6 +303,7 @@ setMethod("addAccessRule", signature("DataObject", "data.frame"), function(x, y)
 #' @param ... Additional arguments
 #' @return boolean TRUE if the subject has read permission, or FALSE otherwise
 #' @aliases canRead
+#' @seealso \code{\link[=DataObject-class]{DataObject}}{ class description.}
 #' @export
 setGeneric("canRead", function(x, subject, ...) {
   standardGeneric("canRead")

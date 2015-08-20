@@ -2,7 +2,8 @@
 % Please edit documentation in R/DataObject.R
 \name{DataObject}
 \alias{DataObject}
-\title{Construct a DataObject instance.}
+\alias{construct-DataObject}
+\title{Create a DataObject object}
 \usage{
 DataObject(...)
 }
@@ -13,6 +14,9 @@ DataObject(...)
 a DataObject
 }
 \description{
-Construct a DataObject instance.
+Create a DataObject object
+}
+\seealso{
+\code{\link[=DataObject-class]{DataObject}}{ class description.}
 }
 

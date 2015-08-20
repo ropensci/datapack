@@ -25,4 +25,7 @@ Get the Identifier of the DataObject
 \itemize{
 \item \code{DataObject}: 
 }}
+\seealso{
+\code{\link[=DataObject-class]{DataObject}}{ class description.}
+}
 

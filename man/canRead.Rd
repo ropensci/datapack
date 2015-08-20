@@ -37,4 +37,7 @@ name formatted according to RFC 2253.
 \itemize{
 \item \code{x = DataObject,subject = character}: 
 }}
+\seealso{
+\code{\link[=DataObject-class]{DataObject}}{ class description.}
+}
 

@@ -2,22 +2,30 @@
 % Please edit documentation in R/SystemMetadata.R
 \docType{methods}
 \name{serializeSystemMetadata}
-\alias{serialize,SystemMetadata-method}
 \alias{serializeSystemMetadata}
 \alias{serializeSystemMetadata,SystemMetadata-method}
-\title{serialize system metadata}
+\title{Serialize a SystemMetadata object to an XML representation}
 \usage{
 serializeSystemMetadata(sysmeta, ...)
 
 \S4method{serializeSystemMetadata}{SystemMetadata}(sysmeta)
 }
 \arguments{
-\item{sysmeta}{the SystemMetadata instance to be serialized}
+\item{sysmeta}{The SystemMetadata instance to be serialized}
+
+\item{...}{(Not currently used)}
 }
 \value{
 the character string representing a SystemMetadata object
 }
 \description{
-Serialize an XML representation of system metadata.
+Serialize a SystemMetadata object to an XML representation
+}
+\section{Methods (by class)}{
+\itemize{
+\item \code{SystemMetadata}: 
+}}
+\seealso{
+\code{\link[=SystemMetadata-class]{SystemMetadata}}{ class description.}
 }
 

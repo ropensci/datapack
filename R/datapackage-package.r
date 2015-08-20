@@ -3,14 +3,15 @@
 #' @name datapackage
 #' @docType package
 #' @author Matthew B. Jones (NCEAS), Peter Slaughter (NCEAS)
-#' @description The datapackage classes provide an abstraction for collating 
+#' @description The datapackage R package provides an abstraction for collating 
 #' heterogeneous collections of data objects and metadata into a bundle that can 
-#' be transported aand loaded s a single composite file.  They are a convenient way
+#' be transported and loaded into a single composite file.  The methods in
+#' this package provide a convenient way
 #' to load data from common repositories such as DataONE into the R environment, 
 #' and to document, serialize, and save data from R to data repositories workdwide. 
-#' A data package is represented as an instance of the S4 class DataPackage, which 
-#' consists of one or more instances of the S4 DataObject class, which in turn is 
-#' described by an instance of the S4 SystemMetadata class.  The SystemMetadata
+#' A data package is represented as an instance of the S4 class \code{\link[=DataPackage-class]{DataPackage}}, which 
+#' consists of one or more instances of the S4 DataObject class, which in turn contains
+#' an instance of the S4 SystemMetadata class.  The SystemMetadata
 #' class provides critical metadata about a data object that is needed to transport
 #' it to an external repository, including the identifier for the object, its
 #' format, its checksum and size, and information about which repositories the
@@ -20,7 +21,7 @@
 #' 
 #' A DataPackage includes a manifest based on the OAI-ORE 
 #' specification for describing aggregations of files as a ResourceMap. 
-#' Resource maps are RDF documents that conform to the Open Archives Initiative’s 
+#' Resource maps are RDF documents that conform to the Open Archives Initiative
 #' Object Reuse and Exchange (OAI-ORE) specification. Resource maps are generated 
 #' by data providers to define data packages, and have a namespace of 
 #' http://www.openarchives.org/ore/terms/.
@@ -34,4 +35,12 @@
 #' expand to a common directory structure with a predictable set of metadata that
 #' describes the structure and content of the bag.  Conformance with the BagIt
 #' specification is handled by the DataPackage class.
+#' @aliases datapackage
+#' @section Classes:
+#' \itemize{
+#'  \item{\code{\link[=DataPackage-class]{DataPackage}}}{: A class representing a data package, which can contain data objects}
+#'  \item{\code{\link[=DataObject-class]{DataObject}}}{: DataObject wraps raw data with system-level metadata}
+#'  \item{\code{\link[=SystemMetadata-class]{SystemMetadata}}}{: A DataONE SystemMetadata object containing basic identification, ownership, access policy, replication policy, and related metadata.}
+#'  \item{\code{\link[=ResourceMap-class]{ResourceMap}}}{: ResourceMap provides methods to create, serialize and deserialize an OAI ORE resource map.}
+#' }
 NULL

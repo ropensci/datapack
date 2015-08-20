@@ -3,6 +3,7 @@
 \docType{methods}
 \name{initialize,SystemMetadata-method}
 \alias{initialize,SystemMetadata-method}
+\alias{initialize-SystemMetadata}
 \title{Initialize a DataONE SystemMetadata object with default values or values passed in to the constructor.}
 \usage{
 \S4method{initialize}{SystemMetadata}(.Object, identifier = as.character(NA),
@@ -15,9 +16,12 @@
   archived = FALSE, dateUploaded = as.character(NA),
   dateSysMetadataModified = as.character(NA),
   originMemberNode = as.character(NA),
-  authoritativeMemberNode = as.character(NA))
+  authoritativeMemberNode = as.character(NA), preferredNodes = list(),
+  blockedNodes = list())
 }
 \arguments{
+\item{.Object}{The object being initialized}
+
 \item{identifier}{value of type \code{"character"}, the identifier of the object that this system metadata describes.}
 
 \item{formatId}{value of type \code{"character"}, the DataONE object format for the object.}
@@ -66,5 +70,7 @@ access policy, replication policy, and related metadata.
 }
 \seealso{
 http://mule1.dataone.org/ArchitectureDocs-current/apis/Types.html#Types.SystemMetadata
+
+\code{\link[=SystemMetadata-class]{SystemMetadata}}{ class description.}
 }
 
