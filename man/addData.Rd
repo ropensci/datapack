@@ -8,23 +8,43 @@
 \usage{
 addData(x, do, ...)
 
-\S4method{addData}{DataPackage,DataObject}(x, do)
+\S4method{addData}{DataPackage,DataObject}(x, do, mo = as.character(NA))
 }
 \arguments{
 \item{x}{A DataPackage instance}
 
-\item{do}{A DataObject identifier}
+\item{do}{A DataObject instance}
 
-\item{...}{(not yet used)}
+\item{...}{(Additional parameters)}
+
+\item{mo}{A DataObject (containing metadata describing \code{"do"} ) to associate with the science object.}
 }
 \description{
 The DataObject is added to the DataPackage, making it available for
 retrieval and eventual upload using the method \code{\link[dataone]{uploadDataPackage}}.
+
+The DataObject \code{do} is added to the data package \code{x}.
+}
+\details{
+If the optional \code{mo} parameter is specified, then it is assumed that this DataObject is a metadata
+object that describes the science object that is being added. The \code{addData} function will add a relationship
+to the resource map that indicates that the metadata object describes the science object, using CiTO, the Citation Typing Ontology
+\code{documents} and \code{isDocumentedBy} relationship.
 }
 \section{Methods (by class)}{
 \itemize{
 \item \code{x = DataPackage,do = DataObject}: 
 }}
+\examples{
+dpkg <- DataPackage()
+data <- charToRaw("1,2,3\\n4,5,6")
+metadata <- charToRaw("This is the good data\\n")
+md <- new("DataObject", id="md1", dataobj=data, format="text/csv", user="smith", mnNodeId="urn:node:KNB")
+do <- new("DataObject", id="id1", dataobj=data, format="text/csv", user="smith", mnNodeId="urn:node:KNB")
+# Associate the metadata object with the science object. The 'mo' object will be added to the package
+# automatically, since it hasn't been added yet.
+addData(dpkg, do, md)
+}
 \seealso{
 \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
 }

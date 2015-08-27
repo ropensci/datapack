@@ -152,8 +152,8 @@ setMethod("getIdentifiers", "DataPackage", function(x) {
 #' @description The DataObject is added to the DataPackage, making it available for
 #' retrieval and eventual upload using the method \code{\link[dataone]{uploadDataPackage}}.
 #' @param x A DataPackage instance
-#' @param do A DataObject identifier
-#' @param ... (not yet used)
+#' @param do A DataObject instance
+#' @param ... (Additional parameters)
 #' @seealso \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
 #' @export
 setGeneric("addData", function(x, do, ...) { 
@@ -161,8 +161,34 @@ setGeneric("addData", function(x, do, ...) {
 })
 
 #' @describeIn addData
-setMethod("addData", signature("DataPackage", "DataObject"), function(x, do) {
+#' @description The DataObject \code{do} is added to the data package \code{x}.
+#' @details If the optional \code{mo} parameter is specified, then it is assumed that this DataObject is a metadata
+#' object that describes the science object that is being added. The \code{addData} function will add a relationship
+#' to the resource map that indicates that the metadata object describes the science object, using CiTO, the Citation Typing Ontology
+#' \code{documents} and \code{isDocumentedBy} relationship.
+#' @param mo A DataObject (containing metadata describing \code{"do"} ) to associate with the science object.
+#' @examples
+#' dpkg <- DataPackage()
+#' data <- charToRaw("1,2,3\n4,5,6")
+#' metadata <- charToRaw("This is the good data\n")
+#' md <- new("DataObject", id="md1", dataobj=data, format="text/csv", user="smith", mnNodeId="urn:node:KNB")
+#' do <- new("DataObject", id="id1", dataobj=data, format="text/csv", user="smith", mnNodeId="urn:node:KNB")
+#' # Associate the metadata object with the science object. The 'mo' object will be added to the package 
+#' # automatically, since it hasn't been added yet.
+#' addData(dpkg, do, md)
+setMethod("addData", signature("DataPackage", "DataObject"), function(x, do, mo=as.character(NA)) {
   x@objects[[do@sysmeta@identifier]] <- do
+  # If a metadata object identifier is specified on the command line, then add the relationship to this package
+  # that associates this science object with the metadata object.
+  if (!missing(mo)) {
+    # CHeck that the metadata object has already been added to the DataPackage. If it has not
+    # been added, then add it now.
+    if (!containsId(x, getIdentifier(mo))) {
+      moId <- addData(x, mo)
+    }
+    # Now add the CITO "documents" and "isDocumentedBy" relationships
+    insertRelationship(x, getIdentifier(mo), getIdentifier(do))
+  }
 })
 
 #' Record relationships of objects in a DataPackage

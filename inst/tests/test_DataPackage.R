@@ -55,7 +55,34 @@ test_that("DataPackage methods work", {
     expect_that(getIdentifiers(dpkg)[[2]], equals(id2))
     removeMember(dpkg, id1)
     expect_that(getSize(dpkg), equals(1))
-    expect_that(containsId(dpkg, id1), equals(FALSE))    
+    expect_that(containsId(dpkg, id1), equals(FALSE))
+    rm(do)
+    rm(do2)
+    rm(dpkg)
+    rm(rdo)
+    rm(rdata)
+    
+    # Test if we can associate a science object with a metadata object without calling
+    # insertRelationships directly
+    dpkg <- DataPackage()
+    mdId <- "md1"
+    md <- new("DataObject", mdId, data, format, user, node)
+    # The 'mdId' parameter indicates that this is a metadata object that is
+    # to be associated with the 'id1' parameter
+    #addData(dpkg, md)
+    do <- new("DataObject", id1, data, format, user, node)
+    addData(dpkg, do, md)
+    expect_that(getSize(dpkg), equals(2))
+    expect_that(containsId(dpkg, id1), equals(TRUE))
+    expect_that(containsId(dpkg, mdId), equals(TRUE))
+    
+    # Test that the addData() function adds the 'documents' relationship if a metadata object is 
+    # specified
+    relations <- getRelationships(dpkg)
+    expect_that(relations[relations$subject == id1, 'predicate'], matches("isDocumentedBy"))
+    expect_that(relations[relations$subject == id1, 'object'], equals(mdId))
+    expect_that(relations[relations$subject == mdId, 'predicate'], matches("documents"))
+    expect_that(relations[relations$subject == mdId, 'object'], equals(id1))
 })
 
 test_that("InsertRelationship methods work", {
