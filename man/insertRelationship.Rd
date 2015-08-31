@@ -55,7 +55,7 @@ appropriate values for subjects and objects.
 }}
 \examples{
 \dontrun{
-dp <- DataPackage()
+dp <- new("DataPackage")
 # Create a relationship
 insertRelationship(dp, "/Users/smith/scripts/genFields.R",
     "http://www.w3.org/ns/prov#used",

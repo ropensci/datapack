@@ -23,7 +23,6 @@ uploaded to a data repository or archived.
 
 \itemize{
  \item{\code{\link[=initialize-DataPackage]{initialize}}}{: Initialize a DataPackage object}
- \item{\code{\link[=construct-DataPackage]{DataPackage}}}{: Alternative initialization for DataPackage object}
  \item{\code{\link{getData}}}{: Get the data content of a specified data object}
  \item{\code{\link{getSize}}}{: Get the Count of Objects in the Package}
  \item{\code{\link{getIdentifiers}}}{: Get the Identifiers of Package Members}

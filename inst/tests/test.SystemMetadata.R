@@ -4,7 +4,7 @@ test_that("datapackage library loads", {
 })
 test_that("SystemMetadata constructors", {
     library(datapackage)
-    sysmeta <- SystemMetadata()
+    sysmeta <- new("SystemMetadata")
     expect_that(sysmeta@serialVersion, equals(1))
     expect_that(is.na(sysmeta@identifier), is_true())
     sysmeta <- new("SystemMetadata", identifier="TestId", formatId="text/csv")
@@ -15,7 +15,7 @@ test_that("XML SystemMetadata parsing works", {
   library(datapackage)
   library(XML)
   testid <- "doi:10.xxyy/AA/tesdoc123456789"
-  sysmeta <- SystemMetadata()
+  sysmeta <- new("SystemMetadata")
   expect_that(sysmeta@serialVersion, equals(1))
   doc <- xmlParseDoc("../testfiles/sysmeta.xml", asText=FALSE)
   expect_that(xmlValue(xmlRoot(doc)[["identifier"]]), matches(testid))
@@ -37,7 +37,7 @@ test_that("XML SystemMetadata serialization works", {
     library(datapackage)
     library(XML)
     testid <- "doi:10.xxyy/AA/tesdoc123456789"
-    sysmeta <- SystemMetadata()
+    sysmeta <- new("SystemMetadata")
     expect_that(sysmeta@serialVersion, equals(1))
     xml <- xmlParseDoc("../testfiles/sysmeta.xml", asText=FALSE)
     expect_that(xmlValue(xmlRoot(xml)[["identifier"]]), matches(testid))

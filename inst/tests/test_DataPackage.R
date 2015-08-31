@@ -32,7 +32,7 @@ test_that("DataPackage methods work", {
     format <- "text/csv"
     node <- "urn:node:KNB"
     
-    dpkg <- DataPackage()
+    dpkg <- new("DataPackage")
     expect_that(class(dpkg)[[1]], equals("DataPackage"))
     expect_that(getSize(dpkg), equals(0))
     do <- new("DataObject", id1, data, format, user, node)
@@ -64,7 +64,7 @@ test_that("DataPackage methods work", {
     
     # Test if we can associate a science object with a metadata object without calling
     # insertRelationships directly
-    dpkg <- DataPackage()
+    dpkg <- new("DataPackage")
     mdId <- "md1"
     md <- new("DataObject", mdId, data, format, user, node)
     # The 'mdId' parameter indicates that this is a metadata object that is
@@ -91,7 +91,7 @@ test_that("InsertRelationship methods work", {
   
   quietOn <- TRUE
   # Test the 'insertRelationships' method that uses the hardwired 'documents', 'isDocumentedBy' relationship
-  dp <- DataPackage()
+  dp <- new("DataPackage")
   doId1 <- "id1"
   doId2 <- "id2" 
   user <- "smith"
@@ -116,7 +116,7 @@ test_that("InsertRelationship methods work", {
   rm(dp)
   
   # Now test the second 'insertRelationships' that allows specifying the predicate of the relationship
-  dp <- DataPackage()
+  dp <- new("DataPackage")
   doId1 <- "id1"
   doId2 <- "id2" 
   user <- "smith"
@@ -219,7 +219,7 @@ test_that("InsertRelationship methods work", {
 test_that("Package serialization works", {
   
   library(uuid)
-  dp <- DataPackage()
+  dp <- new("DataPackage")
   mdId <- "scimeta_id"
   doInId <- "scidataId"
   doOutId <- paste0("urn:uuid:", UUIDgenerate())

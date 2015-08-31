@@ -13,7 +13,7 @@ test_that("ResourceMap creation from DataPackage triples", {
   library(uuid)
   
   D1ResolveURI <- "https://cn.dataone.org/cn/v1/resolve/"
-  dp <- DataPackage()
+  dp <- new("DataPackage")
   mdId <- "scimeta_id"
   doInId <- "scidataId"
   doOutId <- paste0("urn:uuid:", UUIDgenerate())

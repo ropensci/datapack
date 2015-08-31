@@ -35,7 +35,6 @@
 #' @section Methods:
 #' \itemize{
 #'  \item{\code{\link[=initialize-DataPackage]{initialize}}}{: Initialize a DataPackage object}
-#'  \item{\code{\link[=construct-DataPackage]{DataPackage}}}{: Alternative initialization for DataPackage object}
 #'  \item{\code{\link{getData}}}{: Get the data content of a specified data object}
 #'  \item{\code{\link{getSize}}}{: Get the Count of Objects in the Package}
 #'  \item{\code{\link{getIdentifiers}}}{: Get the Identifiers of Package Members}
@@ -62,22 +61,12 @@ setClass("DataPackage", slots = c(
 ###########################
 
 #' Create a DataPackage object
-#' @rdname construct-DataPackage
+#' @rdname initialize-DataPackage
 #' @description The DataPackage() method is a shortcut to creating a DataPackage object, as does
 #' not allow specifying any options that the \code{\link[=initialize-DataPackage]{initialize}} method allows.
 #' @param ... (Not yet used)
-#' @seealso \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
 #' @export
 setGeneric("DataPackage", function(...) { standardGeneric("DataPackage")} )
-
-#' @rdname construct-DataPackage
-#' @aliases construct-DataPackage
-#' @examples
-#' pkg <- DataPackage()
-setMethod("DataPackage", signature(), function() {
-    dpkg <- new("DataPackage")
-    return(dpkg)
-})
 
 #' Initialize a DataPackage object
 #' @rdname initialize-DataPackage
@@ -168,13 +157,15 @@ setGeneric("addData", function(x, do, ...) {
 #' \code{documents} and \code{isDocumentedBy} relationship.
 #' @param mo A DataObject (containing metadata describing \code{"do"} ) to associate with the science object.
 #' @examples
-#' dpkg <- DataPackage()
+#' dpkg <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6")
 #' metadata <- charToRaw("This is the good data\n")
-#' md <- new("DataObject", id="md1", dataobj=data, format="text/csv", user="smith", mnNodeId="urn:node:KNB")
-#' do <- new("DataObject", id="id1", dataobj=data, format="text/csv", user="smith", mnNodeId="urn:node:KNB")
-#' # Associate the metadata object with the science object. The 'mo' object will be added to the package 
-#' # automatically, since it hasn't been added yet.
+#' md <- new("DataObject", id="md1", dataobj=data, format="text/csv", user="smith", 
+#'   mnNodeId="urn:node:KNB")
+#' do <- new("DataObject", id="id1", dataobj=data, format="text/csv", user="smith", 
+#'   mnNodeId="urn:node:KNB")
+#' # Associate the metadata object with the science object. The 'mo' object will be added 
+#' # to the package  automatically, since it hasn't been added yet.
 #' addData(dpkg, do, md)
 setMethod("addData", signature("DataPackage", "DataObject"), function(x, do, mo=as.character(NA)) {
   x@objects[[do@sysmeta@identifier]] <- do
@@ -230,7 +221,7 @@ setMethod("insertRelationship",  signature("DataPackage", "character", "characte
 #' @param dataTypeURIs An RDF data type that specifies the type of the object
 #' @examples
 #' \dontrun{
-#' dp <- DataPackage()
+#' dp <- new("DataPackage")
 #' # Create a relationship
 #' insertRelationship(dp, "/Users/smith/scripts/genFields.R",
 #'     "http://www.w3.org/ns/prov#used",
@@ -314,7 +305,7 @@ setMethod("insertRelationship", signature("DataPackage", "character", "character
 #' @param ... Additional parameters
 #' @examples
 #' \dontrun{
-#' dp <- DataPackage()
+#' dp <- new("DataPackage")
 #' recordDerivation(dp, "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1",
 #'                      "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.45.1")
 #' }

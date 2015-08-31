@@ -47,7 +47,6 @@
 #' @section Methods:
 #' \itemize{
 #'  \item{\code{\link[=initialize-SystemMetadata]{initialize}}}{: Initialize a DataONE SystemMetadata object with default values or values passed in to the constructor object}
-#'  \item{\code{\link[=construct-SystemMetadata]{SystemMetadata}}}{: Create a SystemMetadata object with default values}
 #'  \item{\code{\link[=construct-SystemMetadata-XMLInternalElementNode]{SystemMetadata}}}{: Create a SystemMetadata object, with all fields set to the value found in an XML document}
 #'  \item{\code{\link{parseSystemMetadata}}}{: Parse an external XML document and populate a SystemMetadata object with the parsed data}
 #'  \item{\code{\link{serializeSystemMetadata}}}{: Get the Count of Objects in the Package}
@@ -157,14 +156,14 @@ setGeneric("SystemMetadata", function(...) {
     standardGeneric("SystemMetadata")
 })
 
-#' @rdname construct-SystemMetadata
-#' @aliases construct-SystemMetadata
-#' @return the SystemMetadata object
-setMethod("SystemMetadata", signature(), function(...) {
-    ## create new SystemMetadata object
-    sysmeta <- new("SystemMetadata")
-    return(sysmeta)
-})
+# ## @rdname construct-SystemMetadata
+# ## @aliases construct-SystemMetadata
+# ## @return the SystemMetadata object
+# setMethod("SystemMetadata", signature(), function(...) {
+#     ## create new SystemMetadata object
+#     sysmeta <- new("SystemMetadata")
+#     return(sysmeta)
+# })
 
 #' @title Create a SystemMetadata from an XML document
 #' @description Construct a new SystemMetadata instance by using the fields from an XML representation of the 

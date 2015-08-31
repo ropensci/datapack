@@ -36,13 +36,15 @@ to the resource map that indicates that the metadata object describes the scienc
 \item \code{x = DataPackage,do = DataObject}: 
 }}
 \examples{
-dpkg <- DataPackage()
+dpkg <- new("DataPackage")
 data <- charToRaw("1,2,3\\n4,5,6")
 metadata <- charToRaw("This is the good data\\n")
-md <- new("DataObject", id="md1", dataobj=data, format="text/csv", user="smith", mnNodeId="urn:node:KNB")
-do <- new("DataObject", id="id1", dataobj=data, format="text/csv", user="smith", mnNodeId="urn:node:KNB")
-# Associate the metadata object with the science object. The 'mo' object will be added to the package
-# automatically, since it hasn't been added yet.
+md <- new("DataObject", id="md1", dataobj=data, format="text/csv", user="smith",
+  mnNodeId="urn:node:KNB")
+do <- new("DataObject", id="id1", dataobj=data, format="text/csv", user="smith",
+  mnNodeId="urn:node:KNB")
+# Associate the metadata object with the science object. The 'mo' object will be added
+# to the package  automatically, since it hasn't been added yet.
 addData(dpkg, do, md)
 }
 \seealso{

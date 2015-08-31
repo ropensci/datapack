@@ -49,7 +49,6 @@
 #' @section Methods:
 #' \itemize{
 #'   \item{\code{\link[=initialize-DataObject]{initialize}}}{: Initialize a DataObject}
-#'   \item{\code{\link[=construct-DataObject]{DataObject}}}{: Create a DataObject}
 #'   \item{\code{\link{getData}}}{: Get the data content of a specified data object}
 #'   \item{\code{\link{getIdentifier}}}{: Get the Identifier of the DataObject}
 #'   \item{\code{\link{getFormatId}}}{: Get the FormatId of the DataObject}
@@ -87,17 +86,6 @@ setClass("DataObject", slots = c(
 ##########################
 ## DataObject constructors
 ##########################
-
-#' Create a DataObject object
-#' @rdname construct-DataObject
-#' @aliases construct-DataObject
-#' @param ... Additional arguments
-#' @return a DataObject
-#' @seealso \code{\link[=DataObject-class]{DataObject}}{ class description.}
-#' @export
-setGeneric("DataObject", function(...) { 
-    standardGeneric("DataObject")
-})
 
 #' Initialize a DataObject
 #' @rdname initialize-DataObject

@@ -38,7 +38,6 @@ contents of the data or file as a raw value (but this will read all of the data 
 
 \itemize{
   \item{\code{\link[=initialize-DataObject]{initialize}}}{: Initialize a DataObject}
-  \item{\code{\link[=construct-DataObject]{DataObject}}}{: Create a DataObject}
   \item{\code{\link{getData}}}{: Get the data content of a specified data object}
   \item{\code{\link{getIdentifier}}}{: Get the Identifier of the DataObject}
   \item{\code{\link{getFormatId}}}{: Get the FormatId of the DataObject}
