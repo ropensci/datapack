@@ -320,7 +320,7 @@ setGeneric("recordDerivation", function(x, ...) {
 #' @param derivedIDs an identifier or list of identifiers of objects that were derived from the source 
 setMethod("recordDerivation",  signature("DataPackage"), function(x, sourceID, derivedIDs, ...) {
     for (obj in derivedIDs) {
-        insertRelationship(x, subject=obj, object=sourceID, predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
+        insertRelationship(x, subjectID=obj, objectIDs=sourceID, predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
     }
 })
 
