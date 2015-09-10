@@ -241,7 +241,7 @@ setMethod("parseSystemMetadata", signature("SystemMetadata", "XMLInternalElement
     }
   }
   rpattrs <- xmlAttrs(xml[["replicationPolicy"]])
-  repAllowed <- grep('true', rpattrs[["replicationAllowed"]], ignore.case=TRUE)
+  repAllowed <- grepl('true', rpattrs[["replicationAllowed"]], ignore.case=TRUE)
   if (repAllowed) {
     sysmeta@replicationAllowed = TRUE
     sysmeta@numberReplicas = as.numeric(rpattrs[["numberReplicas"]])
