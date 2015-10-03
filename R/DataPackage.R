@@ -430,13 +430,13 @@ setMethod("serializePackage", signature("DataPackage"), function(.Object, file,
                                                                  syntaxName="rdfxml", 
                                                                  mimeType="application/rdf+xml", 
                                                                  namespaces=data.frame(namespace=character(), prefix=character(), stringsAsFactors=FALSE),
-                                                                 syntaxURI=as.character(NA)) {
+                                                                 syntaxURI=as.character(NA), resolveURI=as.character(NA)) {
   # Get the relationships stored in this datapackage.
   relations <- getRelationships(.Object)
   
   # Create a ResourceMap object and serialize it to the specified file
   resMap <- new("ResourceMap", id)
-  resMap <- createFromTriples(resMap, relations, getIdentifiers(.Object))  
+  resMap <- createFromTriples(resMap, relations=relations, identifiers=getIdentifiers(.Object), resolveURI=resolveURI)  
   status <- serializeRDF(resMap, file, syntaxName, mimeType, namespaces, syntaxURI)
   freeResourceMap(resMap)
   rm(resMap)

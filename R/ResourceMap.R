@@ -93,16 +93,22 @@ setMethod("initialize", "ResourceMap", function(.Object, id = as.character(NA)) 
 #' @param identifiers A list of the identifiers of data objects cotained in the associated data package
 #' @seealso \code{\link[=ResourceMap-class]{ResourceMap}}{ class description.}
 #' @export
-setGeneric("createFromTriples", function(.Object, relations, identifiers) { standardGeneric("createFromTriples")})
+setGeneric("createFromTriples", function(.Object, relations, identifiers, ...) { standardGeneric("createFromTriples")})
 
 #' @describeIn createFromTriples
-setMethod("createFromTriples", signature("ResourceMap", "data.frame", "character"), function(.Object, relations, identifiers) {
+setMethod("createFromTriples", signature("ResourceMap", "data.frame", "character"), function(.Object, relations, identifiers, 
+                                                                                             resolveURI=as.character(NA),...) {
   .Object@relations <- relations
 
   # Hard coded for now, get this from dataone package in future
   D1ResolveURI <- "https://cn.dataone.org/cn/v1/resolve/"
   
-  # TODO: use constants for base URIs
+  if(is.na(resolveURI)) {
+    pkgResolveURI <- D1ResolveURI
+  } else {
+    pkgResolveURI <- resolveURI
+  }
+  
   #xsdString <- "^^http://www.w3.org/2001/XMLSchema#string"
   xsdString <- "^^xsd:string"
   xsdStringURI <- "http://www.w3.org/2001/XMLSchema#string"
@@ -116,8 +122,8 @@ setMethod("createFromTriples", signature("ResourceMap", "data.frame", "character
   aggregatedBy <- "http://www.openarchives.org/ore/terms/isAggregatedBy"
   aggregates <- "http://www.openarchives.org/ore/terms/aggregates"
   aggregationType <- "http://www.openarchives.org/ore/terms/Aggregation"
-  aggregationId <- sprintf("%s%s#aggregation", D1ResolveURI, .Object@id)
-  resMapURI <- paste(D1ResolveURI, .Object@id, sep="")
+  aggregationId <- sprintf("%s/%s#aggregation", pkgResolveURI, .Object@id)
+  resMapURI <- paste(pkgResolveURI, .Object@id, sep="/")
   
   # Add each triple from the input data.frame into the Redland RDF model.
   for(i in 1:nrow(relations)) {
@@ -127,12 +133,12 @@ setMethod("createFromTriples", signature("ResourceMap", "data.frame", "character
     
     # Prepend the DataONE Production CN resolve URI to each identifier in the datapackage, when
     # that identifier appears in the subject or object of a triple.
-    if (is.element(subjectId, identifiers) && ! grepl(D1ResolveURI, subjectId)) {
-      subjectId <- paste(D1ResolveURI, subjectId, sep="")
+    if (is.element(subjectId, identifiers) && ! grepl(pkgResolveURI, subjectId) && ! grepl("^http", subjectId)) {
+      subjectId <- paste(pkgResolveURI, subjectId, sep="/")
     }
     
-    if (is.element(objectId, identifiers) && ! grepl(D1ResolveURI, objectId)) {
-      objectId <- paste(D1ResolveURI, objectId, sep="")
+    if (is.element(objectId, identifiers) && ! grepl(pkgResolveURI, objectId) && ! grepl("^http", objectId)) {
+      objectId <- paste(pkgResolveURI, objectId, sep="/")
     }
     
     statement <- new("Statement", .Object@world, subjectId, triple[['predicate']], objectId, 
@@ -142,8 +148,8 @@ setMethod("createFromTriples", signature("ResourceMap", "data.frame", "character
   
   # Loop through the datapackage objects and add the required ORE properties for each id.
   for(id in identifiers) {
-    if (! grepl(D1ResolveURI, id)) {
-      URIid <- sprintf("%s%s", D1ResolveURI, id)
+    if (! grepl(pkgResolveURI, id) && ! grepl("http", id)) {
+      URIid <- sprintf("%s/%s", pkgResolveURI, id)
     }
     # Add the Dublic Core identifier relation for each object added to the data package
     statement <- new("Statement", .Object@world, subject=URIid, predicate=DCidentifier, object=id, objectType="literal", datatype_uri=xsdStringURI)
