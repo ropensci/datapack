@@ -46,6 +46,7 @@
 #'  \item{\code{\link{removeMember}}}{: Remove the Specified Member from the Package}
 #'  \item{\code{\link{getMember}}}{: Return the Package Member by Identifier}
 #'  \item{\code{\link{serializePackage}}}{: Create an OAI-ORE resource map from the package}
+#'  \item{\code{\link{serializeToBagit}}}{: Serialize A DataPackage into a Bagit Archive File}
 #' }
 #' @seealso \code{\link{datapackage}}{ package description.}
 #' @export
@@ -434,10 +435,165 @@ setMethod("serializePackage", signature("DataPackage"), function(.Object, file,
   # Get the relationships stored in this datapackage.
   relations <- getRelationships(.Object)
   
-  # Create a ResourceMap object and serialize it to the specified file
+  # Create a ResourceMap object and serialize it to the specified file  
+  if(is.na(id)) {
+    id <- sprintf("urn:uuid", UUIDgenerate())
+  }
   resMap <- new("ResourceMap", id)
   resMap <- createFromTriples(resMap, relations=relations, identifiers=getIdentifiers(.Object), resolveURI=resolveURI)  
   status <- serializeRDF(resMap, file, syntaxName, mimeType, namespaces, syntaxURI)
   freeResourceMap(resMap)
   rm(resMap)
+})
+
+#' Serialize A DataPackage into a Bagit Archive File
+#' @description The Bagit packaging format \link{https://tools.ietf.org/html/draft-kunze-bagit-08}
+#' is used to prepare an archive file that contains the contents of a DataPackage.
+#' @details A Bagit Archive File is created by copying each member of a DataPackge, and preparing
+#' files that describe the files in the archive, including information about the size of the files
+#' and a checksum for each file. These metadata files and the data files are then packaged into
+#' a single zip file.
+#' @param .Object A DataPackage object
+#' @param ... Additional arguments
+#' @seealso \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
+#' @export
+setGeneric("serializeToBagit", function(.Object, ...) {
+  standardGeneric("serializeToBagit")
+})
+
+#' @describeIn serializeToBagit
+#' @import uuid
+#' @import digest
+#' @return A zip file containing a Bagit archive.
+setMethod("serializeToBagit", signature("DataPackage"), function(.Object) {
+  pidMap <- as.character()
+  manifest <- as.character()
+  # Create a temp working area where the Bagit directory structure will be created
+  tmpDir <- tempdir()
+  bagDir <- sprintf("%s/bag", tmpDir)
+  if(dir.exists(bagDir)) {
+    unlink(bagDir, recursive=TRUE)
+  } 
+  dir.create(bagDir)
+  payloadDir <- sprintf("%s/data", bagDir)
+  if(!dir.exists(payloadDir)) dir.create(sprintf(payloadDir))
+  
+  # Get the relationships stored in this datapackage.
+  relations <- getRelationships(.Object)
+  
+  # Create a ResourceMap object and serialize it to the specified file
+  resMapId <- sprintf("urn:uuid:%s", UUIDgenerate())
+  
+  tmpFile <- tempfile()
+  resMap <- new("ResourceMap", resMapId)
+  resMap <- createFromTriples(resMap, relations=relations, identifiers=getIdentifiers(.Object), resolveURI=".")  
+  serializeRDF(resMap, tmpFile, syntaxName="rdfxml", mimeType="application/rdf+xml")
+  freeResourceMap(resMap)
+  rm(resMap)
+  
+  # Add resource map to the pid map
+  relFile <- sprintf("data/%s.rdf", resMapId)
+  resMapFilepath <- sprintf("%s/%s", bagDir, relFile)
+  file.copy(tmpFile, resMapFilepath)
+  pidMap <- c(pidMap, sprintf("%s %s", resMapId, relFile))
+  # Add resource map to the manifrest
+  resMapMd5 <- digest(resMapFilepath, algo="md5", file=TRUE)
+  manifest <- c(manifest, sprintf("%s %s", resMapMd5, relFile)) 
+  
+  # Create bagit.txt  
+  bagit <- sprintf("BagIt-Version: 0.97\nTag-File-Character-Encoding: UTF-8")
+  writeLines(bagit, sprintf("%s/bagit.txt", bagDir))
+  
+   # Populate './data" directory by copying each DataPackage member from a filename
+  # if that was specified, or from an in-memober object.
+  identifiers <- getIdentifiers(.Object)
+  for(idNum in 1:length(identifiers)) {
+    dataObj <- getMember(.Object, identifiers[idNum])
+    # Was the DataObject created with the 'file' arg, i.e. data not in the DataObject,
+    # but at a specified file out on disk?
+    if(!is.na(dataObj@filename)) {
+      if(file.exists(dataObj@filename)) {
+        relFile <- sprintf("data/%s", basename(dataObj@filename))
+        file.copy(dataObj@filename, sprintf("%s/%s", bagDir, relFile))
+        # Add this data pacakge member to the bagit files
+        pidMap <- c(pidMap, sprintf("%s %s", identifiers[idNum], relFile))
+        thisMd5 <- digest(sprintf("%s/%s", bagDir, relFile), algo="md5", file=TRUE)
+        manifest <- c(manifest, sprintf("%s %s", as.character(thisMd5), relFile))  
+      } else {
+        stop(sprintf("Error serializing to Bagit format, data object \"%s\", uses file %s but this file doesn't exist", dataObj@filename, identifiers[idNum]))
+      }
+    } else {
+      # Must be an in-memory data object
+      tf <- tempfile()
+      con <- file(tf, "wb")
+      writeBin(getData(dataObj), con)
+      close(con)
+      relFile <- sprintf("data/%s", getIdentifier(dataObj))
+      file.copy(tf, sprintf("%s/%s", bagDir, relFile))
+      unlink(tf)
+      rm(tf)
+      # Add this data pacakge member to the bagit files
+      pidMap <- c(pidMap, sprintf("%s %s", identifiers[idNum], relFile))
+      thisMd5 <- digest(sprintf("%s/%s", bagDir, relFile), algo="md5", file=TRUE)
+      manifest <- c(manifest, sprintf("%s %s", as.character(thisMd5), relFile))
+    }
+  }
+  
+  #fInfo <- file.info(sprintf("%s", payloadDir))
+  fInfo <- file.info(list.files(payloadDir, full.names=T, recursive=T))
+  #fInfo <- file.info(list.files(payloadDir), all.files=TRUE, recursive=TRUE)
+  bagBytes <- sum(fInfo[['size']])
+  # Convert the value returned from file.info (bytes) into a more 
+  # human readable form.
+  # Size is displayed in bytes
+  if(bagBytes < 1024) {
+    bagSize <- bagBytes
+    sizeUnits <- "B"
+  } else if (bagBytes < 1000000) {
+    # Size is displayed in Kilobytes
+    bagSize <- bagBytes / 1024.0
+    sizeUnits <- "KB"
+  } else if (bagBytes < 1000000000) {
+    # Size is displayed in megabytes
+    bagSize <- bagBytes / 1000000.0
+    sizeUnits <- "MB"
+  } else {
+    # Size is displayed in terabytes
+    bagSize <- bagBytes / 1000000000.0 
+    sizeUnits <- "GB"
+  }
+  
+  bagInfo <- sprintf("Payload-Oxum: %d.%d\nBagging-Date: %s\nBag-Size: %f %s",
+                       bagBytes, length(list.files(payloadDir)),
+                       format(Sys.time(), format="%Y-%m-%d"), 
+                       bagSize, sizeUnits)
+  
+  writeLines(bagInfo, sprintf("%s/%s", bagDir, "bag-info.txt"))
+  # Create pid-mapping.txt  
+  writeLines(pidMap, sprintf("%s/%s", bagDir, "pid-mapping.txt"))
+  # Create bag-info.txt
+  
+  # create manifest-md5.txt
+  writeLines(manifest, sprintf("%s/%s", bagDir, "manifest-md5.txt"))
+  
+  # Create tagmanifest-md5.txt
+  tagManifest <- as.character()
+  #tagFiles <- c("bag-info.txt", "bagit.txt", "pid-mapping.txt", "tagmanifest-md5.txt")
+  tagFiles <- c("bag-info.txt", "bagit.txt", "pid-mapping.txt")
+  for (i in 1:length(tagFiles)) {
+    thisFile <- tagFiles[i]  
+    thisMd5 <- digest(sprintf("%s/%s", bagDir, thisFile), algo="md5", file=TRUE)
+    tagManifest <- c(tagManifest, sprintf("%s %s", thisMd5, thisFile))
+  }
+  
+  writeLines(tagManifest, sprintf("%s/%s", bagDir, "tagmanifest-md5.txt"))
+  zipFile <- tempfile(fileext=".zip")
+  # Now zip up the directory struction 
+  setwd(bagDir)
+  if(getwd() != bagDir) {
+    stop("Unable to set working directory to the Bagit dir: %s", bagDir)
+  }
+  zip(zipFile, files=list.files(), flags="-q")
+  # Return the zip filename
+  return(zipFile)
 })

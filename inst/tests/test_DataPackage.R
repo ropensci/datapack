@@ -279,3 +279,63 @@ test_that("Package serialization works", {
   unlink(dpFile)
   
 })
+
+test_that("Bagit serialization works", {
+  
+  library(uuid)
+  # Test Bagit serializatin of a DataPackage
+  # Test bagging with both in-memory DataObjects and file baseed
+  testdf <- data.frame(x=1:10,y=11:20)
+  csvfile <- tempfile(pattern = "file", tmpdir = tempdir(), fileext = ".csv")
+  write.csv(testdf, csvfile, row.names=FALSE)
+  someEML <-'"<eml:eml xmlns:eml="eml://ecoinformatics.org/eml-2.1.1" xmlns:ds="eml://ecoinformatics.org/dataset-2.1.1" 
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:stmml="http://www.xml-cml.org/schema/stmml_1.1" 
+    packageId="urn:uuid:439c8d9d-f0ed-4f47-8cac-275d0d64bafd" system="uuid">
+    <dataset scope="document">
+      <title>My package title</title>
+      <creator>
+        <individualName>
+          <givenName>Smith</givenName>
+          <surName>John</surName>
+        </individualName>
+        <electronicMailAddress>jsmith@example.com</electronicMailAddress>
+      </creator>
+      <pubDate>2015-10-14</pubDate>
+    </dataset>
+  </eml:eml>"'
+  
+  dp <- new("DataPackage")
+  mdId <- "scimetaId"
+  doInId <- "scidataId"
+  doOutId <- paste0("urn:uuid:", UUIDgenerate())
+  executionId <- "execution1"
+  
+  user <- "smith"
+  data <- charToRaw("1,2,3\n4,5,6")
+  node <- "urn:node:KNB"
+  md1 <- new("DataObject", id=mdId, dataobj=charToRaw(someEML), format="eml://ecoinformatics.org/eml-2.1.1", user=user, mnNodeId=node)
+  doIn <- new("DataObject", id=doInId, dataobj=data, format="text/csv", user=user, mnNodeId=node)
+  doOut <- new("DataObject", id=doOutId, filename=csvfile, format="text/csv", user=user, mnNodeId=node)
+  addData(dp, md1)
+  addData(dp, doIn)
+  addData(dp, doOut)
+  
+  # Insert metadata document <-> relationships
+  insertRelationship(dp, subjectID=mdId, objectIDs=c(doOutId))
+  
+  # Insert a typical provenance relationship
+  insertRelationship(dp, subjectID=doOutId, objectIDs=doInId, predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
+  insertRelationship(dp, subjectID=executionId, objectIDs=doInId, predicate="http://www.w3.org/ns/prov#used")
+  insertRelationship(dp, subjectID=doOutId, objectIDs=executionId, predicate="http://www.w3.org/ns/prov#wasGeneratedBy")
+  insertRelationship(dp, subjectID="urn:uuid:abcd", objectIDs="Wed Mar 18 06:26:44 PDT 2015", 
+                     predicate="http://www.w3.org/ns/prov#startedAt", subjectType="uri", 
+                     objectTypes="literal",
+                     dataTypeURIs="http://www.w3.org/2001/XMLSchema#string")
+  
+ bagitFile <- serializeToBagit(dp) 
+ expect_that(file.exists(bagitFile), is_true())
+ expect_that(file.info(bagitFile)[['size']] > 0, is_true())
+
+}) 

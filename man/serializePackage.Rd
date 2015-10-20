@@ -11,7 +11,8 @@ serializePackage(.Object, ...)
 \S4method{serializePackage}{DataPackage}(.Object, file, id = as.character(NA),
   syntaxName = "rdfxml", mimeType = "application/rdf+xml",
   namespaces = data.frame(namespace = character(), prefix = character(),
-  stringsAsFactors = FALSE), syntaxURI = as.character(NA))
+  stringsAsFactors = FALSE), syntaxURI = as.character(NA),
+  resolveURI = as.character(NA))
 }
 \arguments{
 \item{.Object}{A DataPackage object}

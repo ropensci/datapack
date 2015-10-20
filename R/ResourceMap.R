@@ -148,8 +148,12 @@ setMethod("createFromTriples", signature("ResourceMap", "data.frame", "character
   
   # Loop through the datapackage objects and add the required ORE properties for each id.
   for(id in identifiers) {
+    # Check if the 'resolve' URI has already been appended to this identifier, i.e. this is a local
+    # identifier that is being promoted to a DataONE pid. 
     if (! grepl(pkgResolveURI, id) && ! grepl("http", id)) {
       URIid <- sprintf("%s/%s", pkgResolveURI, id)
+    } else {
+      URIid <- id
     }
     # Add the Dublic Core identifier relation for each object added to the data package
     statement <- new("Statement", .Object@world, subject=URIid, predicate=DCidentifier, object=id, objectType="literal", datatype_uri=xsdStringURI)

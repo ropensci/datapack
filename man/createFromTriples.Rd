@@ -6,10 +6,10 @@
 \alias{createFromTriples,ResourceMap,data.frame,character-method}
 \title{Populate a ResourceMap with RDF relationships from data.frame.}
 \usage{
-createFromTriples(.Object, relations, identifiers)
+createFromTriples(.Object, relations, identifiers, ...)
 
 \S4method{createFromTriples}{ResourceMap,data.frame,character}(.Object,
-  relations, identifiers)
+  relations, identifiers, resolveURI = as.character(NA), ...)
 }
 \arguments{
 \item{.Object}{a ResourceMap}
