@@ -15,17 +15,38 @@ data from R to data repositories worldwide.
 
 ## Installation
 
-The R package `datapackage` requires the `redland` package. Installation instructions
-for the `redland` package can be found at https://github.com/ropensci/redland-bindings/blob/master/R/redland/README.md
 
-Once the `redland` package is installed, the development version of `datapackage` can be installed from github
-with the R commands:
+## Installation Notes 
 
-```R
-# install.packages("devtools")
-devtools::install_github("ropensci/datapackage")
+One of the R packages that *datapackage* imports (the *redland* R package) depends on the Redland RDF libraries that must be installed before installing *datapackage*.
+
+On Mac OSX you can use Macports to install the necessary libraries. From a terminal window
+you can enter the command:
+
+```
+sudo port install redland
 ```
 
+On Ubuntu the redland C libraries are installed from a terminal window with the commands:
+
+```
+sudo apt-get update
+sudo apt-get install librdf0
+sudo apt-get install librdf0-dev
+```
+
+Once the Redland RDF libraries are installed, the *datapackage* package can be installed.
+Please note that the *datapackage* package is not yet available via CRAN but a pre-release version
+can be installed via the NCEAS drat repository. Using this repository, *datapackage* can be installed
+From the R console, enter the following commands:
+
+```r
+install.packages("drat"))
+library(drat)
+addRepo("NCEAS")
+install.packages("datapackge")
+library(datapackage)
+```
 
 [![nceas_footer](https://www.nceas.ucsb.edu/files/newLogo_0.png)](http://www.nceas.ucsb.edu)
 
