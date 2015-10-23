@@ -25,6 +25,13 @@ Get the Count of Objects in the Package
 \itemize{
 \item \code{DataPackage}: 
 }}
+\examples{
+dp <- new("DataPackage")
+data <- charToRaw("1,2,3\\n4,5,6")
+do <- new("DataObject", dataobj=data, format="text/csv", user="jsmith")
+addData(dp, do)
+getSize(dp)
+}
 \seealso{
 \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
 }

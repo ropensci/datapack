@@ -25,6 +25,13 @@ The identifiers of the objects in the package are retrieved and returned as a li
 \itemize{
 \item \code{DataPackage}: 
 }}
+\examples{
+dp <- new("DataPackage")
+data <- charToRaw("1,2,3\\n4,5,6")
+do <- new("DataObject", dataobj=data, format="text/csv", user="jsmith")
+addData(dp, do)
+getIdentifiers(dp)
+}
 \seealso{
 \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
 }

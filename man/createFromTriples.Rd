@@ -17,6 +17,8 @@ createFromTriples(.Object, relations, identifiers, ...)
 \item{relations}{A data.frame to read relationships from}
 
 \item{identifiers}{A list of the identifiers of data objects cotained in the associated data package}
+
+\item{resolveURI}{A character string containing a URI to prepend to datapackage identifiers}
 }
 \description{
 RDF relationships are added to a ResourceMap object from a data.frame that
@@ -27,7 +29,9 @@ to create the ResourceMap.
 \details{
 The \code{identifiers} parameter contains the identifiers of all data objects in the DataPackage.
 For each data objects, additional relationships will be added that are required by the OAI-ORE specification,
-for example a Dublin Core identifier statement is added.
+for example a Dublin Core identifier statement is added. The resolveURI string value is prepended to
+DataPackage member identifiers in the resulting resource map. If no resolveURI value
+is specified, then 'https://cn.dataone.org/cn/v1/resolve' is used.
 }
 \section{Methods (by class)}{
 \itemize{

@@ -19,7 +19,7 @@ serializeToBagit(.Object, ...)
 A zip file containing a Bagit archive.
 }
 \description{
-The Bagit packaging format \link{https://tools.ietf.org/html/draft-kunze-bagit-08}
+The Bagit packaging format \url{https://tools.ietf.org/html/draft-kunze-bagit-08}
 is used to prepare an archive file that contains the contents of a DataPackage.
 }
 \details{

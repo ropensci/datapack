@@ -28,6 +28,13 @@ representation of the member.
 \itemize{
 \item \code{x = DataPackage,identifier = character}: 
 }}
+\examples{
+dp <- new("DataPackage")
+data <- charToRaw("1,2,3\\n4,5,6")
+do <- new("DataObject", id="myNewId", dataobj=data, format="text/csv", user="jsmith")
+addData(dp, do)
+do2 <- getMember(dp, "myNewId")
+}
 \seealso{
 \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
 }

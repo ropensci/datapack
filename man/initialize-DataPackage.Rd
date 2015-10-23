@@ -27,7 +27,7 @@ Initialize a DataPackage object
 \examples{
 # Create a DataPackage with undefined package id (to be set manually later)
 pkg <- new("DataPackage")
-# Alternatively, assign the package id when the DataPackage object is created
+# Alternatively, manually assign the package id when the DataPackage object is created
 pkg <- new("DataPackage", "urn:uuid:4f953288-f593-49a1-adc2-5881f815e946")
 }
 \seealso{

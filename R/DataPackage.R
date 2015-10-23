@@ -78,7 +78,7 @@ setGeneric("DataPackage", function(...) { standardGeneric("DataPackage")} )
 #' @examples
 #' # Create a DataPackage with undefined package id (to be set manually later)
 #' pkg <- new("DataPackage")
-#' # Alternatively, assign the package id when the DataPackage object is created
+#' # Alternatively, manually assign the package id when the DataPackage object is created
 #' pkg <- new("DataPackage", "urn:uuid:4f953288-f593-49a1-adc2-5881f815e946")
 #' @seealso \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
 setMethod("initialize", "DataPackage", function(.Object, packageId) {
@@ -116,6 +116,13 @@ setMethod("getData", signature("DataPackage", "character"), function(x, id) {
 setGeneric("getSize", function(x, ...) { standardGeneric("getSize")} )
 
 #' @describeIn getSize
+#' @examples
+#' dp <- new("DataPackage")
+#' data <- charToRaw("1,2,3\n4,5,6")
+#' do <- new("DataObject", dataobj=data, format="text/csv", user="jsmith")
+#' addData(dp, do)
+#' getSize(dp)
+#' @export
 setMethod("getSize", "DataPackage", function(x) {
   return(length(x@objects))
 })
@@ -134,6 +141,13 @@ setMethod("getSize", "DataPackage", function(x) {
 setGeneric("getIdentifiers", function(x, ...) { standardGeneric("getIdentifiers")} )
 
 #' @describeIn getIdentifiers
+#' @examples
+#' dp <- new("DataPackage")
+#' data <- charToRaw("1,2,3\n4,5,6")
+#' do <- new("DataObject", dataobj=data, format="text/csv", user="jsmith")
+#' addData(dp, do)
+#' getIdentifiers(dp)
+#' @export
 setMethod("getIdentifiers", "DataPackage", function(x) {
     return(keys(x@objects))
 })
@@ -168,6 +182,7 @@ setGeneric("addData", function(x, do, ...) {
 #' # Associate the metadata object with the science object. The 'mo' object will be added 
 #' # to the package  automatically, since it hasn't been added yet.
 #' addData(dpkg, do, md)
+#' @export
 setMethod("addData", signature("DataPackage", "DataObject"), function(x, do, mo=as.character(NA)) {
   x@objects[[do@sysmeta@identifier]] <- do
   # If a metadata object identifier is specified on the command line, then add the relationship to this package
@@ -206,7 +221,7 @@ setGeneric("insertRelationship", function(x, subjectID, objectIDs, predicate, ..
 })
 
 #' @describeIn insertRelationship
-# Associate a metadata object with a list of dataobjects that
+#' @export
 setMethod("insertRelationship",  signature("DataPackage", "character", "character", "missing"), function(x, subjectID, objectIDs) {
   
   insertRelationship(x, subjectID, objectIDs, "http://purl.org/spar/cito/documents")
@@ -338,6 +353,13 @@ setGeneric("getRelationships", function(x, ...) {
 })
 
 #' @describeIn getRelationships
+#' @examples
+#' dp <- new("DataPackage")
+#' insertRelationship(dp, "/Users/smith/scripts/genFields.R",
+#'     "http://www.w3.org/ns/prov#used",
+#'     "https://knb.ecoinformatics.org/knb/d1/mn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1")
+#' rels <- getRelationships(dp)
+#' @export
 setMethod("getRelationships", signature("DataPackage"), function(x, ...) {
   
   # Get the relationships stored by insertRelationship
@@ -360,6 +382,14 @@ setGeneric("containsId", function(x, identifier, ...) {
 
 #' @describeIn containsId
 #' @return A logical - a value of TRUE indicates that the DataObject is in the DataPackage
+#' @examples
+#' dp <- new("DataPackage")
+#' data <- charToRaw("1,2,3\n4,5,6")
+#' id <- "myNewId"
+#' do <- new("DataObject", id=id, dataobj=data, format="text/csv", user="jsmith")
+#' addData(dp, do)
+#' isInPackage <- containsId(dp, identifier="myNewId")
+#' @export
 setMethod("containsId", signature("DataPackage", "character"), function(x, identifier) {
     obj <- x@objects[[identifier]]
     found <- !is.null(obj)
@@ -379,6 +409,13 @@ setGeneric("removeMember", function(x, identifier, ...) {
 })
 
 #' @describeIn removeMember
+#' @examples
+#' dp <- new("DataPackage")
+#' data <- charToRaw("1,2,3\n4,5,6")
+#' do <- new("DataObject", id="myNewId", dataobj=data, format="text/csv", user="jsmith")
+#' addData(dp, do)
+#' removeMember(dp, "myNewId")
+#' @export
 setMethod("removeMember", signature("DataPackage", "character"), function(x, identifier) {
     if (containsId(x, identifier)) {
         x@objects[[identifier]] <- NULL
@@ -511,6 +548,7 @@ setGeneric("serializeToBagit", function(.Object, ...) {
 #' @import uuid
 #' @import digest
 #' @return A zip file containing a Bagit archive.
+#' @export
 setMethod("serializeToBagit", signature("DataPackage"), function(.Object) {
   pidMap <- as.character()
   manifest <- as.character()

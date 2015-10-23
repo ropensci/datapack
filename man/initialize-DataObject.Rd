@@ -21,7 +21,7 @@
 
 \item{user}{the identity of the user owning the package, typically in X.509 format}
 
-\item{mnNodeId}{the node identifier for the repository to which this object belings}
+\item{mnNodeId}{the node identifier for the repository to which this object belongs.}
 
 \item{filename}{the filename for the fully qualified path to the data on disk, optional if \code{'data'} is provide}
 }

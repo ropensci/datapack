@@ -87,10 +87,13 @@ setMethod("initialize", "ResourceMap", function(.Object, id = as.character(NA)) 
 #' to create the ResourceMap.
 #' @details The \code{identifiers} parameter contains the identifiers of all data objects in the DataPackage.
 #' For each data objects, additional relationships will be added that are required by the OAI-ORE specification,
-#' for example a Dublin Core identifier statement is added.
+#' for example a Dublin Core identifier statement is added. The resolveURI string value is prepended to 
+#' DataPackage member identifiers in the resulting resource map. If no resolveURI value
+#' is specified, then 'https://cn.dataone.org/cn/v1/resolve' is used.
 #' @param .Object a ResourceMap
 #' @param relations A data.frame to read relationships from
 #' @param identifiers A list of the identifiers of data objects cotained in the associated data package
+#' @param resolveURI A character string containing a URI to prepend to datapackage identifiers
 #' @seealso \code{\link[=ResourceMap-class]{ResourceMap}}{ class description.}
 #' @export
 setGeneric("createFromTriples", function(.Object, relations, identifiers, ...) { standardGeneric("createFromTriples")})
@@ -101,7 +104,7 @@ setMethod("createFromTriples", signature("ResourceMap", "data.frame", "character
   .Object@relations <- relations
 
   # Hard coded for now, get this from dataone package in future
-  D1ResolveURI <- "https://cn.dataone.org/cn/v1/resolve/"
+  D1ResolveURI <- "https://cn.dataone.org/cn/v1/resolve"
   
   if(is.na(resolveURI)) {
     pkgResolveURI <- D1ResolveURI

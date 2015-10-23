@@ -21,7 +21,8 @@ serializePackage(.Object, ...)
 
 \item{file}{The file to which the ResourceMap will be serialized}
 
-\item{id}{A unique identifier for the serialization. If a value is not specified, one will be generated}
+\item{id}{A unique identifier for the serialization. The default value is the id assinged
+to the DataPackage when it was created.}
 
 \item{syntaxName}{The name of the syntax to use for serialization - default is "rdfxml"}
 
@@ -30,18 +31,48 @@ serializePackage(.Object, ...)
 \item{namespaces}{A data frame containing one or more namespaces and their associated prefix}
 
 \item{syntaxURI}{URI of the serialization syntax}
-}
-\value{
-A ResourceMap object
+
+\item{resolveURI}{A character string containing a URI to prepend to datapackage identifiers}
 }
 \description{
-Datapackage relationships are serialized as a OAI-ORE resource map
-and returned as a \code{\link{ResourceMap-class}} object.
+The Datapackage is serialized as a OAI-ORE resource map to the specified file.
+}
+\details{
+The resource map that is created is serialized by default as RDF/XML. Other serialization formats
+can be specified using the \code{syntaxName} and \code{mimeType} parameters. Other available formats
+include:
+\tabular{ll}{
+\strong{syntaxName}\tab \strong{mimeType}\cr
+json\tab application/json\cr
+ntriples\tab application/n-triples\cr
+turtle\tab text/turtle\cr
+dot\tab text/x-graphviz\cr
+}
+Note that the \code{syntaxName} and \code{mimeType} arguments together specify o serialization format.
+
+Also, for packages that will be uploaded to the DataONE network, "rdfxml" is the only
+accepted format.
+
+The resolveURI string value is prepended to DataPackage member identifiers in the resulting resource map.
+If no resolveURI value is specified, then 'https://cn.dataone.org/cn/v1/resolve' is used.
 }
 \section{Methods (by class)}{
 \itemize{
 \item \code{DataPackage}: 
 }}
+\examples{
+dp <- new("DataPackage")
+data <- charToRaw("1,2,3\\n4,5,6")
+do <- new("DataObject", id="do1", dataobj=data, format="text/csv", user="jsmith")
+addData(dp, do)
+data2 <- charToRaw("7,8,9\\n4,10,11")
+do2 <- new("DataObject", id="do2", dataobj=data2, format="text/csv", user="jsmith")
+addData(dp, do2)
+recordDerivation(dp, "do2", "do2")
+status <- serializePackage(dp, file="/tmp/resmap.json", syntaxName="json", mimeType="application/json")
+status <- serializePackage(dp, file="/tmp/resmap.rdf", syntaxName="rdfxml", mimeType="application/rdf+xml")
+status <- serializePackage(dp, file="/tmp/resmap.ttl", syntaxName="turtle", mimeType="text/turtle")
+}
 \seealso{
 \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
 }
