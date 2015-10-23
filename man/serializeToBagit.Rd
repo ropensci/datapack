@@ -32,6 +32,21 @@ a single zip file.
 \itemize{
 \item \code{DataPackage}: 
 }}
+\examples{
+# Create the first data object
+dp <- new("DataPackage")
+data <- charToRaw("1,2,3\\n4,5,6")
+do <- new("DataObject", id="do1", dataobj=data, format="text/csv", user="jsmith")
+addData(dp, do)
+# Create a second data object
+data2 <- charToRaw("7,8,9\\n4,10,11")
+do2 <- new("DataObject", id="do2", dataobj=data2, format="text/csv", user="jsmith")
+addData(dp, do2)
+# Create a relationship between the two data objects
+recordDerivation(dp, "do2", "do2")
+# Write out the data package to a Bagit file
+bagitFile <- serializeToBagit(dp)
+}
 \seealso{
 \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
 }

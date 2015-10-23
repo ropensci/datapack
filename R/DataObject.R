@@ -103,7 +103,7 @@ setClass("DataObject", slots = c(
 #' @param dataobj the bytes of the data for this object in \code{'raw'} format, optional if \code{'filename'} is provided
 #' @param format the format identifier for the object (see \url{'http://cn.dataone.org/cn/v1/formats'})?
 #' @param user the identity of the user owning the package, typically in X.509 format
-#' @param mnNodeId the node identifier for the repository to which this object belings
+#' @param mnNodeId the node identifier for the repository to which this object belongs.
 #' @param filename the filename for the fully qualified path to the data on disk, optional if \code{'data'} is provide
 #' @import digest
 #' @examples

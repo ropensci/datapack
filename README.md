@@ -13,9 +13,6 @@ this package provide a convenient way to load data from common repositories
 such as DataONE into the R environment, and to document, serialize, and save 
 data from R to data repositories worldwide.
 
-## Installation
-
-
 ## Installation Notes 
 
 One of the R packages that *datapackage* imports (the *redland* R package) depends on the Redland RDF libraries that must be installed before installing *datapackage*.
