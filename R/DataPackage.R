@@ -574,7 +574,7 @@ setMethod("serializeToBagit", signature("DataPackage"), function(.Object) {
   } 
   dir.create(bagDir)
   payloadDir <- sprintf("%s/data", bagDir)
-  if(!dir.exists(payloadDir)) dir.create(sprintf(payloadDir))
+  if(!dir.exists(payloadDir)) dir.create(payloadDir)
   
   # Get the relationships stored in this datapackage.
   relations <- getRelationships(.Object)
@@ -584,7 +584,7 @@ setMethod("serializeToBagit", signature("DataPackage"), function(.Object) {
   
   tmpFile <- tempfile()
   resMap <- new("ResourceMap", resMapId)
-  resMap <- createFromTriples(resMap, relations=relations, identifiers=getIdentifiers(.Object), resolveURI=".")  
+  resMap <- createFromTriples(resMap, relations=relations, identifiers=getIdentifiers(.Object), resolveURI="")  
   serializeRDF(resMap, tmpFile, syntaxName="rdfxml", mimeType="application/rdf+xml")
   freeResourceMap(resMap)
   rm(resMap)
@@ -691,7 +691,7 @@ setMethod("serializeToBagit", signature("DataPackage"), function(.Object) {
   if(getwd() != bagDir) {
     stop("Unable to set working directory to the Bagit dir: %s", bagDir)
   }
-  zip(zipFile, files=list.files(), flags="-q")
+  zip(zipFile, files=list.files(recursive=TRUE), flags="-q")
   # Return the zip filename
   return(zipFile)
 })
