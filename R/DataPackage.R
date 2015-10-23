@@ -399,6 +399,13 @@ setGeneric("getMember", function(x, identifier, ...) {
 
 #' @describeIn getMember
 #' @return A DataObject if the member is found, or NULL if not
+#' @export
+#' @examples
+#' dp <- new("DataPackage")
+#' data <- charToRaw("1,2,3\n4,5,6")
+#' do <- new("DataObject", id="myNewId", dataobj=data, format="text/csv", user="jsmith")
+#' addData(dp, do)
+#' do2 <- getMember(dp, "myNewId")
 setMethod("getMember", signature("DataPackage", "character"), function(x, identifier) {
     if (containsId(x, identifier)) {
         return(x@objects[[identifier]])
@@ -408,8 +415,7 @@ setMethod("getMember", signature("DataPackage", "character"), function(x, identi
 })
 
 #' Create an OAI-ORE resource map from the package
-#' @description Datapackage relationships are serialized as a OAI-ORE resource map
-#' and returned as a \code{\link{ResourceMap-class}} object.
+#' @description The Datapackage is serialized as a OAI-ORE resource map to the specified file.
 #' @param .Object A DataPackage object
 #' @param ... Additional arguments
 #' @seealso \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
@@ -419,13 +425,44 @@ setGeneric("serializePackage", function(.Object, ...) {
 })
 
 #' @describeIn serializePackage
+#' @details The resource map that is created is serialized by default as RDF/XML. Other serialization formats
+#' can be specified using the \code{syntaxName} and \code{mimeType} parameters. Other available formats
+#' include: 
+#' \tabular{ll}{
+#' \strong{syntaxName}\tab \strong{mimeType}\cr
+#' json\tab application/json\cr
+#' ntriples\tab application/n-triples\cr
+#' turtle\tab text/turtle\cr
+#' dot\tab text/x-graphviz\cr
+#' } 
+#' Note that the \code{syntaxName} and \code{mimeType} arguments together specify o serialization format.
+#' 
+#' Also, for packages that will be uploaded to the DataONE network, "rdfxml" is the only 
+#' accepted format.  
+#' 
+#' The resolveURI string value is prepended to DataPackage member identifiers in the resulting resource map. 
+#' If no resolveURI value is specified, then 'https://cn.dataone.org/cn/v1/resolve' is used.
 #' @param file The file to which the ResourceMap will be serialized
-#' @param id A unique identifier for the serialization. If a value is not specified, one will be generated
+#' @param id A unique identifier for the serialization. The default value is the id assinged 
+#' to the DataPackage when it was created.
 #' @param syntaxName The name of the syntax to use for serialization - default is "rdfxml"
 #' @param mimeType The mimetype of the serialized output - the default is "application/rdf+xml"
 #' @param namespaces A data frame containing one or more namespaces and their associated prefix
 #' @param syntaxURI URI of the serialization syntax
-#' @return A ResourceMap object
+#' @param resolveURI A character string containing a URI to prepend to datapackage identifiers
+#' @export
+#' @examples
+#' dp <- new("DataPackage")
+#' data <- charToRaw("1,2,3\n4,5,6")
+#' do <- new("DataObject", id="do1", dataobj=data, format="text/csv", user="jsmith")
+#' addData(dp, do)
+#' data2 <- charToRaw("7,8,9\n4,10,11")
+#' do2 <- new("DataObject", id="do2", dataobj=data2, format="text/csv", user="jsmith")
+#' addData(dp, do2)
+#' recordDerivation(dp, "do2", "do2")
+#' status <- serializePackage(dp, file="/tmp/resmap.json", syntaxName="json", mimeType="application/json")
+#' status <- serializePackage(dp, file="/tmp/resmap.rdf", syntaxName="rdfxml", mimeType="application/rdf+xml")
+#' status <- serializePackage(dp, file="/tmp/resmap.ttl", syntaxName="turtle", mimeType="text/turtle")
 setMethod("serializePackage", signature("DataPackage"), function(.Object, file, 
                                                                  id = as.character(NA),
                                                                  syntaxName="rdfxml", 
@@ -436,9 +473,18 @@ setMethod("serializePackage", signature("DataPackage"), function(.Object, file,
   relations <- getRelationships(.Object)
   
   # Create a ResourceMap object and serialize it to the specified file  
+  #
+  # If a serialization id was not specified, then use the id assinged to the DataPackage when it
+  # was created. If a DataPackage id was not assigned, then create a unique id.
   if(is.na(id)) {
-    id <- sprintf("urn:uuid", UUIDgenerate())
+    if(is.na(.Object@sysmeta@identifier) || is.null(.Object@sysmeta@identifier)) {
+      id <- sprintf("urn:uuid:%s", UUIDgenerate())
+    } else {
+      id <- .Object@sysmeta@identifier
+    }
   }
+  
+  # Create a resource map from previously stored triples, for example, from the relationships in a DataPackage
   resMap <- new("ResourceMap", id)
   resMap <- createFromTriples(resMap, relations=relations, identifiers=getIdentifiers(.Object), resolveURI=resolveURI)  
   status <- serializeRDF(resMap, file, syntaxName, mimeType, namespaces, syntaxURI)
@@ -447,7 +493,7 @@ setMethod("serializePackage", signature("DataPackage"), function(.Object, file,
 })
 
 #' Serialize A DataPackage into a Bagit Archive File
-#' @description The Bagit packaging format \link{https://tools.ietf.org/html/draft-kunze-bagit-08}
+#' @description The Bagit packaging format \url{https://tools.ietf.org/html/draft-kunze-bagit-08}
 #' is used to prepare an archive file that contains the contents of a DataPackage.
 #' @details A Bagit Archive File is created by copying each member of a DataPackge, and preparing
 #' files that describe the files in the archive, including information about the size of the files
