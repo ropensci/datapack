@@ -125,8 +125,13 @@ setMethod("createFromTriples", signature("ResourceMap", "data.frame", "character
   aggregatedBy <- "http://www.openarchives.org/ore/terms/isAggregatedBy"
   aggregates <- "http://www.openarchives.org/ore/terms/aggregates"
   aggregationType <- "http://www.openarchives.org/ore/terms/Aggregation"
-  aggregationId <- sprintf("%s/%s#aggregation", pkgResolveURI, .Object@id)
-  resMapURI <- paste(pkgResolveURI, .Object@id, sep="/")
+  if(nchar(pkResolveURI) == 0) {
+    aggregationId <- sprintf("%s#aggregation", pkgResolveURI, .Object@id)
+    resMapURI <- .Object@id
+  } else {
+    aggregationId <- sprintf("%s/%s#aggregation", pkgResolveURI, .Object@id)
+    resMapURI <- paste(pkgResolveURI, .Object@id, sep="/")
+  }
   
   # Add each triple from the input data.frame into the Redland RDF model.
   for(i in 1:nrow(relations)) {
