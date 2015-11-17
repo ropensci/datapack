@@ -93,7 +93,7 @@ setMethod("initialize", "ResourceMap", function(.Object, id = as.character(NA)) 
 #' @param .Object a ResourceMap
 #' @param relations A data.frame to read relationships from
 #' @param identifiers A list of the identifiers of data objects cotained in the associated data package
-#' @param resolveURI A character string containing a URI to prepend to datapackage identifiers
+#' @param resolveURI A character string containing a URI to prepend to datapackage identifiers.
 #' @seealso \code{\link[=ResourceMap-class]{ResourceMap}}{ class description.}
 #' @export
 setGeneric("createFromTriples", function(.Object, relations, identifiers, ...) { standardGeneric("createFromTriples")})
@@ -125,8 +125,11 @@ setMethod("createFromTriples", signature("ResourceMap", "data.frame", "character
   aggregatedBy <- "http://www.openarchives.org/ore/terms/isAggregatedBy"
   aggregates <- "http://www.openarchives.org/ore/terms/aggregates"
   aggregationType <- "http://www.openarchives.org/ore/terms/Aggregation"
-  if(nchar(pkResolveURI) == 0) {
-    aggregationId <- sprintf("%s#aggregation", pkgResolveURI, .Object@id)
+  # The 'resolve' URI may be blank if this is a resource map for a local datapackage. In this
+  # case, the resolve URI will be updated with a proper URI when this datapackage is uploaed
+  # to a repository.
+  if(nchar(pkgResolveURI) == 0) {
+    aggregationId <- sprintf("%s#aggregation", .Object@id)
     resMapURI <- .Object@id
   } else {
     aggregationId <- sprintf("%s/%s#aggregation", pkgResolveURI, .Object@id)
