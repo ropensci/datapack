@@ -63,13 +63,12 @@ setClass("DataPackage", slots = c(
 
 #' Create a DataPackage object
 #' @rdname initialize-DataPackage
-#' @description The DataPackage() method is a shortcut to creating a DataPackage object, as does
-#' not allow specifying any options that the \code{\link[=initialize-DataPackage]{initialize}} method allows.
+#' @description The DataPackage() method is a shortcut to creating a DataPackage object, as this method does
+#' not allow specifying any options that the \code{\link[=initialize-DataPackage]{initialize}} method allows (using new("DataPackage"")
 #' @param ... (Not yet used)
 #' @export
 setGeneric("DataPackage", function(...) { standardGeneric("DataPackage")} )
 
-#' Initialize a DataPackage object
 #' @rdname initialize-DataPackage
 #' @aliases initialize-DataPackage
 #' @import hash

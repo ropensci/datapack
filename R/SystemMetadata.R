@@ -44,6 +44,9 @@
 #' @slot dateSysMetadataModified value of type \code{"character"}, the last date on which this system metadata was modified.
 #' @slot originMemberNode value of type \code{"character"}, the node identifier of the node on which the object was originally registered.
 #' @slot authoritativeMemberNode value of type \code{"character"}, the node identifier of the node which currently is authoritative for the object.
+#' @slot seriesId value of type \code{"character"}, a unique Unicode string that identifies an object revision chain. A seriesId will resolve to the latest version of an object.
+#' @slot mediaType value of type \code{"character"}, the IANA Media Type (aka MIME-Type) of the object, e.g. "text/csv".
+#' @slot fileName value of type \code{"character"}, a suggested file name for the object.
 #' @section Methods:
 #' \itemize{
 #'  \item{\code{\link[=initialize-SystemMetadata]{initialize}}}{: Initialize a DataONE SystemMetadata object with default values or values passed in to the constructor object}
@@ -76,7 +79,10 @@ setClass("SystemMetadata", slots = c(
     dateUploaded            = "character",
     dateSysMetadataModified = "character",
     originMemberNode        = "character",
-    authoritativeMemberNode = "character"
+    authoritativeMemberNode = "character",
+    seriesId                = "character",
+    mediaType               = "character",
+    fileName                = "character"
     #replica                 = "character",
     ))
 
@@ -107,7 +113,9 @@ setClass("SystemMetadata", slots = c(
 #' @param dateSysMetadataModified value of type \code{"character"}, the last date on which this system metadata was modified.
 #' @param originMemberNode value of type \code{"character"}, the node identifier of the node on which the object was originally registered.
 #' @param authoritativeMemberNode value of type \code{"character"}, the node identifier of the node which currently is authoritative for the object.
-#'
+#' @param seriesId value of type \code{"character"}, a unique Unicode string that identifies an object revision chain. A seriesId will resolve to the latest version of an object.
+#' @param mediaType value of type \code{"character"}, the IANA Media Type (aka MIME-Type) of the object, e.g. "text/csv".
+#' @param fileName value of type \code{"character"}, a suggested file name for the object.
 #' @return the SystemMetadata instance representing an object
 #' @seealso http://mule1.dataone.org/ArchitectureDocs-current/apis/Types.html#Types.SystemMetadata
 #' @seealso \code{\link[=SystemMetadata-class]{SystemMetadata}}{ class description.}
@@ -118,7 +126,8 @@ setMethod("initialize", signature = "SystemMetadata", definition = function(.Obj
     checksumAlgorithm="SHA-1", submitter=as.character(NA), rightsHolder=as.character(NA), accessPolicy=data.frame(subject = character(), permission=character()),
     replicationAllowed=TRUE, numberReplicas=3, obsoletes=as.character(NA), obsoletedBy=as.character(NA), archived=FALSE, 
     dateUploaded=as.character(NA), dateSysMetadataModified=as.character(NA), 
-    originMemberNode=as.character(NA), authoritativeMemberNode=as.character(NA), preferredNodes=list(), blockedNodes=list()) {
+    originMemberNode=as.character(NA), authoritativeMemberNode=as.character(NA), preferredNodes=list(), blockedNodes=list(),
+    seriesId=as.character(NA), mediaType=as.character(NA), fileName=as.character(NA)) {
     # defaults here
     .Object@serialVersion <- 1
     .Object@identifier <- as.character(identifier)
@@ -140,6 +149,9 @@ setMethod("initialize", signature = "SystemMetadata", definition = function(.Obj
     .Object@dateSysMetadataModified <- defaultUTCDate(dateSysMetadataModified)
     .Object@originMemberNode <- as.character(originMemberNode)
     .Object@authoritativeMemberNode <- as.character(authoritativeMemberNode)
+    .Object@seriesId  <- as.character(seriesId)
+    .Object@mediaType <- as.character(mediaType)
+    .Object@fileName <- as.character(fileName)
     return(.Object)
 })
 
@@ -262,6 +274,12 @@ setMethod("parseSystemMetadata", signature("SystemMetadata", "XMLInternalElement
   sysmeta@dateSysMetadataModified <- xmlValue(xml[["dateSysMetadataModified"]])
   sysmeta@originMemberNode <- xmlValue(xml[["originMemberNode"]])
   sysmeta@authoritativeMemberNode <- xmlValue(xml[["authoritativeMemberNode"]])
+  
+  # DataONE v2 elements
+  if (!is.null(xmlValue(xml[["seriesId"]]))) sysmeta@seriesId <- xmlValue(xml[["seriesId"]]) 
+  if (!is.null(xmlValue(xml[["mediaType"]]))) sysmeta@mediaType <- xmlValue(xml[["mediaType"]])
+  if (!is.null(xmlValue(xml[["fileName"]]))) sysmeta@fileName <- xmlValue(xml[["fileName"]])
+  
   #TODO: sysmeta@replica    
   
   return(sysmeta)
@@ -279,11 +297,33 @@ setGeneric("serializeSystemMetadata", function(sysmeta, ...) {
 })
 #' @describeIn serializeSystemMetadata
 #' @return the character string representing a SystemMetadata object
-setMethod("serializeSystemMetadata", signature("SystemMetadata"), function(sysmeta) {
+setMethod("serializeSystemMetadata", signature("SystemMetadata"), function(sysmeta, version=as.character(NA)) {
   
+  if(is.na(version) || version == "v1") {
+    message("Serializeing v1")
+    d1Namespace <- "d1"
+    d1NamespaceDef <- c(d1 = "http://ns.dataone.org/service/types/v1")
+  } else if (version == "v2") {
+    message("Serializing v2...")
+    d1Namespace <- "d1_v2.0"
+    d1NamespaceDef <- c(d1_v2.0 = "http://ns.dataone.org/service/types/v2.0",  d1 = "http://ns.dataone.org/service/types/v1")
+  } else {
+    stop(sprintf("Unknown DataONE API version: %s\n", version))
+  }
   root <- xmlNode("systemMetadata",
-                  namespace="d1",
-                  namespaceDefinitions = c(d1 = "http://ns.dataone.org/service/types/v1"))
+                  namespace=d1Namespace,
+                  namespaceDefinitions = d1NamespaceDef)
+  # Check for v2 elements
+  if(!is.na(sysmeta@seriesId)) {
+    root <- addChildren(root, xmlNode("seriesId", sysmeta@seriesId))
+  }
+  if(!is.na(sysmeta@mediaType)) {
+    root <- addChildren(root, xmlNode("mediaType", sysmeta@mediaType))
+  }
+  if(!is.na(sysmeta@fileName)) {
+    root <- addChildren(root, xmlNode("fileName", sysmeta@fileName))
+  }
+  
   root <- addChildren(root, xmlNode("serialVersion", sysmeta@serialVersion))
   root <- addChildren(root, xmlNode("identifier", sysmeta@identifier))
   root <- addChildren(root, xmlNode("formatId", sysmeta@formatId))

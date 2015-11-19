@@ -31,6 +31,28 @@ test_that("XML SystemMetadata parsing works", {
   expect_that(grep("urn:node:KNB", sysmeta@preferredNodes) > 0, is_true())
   expect_that(grep("urn:node:mnUNM1", sysmeta@preferredNodes) > 0, is_true())
   expect_that(grep("urn:node:BADNODE", sysmeta@blockedNodes) > 0, is_true())
+  rm(sysmeta) 
+  rm(xml)
+  rm(do)
+  rm(csattrs)
+  # Parse v2.0 system metadata
+  testid <- "0007f892-0d8f-4451-94e9-94d02ba5dd0d_0"
+  sysmeta <- new("SystemMetadata")
+  expect_that(sysmeta@serialVersion, equals(1))
+  doc <- xmlParseDoc("../testfiles/sysmeta-v2.xml", asText=FALSE)
+  expect_that(xmlValue(xmlRoot(doc)[["identifier"]]), matches(testid))
+  xml <- xmlRoot(doc)
+  sysmeta <- parseSystemMetadata(sysmeta, xmlRoot(xml))
+  expect_that(sysmeta@identifier, matches(testid))
+  expect_that(nrow(sysmeta@accessPolicy), equals(1))
+  expect_that(as.character(sysmeta@accessPolicy$permission[[1]]), matches("read"))
+  expect_false(sysmeta@archived)
+  csattrs <- xmlAttrs(xml[["checksum"]])
+  expect_that(sysmeta@checksumAlgorithm, matches(csattrs[[1]]))
+  expect_equal(sysmeta@seriesId, "3")
+  expect_equal(sysmeta@mediaType, "text/csv")
+  expect_equal(sysmeta@fileName, "testData.csv")
+  
 })
 
 test_that("XML SystemMetadata serialization works", {
