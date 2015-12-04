@@ -101,10 +101,13 @@ setClass("DataObject", slots = c(
 #' @param .Object the DataObject instance to be initialized
 #' @param id the identifier for the DataObject, unique within its repository. Optionally this can be an existing SystemMetadata object
 #' @param dataobj the bytes of the data for this object in \code{'raw'} format, optional if \code{'filename'} is provided
-#' @param format the format identifier for the object (see \url{'http://cn.dataone.org/cn/v1/formats'})?
+#' @param format the format identifier for the object (see \url{'http://cn.dataone.org/cn/v2/formats'}
 #' @param user the identity of the user owning the package, typically in X.509 format
 #' @param mnNodeId the node identifier for the repository to which this object belongs.
-#' @param filename the filename for the fully qualified path to the data on disk, optional if \code{'data'} is provide
+#' @param filename the filename for the fully qualified path to the data on disk, optional if \code{'data'} is provided
+#' @param seriesId A unique string to identifier the latest of multiple revisions of the object.
+#' @param mediaType The When specified, indicates the IANA Media Type (aka MIME-Type) of the object. The value should include the media type and subtype (e.g. text/csv).
+#' @param suggestedFilename A suggested filename to use when this object is serialized. If not specified, defaults to the basename of the filename parameter.
 #' @import digest
 #' @examples
 #' data <- charToRaw("1,2,3\n4,5,6\n")
@@ -112,7 +115,8 @@ setClass("DataObject", slots = c(
 #'   "uid=jones,DC=example,DC=com", "urn:node:KNB")
 #' @seealso \code{\link[=DataObject-class]{DataObject}}{ class description.}
 setMethod("initialize", "DataObject", function(.Object, id=as.character(NA), dataobj=NA, format=as.character(NA), user=as.character(NA), 
-                                               mnNodeId=as.character(NA), filename=as.character(NA)) {
+                                               mnNodeId=as.character(NA), filename=as.character(NA), seriesId=as.character(NA),
+                                               mediaType=as.character(NA), suggestedFilename=as.character(NA)) {
   
     # If no value has been passed in for 'id', then create a UUID for it.
     if (class(id) != "SystemMetadata" && is.na(id)) {
@@ -121,8 +125,7 @@ setMethod("initialize", "DataObject", function(.Object, id=as.character(NA), dat
       
     # Validate: either dataobj or filename must be provided
     if (is.na(dataobj[[1]]) && is.na(filename)) {
-        message("Either the dataobj parameter containing raw data or the file parameter with a file reference to the data must be provided.")
-        return(NULL)
+        stop("Either the dataobj parameter containing raw data or the file parameter with a file reference to the data must be provided.")
     }
     
     # Validate: dataobj must be raw if provided
@@ -147,7 +150,17 @@ setMethod("initialize", "DataObject", function(.Object, id=as.character(NA), dat
             size <- length(dataobj)
             sha1 <- digest(dataobj, algo="sha1", serialize=FALSE, file=FALSE)
         }
-        .Object@sysmeta <- new("SystemMetadata", identifier=id, formatId=format, size=size, submitter=user, rightsHolder=user, checksum=sha1, originMemberNode=mnNodeId, authoritativeMemberNode=mnNodeId)
+        # If the suggested filename is not set, set it to the basename of the filename if set.
+        if(is.na(suggestedFilename)) {
+          if(!is.na(filename)) {}
+            suggestedFilename <- basename(filename)
+        } 
+        
+        # It's OK to set sysmeta v2 fields here, as they will only get serialized to v2 format if requested. The default is
+        # to serialze to v1 format which does not include seriesId, mediaType, fileName.
+        .Object@sysmeta <- new("SystemMetadata", identifier=id, formatId=format, size=size, submitter=user, rightsHolder=user, 
+                               checksum=sha1, originMemberNode=mnNodeId, authoritativeMemberNode=mnNodeId, 
+                               seriesId=seriesId, mediaType=mediaType, fileName=suggestedFilename)
         if (!is.na(dataobj[[1]])) { 
             .Object@data <- dataobj
         }
