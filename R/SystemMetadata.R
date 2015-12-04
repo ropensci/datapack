@@ -115,7 +115,7 @@ setClass("SystemMetadata", slots = c(
 #' @param authoritativeMemberNode value of type \code{"character"}, the node identifier of the node which currently is authoritative for the object.
 #' @param seriesId value of type \code{"character"}, a unique Unicode string that identifies an object revision chain. A seriesId will resolve to the latest version of an object.
 #' @param mediaType value of type \code{"character"}, the IANA Media Type (aka MIME-Type) of the object, e.g. "text/csv".
-#' @param fileName value of type \code{"character"}, a suggested file name for the object.
+#' @param fileName value of type \code{"character"}, a suggested file name for the object (if the object containing this sysmeta is serialized).
 #' @return the SystemMetadata instance representing an object
 #' @seealso http://mule1.dataone.org/ArchitectureDocs-current/apis/Types.html#Types.SystemMetadata
 #' @seealso \code{\link[=SystemMetadata-class]{SystemMetadata}}{ class description.}
@@ -296,15 +296,14 @@ setGeneric("serializeSystemMetadata", function(sysmeta, ...) {
   standardGeneric("serializeSystemMetadata")
 })
 #' @describeIn serializeSystemMetadata
+#' @param version A character string representing the DataONE API version that this system will be used with (eg. "v1", "v2").
 #' @return the character string representing a SystemMetadata object
 setMethod("serializeSystemMetadata", signature("SystemMetadata"), function(sysmeta, version=as.character(NA)) {
   
   if(is.na(version) || version == "v1") {
-    message("Serializeing v1")
     d1Namespace <- "d1"
     d1NamespaceDef <- c(d1 = "http://ns.dataone.org/service/types/v1")
-  } else if (version == "v2") {
-    message("Serializing v2...")
+  } else if (version >= "v2") {
     d1Namespace <- "d1_v2.0"
     d1NamespaceDef <- c(d1_v2.0 = "http://ns.dataone.org/service/types/v2.0",  d1 = "http://ns.dataone.org/service/types/v1")
   } else {
@@ -313,17 +312,7 @@ setMethod("serializeSystemMetadata", signature("SystemMetadata"), function(sysme
   root <- xmlNode("systemMetadata",
                   namespace=d1Namespace,
                   namespaceDefinitions = d1NamespaceDef)
-  # Check for v2 elements
-  if(!is.na(sysmeta@seriesId)) {
-    root <- addChildren(root, xmlNode("seriesId", sysmeta@seriesId))
-  }
-  if(!is.na(sysmeta@mediaType)) {
-    root <- addChildren(root, xmlNode("mediaType", sysmeta@mediaType))
-  }
-  if(!is.na(sysmeta@fileName)) {
-    root <- addChildren(root, xmlNode("fileName", sysmeta@fileName))
-  }
-  
+
   root <- addChildren(root, xmlNode("serialVersion", sysmeta@serialVersion))
   root <- addChildren(root, xmlNode("identifier", sysmeta@identifier))
   root <- addChildren(root, xmlNode("formatId", sysmeta@formatId))
@@ -331,7 +320,6 @@ setMethod("serializeSystemMetadata", signature("SystemMetadata"), function(sysme
   root <- addChildren(root, xmlNode("checksum", sysmeta@checksum, attrs = c(algorithm = sysmeta@checksumAlgorithm)))
   root <- addChildren(root, xmlNode("submitter", sysmeta@submitter))
   root <- addChildren(root, xmlNode("rightsHolder", sysmeta@rightsHolder))
-  
   if (nrow(sysmeta@accessPolicy) > 0) {
     accessPolicy <- xmlNode("accessPolicy")
     for(i in 1:nrow(sysmeta@accessPolicy)) {
@@ -362,6 +350,18 @@ setMethod("serializeSystemMetadata", signature("SystemMetadata"), function(sysme
   root <- addChildren(root, xmlNode("originMemberNode", sysmeta@originMemberNode))
   root <- addChildren(root, xmlNode("authoritativeMemberNode", sysmeta@authoritativeMemberNode))
   #TODO: sysmeta@replica (but not really needed for anything, so low priority)
+  # Add v2 elements
+  if (version >= "v2") {
+    if(!is.na(sysmeta@seriesId)) {
+      root <- addChildren(root, xmlNode("seriesId", sysmeta@seriesId))
+    }
+    if(!is.na(sysmeta@mediaType)) {
+      root <- addChildren(root, xmlNode("mediaType", sysmeta@mediaType))
+    }
+    if(!is.na(sysmeta@fileName)) {
+      root <- addChildren(root, xmlNode("fileName", sysmeta@fileName))
+    } 
+  }
   
   xml <- saveXML(root, encoding="UTF-8")  # NB: Currently saveXML ignores the encoding parameter
   
