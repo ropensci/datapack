@@ -152,8 +152,9 @@ setMethod("initialize", "DataObject", function(.Object, id=as.character(NA), dat
         }
         # If the suggested filename is not set, set it to the basename of the filename if set.
         if(is.na(suggestedFilename)) {
-          if(!is.na(filename)) {}
+          if(!is.na(filename)) {
             suggestedFilename <- basename(filename)
+          }
         } 
         
         # It's OK to set sysmeta v2 fields here, as they will only get serialized to v2 format if requested. The default is
