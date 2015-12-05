@@ -298,9 +298,9 @@ setGeneric("serializeSystemMetadata", function(sysmeta, ...) {
 #' @describeIn serializeSystemMetadata
 #' @param version A character string representing the DataONE API version that this system will be used with (eg. "v1", "v2").
 #' @return the character string representing a SystemMetadata object
-setMethod("serializeSystemMetadata", signature("SystemMetadata"), function(sysmeta, version=as.character(NA)) {
+setMethod("serializeSystemMetadata", signature("SystemMetadata"), function(sysmeta, version="v1",...) {
   
-  if(is.na(version) || version == "v1") {
+  if(version == "v1") {
     d1Namespace <- "d1"
     d1NamespaceDef <- c(d1 = "http://ns.dataone.org/service/types/v1")
   } else if (version >= "v2") {
