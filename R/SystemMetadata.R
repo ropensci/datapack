@@ -145,7 +145,8 @@ setMethod("initialize", signature = "SystemMetadata", definition = function(.Obj
     .Object@obsoletes <- as.character(obsoletes)
     .Object@obsoletedBy <- as.character(obsoletedBy)
     .Object@archived <- as.logical(archived)
-    .Object@dateUploaded <- defaultUTCDate(dateUploaded)
+    #.Object@dateUploaded <- defaultUTCDate(dateUploaded)
+    .Object@dateUploaded <- as.character(dateUploaded)
     .Object@dateSysMetadataModified <- defaultUTCDate(dateSysMetadataModified)
     .Object@originMemberNode <- as.character(originMemberNode)
     .Object@authoritativeMemberNode <- as.character(authoritativeMemberNode)
@@ -345,7 +346,8 @@ setMethod("serializeSystemMetadata", signature("SystemMetadata"), function(sysme
     root <- addChildren(root, xmlNode("obsoletedBy", sysmeta@obsoletedBy))
   }
   root <- addChildren(root, xmlNode("archived", tolower(as.character(sysmeta@archived))))
-  root <- addChildren(root, xmlNode("dateUploaded", sysmeta@dateUploaded))
+  # Serialize this optional field if it is defined
+  if(!is.na(sysmeta@dateUploaded)) root <- addChildren(root, xmlNode("dateUploaded", sysmeta@dateUploaded))
   root <- addChildren(root, xmlNode("dateSysMetadataModified", sysmeta@dateSysMetadataModified))
   root <- addChildren(root, xmlNode("originMemberNode", sysmeta@originMemberNode))
   root <- addChildren(root, xmlNode("authoritativeMemberNode", sysmeta@authoritativeMemberNode))
