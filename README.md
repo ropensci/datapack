@@ -41,7 +41,7 @@ From the R console, enter the following commands:
 install.packages("drat"))
 library(drat)
 addRepo("NCEAS")
-install.packages("datapackge")
+install.packages("datapackage")
 library(datapackage)
 ```
 
