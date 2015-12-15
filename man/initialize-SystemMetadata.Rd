@@ -17,7 +17,8 @@
   dateSysMetadataModified = as.character(NA),
   originMemberNode = as.character(NA),
   authoritativeMemberNode = as.character(NA), preferredNodes = list(),
-  blockedNodes = list())
+  blockedNodes = list(), seriesId = as.character(NA),
+  mediaType = as.character(NA), fileName = as.character(NA))
 }
 \arguments{
 \item{.Object}{The object being initialized}
@@ -59,6 +60,12 @@
 \item{preferredNodes}{list of \code{"character"}, each of which is the node identifier for a node to which a replica should be sent.}
 
 \item{blockedNodes}{list of \code{"character"}, each of which is the node identifier for a node blocked from housing replicas.}
+
+\item{seriesId}{value of type \code{"character"}, a unique Unicode string that identifies an object revision chain. A seriesId will resolve to the latest version of an object.}
+
+\item{mediaType}{value of type \code{"character"}, the IANA Media Type (aka MIME-Type) of the object, e.g. "text/csv".}
+
+\item{fileName}{value of type \code{"character"}, a suggested file name for the object (if the object containing this sysmeta is serialized).}
 }
 \value{
 the SystemMetadata instance representing an object

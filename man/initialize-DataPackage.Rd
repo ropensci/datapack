@@ -19,10 +19,8 @@ DataPackage(...)
 \item{packageId}{The package id to assign to the package}
 }
 \description{
-The DataPackage() method is a shortcut to creating a DataPackage object, as does
-not allow specifying any options that the \code{\link[=initialize-DataPackage]{initialize}} method allows.
-
-Initialize a DataPackage object
+The DataPackage() method is a shortcut to creating a DataPackage object, as this method does
+not allow specifying any options that the \code{\link[=initialize-DataPackage]{initialize}} method allows (using new("DataPackage"")
 }
 \examples{
 # Create a DataPackage with undefined package id (to be set manually later)

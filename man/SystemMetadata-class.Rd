@@ -51,6 +51,12 @@ access policy, replication policy, and related metadata.
 \item{\code{originMemberNode}}{value of type \code{"character"}, the node identifier of the node on which the object was originally registered.}
 
 \item{\code{authoritativeMemberNode}}{value of type \code{"character"}, the node identifier of the node which currently is authoritative for the object.}
+
+\item{\code{seriesId}}{value of type \code{"character"}, a unique Unicode string that identifies an object revision chain. A seriesId will resolve to the latest version of an object.}
+
+\item{\code{mediaType}}{value of type \code{"character"}, the IANA Media Type (aka MIME-Type) of the object, e.g. "text/csv".}
+
+\item{\code{fileName}}{value of type \code{"character"}, a suggested file name for the object.}
 }}
 \section{Methods}{
 

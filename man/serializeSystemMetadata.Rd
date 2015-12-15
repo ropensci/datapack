@@ -8,12 +8,15 @@
 \usage{
 serializeSystemMetadata(sysmeta, ...)
 
-\S4method{serializeSystemMetadata}{SystemMetadata}(sysmeta)
+\S4method{serializeSystemMetadata}{SystemMetadata}(sysmeta, version = "v1",
+  ...)
 }
 \arguments{
 \item{sysmeta}{The SystemMetadata instance to be serialized}
 
 \item{...}{(Not currently used)}
+
+\item{version}{A character string representing the DataONE API version that this system will be used with (eg. "v1", "v2").}
 }
 \value{
 the character string representing a SystemMetadata object

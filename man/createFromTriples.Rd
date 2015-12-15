@@ -18,7 +18,7 @@ createFromTriples(.Object, relations, identifiers, ...)
 
 \item{identifiers}{A list of the identifiers of data objects cotained in the associated data package}
 
-\item{resolveURI}{A character string containing a URI to prepend to datapackage identifiers}
+\item{resolveURI}{A character string containing a URI to prepend to datapackage identifiers.}
 }
 \description{
 RDF relationships are added to a ResourceMap object from a data.frame that

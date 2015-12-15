@@ -8,7 +8,9 @@
 \usage{
 \S4method{initialize}{DataObject}(.Object, id = as.character(NA),
   dataobj = NA, format = as.character(NA), user = as.character(NA),
-  mnNodeId = as.character(NA), filename = as.character(NA))
+  mnNodeId = as.character(NA), filename = as.character(NA),
+  seriesId = as.character(NA), mediaType = as.character(NA),
+  suggestedFilename = as.character(NA))
 }
 \arguments{
 \item{.Object}{the DataObject instance to be initialized}
@@ -17,13 +19,19 @@
 
 \item{dataobj}{the bytes of the data for this object in \code{'raw'} format, optional if \code{'filename'} is provided}
 
-\item{format}{the format identifier for the object (see \url{'http://cn.dataone.org/cn/v1/formats'})?}
+\item{format}{the format identifier for the object (see \url{'http://cn.dataone.org/cn/v2/formats'}}
 
 \item{user}{the identity of the user owning the package, typically in X.509 format}
 
 \item{mnNodeId}{the node identifier for the repository to which this object belongs.}
 
-\item{filename}{the filename for the fully qualified path to the data on disk, optional if \code{'data'} is provide}
+\item{filename}{the filename for the fully qualified path to the data on disk, optional if \code{'data'} is provided}
+
+\item{seriesId}{A unique string to identifier the latest of multiple revisions of the object.}
+
+\item{mediaType}{The When specified, indicates the IANA Media Type (aka MIME-Type) of the object. The value should include the media type and subtype (e.g. text/csv).}
+
+\item{suggestedFilename}{A suggested filename to use when this object is serialized. If not specified, defaults to the basename of the filename parameter.}
 }
 \description{
 When initializing a DataObject using passed in data, one can either pass
