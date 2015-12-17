@@ -686,9 +686,9 @@ setMethod("serializeToBagit", signature("DataPackage"), function(.Object) {
   writeLines(tagManifest, sprintf("%s/%s", bagDir, "tagmanifest-md5.txt"))
   zipFile <- tempfile(fileext=".zip")
   # Now zip up the directory struction 
-  setwd(bagDir)
-  if(getwd() != bagDir) {
-    stop("Unable to set working directory to the Bagit dir: %s", bagDir)
+  setwd(normalizePath(bagDir))
+  if(normalizePath(getwd()) != normalizePath(bagDir)) {
+    stop(sprintf("Unable to set working directory to the Bagit dir: %s", bagDir))
   }
   zip(zipFile, files=list.files(recursive=TRUE), flags="-q")
   # Return the zip filename
