@@ -18,6 +18,8 @@ createFromTriples(.Object, relations, identifiers, ...)
 
 \item{identifiers}{A list of the identifiers of data objects cotained in the associated data package}
 
+\item{...}{(Additional parameters)}
+
 \item{resolveURI}{A character string containing a URI to prepend to datapackage identifiers.}
 }
 \description{

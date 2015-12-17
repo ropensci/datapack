@@ -93,12 +93,13 @@ setMethod("initialize", "ResourceMap", function(.Object, id = as.character(NA)) 
 #' @param .Object a ResourceMap
 #' @param relations A data.frame to read relationships from
 #' @param identifiers A list of the identifiers of data objects cotained in the associated data package
-#' @param resolveURI A character string containing a URI to prepend to datapackage identifiers.
+#' @param ... (Additional parameters)
 #' @seealso \code{\link[=ResourceMap-class]{ResourceMap}}{ class description.}
 #' @export
 setGeneric("createFromTriples", function(.Object, relations, identifiers, ...) { standardGeneric("createFromTriples")})
 
 #' @describeIn createFromTriples
+#' @param resolveURI A character string containing a URI to prepend to datapackage identifiers.
 setMethod("createFromTriples", signature("ResourceMap", "data.frame", "character"), function(.Object, relations, identifiers, 
                                                                                              resolveURI=as.character(NA),...) {
   .Object@relations <- relations

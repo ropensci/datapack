@@ -496,9 +496,12 @@ setGeneric("serializePackage", function(.Object, ...) {
 #' do2 <- new("DataObject", id="do2", dataobj=data2, format="text/csv", user="jsmith")
 #' addData(dp, do2)
 #' recordDerivation(dp, "do2", "do2")
-#' status <- serializePackage(dp, file="/tmp/resmap.json", syntaxName="json", mimeType="application/json")
-#' status <- serializePackage(dp, file="/tmp/resmap.rdf", syntaxName="rdfxml", mimeType="application/rdf+xml")
-#' status <- serializePackage(dp, file="/tmp/resmap.ttl", syntaxName="turtle", mimeType="text/turtle")
+#' status <- serializePackage(dp, file="/tmp/resmap.json", syntaxName="json", 
+#'   mimeType="application/json")
+#' status <- serializePackage(dp, file="/tmp/resmap.rdf", syntaxName="rdfxml", 
+#'   mimeType="application/rdf+xml")
+#' status <- serializePackage(dp, file="/tmp/resmap.ttl", syntaxName="turtle", 
+#'   mimeType="text/turtle")
 setMethod("serializePackage", signature("DataPackage"), function(.Object, file, 
                                                                  id = as.character(NA),
                                                                  syntaxName="rdfxml", 

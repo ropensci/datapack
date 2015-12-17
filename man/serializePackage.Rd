@@ -69,9 +69,12 @@ data2 <- charToRaw("7,8,9\\n4,10,11")
 do2 <- new("DataObject", id="do2", dataobj=data2, format="text/csv", user="jsmith")
 addData(dp, do2)
 recordDerivation(dp, "do2", "do2")
-status <- serializePackage(dp, file="/tmp/resmap.json", syntaxName="json", mimeType="application/json")
-status <- serializePackage(dp, file="/tmp/resmap.rdf", syntaxName="rdfxml", mimeType="application/rdf+xml")
-status <- serializePackage(dp, file="/tmp/resmap.ttl", syntaxName="turtle", mimeType="text/turtle")
+status <- serializePackage(dp, file="/tmp/resmap.json", syntaxName="json",
+  mimeType="application/json")
+status <- serializePackage(dp, file="/tmp/resmap.rdf", syntaxName="rdfxml",
+  mimeType="application/rdf+xml")
+status <- serializePackage(dp, file="/tmp/resmap.ttl", syntaxName="turtle",
+  mimeType="text/turtle")
 }
 \seealso{
 \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
