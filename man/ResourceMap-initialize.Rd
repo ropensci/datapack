@@ -2,8 +2,8 @@
 % Please edit documentation in R/ResourceMap.R
 \docType{methods}
 \name{initialize,ResourceMap-method}
+\alias{ResourceMap-initialize}
 \alias{initialize,ResourceMap-method}
-\alias{initialize-ResourceMap}
 \title{Initialize a ResourceMap object.}
 \usage{
 \S4method{initialize}{ResourceMap}(.Object, id = as.character(NA))

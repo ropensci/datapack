@@ -25,7 +25,7 @@ in a DataPackage and the relationships between these objects.
 \section{Methods}{
 
 \itemize{
- \item{\code{\link[=initialize-ResourceMap]{initialize}}}{: Initialize a ResourceMap object}
+ \item{\code{\link[=ResourceMap-initialize]{initialize}}}{: Initialize a ResourceMap object}
  \item{\code{\link{createFromTriples}}}{: Get the data content of a specified data object}
  \item{\code{\link{serializeRDF}}}{: Get the Count of Objects in the Package}
 }

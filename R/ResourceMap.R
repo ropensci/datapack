@@ -45,7 +45,7 @@
 #' @import uuid
 #' @section Methods:
 #' \itemize{
-#'  \item{\code{\link[=initialize-ResourceMap]{initialize}}}{: Initialize a ResourceMap object}
+#'  \item{\code{\link[=ResourceMap-initialize]{initialize}}}{: Initialize a ResourceMap object}
 #'  \item{\code{\link{createFromTriples}}}{: Get the data content of a specified data object}
 #'  \item{\code{\link{serializeRDF}}}{: Get the Count of Objects in the Package}
 #' }
@@ -60,8 +60,8 @@ setClass("ResourceMap", slots = c(relations = "data.frame",
 
 #' Initialize a ResourceMap object.
 #' @description Create a ResourceMap object that contains relationships (RDF triples) of objects in the DataPackage.
-#' @rdname initialize-ResourceMap
-#' @aliases initialize-ResourceMap
+#' @rdname ResourceMap-initialize
+#' @aliases ResourceMap-initialize
 #' @param .Object a ResourceMap object
 #' @param id a unique identifier to identify this ResourceMap. This id will be used internally in the ResourceMap.
 #' @return the ResourceMap object

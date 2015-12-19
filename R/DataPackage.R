@@ -34,7 +34,7 @@
 #' @slot sysmeta A SystemMetadata class instance describing the package
 #' @section Methods:
 #' \itemize{
-#'  \item{\code{\link[=initialize-DataPackage]{initialize}}}{: Initialize a DataPackage object}
+#'  \item{\code{\link[=DataPackage-initialize]{initialize}}}{: Initialize a DataPackage object}
 #'  \item{\code{\link{getData}}}{: Get the data content of a specified data object}
 #'  \item{\code{\link{getSize}}}{: Get the Count of Objects in the Package}
 #'  \item{\code{\link{getIdentifiers}}}{: Get the Identifiers of Package Members}
@@ -61,16 +61,16 @@ setClass("DataPackage", slots = c(
 ## DataPackage constructors
 ###########################
 
-#' Create a DataPackage object
-#' @rdname initialize-DataPackage
-#' @description The DataPackage() method is a shortcut to creating a DataPackage object, as this method does
-#' not allow specifying any options that the \code{\link[=initialize-DataPackage]{initialize}} method allows (using new("DataPackage"")
-#' @param ... (Not yet used)
-#' @export
-setGeneric("DataPackage", function(...) { standardGeneric("DataPackage")} )
+## Create a DataPackage object
+## @description The DataPackage() method is a shortcut to creating a DataPackage object, as this method does
+## not allow specifying any options that the \code{\link[=initialize-DataPackage]{initialize}} method allows (using new("DataPackage"")
+## @param ... (Not yet used)
+## @export
+#setGeneric("DataPackage", function(...) { standardGeneric("DataPackage")} )
 
-#' @rdname initialize-DataPackage
-#' @aliases initialize-DataPackage
+#' Initialize a DataPackage object.
+#' @rdname DataPackage-initialize
+#' @aliases DataPackage-initialize
 #' @import hash
 #' @param .Object The object being initialized
 #' @param packageId The package id to assign to the package

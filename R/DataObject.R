@@ -48,7 +48,7 @@
 #' @aliases DataObject-class
 #' @section Methods:
 #' \itemize{
-#'   \item{\code{\link[=initialize-DataObject]{initialize}}}{: Initialize a DataObject}
+#'   \item{\code{\link[=DataObject-initialize]{initialize}}}{: Initialize a DataObject}
 #'   \item{\code{\link{getData}}}{: Get the data content of a specified data object}
 #'   \item{\code{\link{getIdentifier}}}{: Get the Identifier of the DataObject}
 #'   \item{\code{\link{getFormatId}}}{: Get the FormatId of the DataObject}
@@ -88,8 +88,8 @@ setClass("DataObject", slots = c(
 ##########################
 
 #' Initialize a DataObject
-#' @rdname initialize-DataObject
-#' @aliases initialize-DataObject
+#' @rdname DataObject-initialize
+#' @aliases DataObject-initialize
 #' @description When initializing a DataObject using passed in data, one can either pass 
 #' in the \code{'id'} param as a \code{'SystemMetadata'} object, or as a \code{'character'} string 
 #' representing the identifier for an object along with parameters for format, user,and associated member node.
