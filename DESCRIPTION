@@ -14,7 +14,7 @@ Description: The datapackage provides a flexible container to transport and
     structured zip files following the BagIt specification.
 Date: 2015
 Depends:
-    R
+    R (>= 3.1.1)
 Imports:
     digest,
     methods,
