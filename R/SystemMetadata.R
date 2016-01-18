@@ -350,7 +350,9 @@ setMethod("serializeSystemMetadata", signature("SystemMetadata"), function(sysme
   if(!is.na(sysmeta@dateUploaded)) root <- addChildren(root, xmlNode("dateUploaded", sysmeta@dateUploaded))
   root <- addChildren(root, xmlNode("dateSysMetadataModified", sysmeta@dateSysMetadataModified))
   root <- addChildren(root, xmlNode("originMemberNode", sysmeta@originMemberNode))
-  root <- addChildren(root, xmlNode("authoritativeMemberNode", sysmeta@authoritativeMemberNode))
+  if(!is.na(sysmeta@authoritativeMemberNode)) {
+    root <- addChildren(root, xmlNode("authoritativeMemberNode", sysmeta@authoritativeMemberNode))
+  }
   #TODO: sysmeta@replica (but not really needed for anything, so low priority)
   # Add v2 elements
   if (version >= "v2") {
