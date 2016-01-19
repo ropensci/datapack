@@ -42,10 +42,10 @@ specification is handled by the DataPackage class.
 \section{Classes}{
 
 \itemize{
- \item{\code{\link[=DataPackage-class]{DataPackage}}}{: A class representing a data package, which can contain data objects}
- \item{\code{\link[=DataObject-class]{DataObject}}}{: DataObject wraps raw data with system-level metadata}
- \item{\code{\link[=SystemMetadata-class]{SystemMetadata}}}{: A DataONE SystemMetadata object containing basic identification, ownership, access policy, replication policy, and related metadata.}
- \item{\code{\link[=ResourceMap-class]{ResourceMap}}}{: ResourceMap provides methods to create, serialize and deserialize an OAI ORE resource map.}
+ \item{\code{\link{DataPackage-class}}}{: A class representing a data package, which can contain data objects}
+ \item{\code{\link{DataObject-class}}}{: DataObject wraps raw data with system-level metadata}
+ \item{\code{\link{SystemMetadata-class}{SystemMetadata}}}{: A DataONE SystemMetadata object containing basic identification, ownership, access policy, replication policy, and related metadata.}
+ \item{\code{\link{ResourceMap-class}{ResourceMap}}}{: ResourceMap provides methods to create, serialize and deserialize an OAI ORE resource map.}
 }
 }
 \author{

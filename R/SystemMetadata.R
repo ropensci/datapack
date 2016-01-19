@@ -49,15 +49,15 @@
 #' @slot fileName value of type \code{"character"}, a suggested file name for the object.
 #' @section Methods:
 #' \itemize{
-#'  \item{\code{\link{SystemMetadata-initialize}{initialize}}}{: Initialize a DataONE SystemMetadata object with default values or values passed in to the constructor object}
-#'  \item{\code{\link{SystemMetadata}{SystemMetadata}}}{: Create a SystemMetadata object, with all fields set to the value found in an XML document}
+#'  \item{\code{\link[=SystemMetadata-initialize]{initialize}}}{: Initialize a DataONE SystemMetadata object with default values or values passed in to the constructor object}
+#'  \item{\code{\link{SystemMetadata}}}{: Create a SystemMetadata object, with all fields set to the value found in an XML document}
 #'  \item{\code{\link{parseSystemMetadata}}}{: Parse an external XML document and populate a SystemMetadata object with the parsed data}
 #'  \item{\code{\link{serializeSystemMetadata}}}{: Get the Count of Objects in the Package}
 #'  \item{\code{\link{validate}}}{: Validate a SystemMetadata object}
 #'  \item{\code{\link{addAccessRule}}}{: Add access rules to an object such as system metadata}
 #'  \item{\code{\link{hasAccessRule}}}{: Determine if a particular access rules exists within SystemMetadata.}
 #' }
-#' @seealso \code{\link{datapackage}}{ package description.}
+#' @seealso \code{\link{datapackage}}
 #' @export
 setClass("SystemMetadata", slots = c(
     serialVersion           = "numeric",
@@ -117,8 +117,8 @@ setClass("SystemMetadata", slots = c(
 #' @param mediaType value of type \code{"character"}, the IANA Media Type (aka MIME-Type) of the object, e.g. "text/csv".
 #' @param fileName value of type \code{"character"}, a suggested file name for the object (if the object containing this sysmeta is serialized).
 #' @return the SystemMetadata instance representing an object
-#' @seealso http://mule1.dataone.org/ArchitectureDocs-current/apis/Types.html#Types.SystemMetadata
-#' @seealso \code{\link{SystemMetadata-class}{SystemMetadata}}{ class description.}
+#' @seealso \url{http://mule1.dataone.org/ArchitectureDocs-current/apis/Types.html#Types.SystemMetadata}
+#' @seealso \code{\link{SystemMetadata-class}}
 #' @export
 #' 
 setMethod("initialize", signature = "SystemMetadata", definition = function(.Object,
@@ -163,7 +163,7 @@ setMethod("initialize", signature = "SystemMetadata", definition = function(.Obj
 #' @rdname SystemMetadata
 #' @aliases SystemMetadata
 #' @param ... Additional arguments
-#' @seealso \code{\link{SystemMetadata-class}{SystemMetadata}}{ class description.}
+#' @seealso \code{\link{SystemMetadata-class}}
 #' @export
 setGeneric("SystemMetadata", function(...) {
     standardGeneric("SystemMetadata")
@@ -206,7 +206,7 @@ setMethod("SystemMetadata", signature("XMLInternalElementNode"), function(sysmet
 #' @param xml The XML representation of the capabilities, as an XMLInternalElementNode
 #' @param ... Additional arguments passed to other functions or methods
 #' @import XML
-#' @seealso \code{\link{SystemMetadata-class}{SystemMetadata}}{ class description.}
+#' @seealso \code{\link{SystemMetadata-class}}
 #' @export
 setGeneric("parseSystemMetadata", function(sysmeta, xml, ...) {
   standardGeneric("parseSystemMetadata")
@@ -294,7 +294,7 @@ setMethod("parseSystemMetadata", signature("SystemMetadata", "XMLInternalElement
 #' @param ... (Not currently used)
 #' @return A character value of the filename that the XML representation of the SystemMetadata object was written to.
 #' @import XML
-#' @seealso \code{\link{SystemMetadata-class}{SystemMetadata}}{ class description.}
+#' @seealso \code{\link{SystemMetadata-class}}
 #' @export
 setGeneric("serializeSystemMetadata", function(sysmeta, ...) {
   standardGeneric("serializeSystemMetadata")
@@ -380,7 +380,7 @@ setMethod("serializeSystemMetadata", signature("SystemMetadata"), function(sysme
 #' Validate a system metadata object, ensuring that required fields are present and of the right type.
 #' @param object the instance to be validated
 #' @param ... (Additional parameters)
-#' @seealso \code{\link{SystemMetadata-class}{SystemMetadata}}{ class description.}
+#' @seealso \code{\link{SystemMetadata-class}}
 #' @export
 setGeneric("validate", function(object, ...) {
     standardGeneric("validate")
@@ -395,7 +395,7 @@ setMethod("validate", signature("SystemMetadata"), function(object, ...) validat
 #' @param x The object instance to which to add the rules
 #' @param y The subject of the rule to be added, or a data frame of subject/permission tuples
 #' @param ... (Not yet used)
-#' @seealso \code{\link{SystemMetadata-class}{SystemMetadata}}{ class description.}
+#' @seealso \code{\link{SystemMetadata-class}}
 #' @export
 setGeneric("addAccessRule", function(x, y, ...) {
     standardGeneric("addAccessRule")
@@ -430,7 +430,7 @@ setMethod("addAccessRule", signature("SystemMetadata", "data.frame"), function(x
 #' @param subject the subject of the rule to be checked
 #' @param ... Additional arguments
 #' @return A logical value: if TRUE the access rule was found, if FALSE it was not found.
-#' @seealso \code{\link{SystemMetadata-class}{SystemMetadata}}{ class description.}
+#' @seealso \code{\link{SystemMetadata-class}}
 #' @export
 setGeneric("hasAccessRule", function(sysmeta, subject, ...) {
     standardGeneric("hasAccessRule")

@@ -18,7 +18,7 @@ data from R to data repositories worldwide.
 The *datapackage* R package has not been released to CRAN yet, nor have its dependencies, so you need to install the 
 dependencies manually before installing the package itself.  The main dependency is the `redland` R package
 which must be installed on your OS prior to installing the R code. The R package *drat* can be used to
-install the *dataone* R package from the NCEAS repository.
+install the *datapackage* R package from the NCEAS repository.
 
 Before the `redland` R package can be installed, the Redland C libraries must be installed.
 
@@ -35,13 +35,14 @@ port version
 ```
 
 ### Installing with Macports
-If you are already using the MacPorts package manager, you can install *dataone* with the following commands, 
-otherwise, it is recommended that you skip to the next section *Installing with HomeBrew*. To install
-the *datapackage* R package with MacPorts, enter these commands at a terminal window:
+If you are already using the MacPorts package manager, you can install *datapackage* with the following commands, 
+otherwise, it is recommended that you skip to the next section *Installing with HomeBrew*. 
 
+To install the *datapackage* R package with MacPorts, enter this commands at a terminal window:
 ```
 sudo port install redland
 ```
+
 Then enter these commands in the R console:
 ```
 install.packages("drat")

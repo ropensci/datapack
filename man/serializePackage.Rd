@@ -73,6 +73,6 @@ status <- serializePackage(dp, file="/tmp/resmap.ttl", syntaxName="turtle",
   mimeType="text/turtle")
 }
 \seealso{
-\code{\link[=DataPackage-class]{DataPackage}}{ class description.}
+\code{\link{DataPackage-class}}
 }
 

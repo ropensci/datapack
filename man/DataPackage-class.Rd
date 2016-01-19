@@ -22,7 +22,7 @@ uploaded to a data repository or archived.
 \section{Methods}{
 
 \itemize{
- \item{\code{\link{DataPackage-initialize}{initialize}}}{: Initialize a DataPackage object}
+ \item{\code{\link[=DataPackage-initialize]{initialize}}}{: Initialize a DataPackage object}
  \item{\code{\link{getData}}}{: Get the data content of a specified data object}
  \item{\code{\link{getSize}}}{: Get the Count of Objects in the Package}
  \item{\code{\link{getIdentifiers}}}{: Get the Identifiers of Package Members}
@@ -38,6 +38,6 @@ uploaded to a data repository or archived.
 }
 }
 \seealso{
-\code{\link{datapackage}}{ package description.}
+\code{\link{datapackage}}
 }
 

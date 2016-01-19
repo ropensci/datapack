@@ -28,6 +28,6 @@ insertRelationship(dp, "/Users/smith/scripts/genFields.R",
 rels <- getRelationships(dp)
 }
 \seealso{
-\code{\link[=DataPackage-class]{DataPackage}}{ class description.}
+\code{\link{DataPackage-class}}
 }
 

@@ -20,8 +20,7 @@ addData(x, do, ...)
 \item{mo}{A DataObject (containing metadata describing \code{"do"} ) to associate with the science object.}
 }
 \description{
-The DataObject is added to the DataPackage, making it available for
-retrieval and eventual upload using the method \code{\link[dataone]{uploadDataPackage}}.
+The DataObject is added to the DataPackage.
 
 The DataObject \code{do} is added to the data package \code{x}.
 }
@@ -44,6 +43,6 @@ do <- new("DataObject", id="id1", dataobj=data, format="text/csv", user="smith",
 addData(dpkg, do, md)
 }
 \seealso{
-\code{\link[=DataPackage-class]{DataPackage}}{ class description.}
+\code{\link{DataPackage-class}}
 }
 

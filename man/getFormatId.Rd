@@ -22,6 +22,6 @@ the formatId
 Get the FormatId of the DataObject
 }
 \seealso{
-\code{\link[=DataObject-class]{DataObject}}{ class description.}
+\code{\link{DataObject-class}}
 }
 

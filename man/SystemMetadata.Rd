@@ -24,6 +24,6 @@ If the *sysmeta* parameter is specified, then construct a new SystemMetadata ins
 an XML representation of the SystemMetadata.
 }
 \seealso{
-\code{\link{SystemMetadata-class}{SystemMetadata}}{ class description.}
+\code{\link{SystemMetadata-class}}
 }
 

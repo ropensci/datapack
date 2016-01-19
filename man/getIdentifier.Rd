@@ -22,6 +22,6 @@ the identifier
 Get the Identifier of the DataObject
 }
 \seealso{
-\code{\link[=DataObject-class]{DataObject}}{ class description.}
+\code{\link{DataObject-class}}
 }
 

@@ -36,6 +36,6 @@ The Redland RDF library is used to serialize the ResourceMap RDF model
 to a file as RDF/XML.
 }
 \seealso{
-\code{\link[=ResourceMap-class]{ResourceMap}}{ class description.}
+\code{\link{ResourceMap-class}}
 }
 

@@ -23,6 +23,6 @@ pkg <- new("DataPackage")
 pkg <- new("DataPackage", "urn:uuid:4f953288-f593-49a1-adc2-5881f815e946")
 }
 \seealso{
-\code{\link[=DataPackage-class]{DataPackage}}{ class description.}
+\code{\link{DataPackage-class}}
 }
 

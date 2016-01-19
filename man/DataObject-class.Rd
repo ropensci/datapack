@@ -37,7 +37,7 @@ contents of the data or file as a raw value (but this will read all of the data 
 \section{Methods}{
 
 \itemize{
-  \item{\code{\link{DataObject-initialize}{initialize}}}{: Initialize a DataObject}
+  \item{\code{\link[=DataObject-initialize]{initialize}}}{: Initialize a DataObject}
   \item{\code{\link{getData}}}{: Get the data content of a specified data object}
   \item{\code{\link{getIdentifier}}}{: Get the Identifier of the DataObject}
   \item{\code{\link{getFormatId}}}{: Get the FormatId of the DataObject}
@@ -66,7 +66,7 @@ do <- new("DataObject", "id1", format="text/csv", user="uid=jones,DC=example,DC=
   mnNodeId="urn:node:KNB", filename=tf)
 }
 \seealso{
-\code{\link{datapackage}}{ package description.}
+\code{\link{datapackage}}
 }
 \keyword{classes}
 

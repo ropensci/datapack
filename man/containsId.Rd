@@ -32,6 +32,6 @@ addData(dp, do)
 isInPackage <- containsId(dp, identifier="myNewId")
 }
 \seealso{
-\code{\link[=DataPackage-class]{DataPackage}}{ class description.}
+\code{\link{DataPackage-class}}
 }
 

@@ -51,6 +51,6 @@ do <- new("DataObject", "id1", dataobj=data, "text/csv",
   "uid=jones,DC=example,DC=com", "urn:node:KNB")
 }
 \seealso{
-\code{\link[=DataObject-class]{DataObject}}{ class description.}
+\code{\link{DataObject-class}}
 }
 

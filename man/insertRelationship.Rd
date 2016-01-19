@@ -69,6 +69,6 @@ insertRelationship(dp, subjectID="orcid.org/0000-0002-2192-403X",
 }
 }
 \seealso{
-\code{\link[=DataPackage-class]{DataPackage}}{ class description.}
+\code{\link{DataPackage-class}}
 }
 

@@ -43,7 +43,7 @@ serializeToRDF("ResourceMap", file="myResMap.rdf")
 }
 }
 \seealso{
-\code{\link{datapackage}}{ package description.}
+\code{\link{datapackage}}
 }
 \keyword{resourceMap}
 

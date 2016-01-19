@@ -32,6 +32,6 @@ If the \code{'version'} parameter is specified as *v2* then the SystemMetadata
 object is serialized according to the DataONE version 2.0 system metdata format.
 }
 \seealso{
-\code{\link{SystemMetadata-class}{SystemMetadata}}{ class description.}
+\code{\link{SystemMetadata-class}}
 }
 

@@ -29,6 +29,6 @@ addData(dp, do)
 removeMember(dp, "myNewId")
 }
 \seealso{
-\code{\link[=DataPackage-class]{DataPackage}}{ class description.}
+\code{\link{DataPackage-class}}
 }
 

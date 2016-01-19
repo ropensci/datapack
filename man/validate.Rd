@@ -22,6 +22,6 @@ logical, \code{TRUE} if the SystemMetadata object is valid, else a list of strin
 Validate a system metadata object, ensuring that required fields are present and of the right type.
 }
 \seealso{
-\code{\link{SystemMetadata-class}{SystemMetadata}}{ class description.}
+\code{\link{SystemMetadata-class}}
 }
 

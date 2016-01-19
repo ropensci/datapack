@@ -30,6 +30,6 @@ that represent the access rules for its associated object. This method determine
 whether a particular access rule already exists within the set.
 }
 \seealso{
-\code{\link{SystemMetadata-class}{SystemMetadata}}{ class description.}
+\code{\link{SystemMetadata-class}}
 }
 

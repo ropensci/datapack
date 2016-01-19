@@ -29,6 +29,6 @@ addData(dp, do)
 getSize(dp)
 }
 \seealso{
-\code{\link[=DataPackage-class]{DataPackage}}{ class description.}
+\code{\link{DataPackage-class}}
 }
 

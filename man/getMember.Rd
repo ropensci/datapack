@@ -32,6 +32,6 @@ addData(dp, do)
 do2 <- getMember(dp, "myNewId")
 }
 \seealso{
-\code{\link[=DataPackage-class]{DataPackage}}{ class description.}
+\code{\link{DataPackage-class}}
 }
 

@@ -54,6 +54,6 @@ sciObj <- addAccessRule(sciObj, accessRules)
 }
 }
 \seealso{
-\code{\link{SystemMetadata-class}{SystemMetadata}}{ class description.}
+\code{\link{SystemMetadata-class}}
 }
 

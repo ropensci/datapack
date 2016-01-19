@@ -38,6 +38,6 @@ recordDerivation(dp, "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R0
 }
 }
 \seealso{
-\code{\link[=DataPackage-class]{DataPackage}}{ class description.}
+\code{\link{DataPackage-class}}
 }
 

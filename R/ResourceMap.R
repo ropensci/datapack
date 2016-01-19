@@ -49,7 +49,7 @@
 #'  \item{\code{\link{createFromTriples}}}{: Get the data content of a specified data object}
 #'  \item{\code{\link{serializeRDF}}}{: Get the Count of Objects in the Package}
 #' }
-#' @seealso \code{\link{datapackage}}{ package description.}
+#' @seealso \code{\link{datapackage}}
 #' @export
 #' 
 setClass("ResourceMap", slots = c(relations = "data.frame",
@@ -65,7 +65,7 @@ setClass("ResourceMap", slots = c(relations = "data.frame",
 #' @param .Object a ResourceMap object
 #' @param id a unique identifier to identify this ResourceMap. This id will be used internally in the ResourceMap.
 #' @return the ResourceMap object
-#' @seealso \code{\link[=ResourceMap-class]{ResourceMap}}{ class description.}
+#' @seealso \code{\link{ResourceMap-class}}
 #' @export
 setMethod("initialize", "ResourceMap", function(.Object, id = as.character(NA)) {
   .Object@relations <- data.frame()
@@ -94,7 +94,7 @@ setMethod("initialize", "ResourceMap", function(.Object, id = as.character(NA)) 
 #' @param relations A data.frame to read relationships from
 #' @param identifiers A list of the identifiers of data objects cotained in the associated data package
 #' @param ... (Additional parameters)
-#' @seealso \code{\link[=ResourceMap-class]{ResourceMap}}{ class description.}
+#' @seealso \code{\link{ResourceMap-class}}
 #' @export
 setGeneric("createFromTriples", function(.Object, relations, identifiers, ...) { standardGeneric("createFromTriples")})
 
@@ -213,7 +213,7 @@ setMethod("createFromTriples", signature("ResourceMap", "data.frame", "character
 #' @param .Object a ResourceMap
 #' @param file the file to which the ResourceMap will be serialized
 #' @param ... Additional parameters
-#' @seealso \code{\link[=ResourceMap-class]{ResourceMap}}{ class description.}
+#' @seealso \code{\link{ResourceMap-class}}
 #' @export
 setGeneric("serializeRDF", function(.Object, file, ...) { standardGeneric("serializeRDF")})
 
@@ -266,7 +266,7 @@ setMethod("serializeRDF", signature("ResourceMap", "character"), function(.Objec
 #' @description The resources allocated by the redland RDF package are freed. The ResourceMap
 #' object should be deleted immediately following this call.
 #' @param .Object a ResourceMap
-#' @seealso \code{\link[=ResourceMap-class]{ResourceMap}}{ class description.}
+#' @seealso \code{\link{ResourceMap-class}}
 #' @export
 setGeneric("freeResourceMap", function(.Object) { 
   standardGeneric("freeResourceMap")

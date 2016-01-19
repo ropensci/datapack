@@ -26,6 +26,6 @@ Parse an XML representation of system metadata, and set the object slots of a Sy
 the with obtained values.
 }
 \seealso{
-\code{\link{SystemMetadata-class}{SystemMetadata}}{ class description.}
+\code{\link{SystemMetadata-class}}
 }
 

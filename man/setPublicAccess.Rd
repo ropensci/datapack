@@ -26,6 +26,6 @@ metadata locally, and will not have any effect on remotely uploaded copies of
 the DataObject.
 }
 \seealso{
-\code{\link[=DataObject-class]{DataObject}}{ class description.}
+\code{\link{DataObject-class}}
 }
 

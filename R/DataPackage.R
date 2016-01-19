@@ -34,7 +34,7 @@
 #' @slot sysmeta A SystemMetadata class instance describing the package
 #' @section Methods:
 #' \itemize{
-#'  \item{\code{\link{DataPackage-initialize}{initialize}}}{: Initialize a DataPackage object}
+#'  \item{\code{\link[=DataPackage-initialize]{initialize}}}{: Initialize a DataPackage object}
 #'  \item{\code{\link{getData}}}{: Get the data content of a specified data object}
 #'  \item{\code{\link{getSize}}}{: Get the Count of Objects in the Package}
 #'  \item{\code{\link{getIdentifiers}}}{: Get the Identifiers of Package Members}
@@ -48,7 +48,7 @@
 #'  \item{\code{\link{serializePackage}}}{: Create an OAI-ORE resource map from the package}
 #'  \item{\code{\link{serializeToBagit}}}{: Serialize A DataPackage into a Bagit Archive File}
 #' }
-#' @seealso \code{\link{datapackage}}{ package description.}
+#' @seealso \code{\link{datapackage}}
 #' @export
 setClass("DataPackage", slots = c(
     relations               = "hash",
@@ -79,7 +79,7 @@ setClass("DataPackage", slots = c(
 #' pkg <- new("DataPackage")
 #' # Alternatively, manually assign the package id when the DataPackage object is created
 #' pkg <- new("DataPackage", "urn:uuid:4f953288-f593-49a1-adc2-5881f815e946")
-#' @seealso \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
+#' @seealso \code{\link{DataPackage-class}}
 setMethod("initialize", "DataPackage", function(.Object, packageId) {
     dmsg("DataPackage-class.R initialize")
 
@@ -110,7 +110,7 @@ setMethod("getData", signature("DataPackage", "character"), function(x, id) {
 #' @param x A DataPackage instance
 #' @param ... (not yet used)
 #' @return The number of object in the Package
-#' @seealso \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
+#' @seealso \code{\link{DataPackage-class}}
 #' @export
 setGeneric("getSize", function(x, ...) { standardGeneric("getSize")} )
 
@@ -135,7 +135,7 @@ setMethod("getSize", "DataPackage", function(x) {
 #' @param x A DataPackage instance
 #' @param ... (not yet used)
 #' @return A list of identifiers
-#' @seealso \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
+#' @seealso \code{\link{DataPackage-class}}
 #' @export
 setGeneric("getIdentifiers", function(x, ...) { standardGeneric("getIdentifiers")} )
 
@@ -152,12 +152,11 @@ setMethod("getIdentifiers", "DataPackage", function(x) {
 })
 
 #' Add a DataObject to the DataPackage
-#' @description The DataObject is added to the DataPackage, making it available for
-#' retrieval and eventual upload using the method \code{\link[dataone]{uploadDataPackage}}.
+#' @description The DataObject is added to the DataPackage.
 #' @param x A DataPackage instance
 #' @param do A DataObject instance
 #' @param ... (Additional parameters)
-#' @seealso \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
+#' @seealso \code{\link{DataPackage-class}}
 #' @export
 setGeneric("addData", function(x, do, ...) { 
     standardGeneric("addData")
@@ -213,7 +212,7 @@ setMethod("addData", signature("DataPackage", "DataObject"), function(x, do, mo=
 #' @param objectIDs A list of identifiers of the object of the relationships (a relationship is recorded for each objectID)
 #' @param predicate The IRI of the predicate of the relationship
 #' @param ... (Additional parameters)
-#' @seealso \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
+#' @seealso \code{\link{DataPackage-class}}
 #' @export
 setGeneric("insertRelationship", function(x, subjectID, objectIDs, predicate, ...) {
   standardGeneric("insertRelationship")
@@ -324,7 +323,7 @@ setMethod("insertRelationship", signature("DataPackage", "character", "character
 #' recordDerivation(dp, "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1",
 #'                      "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.45.1")
 #' }
-#' @seealso \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
+#' @seealso \code{\link{DataPackage-class}}
 #' @export
 setGeneric("recordDerivation", function(x, ...) {
     standardGeneric("recordDerivation")
@@ -345,7 +344,7 @@ setMethod("recordDerivation",  signature("DataPackage"), function(x, sourceID, d
 #' as the columns, ordered by "subject"
 #' @param x A DataPackage object
 #' @param ... (Not yet used)
-#' @seealso \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
+#' @seealso \code{\link{DataPackage-class}}
 #' @export
 setGeneric("getRelationships", function(x, ...) {
   standardGeneric("getRelationships")
@@ -373,7 +372,7 @@ setMethod("getRelationships", signature("DataPackage"), function(x, ...) {
 #' @param x A DataPackage object
 #' @param identifier The DataObject identifier to check for inclusion in the DataPackage
 #' @param ... (Not yet used)
-#' @seealso \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
+#' @seealso \code{\link{DataPackage-class}}
 #' @export
 setGeneric("containsId", function(x, identifier, ...) {
     standardGeneric("containsId")
@@ -401,7 +400,7 @@ setMethod("containsId", signature("DataPackage", "character"), function(x, ident
 #' @param x a Datapackage object
 #' @param identifier an identifier for a DataObject
 #' @param ... (Not yet used)
-#' @seealso \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
+#' @seealso \code{\link{DataPackage-class}}
 #' @export 
 setGeneric("removeMember", function(x, identifier, ...) {
   standardGeneric("removeMember")
@@ -427,7 +426,7 @@ setMethod("removeMember", signature("DataPackage", "character"), function(x, ide
 #' @param x A DataPackage object
 #' @param identifier A DataObject identifier
 #' @param ... (Not yet used)
-#' @seealso \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
+#' @seealso \code{\link{DataPackage-class}}
 #' @export
 setGeneric("getMember", function(x, identifier, ...) {
     standardGeneric("getMember")
@@ -454,7 +453,7 @@ setMethod("getMember", signature("DataPackage", "character"), function(x, identi
 #' @description The Datapackage is serialized as a OAI-ORE resource map to the specified file.
 #' @param .Object A DataPackage object
 #' @param ... Additional arguments
-#' @seealso \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
+#' @seealso \code{\link{DataPackage-class}}
 #' @export
 setGeneric("serializePackage", function(.Object, ...) {
   standardGeneric("serializePackage")
@@ -540,7 +539,7 @@ setMethod("serializePackage", signature("DataPackage"), function(.Object, file,
 #' a single zip file.
 #' @param .Object A DataPackage object
 #' @param ... Additional arguments
-#' @seealso \code{\link[=DataPackage-class]{DataPackage}}{ class description.}
+#' @seealso \code{\link{DataPackage-class}}
 #' @export
 setGeneric("serializeToBagit", function(.Object, ...) {
   standardGeneric("serializeToBagit")

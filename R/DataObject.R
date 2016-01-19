@@ -48,7 +48,7 @@
 #' @aliases DataObject-class
 #' @section Methods:
 #' \itemize{
-#'   \item{\code{\link{DataObject-initialize}{initialize}}}{: Initialize a DataObject}
+#'   \item{\code{\link[=DataObject-initialize]{initialize}}}{: Initialize a DataObject}
 #'   \item{\code{\link{getData}}}{: Get the data content of a specified data object}
 #'   \item{\code{\link{getIdentifier}}}{: Get the Identifier of the DataObject}
 #'   \item{\code{\link{getFormatId}}}{: Get the FormatId of the DataObject}
@@ -56,7 +56,7 @@
 #'   \item{\code{\link{addAccessRule}}}{: Add a Rule to the AccessPolicy}
 #'   \item{\code{\link{canRead}}}{: Test whether the provided subject can read an object.}
 #' }
-#' @seealso \code{\link{datapackage}}{ package description.}
+#' @seealso \code{\link{datapackage}}
 #' @examples
 #' data <- charToRaw("1,2,3\n4,5,6\n")
 #' do <- new("DataObject", "id1", dataobj=data, "text/csv", 
@@ -113,7 +113,7 @@ setClass("DataObject", slots = c(
 #' data <- charToRaw("1,2,3\n4,5,6\n")
 #' do <- new("DataObject", "id1", dataobj=data, "text/csv", 
 #'   "uid=jones,DC=example,DC=com", "urn:node:KNB")
-#' @seealso \code{\link[=DataObject-class]{DataObject}}{ class description.}
+#' @seealso \code{\link{DataObject-class}}
 setMethod("initialize", "DataObject", function(.Object, id=as.character(NA), dataobj=NA, format=as.character(NA), user=as.character(NA), 
                                                mnNodeId=as.character(NA), filename=as.character(NA), seriesId=as.character(NA),
                                                mediaType=as.character(NA), suggestedFilename=as.character(NA)) {
@@ -184,7 +184,7 @@ setMethod("initialize", "DataObject", function(.Object, id=as.character(NA), dat
 #' package member to get data from
 #' @param ... Additional arguments
 #' @aliases getData
-#' @seealso \code{\link[=DataObject-class]{DataObject}}{ class description.}
+#' @seealso \code{\link{DataObject-class}}
 #' @export
 setGeneric("getData", function(x, id=NA, ...) {
     standardGeneric("getData")
@@ -212,7 +212,7 @@ setMethod("getData", signature("DataObject"), function(x) {
 #' @param ... (not yet used)
 #' @return the identifier
 #' @aliases getIdentifier
-#' @seealso \code{\link[=DataObject-class]{DataObject}}{ class description.}
+#' @seealso \code{\link{DataObject-class}}
 #' @export
 setGeneric("getIdentifier", function(x, ...) {
     standardGeneric("getIdentifier")
@@ -229,7 +229,7 @@ setMethod("getIdentifier", signature("DataObject"), function(x) {
 #' @param ... (not yet used)
 #' @return the formatId
 #' @aliases getFormatId
-#' @seealso \code{\link[=DataObject-class]{DataObject}}{ class description.}
+#' @seealso \code{\link{DataObject-class}}
 #' @export
 setGeneric("getFormatId", function(x, ...) {
 			standardGeneric("getFormatId")
@@ -252,7 +252,7 @@ setMethod("getFormatId", signature("DataObject"), function(x) {
 #' @param ... (not yet used)
 #' @return DataObject with modified access rules
 #' @aliases setPublicAccess
-#' @seealso \code{\link[=DataObject-class]{DataObject}}{ class description.}
+#' @seealso \code{\link{DataObject-class}}
 #' @export
 setGeneric("setPublicAccess", function(x, ...) {
   standardGeneric("setPublicAccess")
@@ -305,7 +305,7 @@ setMethod("addAccessRule", signature("DataObject", "data.frame"), function(x, y)
 #' @param ... Additional arguments
 #' @return boolean TRUE if the subject has read permission, or FALSE otherwise
 #' @aliases canRead
-#' @seealso \code{\link[=DataObject-class]{DataObject}}{ class description.}
+#' @seealso \code{\link{DataObject-class}}
 #' @export
 setGeneric("canRead", function(x, subject, ...) {
   standardGeneric("canRead")

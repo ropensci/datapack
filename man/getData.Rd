@@ -28,6 +28,6 @@ raw representation of the data
 Get the data content of a specified data object
 }
 \seealso{
-\code{\link[=DataObject-class]{DataObject}}{ class description.}
+\code{\link{DataObject-class}}
 }
 

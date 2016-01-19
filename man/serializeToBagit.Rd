@@ -44,6 +44,6 @@ recordDerivation(dp, "do2", "do2")
 bagitFile <- serializeToBagit(dp)
 }
 \seealso{
-\code{\link[=DataPackage-class]{DataPackage}}{ class description.}
+\code{\link{DataPackage-class}}
 }
 

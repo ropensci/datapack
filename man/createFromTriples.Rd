@@ -36,6 +36,6 @@ DataPackage member identifiers in the resulting resource map. If no resolveURI v
 is specified, then 'https://cn.dataone.org/cn/v1/resolve' is used.
 }
 \seealso{
-\code{\link[=ResourceMap-class]{ResourceMap}}{ class description.}
+\code{\link{ResourceMap-class}}
 }
 

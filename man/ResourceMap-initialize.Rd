@@ -20,6 +20,6 @@ the ResourceMap object
 Create a ResourceMap object that contains relationships (RDF triples) of objects in the DataPackage.
 }
 \seealso{
-\code{\link[=ResourceMap-class]{ResourceMap}}{ class description.}
+\code{\link{ResourceMap-class}}
 }
 

@@ -18,6 +18,6 @@ The resources allocated by the redland RDF package are freed. The ResourceMap
 object should be deleted immediately following this call.
 }
 \seealso{
-\code{\link[=ResourceMap-class]{ResourceMap}}{ class description.}
+\code{\link{ResourceMap-class}}
 }
 

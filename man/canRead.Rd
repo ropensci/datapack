@@ -34,6 +34,6 @@ argument to this method is a string value, but is generally formatted as an X.50
 name formatted according to RFC 2253.
 }
 \seealso{
-\code{\link[=DataObject-class]{DataObject}}{ class description.}
+\code{\link{DataObject-class}}
 }
 

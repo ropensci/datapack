@@ -61,8 +61,8 @@ access policy, replication policy, and related metadata.
 \section{Methods}{
 
 \itemize{
- \item{\code{\link{SystemMetadata-initialize}{initialize}}}{: Initialize a DataONE SystemMetadata object with default values or values passed in to the constructor object}
- \item{\code{\link{SystemMetadata}{SystemMetadata}}}{: Create a SystemMetadata object, with all fields set to the value found in an XML document}
+ \item{\code{\link[=SystemMetadata-initialize]{initialize}}}{: Initialize a DataONE SystemMetadata object with default values or values passed in to the constructor object}
+ \item{\code{\link{SystemMetadata}}}{: Create a SystemMetadata object, with all fields set to the value found in an XML document}
  \item{\code{\link{parseSystemMetadata}}}{: Parse an external XML document and populate a SystemMetadata object with the parsed data}
  \item{\code{\link{serializeSystemMetadata}}}{: Get the Count of Objects in the Package}
  \item{\code{\link{validate}}}{: Validate a SystemMetadata object}
@@ -71,6 +71,6 @@ access policy, replication policy, and related metadata.
 }
 }
 \seealso{
-\code{\link{datapackage}}{ package description.}
+\code{\link{datapackage}}
 }
 
