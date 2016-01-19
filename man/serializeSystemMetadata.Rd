@@ -12,16 +12,26 @@ serializeSystemMetadata(sysmeta, ...)
   ...)
 }
 \arguments{
-\item{sysmeta}{The SystemMetadata instance to be serialized}
+\item{sysmeta}{The SystemMetadata instance to be serialized.}
 
 \item{...}{(Not currently used)}
 
 \item{version}{A character string representing the DataONE API version that this system will be used with (eg. "v1", "v2").}
 }
 \value{
+A character value of the filename that the XML representation of the SystemMetadata object was written to.
+
 the character string representing a SystemMetadata object
 }
+\description{
+The SystemMetadata object is converted to XML and 
+written to a file.
+}
+\details{
+If the \code{'version'} parameter is specified as *v2* then the SystemMetadata
+object is serialized according to the DataONE version 2.0 system metdata format.
+}
 \seealso{
-\code{\link[=SystemMetadata-class]{SystemMetadata}}{ class description.}
+\code{\link{SystemMetadata-class}{SystemMetadata}}{ class description.}
 }
 

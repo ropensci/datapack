@@ -20,6 +20,8 @@ hasAccessRule(sysmeta, subject, ...)
 \item{permission}{the permission to be applied to subject if x is character}
 }
 \value{
+A logical value: if TRUE the access rule was found, if FALSE it was not found.
+
 boolean TRUE if the access rule exists already, FALSE otherwise
 }
 \description{
@@ -28,6 +30,6 @@ that represent the access rules for its associated object. This method determine
 whether a particular access rule already exists within the set.
 }
 \seealso{
-\code{\link[=SystemMetadata-class]{SystemMetadata}}{ class description.}
+\code{\link{SystemMetadata-class}{SystemMetadata}}{ class description.}
 }
 
