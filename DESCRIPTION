@@ -36,3 +36,4 @@ Collate:
     'DataPackage.R'
     'ResourceMap.R'
     'datapackage-package.r'
+RoxygenNote: 5.0.1

@@ -34,7 +34,7 @@
 #' @slot sysmeta A SystemMetadata class instance describing the package
 #' @section Methods:
 #' \itemize{
-#'  \item{\code{\link[=DataPackage-initialize]{initialize}}}{: Initialize a DataPackage object}
+#'  \item{\code{\link{DataPackage-initialize}{initialize}}}{: Initialize a DataPackage object}
 #'  \item{\code{\link{getData}}}{: Get the data content of a specified data object}
 #'  \item{\code{\link{getSize}}}{: Get the Count of Objects in the Package}
 #'  \item{\code{\link{getIdentifiers}}}{: Get the Identifiers of Package Members}
@@ -93,7 +93,7 @@ setMethod("initialize", "DataPackage", function(.Object, packageId) {
    return(.Object)
 })
 
-#' @describeIn getData
+#' @rdname getData
 #' @export
 setMethod("getData", signature("DataPackage", "character"), function(x, id) {
     databytes <- as.raw(NULL)
@@ -114,7 +114,7 @@ setMethod("getData", signature("DataPackage", "character"), function(x, id) {
 #' @export
 setGeneric("getSize", function(x, ...) { standardGeneric("getSize")} )
 
-#' @describeIn getSize
+#' @rdname getSize
 #' @examples
 #' dp <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6")
@@ -139,7 +139,7 @@ setMethod("getSize", "DataPackage", function(x) {
 #' @export
 setGeneric("getIdentifiers", function(x, ...) { standardGeneric("getIdentifiers")} )
 
-#' @describeIn getIdentifiers
+#' @rdname getIdentifiers
 #' @examples
 #' dp <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6")
@@ -163,7 +163,7 @@ setGeneric("addData", function(x, do, ...) {
     standardGeneric("addData")
 })
 
-#' @describeIn addData
+#' @rdname addData
 #' @description The DataObject \code{do} is added to the data package \code{x}.
 #' @details If the optional \code{mo} parameter is specified, then it is assumed that this DataObject is a metadata
 #' object that describes the science object that is being added. The \code{addData} function will add a relationship
@@ -219,7 +219,7 @@ setGeneric("insertRelationship", function(x, subjectID, objectIDs, predicate, ..
   standardGeneric("insertRelationship")
 })
 
-#' @describeIn insertRelationship
+#' @rdname insertRelationship
 #' @export
 setMethod("insertRelationship",  signature("DataPackage", "character", "character", "missing"), function(x, subjectID, objectIDs) {
   
@@ -230,7 +230,7 @@ setMethod("insertRelationship",  signature("DataPackage", "character", "characte
   }
 })
 
-#' @describeIn insertRelationship
+#' @rdname insertRelationship
 #' @param subjectType the type to assign the subject, values can be 'uri', 'blank'
 #' @param objectTypes the types to assign the objects (cal be single value or list), each value can be 'uri', 'blank', or 'literal'
 #' @param dataTypeURIs An RDF data type that specifies the type of the object
@@ -330,7 +330,7 @@ setGeneric("recordDerivation", function(x, ...) {
     standardGeneric("recordDerivation")
 })
 
-#' @describeIn recordDerivation
+#' @rdname recordDerivation
 #' @param sourceID the identifier of the source object in the relationship
 #' @param derivedIDs an identifier or list of identifiers of objects that were derived from the source 
 setMethod("recordDerivation",  signature("DataPackage"), function(x, sourceID, derivedIDs, ...) {
@@ -351,7 +351,7 @@ setGeneric("getRelationships", function(x, ...) {
   standardGeneric("getRelationships")
 })
 
-#' @describeIn getRelationships
+#' @rdname getRelationships
 #' @examples
 #' dp <- new("DataPackage")
 #' insertRelationship(dp, "/Users/smith/scripts/genFields.R",
@@ -379,7 +379,7 @@ setGeneric("containsId", function(x, identifier, ...) {
     standardGeneric("containsId")
 })
 
-#' @describeIn containsId
+#' @rdname containsId
 #' @return A logical - a value of TRUE indicates that the DataObject is in the DataPackage
 #' @examples
 #' dp <- new("DataPackage")
@@ -407,7 +407,7 @@ setGeneric("removeMember", function(x, identifier, ...) {
   standardGeneric("removeMember")
 })
 
-#' @describeIn removeMember
+#' @rdname removeMember
 #' @examples
 #' dp <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6")
@@ -433,7 +433,7 @@ setGeneric("getMember", function(x, identifier, ...) {
     standardGeneric("getMember")
 })
 
-#' @describeIn getMember
+#' @rdname getMember
 #' @return A DataObject if the member is found, or NULL if not
 #' @export
 #' @examples
@@ -460,7 +460,7 @@ setGeneric("serializePackage", function(.Object, ...) {
   standardGeneric("serializePackage")
 })
 
-#' @describeIn serializePackage
+#' @rdname serializePackage
 #' @details The resource map that is created is serialized by default as RDF/XML. Other serialization formats
 #' can be specified using the \code{syntaxName} and \code{mimeType} parameters. Other available formats
 #' include: 
@@ -546,7 +546,7 @@ setGeneric("serializeToBagit", function(.Object, ...) {
   standardGeneric("serializeToBagit")
 })
 
-#' @describeIn serializeToBagit
+#' @rdname serializeToBagit
 #' @import uuid
 #' @import digest
 #' @return A zip file containing a Bagit archive.

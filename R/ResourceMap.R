@@ -98,7 +98,7 @@ setMethod("initialize", "ResourceMap", function(.Object, id = as.character(NA)) 
 #' @export
 setGeneric("createFromTriples", function(.Object, relations, identifiers, ...) { standardGeneric("createFromTriples")})
 
-#' @describeIn createFromTriples
+#' @rdname createFromTriples
 #' @param resolveURI A character string containing a URI to prepend to datapackage identifiers.
 setMethod("createFromTriples", signature("ResourceMap", "data.frame", "character"), function(.Object, relations, identifiers, 
                                                                                              resolveURI=as.character(NA),...) {
@@ -217,7 +217,7 @@ setMethod("createFromTriples", signature("ResourceMap", "data.frame", "character
 #' @export
 setGeneric("serializeRDF", function(.Object, file, ...) { standardGeneric("serializeRDF")})
 
-#' @describeIn serializeRDF
+#' @rdname serializeRDF
 #' @param syntaxName name of the syntax to use for serialization - default is "rdfxml"
 #' @param mimeType the mimetype of the serialized output - the default is "application/rdf+xml"
 #' @param namespaces a data frame containing one or more namespaces and their associated prefix
@@ -272,7 +272,7 @@ setGeneric("freeResourceMap", function(.Object) {
   standardGeneric("freeResourceMap")
 })
 
-#' @describeIn freeResourceMap
+#' @rdname freeResourceMap
 setMethod("freeResourceMap", signature("ResourceMap"), function(.Object) {
   freeModel(.Object@model)
   freeStorage(.Object@storage)

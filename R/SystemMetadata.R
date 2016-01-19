@@ -214,7 +214,7 @@ setGeneric("parseSystemMetadata", function(sysmeta, xml, ...) {
   standardGeneric("parseSystemMetadata")
 })
 
-#' @describeIn parseSystemMetadata
+#' @rdname parseSystemMetadata
 #' @return the SystemMetadata object representing an object
 setMethod("parseSystemMetadata", signature("SystemMetadata", "XMLInternalElementNode"), function(sysmeta, xml, ...) {
   
@@ -296,7 +296,7 @@ setMethod("parseSystemMetadata", signature("SystemMetadata", "XMLInternalElement
 setGeneric("serializeSystemMetadata", function(sysmeta, ...) {
   standardGeneric("serializeSystemMetadata")
 })
-#' @describeIn serializeSystemMetadata
+#' @rdname serializeSystemMetadata
 #' @param version A character string representing the DataONE API version that this system will be used with (eg. "v1", "v2").
 #' @return the character string representing a SystemMetadata object
 setMethod("serializeSystemMetadata", signature("SystemMetadata"), function(sysmeta, version="v1",...) {
@@ -383,7 +383,7 @@ setGeneric("validate", function(object, ...) {
     standardGeneric("validate")
 })
 
-#' @describeIn validate
+#' @rdname validate
 #' @return logical, \code{TRUE} if the SystemMetadata object is valid, else a list of strings detailing errors
 setMethod("validate", signature("SystemMetadata"), function(object, ...) validate_function(object))
 
@@ -398,7 +398,7 @@ setMethod("validate", signature("SystemMetadata"), function(object, ...) validat
 setGeneric("addAccessRule", function(x, y, ...) {
     standardGeneric("addAccessRule")
 })
-#' @describeIn addAccessRule
+#' @rdname addAccessRule
 #' @param permission The permission to be applied to subject if x is character (read, write, changePermission)
 #' @examples \dontrun{
 #' sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
@@ -412,7 +412,7 @@ setMethod("addAccessRule", signature("SystemMetadata", "character"), function(x,
     return(x)
 })
 
-#' @describeIn addAccessRule
+#' @rdname addAccessRule
 setMethod("addAccessRule", signature("SystemMetadata", "data.frame"), function(x, y) {
     x@accessPolicy <- rbind(x@accessPolicy, y)
     # Remove duplicate access rules
@@ -432,7 +432,7 @@ setMethod("addAccessRule", signature("SystemMetadata", "data.frame"), function(x
 setGeneric("hasAccessRule", function(sysmeta, subject, ...) {
     standardGeneric("hasAccessRule")
 })
-#' @describeIn hasAccessRule
+#' @rdname hasAccessRule
 #' @param permission the permission to be applied to subject if x is character
 #' @return boolean TRUE if the access rule exists already, FALSE otherwise
 setMethod("hasAccessRule", signature("SystemMetadata", "character"), function(sysmeta, subject, permission) {

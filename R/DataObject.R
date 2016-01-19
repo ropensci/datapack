@@ -48,7 +48,7 @@
 #' @aliases DataObject-class
 #' @section Methods:
 #' \itemize{
-#'   \item{\code{\link[=DataObject-initialize]{initialize}}}{: Initialize a DataObject}
+#'   \item{\code{\link{DataObject-initialize}{initialize}}}{: Initialize a DataObject}
 #'   \item{\code{\link{getData}}}{: Get the data content of a specified data object}
 #'   \item{\code{\link{getIdentifier}}}{: Get the Identifier of the DataObject}
 #'   \item{\code{\link{getFormatId}}}{: Get the FormatId of the DataObject}
@@ -190,7 +190,7 @@ setGeneric("getData", function(x, id=NA, ...) {
     standardGeneric("getData")
 })
 
-#' @describeIn getData
+#' @rdname getData
 #' @return raw representation of the data
 #' @aliases getData
 setMethod("getData", signature("DataObject"), function(x) {
@@ -218,7 +218,7 @@ setGeneric("getIdentifier", function(x, ...) {
     standardGeneric("getIdentifier")
 })
 
-#' @describeIn getIdentifier
+#' @rdname getIdentifier
 #' @aliases getIdentifier
 setMethod("getIdentifier", signature("DataObject"), function(x) {
 	return(x@sysmeta@identifier)
@@ -235,7 +235,7 @@ setGeneric("getFormatId", function(x, ...) {
 			standardGeneric("getFormatId")
 		})
 
-#' @describeIn getFormatId
+#' @rdname getFormatId
 #' @aliases getFormatId
 setMethod("getFormatId", signature("DataObject"), function(x) {
     return(x@sysmeta@formatId)
@@ -258,7 +258,7 @@ setGeneric("setPublicAccess", function(x, ...) {
   standardGeneric("setPublicAccess")
 })
 
-#' @describeIn setPublicAccess
+#' @rdname setPublicAccess
 #' @aliases setPublicAccess
 setMethod("setPublicAccess", signature("DataObject"), function(x) {
     # Check if public: read is already set, and if not, set it
@@ -281,7 +281,7 @@ setMethod("setPublicAccess", signature("DataObject"), function(x) {
 #' sciObj <- addAccessRule(sciObj, accessRules)
 #' }
 #' @export
-#' @describeIn addAccessRule
+#' @rdname addAccessRule
 #' @aliases addAccessRule
 setMethod("addAccessRule", signature("DataObject", "data.frame"), function(x, y) {
   # Add the access rules to the DataObjects system metadata object    
@@ -311,7 +311,7 @@ setGeneric("canRead", function(x, subject, ...) {
   standardGeneric("canRead")
 })
 
-#' @describeIn canRead
+#' @rdname canRead
 #' @export
 setMethod("canRead", signature("DataObject", "character"), function(x, subject) {
 
