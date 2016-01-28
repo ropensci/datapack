@@ -250,7 +250,8 @@ test_that("Package serialization works", {
   
   # Serialize the ResourceMap to a file.
   serializationId <- sprintf("%s%s", "resourceMap1", UUIDgenerate())
-  filePath <- sprintf("/tmp/%s.rdf", serializationId)
+  filePath <- file.path(sprintf("%s/%s.rdf", tempdir(), serializationId))
+  message(filePath)
   status <- serializePackage(dp, filePath, id=serializationId)
   expect_that(file.exists(filePath), is_true())
   found <- grep("wasDerivedFrom", readLines(filePath))

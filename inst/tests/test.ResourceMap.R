@@ -54,7 +54,7 @@ test_that("ResourceMap creation from DataPackage triples", {
   resMap <- createFromTriples(resMap, relations, getIdentifiers(dp))
   
   # Serialize the ResourceMap to a file.
-  filePath <- sprintf("/tmp/%s.rdf", resMapId)
+  filePath <- sprintf("%s/%s.rdf", tempdir(), resMapId)
   status <- serializeRDF(resMap, filePath)
   found <- grep("wasDerivedFrom", readLines(filePath))
   expect_that(found, is_more_than(0))

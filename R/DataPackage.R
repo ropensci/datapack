@@ -591,8 +591,11 @@ setMethod("serializeToBagit", signature("DataPackage"), function(.Object) {
   rm(resMap)
   
   # Add resource map to the pid map
-  relFile <- sprintf("data/%s.rdf", resMapId)
-  resMapFilepath <- sprintf("%s/%s", bagDir, relFile)
+  #relFile <- sprintf("data/%s.rdf", resMapId)
+  # Windows doesn't allow colons in filenames, so substitute for "_"
+  relFile <- file.path("data", paste(gsub(":", "_", resMapId), ".rdf", sep=""))
+  #resMapFilepath <- sprintf("%s/%s", bagDir, relFile)
+  resMapFilepath <- file.path(bagDir, relFile)
   file.copy(tmpFile, resMapFilepath)
   pidMap <- c(pidMap, sprintf("%s %s", resMapId, relFile))
   # Add resource map to the manifrest

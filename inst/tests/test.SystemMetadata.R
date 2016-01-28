@@ -33,7 +33,7 @@ test_that("XML SystemMetadata parsing works", {
   expect_that(grep("urn:node:BADNODE", sysmeta@blockedNodes) > 0, is_true())
   rm(sysmeta) 
   rm(xml)
-  rm(do)
+  rm(doc)
   rm(csattrs)
   # Parse v2.0 system metadata
   testid <- "0007f892-0d8f-4451-94e9-94d02ba5dd0d_0"
