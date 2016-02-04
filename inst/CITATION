@@ -1,0 +1,13 @@
+year <- sub("-.*", "", meta$Date)
+note <- sprintf("R package version %s", meta$Version)
+title <- meta$Title
+authors <-  c( 
+    person("Matthew B.", "Jones", email="jones@nceas.ucsb.edu", role=c("aut", "cre")),
+    person("Peter", "Slaughter", role = "aut", email = "slaughter@nceas.ucsb.edu"))
+bibentry(bibtype = "Manual",
+         title = paste0("{datapackage}: ", title),
+         author = authors,
+         year = year,
+         note = note,
+         url = "https://github.com/ropensci/datapackage",
+         doi = "10.5063/F1QV3JGM")
