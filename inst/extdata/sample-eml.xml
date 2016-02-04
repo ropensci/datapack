@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+<eml:eml xmlns:eml="eml://ecoinformatics.org/eml-2.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" packageId="sample.1.1" scope="system" system="knb" xsi:schemaLocation="eml://ecoinformatics.org/eml-2.1.0 http://nis.lternet.edu/schemas/EML/eml-2.1.0/eml.xsd">
+  <access authSystem="knb" order="allowFirst" scope="document">
+    <allow>
+      <principal>uid=jsmith,o=unaffiliated,dc=ecoinformatics,dc=org</principal>
+      <permission>all</permission>
+    </allow>
+    <allow>
+      <principal>public</principal>
+      <permission>read</permission>
+    </allow>
+  </access>
+  <dataset scope="document">
+    <shortName>Sample test data</shortName>
+    <title>Sample test data for R package "datapackage"</title>
+    <creator scope="document">
+      <individualName>
+        <salutation>Mr.</salutation>
+        <givenName>John</givenName>
+        <surName>Smith</surName>
+      </individualName>
+      <address scope="document">
+        <deliveryPoint>NCEAS</deliveryPoint>
+        <deliveryPoint>University of California</deliveryPoint>
+        <city>Santa Barbara</city>
+        <administrativeArea>California</administrativeArea>
+        <postalCode>93106-6150</postalCode>
+        <country>United States</country>
+      </address>
+      <phone phonetype="voice">805 123 4567</phone>
+      <electronicMailAddress>jsmith@nceas.ucsb.edu</electronicMailAddress>
+    </creator>
+    <pubDate>2013-04-10</pubDate>
+    <abstract>
+      <para>This is test data for the R package "datapackage".</para>
+    </abstract>
+    <coverage scope="document">
+      <geographicCoverage id="ABUR" scope="document">
+        <geographicDescription>Arroyo Burro Reef</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>-119.7443</westBoundingCoordinate>
+          <eastBoundingCoordinate>-119.7443</eastBoundingCoordinate>
+          <northBoundingCoordinate>34.4000</northBoundingCoordinate>
+          <southBoundingCoordinate>34.4000</southBoundingCoordinate>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <temporalCoverage scope="document">
+        <rangeOfDates>
+          <beginDate>
+            <calendarDate>2000-08-01</calendarDate>
+          </beginDate>
+          <endDate>
+            <calendarDate>2012-07-25</calendarDate>
+          </endDate>
+        </rangeOfDates>
+      </temporalCoverage>
+    </coverage>
+    <dataTable scope="document">
+      <entityName>sample-data.csv</entityName>
+      <entityDescription>sample data for R datapackage</entityDescription>
+      <physical scope="document">
+        <objectName>sample-data.csv</objectName>
+        <characterEncoding>ASCII</characterEncoding>
+        <size unit="Mb">3.6</size>
+        <dataFormat>
+          <textFormat>
+            <numHeaderLines>1</numHeaderLines>
+            <recordDelimiter>\r\n</recordDelimiter>
+            <attributeOrientation>column</attributeOrientation>
+            <simpleDelimited>
+              <quoteCharacter>"</quoteCharacter>
+              <fieldDelimiter>,</fieldDelimiter>
+            </simpleDelimited>
+          </textFormat>
+        </dataFormat>
+      </physical>
+      <attributeList>
+        <attribute id="1" scope="document">
+          <attributeName>Species_name</attributeName>
+          <attributeLabel>Species name</attributeLabel>
+          <attributeDefinition>Name of the plant species</attributeDefinition>
+          <storageType typeSystem="http://www.w3.org/2001/XMLSchema-datatypes">string</storageType>
+          <missingValueCode>
+            <code>NA</code>
+            <codeExplanation>value not recorded or not available</codeExplanation>
+          </missingValueCode>
+        </attribute>
+        <attribute id="2" scope="document">
+          <attributeName>light</attributeName>
+          <attributeLabel>Light</attributeLabel>
+          <attributeDefinition>Ambient light level</attributeDefinition>
+          <storageType typeSystem="http://www.w3.org/2001/XMLSchema-datatypes">string</storageType>
+        </attribute>
+        <attribute id="3" scope="document">
+          <attributeName>temp</attributeName>
+          <attributeLabel>Temperature</attributeLabel>
+          <attributeDefinition>Ambient air temperature in Celsius</attributeDefinition>
+          <storageType typeSystem="http://www.w3.org/2001/XMLSchema-datatypes">string</storageType>
+        </attribute>
+        <attribute id="4" scope="document">
+          <attributeName>cont</attributeName>
+          <attributeLabel>cont</attributeLabel>
+          <attributeDefinition>Continentality</attributeDefinition>
+          <storageType typeSystem="http://www.w3.org/2001/XMLSchema-datatypes">string</storageType>
+        </attribute>
+        <attribute id="5" scope="document">
+          <attributeName>moist</attributeName>
+          <attributeLabel>Moisture</attributeLabel>
+          <attributeDefinition>Soil Moisture content</attributeDefinition>
+          <storageType typeSystem="http://www.w3.org/2001/XMLSchema-datatypes">string</storageType>
+        </attribute>
+        <attribute id="6" scope="document">
+          <attributeName>react</attributeName>
+          <attributeLabel>Reactivitiy</attributeLabel>
+          <attributeDefinition>Reactivity to nutrients</attributeDefinition>
+          <storageType typeSystem="http://www.w3.org/2001/XMLSchema-datatypes">string</storageType>
+        </attribute>
+        <attribute id="6" scope="document">
+          <attributeName>nutr</attributeName>
+          <attributeLabel>Nutrients</attributeLabel>
+          <attributeDefinition>Nutriets measured in soil</attributeDefinition>
+          <storageType typeSystem="http://www.w3.org/2001/XMLSchema-datatypes">string</storageType>
+        </attribute>
+      </attributeList>
+      <numberOfRecords>231</numberOfRecords>
+    </dataTable>
+  </dataset>
+</eml:eml>
