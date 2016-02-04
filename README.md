@@ -15,12 +15,8 @@ data from R to data repositories worldwide.
 
 ## Installation Notes 
 
-The *datapackage* R package has not been released to CRAN yet, nor have its dependencies, so you need to install the 
-dependencies manually before installing the package itself.  The main dependency is the `redland` R package
-which must be installed on your OS prior to installing the R code. The R package *drat* can be used to
-install the *datapackage* R package from the NCEAS repository.
-
-Before the `redland` R package can be installed, the Redland C libraries must be installed.
+The *datapackage* R package requires the R package *redland*,  which requires the Redland C libraries. 
+The following instructions illustrate how to install *datapackage* and its requirements.
 
 ### Installing on Mac OS X
 
@@ -34,9 +30,11 @@ You can check if you have MacPorts installed by entering the following command i
 port version
 ```
 
+If the *port* command is not found, then skip to the [Installing with HomeBrew](#homebrew) section.
+
 ### Installing with Macports
 If you are already using the MacPorts package manager, you can install *datapackage* with the following commands, 
-otherwise, it is recommended that you skip to the next section *Installing with HomeBrew*. 
+otherwise, it is recommended that you skip to the next section [Installing with HomeBrew](#homebrew). 
 
 To install the *datapackage* R package with MacPorts, enter this commands at a terminal window:
 ```
@@ -45,17 +43,13 @@ sudo port install redland
 
 Then enter these commands in the R console:
 ```
-install.packages("drat")
-library(drat)
-addRepo("NCEAS")
-install.packages("redland", type="source")
 install.packages("datapackage")
 library(datapackage)
 ```
 
 The *datapackage* R package should be available for use at this point
 
-### Installing with HomeBrew
+### <a id="homebrew"></a>Installing with HomeBrew
 On Mac OS X you can use the package management system [HomeBrew](http://brew.sh) to install the 
 necessary libraries. The HomeBrew software can be installed with the following command entered at a terminal window:
 
@@ -63,27 +57,25 @@ necessary libraries. The HomeBrew software can be installed with the following c
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 ```
 
-Once HomeBrew has been installed, you can then enter the following command to install the Redland C libraries:
+Once HomeBrew has been installed, you can then enter the following command in a terminal windows to install the Redland C libraries:
 
 ```
 brew install redland
 ```
 
 Next, install the *datapackage* R package with these commands typed at the R console window:
+
 ```
-install.packages("drat")
-library(drat)
-addRepo("NCEAS")
-install.packages("redland", type="binary")
 install.packages("datapackage")
 library(datapackage)
 ```
-  
+ 
 The *datapackage* R package should be available for use at this point
 
 ## Installing on Ubuntu
 
-For ubuntu, install the required Redland C libraies
+For ubuntu, install the required Redland C libraries by entering the following commands 
+in a terminal window:
 
 ```
 sudo apt-get update
@@ -93,14 +85,66 @@ sudo apt-get install librdf0 librdf0-dev
 Then install the R packages from the R console:
 
 ```
-install.packages("drat")
-library(drat)
-addRepo("NCEAS")
 install.packages("datapackage")
 library(datapackage)
 ```
-  
+
 The *datapackage* R package should be available for use at this point
+
+## Quick Start
+
+See the full manual for documentation, but once installed, the package can be run in R using:
+
+```
+library(datapackage)
+help("datapackage")
+```
+
+Create a DataPackage and add metadata and science data DataObjects to it:
+
+```
+library(datapackage)
+library(uuid)
+dp <- new("DataPackage")
+mdFile <- system.file("extdata/sample-eml.xml", package="datapackage")
+mdId <- paste("urn:uuid:", UUIDgenerate(), sep="")
+md <- new("DataObject", id=mdId, format="eml://ecoinformatics.org/eml-2.1.0", file=mdFile)
+addData(dp, md)
+
+csvfile <- system.file("extdata/sample-data.csv", package="datapackage")
+sciId <- paste("urn:uuid:", UUIDgenerate(), sep="")
+sciObj <- new("DataObject", id=sciId, format="text/csv", filename=csvfile)
+addData(dp, sciObj)
+ids <- getIdentifiers(dp)
+```
+
+Add a relationship to the DataPackage that shows that the metadata describes ("documents") the science data:
+
+```
+insertRelationship(dp, subjectID=mdId, objectIDs=sciId)
+relations <- getRelationships(dp)
+```  
+
+Create an Resource Description Framework representation of the relationships in the package:
+
+```
+serializationId <- paste("resourceMap", UUIDgenerate(), sep="")
+filePath <- file.path(sprintf("%s/%s.rdf", tempdir(), serializationId))
+status <- serializePackage(dp, filePath, id=serializationId, resolveURI="")
+```  
+Save the DataPackage to a file, using the Bagit packaging format:
+
+```
+bagitFile <- serializeToBagit(dp) 
+```
+
+Note that the *dataone* R package can be used to upload a DataPackage to a DataONE Member Node
+using the *uploadDataPackage* method. Please see the documentation for the *dataone* R package,
+for example:
+
+```
+vignette("upload-data", package="dataone")
+```
 
 [![nceas_footer](https://www.nceas.ucsb.edu/files/newLogo_0.png)](http://www.nceas.ucsb.edu)
 
