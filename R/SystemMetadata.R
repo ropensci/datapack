@@ -31,7 +31,7 @@
 #' @slot preferredNodes value of type \code{"list"}, of prefered member nodes.
 #' @slot blockedNodes value of type \code{"list"}, of blocked member nodes.
 #' @slot formatId value of type \code{"character"}, the DataONE object format for the object.
-#' @slot size value of type \code{"integer"}, the size of the object in bytes.
+#' @slot size value of type \code{"numeric"}, the size of the object in bytes.
 #' @slot checksum value of type \code{"character"}, the checksum for the object using the designated checksum algorithm.
 #' @slot checksumAlgorithm value of type \code{"character"}, the name of the hash function used to generate a checksum, from the DataONE controlled list.
 #' @slot submitter value of type \code{"character"}, the Distinguished Name or identifier of the person submitting the object.
@@ -63,7 +63,7 @@ setClass("SystemMetadata", slots = c(
     serialVersion           = "numeric",
     identifier              = "character",
     formatId                = "character",
-    size                    = "integer",
+    size                    = "numeric",
     checksum                = "character",
     checksumAlgorithm       = "character",
     submitter               = "character",
@@ -96,7 +96,7 @@ setClass("SystemMetadata", slots = c(
 #' @param .Object The object being initialized
 #' @param identifier value of type \code{"character"}, the identifier of the object that this system metadata describes.
 #' @param formatId value of type \code{"character"}, the DataONE object format for the object.
-#' @param size value of type \code{"integer"}, the size of the object in bytes.
+#' @param size value of type \code{"numeric"}, the size of the object in bytes.
 #' @param checksum value of type \code{"character"}, the checksum for the object using the designated checksum algorithm.
 #' @param checksumAlgorithm value of type \code{"character"}, the name of the hash function used to generate a checksum, from the DataONE controlled list.
 #' @param submitter value of type \code{"character"}, the Distinguished Name or identifier of the person submitting the object.
@@ -122,7 +122,7 @@ setClass("SystemMetadata", slots = c(
 #' @export
 #' 
 setMethod("initialize", signature = "SystemMetadata", definition = function(.Object,
-    identifier=as.character(NA), formatId=as.character(NA), size=as.integer(NA), checksum=as.character(NA), 
+    identifier=as.character(NA), formatId=as.character(NA), size=as.numeric(NA), checksum=as.character(NA), 
     checksumAlgorithm="SHA-1", submitter=as.character(NA), rightsHolder=as.character(NA), accessPolicy=data.frame(subject = character(), permission=character()),
     replicationAllowed=TRUE, numberReplicas=3, obsoletes=as.character(NA), obsoletedBy=as.character(NA), archived=FALSE, 
     dateUploaded=as.character(NA), dateSysMetadataModified=as.character(NA), 
@@ -132,7 +132,7 @@ setMethod("initialize", signature = "SystemMetadata", definition = function(.Obj
     .Object@serialVersion <- 1
     .Object@identifier <- as.character(identifier)
     .Object@formatId <- as.character(formatId)
-    .Object@size <- as.integer(size)
+    .Object@size <- as.numeric(size)
     .Object@checksum <- as.character(checksum)
     .Object@checksumAlgorithm <- as.character(checksumAlgorithm)
     .Object@submitter <- as.character(submitter)
@@ -219,7 +219,7 @@ setMethod("parseSystemMetadata", signature("SystemMetadata", "XMLInternalElement
   sysmeta@serialVersion <- as.numeric(xmlValue(xml[["serialVersion"]]))
   sysmeta@identifier <- xmlValue(xml[["identifier"]])
   sysmeta@formatId <- xmlValue(xml[["formatId"]])
-  sysmeta@size <- as.integer(xmlValue(xml[["size"]]))
+  sysmeta@size <- as.numeric(xmlValue(xml[["size"]]))
   sysmeta@checksum <- xmlValue(xml[["checksum"]])
   csattrs <- xmlAttrs(xml[["checksum"]])
   sysmeta@checksumAlgorithm <- csattrs[[1]]
@@ -320,7 +320,7 @@ setMethod("serializeSystemMetadata", signature("SystemMetadata"), function(sysme
   root <- addChildren(root, xmlNode("serialVersion", sysmeta@serialVersion))
   root <- addChildren(root, xmlNode("identifier", sysmeta@identifier))
   root <- addChildren(root, xmlNode("formatId", sysmeta@formatId))
-  root <- addChildren(root, xmlNode("size", as.integer(sysmeta@size)))
+  root <- addChildren(root, xmlNode("size", format(as.numeric(sysmeta@size), scientific=FALSE)))
   root <- addChildren(root, xmlNode("checksum", sysmeta@checksum, attrs = c(algorithm = sysmeta@checksumAlgorithm)))
   root <- addChildren(root, xmlNode("submitter", sysmeta@submitter))
   root <- addChildren(root, xmlNode("rightsHolder", sysmeta@rightsHolder))
