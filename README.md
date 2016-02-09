@@ -132,10 +132,10 @@ serializationId <- paste("resourceMap", UUIDgenerate(), sep="")
 filePath <- file.path(sprintf("%s/%s.rdf", tempdir(), serializationId))
 status <- serializePackage(dp, filePath, id=serializationId, resolveURI="")
 ```  
-Save the DataPackage to a file, using the Bagit packaging format:
+Save the DataPackage to a file, using the BagIt packaging format:
 
 ```
-bagitFile <- serializeToBagit(dp) 
+bagitFile <- serializeToBagIt(dp) 
 ```
 
 Note that the *dataone* R package can be used to upload a DataPackage to a DataONE Member Node

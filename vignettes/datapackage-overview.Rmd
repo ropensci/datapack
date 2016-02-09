@@ -253,16 +253,16 @@ serializePackage(dp, file=tf, id=packageId, syntaxName="json", mimeType="applica
 
 ## Saving DataPackage Contents to a File
 
-The contents of a DataPackage can be saved to a file using the *serializeToBagit* method. This creates 
+The contents of a DataPackage can be saved to a file using the *serializeToBagIt* method. This creates 
 a *BagIt* file, a hierarchical file packaging format. 
 
-The created Bagit file contains the data from the DataPackage members as well as an OAI-ORE resource
-map that is automatically created by *serializeToBagit*.
+The created BagIt file contains the data from the DataPackage members as well as an OAI-ORE resource
+map that is automatically created by *serializeToBagIt*.
  
 The following R command shows how to create the BagIt file for the example DataPackage:
 
 ```{r, eval=F}
-bagitFilename <- serializeToBagit(dp)
+bagitFilename <- serializeToBagIt(dp)
 ```
 
 The variable `bagitFilename` contains the file path to the temporary BagIt file.

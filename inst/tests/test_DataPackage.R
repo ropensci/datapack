@@ -281,11 +281,11 @@ test_that("Package serialization works", {
   
 })
 
-test_that("Bagit serialization works", {
+test_that("BagIt serialization works", {
   
   library(uuid)
   library(datapackage)
-  # Test Bagit serializatin of a DataPackage
+  # Test BagIt serializatin of a DataPackage
   # Test bagging with both in-memory DataObjects and file baseed
   testdf <- data.frame(x=1:10,y=11:20)
   csvfile <- tempfile(pattern = "file", tmpdir = tempdir(), fileext = ".csv")
@@ -336,7 +336,7 @@ test_that("Bagit serialization works", {
                      objectTypes="literal",
                      dataTypeURIs="http://www.w3.org/2001/XMLSchema#string")
   
- bagitFile <- serializeToBagit(dp) 
+ bagitFile <- serializeToBagIt(dp) 
  expect_that(file.exists(bagitFile), is_true())
  expect_that(file.info(bagitFile)[['size']] > 0, is_true())
 

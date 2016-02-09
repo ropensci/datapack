@@ -46,7 +46,7 @@
 #'  \item{\code{\link{removeMember}}}{: Remove the Specified Member from the Package}
 #'  \item{\code{\link{getMember}}}{: Return the Package Member by Identifier}
 #'  \item{\code{\link{serializePackage}}}{: Create an OAI-ORE resource map from the package}
-#'  \item{\code{\link{serializeToBagit}}}{: Serialize A DataPackage into a Bagit Archive File}
+#'  \item{\code{\link{serializeToBagIt}}}{: Serialize A DataPackage into a BagIt Archive File}
 #' }
 #' @seealso \code{\link{datapackage}}
 #' @export
@@ -531,10 +531,10 @@ setMethod("serializePackage", signature("DataPackage"), function(.Object, file,
   invisible(status)
 })
 
-#' Serialize A DataPackage into a Bagit Archive File
-#' @description The Bagit packaging format \url{https://tools.ietf.org/html/draft-kunze-bagit-08}
+#' Serialize A DataPackage into a BagIt Archive File
+#' @description The BagIt packaging format \url{https://tools.ietf.org/html/draft-kunze-bagit-08}
 #' is used to prepare an archive file that contains the contents of a DataPackage.
-#' @details A Bagit Archive File is created by copying each member of a DataPackge, and preparing
+#' @details A BagIt Archive File is created by copying each member of a DataPackge, and preparing
 #' files that describe the files in the archive, including information about the size of the files
 #' and a checksum for each file. An OAI-ORE resource map is automatically created and added to the
 #' archive. These metadata files and the data files are then packaged into
@@ -543,11 +543,11 @@ setMethod("serializePackage", signature("DataPackage"), function(.Object, file,
 #' @param ... Additional arguments
 #' @seealso \code{\link{DataPackage-class}}
 #' @export
-setGeneric("serializeToBagit", function(.Object, ...) {
-  standardGeneric("serializeToBagit")
+setGeneric("serializeToBagIt", function(.Object, ...) {
+  standardGeneric("serializeToBagIt")
 })
 
-#' @rdname serializeToBagit
+#' @rdname serializeToBagIt
 #' @import uuid
 #' @import digest
 #' @param mapId A unique identifier for the package resource map. If not specified, one will be 
@@ -560,7 +560,7 @@ setGeneric("serializeToBagit", function(.Object, ...) {
 #' @param resolveURI A character string containing a URI to prepend to datapackage identifiersa for the resource map.
 #' @seealso For more information and examples regarding the parameters specifying the creation of the resource map,
 #' see \link{serializePackage}.
-#' @return The file name that contains the Bagit zip archive.
+#' @return The file name that contains the BagIt zip archive.
 #' @examples
 #' # Create the first data object
 #' dp <- new("DataPackage")
@@ -573,10 +573,10 @@ setGeneric("serializeToBagit", function(.Object, ...) {
 #' addData(dp, do2)
 #' # Create a relationship between the two data objects
 #' recordDerivation(dp, "do2", "do2")
-#' # Write out the data package to a Bagit file
-#' bagitFile <- serializeToBagit(dp, syntaxName="json", mimeType="application/json")
+#' # Write out the data package to a BagIt file
+#' bagitFile <- serializeToBagIt(dp, syntaxName="json", mimeType="application/json")
 #' @export
-setMethod("serializeToBagit", signature("DataPackage"), function(.Object, mapId=as.character(NA),
+setMethod("serializeToBagIt", signature("DataPackage"), function(.Object, mapId=as.character(NA),
                                                                  syntaxName=as.character(NA),
                                                                  namespaces=data.frame(),
                                                                  mimeType=as.character(NA),
@@ -584,7 +584,7 @@ setMethod("serializeToBagit", signature("DataPackage"), function(.Object, mapId=
                                                                  resolveURI=as.character(NA), ...) {
   pidMap <- as.character()
   manifest <- as.character()
-  # Create a temp working area where the Bagit directory structure will be created
+  # Create a temp working area where the BagIt directory structure will be created
   tmpDir <- tempdir()
   bagDir <- sprintf("%s/bag", tmpDir)
   if(dir.exists(bagDir)) {
@@ -642,7 +642,7 @@ setMethod("serializeToBagit", signature("DataPackage"), function(.Object, mapId=
         thisMd5 <- digest(sprintf("%s/%s", bagDir, relFile), algo="md5", file=TRUE)
         manifest <- c(manifest, sprintf("%s %s", as.character(thisMd5), relFile))  
       } else {
-        stop(sprintf("Error serializing to Bagit format, data object \"%s\", uses file %s but this file doesn't exist", dataObj@filename, identifiers[idNum]))
+        stop(sprintf("Error serializing to BagIt format, data object \"%s\", uses file %s but this file doesn't exist", dataObj@filename, identifiers[idNum]))
       }
     } else {
       # Must be an in-memory data object
@@ -713,7 +713,7 @@ setMethod("serializeToBagit", signature("DataPackage"), function(.Object, mapId=
   # Now zip up the directory struction 
   setwd(normalizePath(bagDir))
   if(normalizePath(getwd()) != normalizePath(bagDir)) {
-    stop(sprintf("Unable to set working directory to the Bagit dir: %s", bagDir))
+    stop(sprintf("Unable to set working directory to the BagIt dir: %s", bagDir))
   }
   zip(zipFile, files=list.files(recursive=TRUE), flags="-q")
   # Return the zip filename

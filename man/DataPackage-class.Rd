@@ -34,7 +34,7 @@ uploaded to a data repository or archived.
  \item{\code{\link{removeMember}}}{: Remove the Specified Member from the Package}
  \item{\code{\link{getMember}}}{: Return the Package Member by Identifier}
  \item{\code{\link{serializePackage}}}{: Create an OAI-ORE resource map from the package}
- \item{\code{\link{serializeToBagit}}}{: Serialize A DataPackage into a Bagit Archive File}
+ \item{\code{\link{serializeToBagIt}}}{: Serialize A DataPackage into a BagIt Archive File}
 }
 }
 \seealso{
