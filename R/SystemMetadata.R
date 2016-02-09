@@ -402,12 +402,12 @@ setGeneric("addAccessRule", function(x, y, ...) {
 })
 #' @rdname addAccessRule
 #' @param permission The permission to be applied to subject if x is character (read, write, changePermission)
-#' @examples \dontrun{
+#' @examples 
+#' sysmeta <- new("SystemMetadata")
 #' sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
 #' accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", 
 #'   "uid=slaughter,o=unaffiliated,dc=example,dc=org"), permission=c("write", "changePermission"))
 #' sysmeta <- addAccessRule(sysmeta, accessRules)
-#' }
 setMethod("addAccessRule", signature("SystemMetadata", "character"), function(x, y, permission) {
     accessRecord <- data.frame(subject=y, permission=permission)
     x <- addAccessRule(x, accessRecord)
