@@ -536,8 +536,9 @@ setMethod("serializePackage", signature("DataPackage"), function(.Object, file,
 #' is used to prepare an archive file that contains the contents of a DataPackage.
 #' @details A Bagit Archive File is created by copying each member of a DataPackge, and preparing
 #' files that describe the files in the archive, including information about the size of the files
-#' and a checksum for each file. These metadata files and the data files are then packaged into
-#' a single zip file.
+#' and a checksum for each file. An OAI-ORE resource map is automatically created and added to the
+#' archive. These metadata files and the data files are then packaged into
+#' a single zip file. 
 #' @param .Object A DataPackage object
 #' @param ... Additional arguments
 #' @seealso \code{\link{DataPackage-class}}
@@ -549,7 +550,17 @@ setGeneric("serializeToBagit", function(.Object, ...) {
 #' @rdname serializeToBagit
 #' @import uuid
 #' @import digest
-#' @return A zip file containing a Bagit archive.
+#' @param mapId A unique identifier for the package resource map. If not specified, one will be 
+#' automatically generated. 
+#' @param syntaxName The name of the syntax to use for the resource map serialization, defaults to "rdfxml"
+#' @param mimeType The mimetype for the resource map serialization, defaults to "application/rdf+xml".
+#' @param namespaces An optional data frame containing one or more namespaces and their associated prefix for 
+#' the resource map serialization.
+#' @param syntaxURI An optional string specifying the URI for the resource map serialization.
+#' @param resolveURI A character string containing a URI to prepend to datapackage identifiersa for the resource map.
+#' @seealso For more information and examples regarding the parameters specifying the creation of the resource map,
+#' see \link{serializePackage}.
+#' @return The file name that contains the Bagit zip archive.
 #' @examples
 #' # Create the first data object
 #' dp <- new("DataPackage")
@@ -563,9 +574,14 @@ setGeneric("serializeToBagit", function(.Object, ...) {
 #' # Create a relationship between the two data objects
 #' recordDerivation(dp, "do2", "do2")
 #' # Write out the data package to a Bagit file
-#' bagitFile <- serializeToBagit(dp)
+#' bagitFile <- serializeToBagit(dp, syntaxName="json", mimeType="application/json")
 #' @export
-setMethod("serializeToBagit", signature("DataPackage"), function(.Object) {
+setMethod("serializeToBagit", signature("DataPackage"), function(.Object, mapId=as.character(NA),
+                                                                 syntaxName=as.character(NA),
+                                                                 namespaces=data.frame(),
+                                                                 mimeType=as.character(NA),
+                                                                 syntaxURI=as.character(NA),
+                                                                 resolveURI=as.character(NA), ...) {
   pidMap <- as.character()
   manifest <- as.character()
   # Create a temp working area where the Bagit directory structure will be created
@@ -578,27 +594,30 @@ setMethod("serializeToBagit", signature("DataPackage"), function(.Object) {
   payloadDir <- sprintf("%s/data", bagDir)
   if(!dir.exists(payloadDir)) dir.create(payloadDir)
   
-  # Get the relationships stored in this datapackage.
-  relations <- getRelationships(.Object)
-  
   # Create a ResourceMap object and serialize it to the specified file
-  resMapId <- sprintf("urn:uuid:%s", UUIDgenerate())
-  
+  if(is.na(mapId)) {
+    mapId <- sprintf("urn:uuid:%s", UUIDgenerate())
+  }
+  if(is.na(syntaxName)) {
+    syntaxName="rdfxml"
+  }
+  if(is.na(mimeType)) {
+    mimeType <- "application/rdf+xml"
+  }
+  if(is.na(resolveURI)) {
+    resolveURI <- ""
+  }
   tmpFile <- tempfile()
-  resMap <- new("ResourceMap", resMapId)
-  resMap <- createFromTriples(resMap, relations=relations, identifiers=getIdentifiers(.Object), resolveURI="")  
-  serializeRDF(resMap, tmpFile, syntaxName="rdfxml", mimeType="application/rdf+xml")
-  freeResourceMap(resMap)
-  rm(resMap)
-  
+  serializePackage(.Object, file=tmpFile, id=mapId, syntaxName=syntaxName, namespaces=namespaces,
+                   mimeType=mimeType, resolveURI=resolveURI)
   # Add resource map to the pid map
   #relFile <- sprintf("data/%s.rdf", resMapId)
   # Windows doesn't allow colons in filenames, so substitute for "_"
-  relFile <- file.path("data", paste(gsub(":", "_", resMapId), ".rdf", sep=""))
+  relFile <- file.path("data", paste(gsub(":", "_", mapId), ".rdf", sep=""))
   #resMapFilepath <- sprintf("%s/%s", bagDir, relFile)
   resMapFilepath <- file.path(bagDir, relFile)
   file.copy(tmpFile, resMapFilepath)
-  pidMap <- c(pidMap, sprintf("%s %s", resMapId, relFile))
+  pidMap <- c(pidMap, sprintf("%s %s", mapId, relFile))
   # Add resource map to the manifrest
   resMapMd5 <- digest(resMapFilepath, algo="md5", file=TRUE)
   manifest <- c(manifest, sprintf("%s %s", resMapMd5, relFile)) 

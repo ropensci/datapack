@@ -8,15 +8,32 @@
 \usage{
 serializeToBagit(.Object, ...)
 
-\S4method{serializeToBagit}{DataPackage}(.Object)
+\S4method{serializeToBagit}{DataPackage}(.Object, mapId = as.character(NA),
+  syntaxName = as.character(NA), namespaces = data.frame(),
+  mimeType = as.character(NA), syntaxURI = as.character(NA),
+  resolveURI = as.character(NA), ...)
 }
 \arguments{
 \item{.Object}{A DataPackage object}
 
 \item{...}{Additional arguments}
+
+\item{mapId}{A unique identifier for the package resource map. If not specified, one will be 
+automatically generated.}
+
+\item{syntaxName}{The name of the syntax to use for the resource map serialization, defaults to "rdfxml"}
+
+\item{namespaces}{An optional data frame containing one or more namespaces and their associated prefix for 
+the resource map serialization.}
+
+\item{mimeType}{The mimetype for the resource map serialization, defaults to "application/rdf+xml".}
+
+\item{syntaxURI}{An optional string specifying the URI for the resource map serialization.}
+
+\item{resolveURI}{A character string containing a URI to prepend to datapackage identifiersa for the resource map.}
 }
 \value{
-A zip file containing a Bagit archive.
+The file name that contains the Bagit zip archive.
 }
 \description{
 The Bagit packaging format \url{https://tools.ietf.org/html/draft-kunze-bagit-08}
@@ -25,7 +42,8 @@ is used to prepare an archive file that contains the contents of a DataPackage.
 \details{
 A Bagit Archive File is created by copying each member of a DataPackge, and preparing
 files that describe the files in the archive, including information about the size of the files
-and a checksum for each file. These metadata files and the data files are then packaged into
+and a checksum for each file. An OAI-ORE resource map is automatically created and added to the
+archive. These metadata files and the data files are then packaged into
 a single zip file.
 }
 \examples{
@@ -41,9 +59,12 @@ addData(dp, do2)
 # Create a relationship between the two data objects
 recordDerivation(dp, "do2", "do2")
 # Write out the data package to a Bagit file
-bagitFile <- serializeToBagit(dp)
+bagitFile <- serializeToBagit(dp, syntaxName="json", mimeType="application/json")
 }
 \seealso{
 \code{\link{DataPackage-class}}
+
+For more information and examples regarding the parameters specifying the creation of the resource map,
+see \link{serializePackage}.
 }
 
