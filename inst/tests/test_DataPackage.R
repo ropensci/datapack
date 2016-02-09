@@ -87,8 +87,6 @@ test_that("DataPackage methods work", {
 
 test_that("InsertRelationship methods work", {
   
-  D1ResolveURI <- "https://cn.dataone.org/cn/v1/resolve/"
-  
   quietOn <- TRUE
   # Test the 'insertRelationships' method that uses the hardwired 'documents', 'isDocumentedBy' relationship
   dp <- new("DataPackage")
@@ -122,7 +120,6 @@ test_that("InsertRelationship methods work", {
   user <- "smith"
   data <- charToRaw("1,2,3\n4,5,6")
   format <- "text/csv"
-  node <- "urn:node:KNB"
   do1 <- new("DataObject", id=doId1, data, format, user, node)
   do2 <- new("DataObject", id=doId2, data, format, user, node)
   addData(dp, do1)
