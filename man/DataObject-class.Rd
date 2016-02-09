@@ -5,8 +5,8 @@
 \alias{DataObject-class}
 \title{DataObject wraps raw data with system-level metadata}
 \description{
-DataObject is a wrapper class that associates raw data with system-level metadata 
-describing the object.  The system metadata includes attributes such as the object's identifier, 
+DataObject is a wrapper class that associates raw data or a data file with system-level metadata 
+describing the data.  The system metadata includes attributes such as the object's identifier, 
 type, size, checksum, owner, version relationship to other objects, access rules, and other critical metadata.
 The SystemMetadata is compliant with the DataONE federated repository network's definition of SystemMetadata, and
 is encapsulated as a separate object of type \code{\link{SystemMetadata}} that can be manipulated as needed. Additional science-level and
