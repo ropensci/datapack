@@ -3,6 +3,7 @@
 \docType{methods}
 \name{addAccessRule}
 \alias{addAccessRule}
+\alias{addAccessRule,DataObject,character-method}
 \alias{addAccessRule,DataObject,data.frame-method}
 \alias{addAccessRule,SystemMetadata,character-method}
 \alias{addAccessRule,SystemMetadata,data.frame-method}
@@ -13,6 +14,8 @@ addAccessRule(x, y, ...)
 \S4method{addAccessRule}{SystemMetadata,character}(x, y, permission)
 
 \S4method{addAccessRule}{SystemMetadata,data.frame}(x, y)
+
+\S4method{addAccessRule}{DataObject,character}(x, y, permission)
 
 \S4method{addAccessRule}{DataObject,data.frame}(x, y)
 }
@@ -41,12 +44,14 @@ will only change the system metadata locally, and will not have any effect
 on remotely uploaded copies of the DataObject.
 }
 \examples{
-\dontrun{
+sysmeta <- new("SystemMetadata")
 sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
 accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", 
   "uid=slaughter,o=unaffiliated,dc=example,dc=org"), permission=c("write", "changePermission"))
 sysmeta <- addAccessRule(sysmeta, accessRules)
-}
+data <- charToRaw("1,2,3\\n4,5,6\\n")
+obj <- new("DataObject", id="1234", data=data, format="text/csv")
+obj <- addAccessRule(obj, "uid=smith,ou=Account,dc=example,dc=com", "write")
 \dontrun{
 accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", 
   "uid=slaughter,o=unaffiliated,dc=example,dc=org"), permission=c("write", "changePermission"))
