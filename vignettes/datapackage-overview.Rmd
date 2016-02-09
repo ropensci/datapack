@@ -1,0 +1,273 @@
+---
+title: "datapackage R package overview"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+<!-- output: pdf_document -->
+vignette: >
+  %\VignetteIndexEntry{datapackage R Package Overview}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\usepackage[utf8]{inputenc}
+---
+
+## Overview
+
+The *datapackage* R package provides an abstraction for collating heterogeneous collections of data 
+objects and metadata into a bundle that can be transported and loaded into a single composite file.  
+
+The methods in this package provide a convenient way to load data from common repositories 
+such as DataONE into the R environment, and to document, serialize, and save data from R to 
+data repositories. 
+
+## Create a Single Object 
+The *datapackage* DataObject class is a wrapper that contains both data and system metadata that describes the data. 
+The data can be either R `raw` data or a data file, for example a CSV file. The system metadata includes attributes such as the 
+object identifier, type, size, checksum, owner, version relationship to other objects, access rules, and other critical metadata. 
+
+The following example shows how to create a DataObject from a CSV file:
+
+```{r}
+library(datapackage)
+library(uuid)
+csvfile <- system.file("extdata/sample-data.csv", package="datapackage")
+myId <- paste("urn:uuid:", UUIDgenerate(), sep="")
+myObj <- new("DataObject", id=myId, format="text/csv", filename=csvfile)
+```
+
+The DataObject `sciObj` now contains the CSV data as well as the system metadata information. 
+The *getData* method can be used to extract the data content of a DataObject. Using the example
+DataObject:
+
+```{r}
+rawData <- getData(myObj)
+```
+
+This raw data can be converted back to CSV format using the R commands:
+
+```{r}
+tf <- tempfile(fileext=".csv")
+write.csv(rawToChar(rawData), tf, quote=F, row.names=F)
+```
+
+To retrieve the identifier associated with a DataObject:
+
+```{r}
+id <- getIdentifier(myObj)
+```
+
+To retrieve the format type:
+```{r}
+formatType <- getFormatId(myObj)
+```
+
+The entire system metadata information for a DataObject can be access directly from the SystemMetadata object contained in the DataObject:
+
+```{r}
+str(myObj@sysmeta)
+```
+
+The system metadata contains access policy information for the DataObject that could be used
+by a data repository that the object is uploaded to. For example, when a DataObject is
+uploaded to a [DataONE Member Nodes](https://www.dataone.org/current-member-nodes), the access policy is applied to the uploaded data
+and controls access to the data on the Member Node by DataONE users.
+
+Before the DataObject is uploaed, access can be set so that anyone can read the uploaded data:
+```{r}
+myObj <- setPublicAccess(myObj)
+```
+
+Individual access rules can also be added one at a time:
+```{r}
+myObj <- addAccessRule(myObj, "uid=smith,ou=Account,dc=example,dc=com", "write")
+```
+
+Alternatively, multiple access rules can be added:
+```{r}
+accessRules <- data.frame(subject=c("uid=jsmith,o=Account,dc=example,dc=com",  
+                                    "uid=jadams,o=Account,dc=example,dc=org"), 
+                          permission=c("write", "changePermission"))
+myObj <- addAccessRule(myObj, accessRules)
+str(myObj@sysmeta@accessPolicy)
+```
+
+The *dataone* R package can be used to upload or download DataObjecs to a DataONE Member Node.
+Please see the web page for the [*dataone*](http://github.com/DataONEorg/rdataone) R package and the 
+vignettes for more information:
+
+```{r, eval=FALSE}
+library(dataone)
+vignette("download-data", package="dataone")
+vignette("upload-data", package="dataone")
+```
+
+## Create a Collection of Objects
+        
+A DataPackage is a container for a set of DataObjects. A collection of related DataObjects can be placed in
+a DataPackage and actions can be performed on it, such as serializing the entire collection
+of objects into a packaging file, or uploading all package member objects to a data repository.
+
+This example creates a DataPackage with one DataObject containing metadata and two others containing science data:
+
+```{r}
+metadataFile <- system.file("extdata/sample-eml.xml", package="datapackage")
+metadataId <- "metadataId"
+metadataObj <- new("DataObject", id=metadataId, format="eml://ecoinformatics.org/eml-2.1.0", file=metadataFile)
+
+csvfile <- system.file("extdata/sample-data.csv", package="datapackage")
+sciId <- "sciId1"
+sciObj <- new("DataObject", id=sciId, format="text/csv", filename=csvfile)
+
+data <- charToRaw("1,2,3\n4,5,6\n")
+sciId2 <- "sciId2"
+sciObj2 <- new("DataObject", id=sciId2, data, format="text/csv")
+```
+
+The identifier values used in this example are simple and easily recognizable for demonstraction
+purposes. A more standard unique identifier can be created with the statement:
+
+```{r}
+myid <- paste("urn:uuid:", UUIDgenerate(), sep="")
+myid
+```
+
+Next a DataPackage object is created and the DataObjects added to it:
+```{r}
+dp <- new("DataPackage")
+addData(dp, metadataObj)
+addData(dp, sciObj)
+# The second object will be added in the next section 
+```
+
+Information can also be extracted from the DataPackage. To show the identifiers of the DataObjects that are in the package:
+
+```{r}
+getIdentifiers(dp)
+```
+
+To show the size of each DataObject in the package:
+```{r}
+getSize(dp)
+```
+
+To extract the data in a DataObject as raw data:
+```{r}
+sciObjRaw <- getData(dp, sciId)
+```
+
+To extract a package member and create from it a separate DataObject:
+```{r}
+mySciObj <- getMember(dp, sciId)
+```
+
+## Relationships Between DataObjects
+
+Relationships between DataObjects in a DataPackage can be recorded in the DataPackage. For example, 
+a typical relationship is that a DataObject containing metadata
+can describe, or document, DataObjects containing science data. 
+
+Relationships between DataPackage member 
+DataObjects can be recorded with the *insertRelationship* method. This relationship between metadata
+and is the default relation recordred by *insertRelationship*, so the relationship type doesn't
+need to be specified in this case. For example, with the example DataPackage created above, 
+we can add the *documents* relationship:
+
+```{r}
+insertRelationship(dp, subjectID=metadataId, objectIDs=sciId)
+```
+
+These relationships can be examined with the statements:
+```{r}
+relations <- getRelationships(dp)
+relations[,1:3]
+```
+
+(This `documents` relationship is defined by the [Citation Typing Ontology](http://vocab.ox.ac.uk/index) (CITO))
+
+A quick way to add this *documents* relationship is to include the metadata object when a science data
+object is added to the package:
+
+```{r}
+addData(dp, sciObj2, metadataObj)
+```
+
+When a second object is included with the `addData` call, the `insertRelationship` method is
+automatically called to establish the *documents* relationship between the two objects, as can
+be seen with the updated relationships stored in the package:
+
+```{r}
+relations <- getRelationships(dp)
+# Print just the first relationship for clarity, without the type information columns
+relations[,1:3]
+```
+
+Relationships can be fully specified, as shown in the following statement that adds a provenence 
+relationship between two objects in the example package:
+
+```{r, eval=F}
+insertRelationship(dp, subjectID=sciId2, objectIDs=sciId,
+                   predicate="http://www.w3.org/ns/prov#wasDerivedFrom") 
+``` 
+
+The relationships contained in a DataPackage conform to the [Resource Description Framework](https://www.w3.org/RDF/) (RDF), which is a [World Wide Web Consortium](https://www.w3.org/)
+standard for describing web accessible resources.
+
+## Describing The Contents of a DataPackage 
+
+In order to transport a DataPackage, for example to a data repository, it is necessary that a description of
+the contents of the DataPackage is created so that the consumer of the DataPackage can 
+determine how to extract, and process the contents.
+
+A DataPackage can produce a standard description of its members and relationships which conforms to the 
+the Open Archives Initiative [Object Reuse and Exchange](https://www.openarchives.org/ore/) (OAI-ORE), 
+which is a widely used standard to describe aggregations of web accessible resources. This OAI-ORE 
+description is refered to as a *resource map*.
+
+The *serializePackage* method will create Resource Description Framework serialization of a resource map,
+written to a file in this case, that conforms to the OAI-ORE specification.
+
+To create a resource map for the example DataPackage:
+
+```{r}
+tf <- tempfile()
+packageId <- paste("urn:uuid:", UUIDgenerate(), sep="")
+serializePackage(dp, file=tf, id=packageId)
+```
+
+This example writes to a tempfile using the default serialization format of "rdfxml". Also the URLs for each 
+package member are prepended with the default value of "https://cn.dataone.org/cn/v2/resolve/". A different
+value can be specified with the *resoveURI* argument. To specify that no value be prepended to the 
+identifier URLs, specify a zero-length character:
+
+```{r}
+tf <- tempfile()
+packageId <- paste("urn:uuid:", UUIDgenerate(), sep="")
+serializePackage(dp, file=tf, id=packageId, resolveURI="")
+```
+
+It is also possible to create a JSON serialization, if desired:
+
+```{r}
+tf <- tempfile()
+packageId <- paste("urn:uuid:", UUIDgenerate(), sep="")
+serializePackage(dp, file=tf, id=packageId, syntaxName="json", mimeType="application/json", resolveURI="")
+```
+
+## Saving DataPackage Contents to a File
+
+The contents of a DataPackage can be saved to a file using the *serializeToBagit* method. This creates 
+a *BagIt* file, a hierarchical file packaging format. 
+
+The created Bagit file contains the data from the DataPackage members as well as an OAI-ORE resource
+map that is automatically created by *serializeToBagit*.
+ 
+The following R command shows how to create the BagIt file for the example DataPackage:
+
+```{r, eval=F}
+bagitFilename <- serializeToBagit(dp)
+```
+
+The variable `bagitFilename` contains the file path to the temporary BagIt file.
+This file should be copied to another location before quiting or restarting R:
+
+```{r, eval=F}
+file.copy(bagitFilename, "~/myPackageFile.zip")
+```
