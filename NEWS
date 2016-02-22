@@ -1,0 +1,17 @@
+Version 1.0.0
+-------------
+
+NEW FEATURES
+
+* Initial version (see help topic for 'datapackage', e.g. "?datapackage")
+
+* Provides an API for building and serializing packages of data and associated metadata.
+
+NEW S4 CLASSES
+
+* Class DataPackage for building and serializing data packages.
+
+* Class SystemMetadata and DataObject for representing a member of a data package.
+
+* Class ResourceMap for building and serializing a Resource Description Framework
+  representation of a data package.
