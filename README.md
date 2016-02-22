@@ -91,6 +91,18 @@ library(datapackage)
 
 The *datapackage* R package should be available for use at this point
 
+## Installing on Windows
+
+For windows, the required redland R package is distributed as a binary release, so it is not
+necessary to install any additional system libraries.
+
+To install the R packages from the R console:
+
+```
+install.packages("datapackage")
+library(datapackage)
+```
+
 ## Quick Start
 
 See the full manual for documentation, but once installed, the package can be run in R using:
