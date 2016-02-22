@@ -291,8 +291,8 @@ setMethod("insertRelationship", signature("DataPackage", "character", "character
       stop(sprintf("Invalid objct type: %s\n", objectTypes[i]))
     }
     newRels <- data.frame(subject=subjectID, predicate=predicate, object=obj, 
-                        subjectType=subjectType, objectTypes=objectTypes[i], 
-                        dataTypeURIs=dataTypeURIs[i], row.names = NULL, stringsAsFactors = FALSE)
+                        subjectType=subjectType, objectType=objectTypes[i], 
+                        dataTypeURI=dataTypeURIs[i], row.names = NULL, stringsAsFactors = FALSE)
     
     # Has a relation been added previously?
     if (nrow(relations) == 0) {

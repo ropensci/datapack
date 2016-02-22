@@ -154,7 +154,7 @@ setMethod("createFromTriples", signature("ResourceMap", "data.frame", "character
     }
     
     statement <- new("Statement", .Object@world, subjectId, triple[['predicate']], objectId, 
-                     triple[['subjectType']], triple[['objectTypes']], triple[['dataTypeURIs']])
+                     triple[['subjectType']], triple[['objectType']], triple[['dataTypeURI']])
     addStatement(.Object@model, statement)
   }
   
