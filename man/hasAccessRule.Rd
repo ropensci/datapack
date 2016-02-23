@@ -35,7 +35,8 @@ sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "wri
 accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", 
   "uid=slaughter,o=unaffiliated,dc=example,dc=org"), permission=c("write", "changePermission"))
 sysmeta <- addAccessRule(sysmeta, accessRules)
-ruleExists <- hasAccessRule(sysmeta, subject="uid=smith,ou=Account,dc=example,dc=com", permission="write")
+ruleExists <- hasAccessRule(sysmeta, subject="uid=smith,ou=Account,dc=example,dc=com", 
+  permission="write")
 }
 \seealso{
 \code{\link{SystemMetadata-class}}

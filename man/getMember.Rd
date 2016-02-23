@@ -11,9 +11,9 @@ getMember(x, ...)
 \S4method{getMember}{DataPackage}(x, identifier)
 }
 \arguments{
-\item{...}{(Not yet used)}
+\item{x}{A DataPackage instance}
 
-\item{identifier}{A DataObject identifier}
+\item{...}{(Not yet used)}
 
 \item{identifier}{A DataObject identifier}
 }

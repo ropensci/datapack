@@ -431,7 +431,7 @@ setMethod("removeMember", signature("DataPackage"), function(x, identifier) {
 #' Return the Package Member by Identifier
 #' @description Given the identifier of a member of the data package, return the DataObject
 #' representation of the member.
-#' @param identifier A DataObject identifier
+#' @param x A DataPackage instance
 #' @param ... (Not yet used)
 #' @seealso \code{\link{DataPackage-class}}
 #' @export

@@ -466,7 +466,8 @@ setGeneric("hasAccessRule", function(sysmeta, subject, ...) {
 #' accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", 
 #'   "uid=slaughter,o=unaffiliated,dc=example,dc=org"), permission=c("write", "changePermission"))
 #' sysmeta <- addAccessRule(sysmeta, accessRules)
-#' ruleExists <- hasAccessRule(sysmeta, subject="uid=smith,ou=Account,dc=example,dc=com", permission="write")
+#' ruleExists <- hasAccessRule(sysmeta, subject="uid=smith,ou=Account,dc=example,dc=com", 
+#'   permission="write")
 #' @return boolean TRUE if the access rule exists already, FALSE otherwise
 setMethod("hasAccessRule", signature("SystemMetadata", "character"), function(sysmeta, subject, permission) {
     found <- any(grepl(subject, sysmeta@accessPolicy$subject) & grepl(permission, sysmeta@accessPolicy$permission))
