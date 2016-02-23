@@ -453,11 +453,11 @@ setMethod("getMember", signature("DataPackage"), function(x, identifier) {
 
 #' Create an OAI-ORE resource map from the package
 #' @description The Datapackage is serialized as a OAI-ORE resource map to the specified file.
-#' @param .Object A DataPackage object
+#' @param x A DataPackage object
 #' @param ... Additional arguments
 #' @seealso \code{\link{DataPackage-class}}
 #' @export
-setGeneric("serializePackage", function(.Object, ...) {
+setGeneric("serializePackage", function(x, ...) {
   standardGeneric("serializePackage")
 })
 
@@ -503,30 +503,30 @@ setGeneric("serializePackage", function(.Object, ...) {
 #'   mimeType="application/rdf+xml")
 #' status <- serializePackage(dp, file="/tmp/resmap.ttl", syntaxName="turtle", 
 #'   mimeType="text/turtle")
-setMethod("serializePackage", signature("DataPackage"), function(.Object, file, 
+setMethod("serializePackage", signature("DataPackage"), function(x, file, 
                                                                  id = as.character(NA),
                                                                  syntaxName="rdfxml", 
                                                                  mimeType="application/rdf+xml", 
                                                                  namespaces=data.frame(namespace=character(), prefix=character(), stringsAsFactors=FALSE),
                                                                  syntaxURI=as.character(NA), resolveURI=as.character(NA)) {
   # Get the relationships stored in this datapackage.
-  relations <- getRelationships(.Object)
+  relations <- getRelationships(x)
   
   # Create a ResourceMap object and serialize it to the specified file  
   #
   # If a serialization id was not specified, then use the id assinged to the DataPackage when it
   # was created. If a DataPackage id was not assigned, then create a unique id.
   if(is.na(id)) {
-    if(is.na(.Object@sysmeta@identifier) || is.null(.Object@sysmeta@identifier)) {
+    if(is.na(x@sysmeta@identifier) || is.null(x@sysmeta@identifier)) {
       id <- sprintf("urn:uuid:%s", UUIDgenerate())
     } else {
-      id <- .Object@sysmeta@identifier
+      id <- x@sysmeta@identifier
     }
   }
   
   # Create a resource map from previously stored triples, for example, from the relationships in a DataPackage
   resMap <- new("ResourceMap", id)
-  resMap <- createFromTriples(resMap, relations=relations, identifiers=getIdentifiers(.Object), resolveURI=resolveURI)  
+  resMap <- createFromTriples(resMap, relations=relations, identifiers=getIdentifiers(x), resolveURI=resolveURI)  
   status <- serializeRDF(resMap, file, syntaxName, mimeType, namespaces, syntaxURI)
   freeResourceMap(resMap)
   rm(resMap)
@@ -541,11 +541,11 @@ setMethod("serializePackage", signature("DataPackage"), function(.Object, file,
 #' and a checksum for each file. An OAI-ORE resource map is automatically created and added to the
 #' archive. These metadata files and the data files are then packaged into
 #' a single zip file. 
-#' @param .Object A DataPackage object
+#' @param x A DataPackage object
 #' @param ... Additional arguments
 #' @seealso \code{\link{DataPackage-class}}
 #' @export
-setGeneric("serializeToBagIt", function(.Object, ...) {
+setGeneric("serializeToBagIt", function(x, ...) {
   standardGeneric("serializeToBagIt")
 })
 
@@ -578,7 +578,7 @@ setGeneric("serializeToBagIt", function(.Object, ...) {
 #' # Write out the data package to a BagIt file
 #' bagitFile <- serializeToBagIt(dp, syntaxName="json", mimeType="application/json")
 #' @export
-setMethod("serializeToBagIt", signature("DataPackage"), function(.Object, mapId=as.character(NA),
+setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=as.character(NA),
                                                                  syntaxName=as.character(NA),
                                                                  namespaces=data.frame(),
                                                                  mimeType=as.character(NA),
@@ -610,7 +610,7 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(.Object, mapId=
     resolveURI <- ""
   }
   tmpFile <- tempfile()
-  serializePackage(.Object, file=tmpFile, id=mapId, syntaxName=syntaxName, namespaces=namespaces,
+  serializePackage(x, file=tmpFile, id=mapId, syntaxName=syntaxName, namespaces=namespaces,
                    mimeType=mimeType, resolveURI=resolveURI)
   # Add resource map to the pid map
   #relFile <- sprintf("data/%s.rdf", resMapId)
@@ -630,9 +630,9 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(.Object, mapId=
   
    # Populate './data" directory by copying each DataPackage member from a filename
   # if that was specified, or from an in-memober object.
-  identifiers <- getIdentifiers(.Object)
+  identifiers <- getIdentifiers(x)
   for(idNum in 1:length(identifiers)) {
-    dataObj <- getMember(.Object, identifiers[idNum])
+    dataObj <- getMember(x, identifiers[idNum])
     # Was the DataObject created with the 'file' arg, i.e. data not in the DataObject,
     # but at a specified file out on disk?
     if(!is.na(dataObj@filename)) {

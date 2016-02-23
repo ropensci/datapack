@@ -6,12 +6,12 @@
 \alias{freeResourceMap,ResourceMap-method}
 \title{Free memory used by a ResouceMap.}
 \usage{
-freeResourceMap(.Object)
+freeResourceMap(x)
 
-\S4method{freeResourceMap}{ResourceMap}(.Object)
+\S4method{freeResourceMap}{ResourceMap}(x)
 }
 \arguments{
-\item{.Object}{a ResourceMap}
+\item{x}{a ResourceMap}
 }
 \description{
 The resources allocated by the redland RDF package are freed. The ResourceMap

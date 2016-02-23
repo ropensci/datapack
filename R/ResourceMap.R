@@ -90,19 +90,19 @@ setMethod("initialize", "ResourceMap", function(.Object, id = as.character(NA)) 
 #' for example a Dublin Core identifier statement is added. The resolveURI string value is prepended to 
 #' DataPackage member identifiers in the resulting resource map. If no resolveURI value
 #' is specified, then 'https://cn.dataone.org/cn/v1/resolve' is used.
-#' @param .Object a ResourceMap
+#' @param x a ResourceMap
 #' @param relations A data.frame to read relationships from
 #' @param ... (Additional parameters)
 #' @seealso \code{\link{ResourceMap-class}}
 #' @export
-setGeneric("createFromTriples", function(.Object, relations, ...) { standardGeneric("createFromTriples")})
+setGeneric("createFromTriples", function(x, relations, ...) { standardGeneric("createFromTriples")})
 
 #' @rdname createFromTriples
 #' @param identifiers A list of the identifiers of data objects cotained in the associated data package
 #' @param resolveURI A character string containing a URI to prepend to datapackage identifiers.
-setMethod("createFromTriples", signature("ResourceMap", "data.frame"), function(.Object, relations, identifiers, 
+setMethod("createFromTriples", signature("ResourceMap", "data.frame"), function(x, relations, identifiers, 
                                                                                              resolveURI=as.character(NA),...) {
-  .Object@relations <- relations
+  x@relations <- relations
 
   # Hard coded for now, get this from dataone package in future
   D1ResolveURI <- "https://cn.dataone.org/cn/v1/resolve"
@@ -130,11 +130,11 @@ setMethod("createFromTriples", signature("ResourceMap", "data.frame"), function(
   # case, the resolve URI will be updated with a proper URI when this datapackage is uploaed
   # to a repository.
   if(nchar(pkgResolveURI) == 0) {
-    aggregationId <- sprintf("%s#aggregation", .Object@id)
-    resMapURI <- .Object@id
+    aggregationId <- sprintf("%s#aggregation", x@id)
+    resMapURI <- x@id
   } else {
-    aggregationId <- sprintf("%s/%s#aggregation", pkgResolveURI, .Object@id)
-    resMapURI <- paste(pkgResolveURI, .Object@id, sep="/")
+    aggregationId <- sprintf("%s/%s#aggregation", pkgResolveURI, x@id)
+    resMapURI <- paste(pkgResolveURI, x@id, sep="/")
   }
   
   # Add each triple from the input data.frame into the Redland RDF model.
@@ -153,9 +153,9 @@ setMethod("createFromTriples", signature("ResourceMap", "data.frame"), function(
       objectId <- paste(pkgResolveURI, objectId, sep="/")
     }
     
-    statement <- new("Statement", .Object@world, subjectId, triple[['predicate']], objectId, 
+    statement <- new("Statement", x@world, subjectId, triple[['predicate']], objectId, 
                      triple[['subjectType']], triple[['objectType']], triple[['dataTypeURI']])
-    addStatement(.Object@model, statement)
+    addStatement(x@model, statement)
   }
   
   # Loop through the datapackage objects and add the required ORE properties for each id.
@@ -168,53 +168,53 @@ setMethod("createFromTriples", signature("ResourceMap", "data.frame"), function(
       URIid <- id
     }
     # Add the Dublic Core identifier relation for each object added to the data package
-    statement <- new("Statement", .Object@world, subject=URIid, predicate=DCidentifier, object=id, objectType="literal", datatype_uri=xsdStringURI)
+    statement <- new("Statement", x@world, subject=URIid, predicate=DCidentifier, object=id, objectType="literal", datatype_uri=xsdStringURI)
     
-    addStatement(.Object@model, statement)
+    addStatement(x@model, statement)
     
     # Add triples for each object that is aggregated
-    statement <- new("Statement", .Object@world, subject=URIid, predicate=aggregatedBy, object=aggregationId)
-    addStatement(.Object@model, statement)
+    statement <- new("Statement", x@world, subject=URIid, predicate=aggregatedBy, object=aggregationId)
+    addStatement(x@model, statement)
     
     # Add triples identifying the ids that this aggregation aggregates
-    statement <- new("Statement", .Object@world, subject=aggregationId, predicate=aggregates, object=URIid)
-    addStatement(.Object@model, statement)
+    statement <- new("Statement", x@world, subject=aggregationId, predicate=aggregates, object=URIid)
+    addStatement(x@model, statement)
   }
 
   # Add the triple identifying the ResourceMap
-  statement <- new("Statement", .Object@world, subject=resMapURI, predicate=RDFtype, object=OREresourceMap)
-  addStatement(.Object@model, statement)
+  statement <- new("Statement", x@world, subject=resMapURI, predicate=RDFtype, object=OREresourceMap)
+  addStatement(x@model, statement)
   
   # Not sure if this is needed by D1 to parse resourceMap
   #currentTime <- format(Sys.time(), "%Y-%m-%dT%H:%M:%S.000%z")
-  #statement <- new("Statement", .Object@world, subject=resMapURI, predicate=DCmodified, object=currentTime, objectType="literal", datatype_uri=xsdDateTimeURI)
+  #statement <- new("Statement", x@world, subject=resMapURI, predicate=DCmodified, object=currentTime, objectType="literal", datatype_uri=xsdDateTimeURI)
     
   # Add the identifier for the ResourceMap
-  statement <- new("Statement", .Object@world, subject=resMapURI, predicate=DCidentifier, object=.Object@id, objectType="literal", datatype_uri=xsdStringURI)
+  statement <- new("Statement", x@world, subject=resMapURI, predicate=DCidentifier, object=x@id, objectType="literal", datatype_uri=xsdStringURI)
   
-  addStatement(.Object@model, statement)
+  addStatement(x@model, statement)
   
   # Add the triples identifying the Aggregation
-  statement <- new("Statement", .Object@world, subject=aggregationId, predicate=RDFtype, object=aggregationType)
-  addStatement(.Object@model, statement)
+  statement <- new("Statement", x@world, subject=aggregationId, predicate=RDFtype, object=aggregationType)
+  addStatement(x@model, statement)
   
-  statement <- new("Statement", .Object@world, subject=aggregationId, predicate=DCtitle, object="DataONE Aggregation")
-  addStatement(.Object@model, statement)
+  statement <- new("Statement", x@world, subject=aggregationId, predicate=DCtitle, object="DataONE Aggregation")
+  addStatement(x@model, statement)
   
-  statement <- new("Statement", .Object@world, subject=resMapURI, predicate=OREdescribes, object=aggregationId)
-  addStatement(.Object@model, statement)
+  statement <- new("Statement", x@world, subject=resMapURI, predicate=OREdescribes, object=aggregationId)
+  addStatement(x@model, statement)
 
-  return(.Object)
+  return(x)
 })
 
 #' Serialize a ResouceMap.
 #' @description The Redland RDF library is used to serialize the ResourceMap RDF model
 #' to a file as RDF/XML.
-#' @param .Object a ResourceMap
+#' @param x a ResourceMap
 #' @param ... Additional parameters
 #' @seealso \code{\link{ResourceMap-class}}
 #' @export
-setGeneric("serializeRDF", function(.Object, ...) { standardGeneric("serializeRDF")})
+setGeneric("serializeRDF", function(x, ...) { standardGeneric("serializeRDF")})
 
 #' @rdname serializeRDF
 #' @param file the file to which the ResourceMap will be serialized
@@ -223,7 +223,7 @@ setGeneric("serializeRDF", function(.Object, ...) { standardGeneric("serializeRD
 #' @param namespaces a data frame containing one or more namespaces and their associated prefix
 #' @param syntaxURI A URI of the serialized syntax
 #' @return status of the serialization (non)
-setMethod("serializeRDF", signature("ResourceMap"), function(.Object, 
+setMethod("serializeRDF", signature("ResourceMap"), function(x, 
                                                                           file, 
                                                                           syntaxName="rdfxml", 
                                                                           mimeType="application/rdf+xml", 
@@ -245,17 +245,17 @@ setMethod("serializeRDF", signature("ResourceMap"), function(.Object,
   
   # Merge the default namespaces with the namespaces passed in
   namespaces <- merge(defaultNS, namespaces, all.x=TRUE, all.y=TRUE)
-  serializer <- new("Serializer", .Object@world, name=syntaxName, mimeType=mimeType, typeUri=syntaxURI)
+  serializer <- new("Serializer", x@world, name=syntaxName, mimeType=mimeType, typeUri=syntaxURI)
 
   # Add default and additional namespaces to the serializer
   for(i in 1:nrow(namespaces)) {
     thisNamespace <- namespaces[i,]
     namespace <- as.character(thisNamespace['namespace'])
     prefix <- as.character(thisNamespace['prefix'])
-    status <- setNameSpace(serializer, .Object@world, namespace=namespace, prefix=prefix)
+    status <- setNameSpace(serializer, x@world, namespace=namespace, prefix=prefix)
   }
   
-  status <- serializeToFile(serializer, .Object@world, .Object@model, file)
+  status <- serializeToFile(serializer, x@world, x@model, file)
   freeSerializer(serializer)
   rm(serializer)
   return(status)
@@ -265,18 +265,18 @@ setMethod("serializeRDF", signature("ResourceMap"), function(.Object,
 #' Free memory used by a ResouceMap.
 #' @description The resources allocated by the redland RDF package are freed. The ResourceMap
 #' object should be deleted immediately following this call.
-#' @param .Object a ResourceMap
+#' @param x a ResourceMap
 #' @seealso \code{\link{ResourceMap-class}}
 #' @export
-setGeneric("freeResourceMap", function(.Object) { 
+setGeneric("freeResourceMap", function(x) { 
   standardGeneric("freeResourceMap")
 })
 
 #' @rdname freeResourceMap
-setMethod("freeResourceMap", signature("ResourceMap"), function(.Object) {
-  freeModel(.Object@model)
-  freeStorage(.Object@storage)
-  freeWorld(.Object@world)
+setMethod("freeResourceMap", signature("ResourceMap"), function(x) {
+  freeModel(x@model)
+  freeStorage(x@storage)
+  freeWorld(x@world)
 })
 
 # #' Parse an RDF/XML resource map from a file
@@ -285,15 +285,15 @@ setMethod("freeResourceMap", signature("ResourceMap"), function(.Object) {
 # #' @details This method resets the slot ResourceMap@world so any previously stored triples are discarded, allowing
 # #' for a clean model object in which to parse the new RDF content into. It is assumed that the content is a 
 # #' valid ORE resource map and no validation checks specific to the OAI-ORE content model are not performed.
-# #' @param .Object ResourceMap
+# #' @param x ResourceMap
 # #' @param file a file containing a resource map in RDF/XML that will be parsed into the ResourceMap object
-# #' @return .Object the ResourceMap containing the parsed RDF/XML content
+# #' @return x the ResourceMap containing the parsed RDF/XML content
 # #' @export
-# setGeneric("parseRDF_XML", function(.Object, file) { standardGeneric("parseRDF")} )
+# setGeneric("parseRDF_XML", function(x, file) { standardGeneric("parseRDF")} )
 # 
-# setMethod("parseRDF_XML", "ResourceMap", function(.Object, file) {
-#  parser <- new("Parser", .Object@world)
-#  parseFileIntoModel(parser, .Object@world, file, model)
+# setMethod("parseRDF_XML", "ResourceMap", function(x, file) {
+#  parser <- new("Parser", x@world)
+#  parseFileIntoModel(parser, x@world, file, model)
 #  
-#  return(.Object)
+#  return(x)
 # })

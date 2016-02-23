@@ -6,16 +6,16 @@
 \alias{serializePackage,DataPackage-method}
 \title{Create an OAI-ORE resource map from the package}
 \usage{
-serializePackage(.Object, ...)
+serializePackage(x, ...)
 
-\S4method{serializePackage}{DataPackage}(.Object, file, id = as.character(NA),
+\S4method{serializePackage}{DataPackage}(x, file, id = as.character(NA),
   syntaxName = "rdfxml", mimeType = "application/rdf+xml",
   namespaces = data.frame(namespace = character(), prefix = character(),
   stringsAsFactors = FALSE), syntaxURI = as.character(NA),
   resolveURI = as.character(NA))
 }
 \arguments{
-\item{.Object}{A DataPackage object}
+\item{x}{A DataPackage object}
 
 \item{...}{Additional arguments}
 

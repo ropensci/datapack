@@ -6,15 +6,15 @@
 \alias{serializeRDF,ResourceMap-method}
 \title{Serialize a ResouceMap.}
 \usage{
-serializeRDF(.Object, ...)
+serializeRDF(x, ...)
 
-\S4method{serializeRDF}{ResourceMap}(.Object, file, syntaxName = "rdfxml",
+\S4method{serializeRDF}{ResourceMap}(x, file, syntaxName = "rdfxml",
   mimeType = "application/rdf+xml", namespaces = data.frame(namespace =
   character(), prefix = character(), stringsAsFactors = FALSE),
   syntaxURI = as.character(NA))
 }
 \arguments{
-\item{.Object}{a ResourceMap}
+\item{x}{a ResourceMap}
 
 \item{...}{Additional parameters}
 

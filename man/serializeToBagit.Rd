@@ -6,15 +6,15 @@
 \alias{serializeToBagIt,DataPackage-method}
 \title{Serialize A DataPackage into a BagIt Archive File}
 \usage{
-serializeToBagIt(.Object, ...)
+serializeToBagIt(x, ...)
 
-\S4method{serializeToBagIt}{DataPackage}(.Object, mapId = as.character(NA),
+\S4method{serializeToBagIt}{DataPackage}(x, mapId = as.character(NA),
   syntaxName = as.character(NA), namespaces = data.frame(),
   mimeType = as.character(NA), syntaxURI = as.character(NA),
   resolveURI = as.character(NA), ...)
 }
 \arguments{
-\item{.Object}{A DataPackage object}
+\item{x}{A DataPackage object}
 
 \item{...}{Additional arguments}
 
