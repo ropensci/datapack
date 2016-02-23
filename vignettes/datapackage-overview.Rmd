@@ -231,11 +231,12 @@ tf <- tempfile()
 packageId <- paste("urn:uuid:", UUIDgenerate(), sep="")
 serializePackage(dp, file=tf, id=packageId)
 ```
-
 This example writes to a tempfile using the default serialization format of "rdfxml". Also the URLs for each 
-package member are prepended with the default value of "https://cn.dataone.org/cn/v2/resolve/". A different
-value can be specified with the *resoveURI* argument. To specify that no value be prepended to the 
-identifier URLs, specify a zero-length character:
+package member are prepended with the default value of the DataONE resolve service, which would be the URL
+that could be used to access this data object if the package is uploaded to a DataONE member node. 
+
+A different value to be prepended to each identifier can be specified with the *resoveURI* argument. 
+To specify that no value be prepended to the identifier URLs, specify a zero-length character:
 
 ```{r}
 tf <- tempfile()

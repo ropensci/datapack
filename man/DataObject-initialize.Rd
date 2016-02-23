@@ -19,7 +19,7 @@
 
 \item{dataobj}{the bytes of the data for this object in \code{'raw'} format, optional if \code{'filename'} is provided}
 
-\item{format}{the format identifier for the object (see \url{'http://cn.dataone.org/cn/v2/formats'}}
+\item{format}{the format identifier for the object, e.g."text/csv", "eml://ecoinformatics.org/eml-2.1.1"}
 
 \item{user}{the identity of the user owning the package, typically in X.509 format}
 

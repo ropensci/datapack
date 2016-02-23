@@ -101,7 +101,7 @@ setClass("DataObject", slots = c(
 #' @param .Object the DataObject instance to be initialized
 #' @param id the identifier for the DataObject, unique within its repository. Optionally this can be an existing SystemMetadata object
 #' @param dataobj the bytes of the data for this object in \code{'raw'} format, optional if \code{'filename'} is provided
-#' @param format the format identifier for the object (see \url{'http://cn.dataone.org/cn/v2/formats'}
+#' @param format the format identifier for the object, e.g."text/csv", "eml://ecoinformatics.org/eml-2.1.1"
 #' @param user the identity of the user owning the package, typically in X.509 format
 #' @param mnNodeId the node identifier for the repository to which this object belongs.
 #' @param filename the filename for the fully qualified path to the data on disk, optional if \code{'data'} is provided
