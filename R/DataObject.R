@@ -180,13 +180,11 @@ setMethod("initialize", "DataObject", function(.Object, id=as.character(NA), dat
 #' Get the data content of a specified data object
 #' 
 #' @param x  DataObject or DataPackage: the data structure from where to get the data
-#' @param id Missing or character: if \code{'x'} is DataPackage, the identifier of the
-#' package member to get data from
 #' @param ... Additional arguments
 #' @aliases getData
 #' @seealso \code{\link{DataObject-class}}
 #' @export
-setGeneric("getData", function(x, id=NA, ...) {
+setGeneric("getData", function(x, ...) {
     standardGeneric("getData")
 })
 
@@ -312,19 +310,19 @@ setMethod("addAccessRule", signature("DataObject", "data.frame"), function(x, y)
 #' argument to this method is a string value, but is generally formatted as an X.509
 #' name formatted according to RFC 2253.
 #' @param x DataObject
-#' @param subject : the subject name of the person/system to check for read permissions
 #' @param ... Additional arguments
 #' @return boolean TRUE if the subject has read permission, or FALSE otherwise
 #' @aliases canRead
 #' @seealso \code{\link{DataObject-class}}
 #' @export
-setGeneric("canRead", function(x, subject, ...) {
+setGeneric("canRead", function(x, ...) {
   standardGeneric("canRead")
 })
 
 #' @rdname canRead
+#' @param subject : the subject name of the person/system to check for read permissions
 #' @export
-setMethod("canRead", signature("DataObject", "character"), function(x, subject) {
+setMethod("canRead", signature("DataObject"), function(x, subject) {
 
     canRead <- hasAccessRule(x@sysmeta, "public", "read") | hasAccessRule(x@sysmeta, subject, "read")
 	return(canRead)

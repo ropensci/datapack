@@ -92,15 +92,15 @@ setMethod("initialize", "ResourceMap", function(.Object, id = as.character(NA)) 
 #' is specified, then 'https://cn.dataone.org/cn/v1/resolve' is used.
 #' @param .Object a ResourceMap
 #' @param relations A data.frame to read relationships from
-#' @param identifiers A list of the identifiers of data objects cotained in the associated data package
 #' @param ... (Additional parameters)
 #' @seealso \code{\link{ResourceMap-class}}
 #' @export
-setGeneric("createFromTriples", function(.Object, relations, identifiers, ...) { standardGeneric("createFromTriples")})
+setGeneric("createFromTriples", function(.Object, relations, ...) { standardGeneric("createFromTriples")})
 
 #' @rdname createFromTriples
+#' @param identifiers A list of the identifiers of data objects cotained in the associated data package
 #' @param resolveURI A character string containing a URI to prepend to datapackage identifiers.
-setMethod("createFromTriples", signature("ResourceMap", "data.frame", "character"), function(.Object, relations, identifiers, 
+setMethod("createFromTriples", signature("ResourceMap", "data.frame"), function(.Object, relations, identifiers, 
                                                                                              resolveURI=as.character(NA),...) {
   .Object@relations <- relations
 
@@ -211,19 +211,19 @@ setMethod("createFromTriples", signature("ResourceMap", "data.frame", "character
 #' @description The Redland RDF library is used to serialize the ResourceMap RDF model
 #' to a file as RDF/XML.
 #' @param .Object a ResourceMap
-#' @param file the file to which the ResourceMap will be serialized
 #' @param ... Additional parameters
 #' @seealso \code{\link{ResourceMap-class}}
 #' @export
-setGeneric("serializeRDF", function(.Object, file, ...) { standardGeneric("serializeRDF")})
+setGeneric("serializeRDF", function(.Object, ...) { standardGeneric("serializeRDF")})
 
 #' @rdname serializeRDF
+#' @param file the file to which the ResourceMap will be serialized
 #' @param syntaxName name of the syntax to use for serialization - default is "rdfxml"
 #' @param mimeType the mimetype of the serialized output - the default is "application/rdf+xml"
 #' @param namespaces a data frame containing one or more namespaces and their associated prefix
 #' @param syntaxURI A URI of the serialized syntax
 #' @return status of the serialization (non)
-setMethod("serializeRDF", signature("ResourceMap", "character"), function(.Object, 
+setMethod("serializeRDF", signature("ResourceMap"), function(.Object, 
                                                                           file, 
                                                                           syntaxName="rdfxml", 
                                                                           mimeType="application/rdf+xml", 

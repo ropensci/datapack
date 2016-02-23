@@ -3,23 +3,23 @@
 \docType{methods}
 \name{getData}
 \alias{getData}
-\alias{getData,DataObject,ANY-method}
-\alias{getData,DataPackage,character-method}
+\alias{getData,DataObject-method}
+\alias{getData,DataPackage-method}
 \title{Get the data content of a specified data object}
 \usage{
-getData(x, id = NA, ...)
+getData(x, ...)
 
-\S4method{getData}{DataObject,ANY}(x)
+\S4method{getData}{DataObject}(x)
 
-\S4method{getData}{DataPackage,character}(x, id)
+\S4method{getData}{DataPackage}(x, id)
 }
 \arguments{
 \item{x}{DataObject or DataPackage: the data structure from where to get the data}
 
+\item{...}{Additional arguments}
+
 \item{id}{Missing or character: if \code{'x'} is DataPackage, the identifier of the
 package member to get data from}
-
-\item{...}{Additional arguments}
 }
 \value{
 raw representation of the data

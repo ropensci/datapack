@@ -3,19 +3,19 @@
 \docType{methods}
 \name{containsId}
 \alias{containsId}
-\alias{containsId,DataPackage,character-method}
+\alias{containsId,DataPackage-method}
 \title{Returns true if the specified object is a member of the package}
 \usage{
-containsId(x, identifier, ...)
+containsId(x, ...)
 
-\S4method{containsId}{DataPackage,character}(x, identifier)
+\S4method{containsId}{DataPackage}(x, identifier)
 }
 \arguments{
 \item{x}{A DataPackage object}
 
-\item{identifier}{The DataObject identifier to check for inclusion in the DataPackage}
-
 \item{...}{(Not yet used)}
+
+\item{identifier}{The DataObject identifier to check for inclusion in the DataPackage}
 }
 \value{
 A logical - a value of TRUE indicates that the DataObject is in the DataPackage

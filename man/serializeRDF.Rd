@@ -3,22 +3,22 @@
 \docType{methods}
 \name{serializeRDF}
 \alias{serializeRDF}
-\alias{serializeRDF,ResourceMap,character-method}
+\alias{serializeRDF,ResourceMap-method}
 \title{Serialize a ResouceMap.}
 \usage{
-serializeRDF(.Object, file, ...)
+serializeRDF(.Object, ...)
 
-\S4method{serializeRDF}{ResourceMap,character}(.Object, file,
-  syntaxName = "rdfxml", mimeType = "application/rdf+xml",
-  namespaces = data.frame(namespace = character(), prefix = character(),
-  stringsAsFactors = FALSE), syntaxURI = as.character(NA))
+\S4method{serializeRDF}{ResourceMap}(.Object, file, syntaxName = "rdfxml",
+  mimeType = "application/rdf+xml", namespaces = data.frame(namespace =
+  character(), prefix = character(), stringsAsFactors = FALSE),
+  syntaxURI = as.character(NA))
 }
 \arguments{
 \item{.Object}{a ResourceMap}
 
-\item{file}{the file to which the ResourceMap will be serialized}
-
 \item{...}{Additional parameters}
+
+\item{file}{the file to which the ResourceMap will be serialized}
 
 \item{syntaxName}{name of the syntax to use for serialization - default is "rdfxml"}
 

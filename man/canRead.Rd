@@ -3,19 +3,19 @@
 \docType{methods}
 \name{canRead}
 \alias{canRead}
-\alias{canRead,DataObject,character-method}
+\alias{canRead,DataObject-method}
 \title{Test whether the provided subject can read an object.}
 \usage{
-canRead(x, subject, ...)
+canRead(x, ...)
 
-\S4method{canRead}{DataObject,character}(x, subject)
+\S4method{canRead}{DataObject}(x, subject)
 }
 \arguments{
 \item{x}{DataObject}
 
-\item{subject}{: the subject name of the person/system to check for read permissions}
-
 \item{...}{Additional arguments}
+
+\item{subject}{: the subject name of the person/system to check for read permissions}
 }
 \value{
 boolean TRUE if the subject has read permission, or FALSE otherwise

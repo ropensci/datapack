@@ -3,19 +3,19 @@
 \docType{methods}
 \name{getMember}
 \alias{getMember}
-\alias{getMember,DataPackage,character-method}
+\alias{getMember,DataPackage-method}
 \title{Return the Package Member by Identifier}
 \usage{
-getMember(x, identifier, ...)
+getMember(x, ...)
 
-\S4method{getMember}{DataPackage,character}(x, identifier)
+\S4method{getMember}{DataPackage}(x, identifier)
 }
 \arguments{
-\item{x}{A DataPackage object}
+\item{...}{(Not yet used)}
 
 \item{identifier}{A DataObject identifier}
 
-\item{...}{(Not yet used)}
+\item{identifier}{A DataObject identifier}
 }
 \value{
 A DataObject if the member is found, or NULL if not

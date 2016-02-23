@@ -94,8 +94,10 @@ setMethod("initialize", "DataPackage", function(.Object, packageId) {
 })
 
 #' @rdname getData
+#' @param id Missing or character: if \code{'x'} is DataPackage, the identifier of the
+#' package member to get data from
 #' @export
-setMethod("getData", signature("DataPackage", "character"), function(x, id) {
+setMethod("getData", signature("DataPackage"), function(x, id) {
     databytes <- as.raw(NULL)
     if (containsId(x, id)) {
         do <- x@objects[[id]]
@@ -154,15 +156,15 @@ setMethod("getIdentifiers", "DataPackage", function(x) {
 #' Add a DataObject to the DataPackage
 #' @description The DataObject is added to the DataPackage.
 #' @param x A DataPackage instance
-#' @param do A DataObject instance
 #' @param ... (Additional parameters)
 #' @seealso \code{\link{DataPackage-class}}
 #' @export
-setGeneric("addData", function(x, do, ...) { 
+setGeneric("addData", function(x, ...) { 
     standardGeneric("addData")
 })
 
 #' @rdname addData
+#' @param do A DataObject instance
 #' @description The DataObject \code{do} is added to the data package \code{x}.
 #' @details If the optional \code{mo} parameter is specified, then it is assumed that this DataObject is a metadata
 #' object that describes the science object that is being added. The \code{addData} function will add a relationship
@@ -181,7 +183,7 @@ setGeneric("addData", function(x, do, ...) {
 #' # to the package  automatically, since it hasn't been added yet.
 #' addData(dpkg, do, md)
 #' @export
-setMethod("addData", signature("DataPackage", "DataObject"), function(x, do, mo=as.character(NA)) {
+setMethod("addData", signature("DataPackage"), function(x, do, mo=as.character(NA)) {
   x@objects[[do@sysmeta@identifier]] <- do
   # If a metadata object identifier is specified on the command line, then add the relationship to this package
   # that associates this science object with the metadata object.
@@ -370,15 +372,15 @@ setMethod("getRelationships", signature("DataPackage"), function(x, ...) {
 
 #' Returns true if the specified object is a member of the package
 #' @param x A DataPackage object
-#' @param identifier The DataObject identifier to check for inclusion in the DataPackage
 #' @param ... (Not yet used)
 #' @seealso \code{\link{DataPackage-class}}
 #' @export
-setGeneric("containsId", function(x, identifier, ...) {
+setGeneric("containsId", function(x, ...) {
     standardGeneric("containsId")
 })
 
 #' @rdname containsId
+#' @param identifier The DataObject identifier to check for inclusion in the DataPackage
 #' @return A logical - a value of TRUE indicates that the DataObject is in the DataPackage
 #' @examples
 #' dp <- new("DataPackage")
@@ -388,7 +390,7 @@ setGeneric("containsId", function(x, identifier, ...) {
 #' addData(dp, do)
 #' isInPackage <- containsId(dp, identifier="myNewId")
 #' @export
-setMethod("containsId", signature("DataPackage", "character"), function(x, identifier) {
+setMethod("containsId", signature("DataPackage"), function(x, identifier) {
     obj <- x@objects[[identifier]]
     found <- !is.null(obj)
     return(found)
@@ -398,15 +400,15 @@ setMethod("containsId", signature("DataPackage", "character"), function(x, ident
 #' @description Given the identifier of a member of the data package, delete the DataObject
 #' representation of the member.
 #' @param x a Datapackage object
-#' @param identifier an identifier for a DataObject
 #' @param ... (Not yet used)
 #' @seealso \code{\link{DataPackage-class}}
 #' @export 
-setGeneric("removeMember", function(x, identifier, ...) {
+setGeneric("removeMember", function(x, ...) {
   standardGeneric("removeMember")
 })
 
 #' @rdname removeMember
+#' @param identifier an identifier for a DataObject
 #' @examples
 #' dp <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6")
@@ -414,7 +416,7 @@ setGeneric("removeMember", function(x, identifier, ...) {
 #' addData(dp, do)
 #' removeMember(dp, "myNewId")
 #' @export
-setMethod("removeMember", signature("DataPackage", "character"), function(x, identifier) {
+setMethod("removeMember", signature("DataPackage"), function(x, identifier) {
     if (containsId(x, identifier)) {
         x@objects[[identifier]] <- NULL
     }
@@ -423,16 +425,16 @@ setMethod("removeMember", signature("DataPackage", "character"), function(x, ide
 #' Return the Package Member by Identifier
 #' @description Given the identifier of a member of the data package, return the DataObject
 #' representation of the member.
-#' @param x A DataPackage object
 #' @param identifier A DataObject identifier
 #' @param ... (Not yet used)
 #' @seealso \code{\link{DataPackage-class}}
 #' @export
-setGeneric("getMember", function(x, identifier, ...) {
+setGeneric("getMember", function(x, ...) {
     standardGeneric("getMember")
 })
 
 #' @rdname getMember
+#' @param identifier A DataObject identifier
 #' @return A DataObject if the member is found, or NULL if not
 #' @export
 #' @examples
@@ -441,7 +443,7 @@ setGeneric("getMember", function(x, identifier, ...) {
 #' do <- new("DataObject", id="myNewId", dataobj=data, format="text/csv", user="jsmith")
 #' addData(dp, do)
 #' do2 <- getMember(dp, "myNewId")
-setMethod("getMember", signature("DataPackage", "character"), function(x, identifier) {
+setMethod("getMember", signature("DataPackage"), function(x, identifier) {
     if (containsId(x, identifier)) {
         return(x@objects[[identifier]])
     } else {

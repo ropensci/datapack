@@ -3,19 +3,19 @@
 \docType{methods}
 \name{removeMember}
 \alias{removeMember}
-\alias{removeMember,DataPackage,character-method}
+\alias{removeMember,DataPackage-method}
 \title{Remove the Specified Member from the Package}
 \usage{
-removeMember(x, identifier, ...)
+removeMember(x, ...)
 
-\S4method{removeMember}{DataPackage,character}(x, identifier)
+\S4method{removeMember}{DataPackage}(x, identifier)
 }
 \arguments{
 \item{x}{a Datapackage object}
 
-\item{identifier}{an identifier for a DataObject}
-
 \item{...}{(Not yet used)}
+
+\item{identifier}{an identifier for a DataObject}
 }
 \description{
 Given the identifier of a member of the data package, delete the DataObject
