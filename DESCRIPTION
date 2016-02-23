@@ -1,6 +1,5 @@
 Package: datapackage
-Title: A flexible container to transport and manipulate data and
-    associated resources
+Title: A Flexible Container to Transport and Manipulate Data and Associated Resources 
 Version: 1.0.0
 Authors@R: c( person("Matthew B.", "Jones", email="jones@nceas.ucsb.edu", role=c("aut", "cre")),
     person("Peter", "Slaughter", role = "aut", email = "slaughter@nceas.ucsb.edu"))
