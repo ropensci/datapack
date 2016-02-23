@@ -31,15 +31,16 @@
 #' @aliases ResourceMap-class
 #' @keywords resourceMap
 #' @examples
-#' \dontrun{
 #' dp <- new("DataPackage")
 #' insertRelationship(dp, "/Users/smith/scripts/genFields.R",
 #'     "http://www.w3.org/ns/prov#used",
 #'     "https://knb.ecoinformatics.org/knb/d1/mn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1")
 #' relations <- getRelationships(dp)
-#' resMap <- new("ResourceMap", relations)
+#' resMap <- new("ResourceMap")
 #' resMap <- createFromTriples(resMap, relations, getIdentifiers(dp))
-#' serializeToRDF("ResourceMap", file="myResMap.rdf")
+#' \dontrun{
+#' tf <- tempfile(fileext=".rdf")
+#' serializeRDF(resMap, file=tf)
 #' }
 #' @import redland
 #' @import uuid
@@ -94,6 +95,15 @@ setMethod("initialize", "ResourceMap", function(.Object, id = as.character(NA)) 
 #' @param relations A data.frame to read relationships from
 #' @param ... (Additional parameters)
 #' @seealso \code{\link{ResourceMap-class}}
+#' @examples 
+#' dp <- new("DataPackage")
+#' data <- charToRaw("1,2,3\n4,5,6")
+#' do1 <- new("DataObject", id="id1", data, format="text/csv")
+#' do2 <- new("DataObject", id="id2", data, format="text/csv")
+#' addData(dp, do1)
+#' addData(dp, do2)
+#' insertRelationship(dp, subjectID="id1", objectIDs="id2", predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
+#' relations <- getRelationships(dp)
 #' @export
 setGeneric("createFromTriples", function(x, relations, ...) { standardGeneric("createFromTriples")})
 
@@ -223,6 +233,21 @@ setGeneric("serializeRDF", function(x, ...) { standardGeneric("serializeRDF")})
 #' @param namespaces a data frame containing one or more namespaces and their associated prefix
 #' @param syntaxURI A URI of the serialized syntax
 #' @return status of the serialization (non)
+#' @examples 
+#' dp <- new("DataPackage")
+#' data <- charToRaw("1,2,3\n4,5,6")
+#' do1 <- new("DataObject", id="id1", data, format="text/csv")
+#' do2 <- new("DataObject", id="id2", data, format="text/csv")
+#' addData(dp, do1)
+#' addData(dp, do2)
+#' insertRelationship(dp, subjectID="id1", objectIDs="id2", predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
+#' tf <- tempfile(fileext=".xml")
+#' relations <- getRelationships(dp)
+#' resmap <- new("ResourceMap")
+#' resmap <- createFromTriples(resmap, relations, id="myuniqueid")
+#' \dontrun{
+#' serializeRDF(resmap, tf)
+#' }
 setMethod("serializeRDF", signature("ResourceMap"), function(x, 
                                                                           file, 
                                                                           syntaxName="rdfxml", 

@@ -49,6 +49,11 @@ sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "wri
 accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", 
   "uid=slaughter,o=unaffiliated,dc=example,dc=org"), permission=c("write", "changePermission"))
 sysmeta <- addAccessRule(sysmeta, accessRules)
+sysmeta <- new("SystemMetadata")
+sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
+accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", 
+  "uid=slaughter,o=unaffiliated,dc=example,dc=org"), permission=c("write", "changePermission"))
+sysmeta <- addAccessRule(sysmeta, accessRules)
 data <- charToRaw("1,2,3\\n4,5,6\\n")
 obj <- new("DataObject", id="1234", data=data, format="text/csv")
 obj <- addAccessRule(obj, "uid=smith,ou=Account,dc=example,dc=com", "write")

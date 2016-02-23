@@ -96,6 +96,12 @@ setMethod("initialize", "DataPackage", function(.Object, packageId) {
 #' @rdname getData
 #' @param id Missing or character: if \code{'x'} is DataPackage, the identifier of the
 #' package member to get data from
+#' @examples 
+#' dp <- new("DataPackage")
+#' data <- charToRaw("1,2,3\n4,5,6")
+#' do1 <- new("DataObject", id="id1", data, format="text/csv", user="smith", mnNodeId="urn:node:KNB")
+#' addData(dp, do1)
+#' bytes <- getData(dp, "id1")
 #' @export
 setMethod("getData", signature("DataPackage"), function(x, id) {
     databytes <- as.raw(NULL)

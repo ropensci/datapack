@@ -25,6 +25,12 @@ the SystemMetadata object representing an object
 Parse an XML representation of system metadata, and set the object slots of a SystemMetadata object 
 the with obtained values.
 }
+\examples{
+library(XML)
+doc <- xmlParseDoc(system.file("testfiles/sysmeta.xml", package="datapackage"), asText=FALSE)
+sysmeta <- new("SystemMetadata")
+sysmeta <- parseSystemMetadata(sysmeta, xmlRoot(doc))
+}
 \seealso{
 \code{\link{SystemMetadata-class}}
 }

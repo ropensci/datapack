@@ -35,6 +35,22 @@ status of the serialization (non)
 The Redland RDF library is used to serialize the ResourceMap RDF model
 to a file as RDF/XML.
 }
+\examples{
+dp <- new("DataPackage")
+data <- charToRaw("1,2,3\\n4,5,6")
+do1 <- new("DataObject", id="id1", data, format="text/csv")
+do2 <- new("DataObject", id="id2", data, format="text/csv")
+addData(dp, do1)
+addData(dp, do2)
+insertRelationship(dp, subjectID="id1", objectIDs="id2", predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
+tf <- tempfile(fileext=".xml")
+relations <- getRelationships(dp)
+resmap <- new("ResourceMap")
+resmap <- createFromTriples(resmap, relations, id="myuniqueid")
+\dontrun{
+serializeRDF(resmap, tf)
+}
+}
 \seealso{
 \code{\link{ResourceMap-class}}
 }

@@ -21,6 +21,12 @@ the formatId
 \description{
 Get the FormatId of the DataObject
 }
+\examples{
+data <- charToRaw("1,2,3\\n4,5,6\\n")
+do <- new("DataObject", "id1", dataobj=data, "text/csv", 
+  "uid=jones,DC=example,DC=com", "urn:node:KNB")
+fmtId <- getFormatId(do)
+}
 \seealso{
 \code{\link{DataObject-class}}
 }

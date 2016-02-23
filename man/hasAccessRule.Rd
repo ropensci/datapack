@@ -29,6 +29,14 @@ Each SystemMetadata document may contain a set of (subject, permission) tuples
 that represent the access rules for its associated object. This method determines
 whether a particular access rule already exists within the set.
 }
+\examples{
+sysmeta <- new("SystemMetadata")
+sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
+accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", 
+  "uid=slaughter,o=unaffiliated,dc=example,dc=org"), permission=c("write", "changePermission"))
+sysmeta <- addAccessRule(sysmeta, accessRules)
+ruleExists <- hasAccessRule(sysmeta, subject="uid=smith,ou=Account,dc=example,dc=com", permission="write")
+}
 \seealso{
 \code{\link{SystemMetadata-class}}
 }

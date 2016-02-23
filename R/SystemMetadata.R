@@ -213,6 +213,11 @@ setGeneric("parseSystemMetadata", function(sysmeta, xml, ...) {
 })
 
 #' @rdname parseSystemMetadata
+#' @examples
+#' library(XML)
+#' doc <- xmlParseDoc(system.file("testfiles/sysmeta.xml", package="datapackage"), asText=FALSE)
+#' sysmeta <- new("SystemMetadata")
+#' sysmeta <- parseSystemMetadata(sysmeta, xmlRoot(doc))
 #' @return the SystemMetadata object representing an object
 setMethod("parseSystemMetadata", signature("SystemMetadata", "XMLInternalElementNode"), function(sysmeta, xml, ...) {
   
@@ -302,6 +307,12 @@ setGeneric("serializeSystemMetadata", function(sysmeta, ...) {
 #' @rdname serializeSystemMetadata
 #' @param version A character string representing the DataONE API version that this system will be used with (eg. "v1", "v2").
 #' @return the character string representing a SystemMetadata object
+#' @examples 
+#' library(XML)
+#' doc <- xmlParseDoc(system.file("testfiles/sysmeta.xml", package="datapackage"), asText=FALSE)
+#' sysmeta <- new("SystemMetadata")
+#' sysmeta <- parseSystemMetadata(sysmeta, xmlRoot(doc))
+#' sysmetaXML <- serializeSystemMetadata(sysmeta, version="v2")
 setMethod("serializeSystemMetadata", signature("SystemMetadata"), function(sysmeta, version="v1",...) {
   
   if(version == "v1") {
@@ -381,6 +392,12 @@ setMethod("serializeSystemMetadata", signature("SystemMetadata"), function(sysme
 #' @param object the instance to be validated
 #' @param ... (Additional parameters)
 #' @seealso \code{\link{SystemMetadata-class}}
+#' @examples 
+#' library(XML)
+#' doc <- xmlParseDoc(system.file("testfiles/sysmeta.xml", package="datapackage"), asText=FALSE)
+#' sysmeta <- new("SystemMetadata")
+#' sysmeta <- parseSystemMetadata(sysmeta, xmlRoot(doc))
+#' valid <- validate(sysmeta)
 #' @export
 setGeneric("validate", function(object, ...) {
     standardGeneric("validate")
@@ -415,6 +432,12 @@ setMethod("addAccessRule", signature("SystemMetadata", "character"), function(x,
 })
 
 #' @rdname addAccessRule
+#' @examples 
+#' sysmeta <- new("SystemMetadata")
+#' sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
+#' accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", 
+#'   "uid=slaughter,o=unaffiliated,dc=example,dc=org"), permission=c("write", "changePermission"))
+#' sysmeta <- addAccessRule(sysmeta, accessRules)
 setMethod("addAccessRule", signature("SystemMetadata", "data.frame"), function(x, y) {
     x@accessPolicy <- rbind(x@accessPolicy, y)
     # Remove duplicate access rules
@@ -437,6 +460,13 @@ setGeneric("hasAccessRule", function(sysmeta, subject, ...) {
 })
 #' @rdname hasAccessRule
 #' @param permission the permission to be applied to subject if x is character
+#' @examples 
+#' sysmeta <- new("SystemMetadata")
+#' sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
+#' accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", 
+#'   "uid=slaughter,o=unaffiliated,dc=example,dc=org"), permission=c("write", "changePermission"))
+#' sysmeta <- addAccessRule(sysmeta, accessRules)
+#' ruleExists <- hasAccessRule(sysmeta, subject="uid=smith,ou=Account,dc=example,dc=com", permission="write")
 #' @return boolean TRUE if the access rule exists already, FALSE otherwise
 setMethod("hasAccessRule", signature("SystemMetadata", "character"), function(sysmeta, subject, permission) {
     found <- any(grepl(subject, sysmeta@accessPolicy$subject) & grepl(permission, sysmeta@accessPolicy$permission))

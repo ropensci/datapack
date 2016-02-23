@@ -35,6 +35,16 @@ for example a Dublin Core identifier statement is added. The resolveURI string v
 DataPackage member identifiers in the resulting resource map. If no resolveURI value
 is specified, then 'https://cn.dataone.org/cn/v1/resolve' is used.
 }
+\examples{
+dp <- new("DataPackage")
+data <- charToRaw("1,2,3\\n4,5,6")
+do1 <- new("DataObject", id="id1", data, format="text/csv")
+do2 <- new("DataObject", id="id2", data, format="text/csv")
+addData(dp, do1)
+addData(dp, do2)
+insertRelationship(dp, subjectID="id1", objectIDs="id2", predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
+relations <- getRelationships(dp)
+}
 \seealso{
 \code{\link{ResourceMap-class}}
 }

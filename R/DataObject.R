@@ -191,6 +191,11 @@ setGeneric("getData", function(x, ...) {
 #' @rdname getData
 #' @return raw representation of the data
 #' @aliases getData
+#' @examples
+#' data <- charToRaw("1,2,3\n4,5,6\n")
+#' do <- new("DataObject", "id1", dataobj=data, "text/csv", 
+#'   "uid=jones,DC=example,DC=com", "urn:node:KNB")
+#' bytes <- getData(do)
 setMethod("getData", signature("DataObject"), function(x) {
     if (is.na(x@filename)) {
         return(x@data)
@@ -218,6 +223,11 @@ setGeneric("getIdentifier", function(x, ...) {
 
 #' @rdname getIdentifier
 #' @aliases getIdentifier
+#' @examples 
+#' data <- charToRaw("1,2,3\n4,5,6\n")
+#' do <- new("DataObject", "id1", dataobj=data, "text/csv", 
+#'   "uid=jones,DC=example,DC=com", "urn:node:KNB")
+#' id <- getIdentifier(do)
 setMethod("getIdentifier", signature("DataObject"), function(x) {
 	return(x@sysmeta@identifier)
 })
@@ -235,6 +245,11 @@ setGeneric("getFormatId", function(x, ...) {
 
 #' @rdname getFormatId
 #' @aliases getFormatId
+#' @examples
+#' data <- charToRaw("1,2,3\n4,5,6\n")
+#' do <- new("DataObject", "id1", dataobj=data, "text/csv", 
+#'   "uid=jones,DC=example,DC=com", "urn:node:KNB")
+#' fmtId <- getFormatId(do)
 setMethod("getFormatId", signature("DataObject"), function(x) {
     return(x@sysmeta@formatId)
 })
@@ -258,6 +273,11 @@ setGeneric("setPublicAccess", function(x, ...) {
 
 #' @rdname setPublicAccess
 #' @aliases setPublicAccess
+#' @examples
+#' data <- charToRaw("1,2,3\n4,5,6\n")
+#' do <- new("DataObject", "id1", dataobj=data, "text/csv", 
+#'   "uid=jones,DC=example,DC=com", "urn:node:KNB")
+#' do <- setPublicAccess(do)
 setMethod("setPublicAccess", signature("DataObject"), function(x) {
     # Check if public: read is already set, and if not, set it
     if (!hasAccessRule(x@sysmeta, "public", "read")) {
@@ -292,6 +312,12 @@ setMethod("addAccessRule", signature("DataObject", "character"), function(x, y, 
 #' @export
 #' @rdname addAccessRule
 #' @aliases addAccessRule
+#' @examples
+#' data <- charToRaw("1,2,3\n4,5,6\n")
+#' do <- new("DataObject", "id1", dataobj=data, "text/csv", 
+#'   "uid=jones,DC=example,DC=com", "urn:node:KNB")
+#' ap <- data.frame(subject=c("user1", "user2"), permission= c("changePermission", "write"))
+#' do <- addAccessRule(do, ap)
 setMethod("addAccessRule", signature("DataObject", "data.frame"), function(x, y) {
   # Add the access rules to the DataObjects system metadata object    
   x@sysmeta <- addAccessRule(x@sysmeta, y)
@@ -322,6 +348,11 @@ setGeneric("canRead", function(x, ...) {
 #' @rdname canRead
 #' @param subject : the subject name of the person/system to check for read permissions
 #' @export
+#' @examples 
+#' data <- charToRaw("1,2,3\n4,5,6\n")
+#' obj <- new("DataObject", id="1234", data=data, format="text/csv")
+#' obj <- addAccessRule(obj, "smith", "read")
+#' access <- canRead(obj, "smith")
 setMethod("canRead", signature("DataObject"), function(x, subject) {
 
     canRead <- hasAccessRule(x@sysmeta, "public", "read") | hasAccessRule(x@sysmeta, subject, "read")

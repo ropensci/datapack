@@ -25,6 +25,12 @@ publicly readable.  If called after creation, it will only change the system
 metadata locally, and will not have any effect on remotely uploaded copies of
 the DataObject.
 }
+\examples{
+data <- charToRaw("1,2,3\\n4,5,6\\n")
+do <- new("DataObject", "id1", dataobj=data, "text/csv", 
+  "uid=jones,DC=example,DC=com", "urn:node:KNB")
+do <- setPublicAccess(do)
+}
 \seealso{
 \code{\link{DataObject-class}}
 }

@@ -33,6 +33,12 @@ The subject name used in both the AccessPolicy and in the \code{'subject'}
 argument to this method is a string value, but is generally formatted as an X.509
 name formatted according to RFC 2253.
 }
+\examples{
+data <- charToRaw("1,2,3\\n4,5,6\\n")
+obj <- new("DataObject", id="1234", data=data, format="text/csv")
+obj <- addAccessRule(obj, "smith", "read")
+access <- canRead(obj, "smith")
+}
 \seealso{
 \code{\link{DataObject-class}}
 }

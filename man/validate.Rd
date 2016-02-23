@@ -21,6 +21,13 @@ logical, \code{TRUE} if the SystemMetadata object is valid, else a list of strin
 \description{
 Validate a system metadata object, ensuring that required fields are present and of the right type.
 }
+\examples{
+library(XML)
+doc <- xmlParseDoc(system.file("testfiles/sysmeta.xml", package="datapackage"), asText=FALSE)
+sysmeta <- new("SystemMetadata")
+sysmeta <- parseSystemMetadata(sysmeta, xmlRoot(doc))
+valid <- validate(sysmeta)
+}
 \seealso{
 \code{\link{SystemMetadata-class}}
 }

@@ -31,15 +31,16 @@ in a DataPackage and the relationships between these objects.
 }
 }
 \examples{
-\dontrun{
 dp <- new("DataPackage")
 insertRelationship(dp, "/Users/smith/scripts/genFields.R",
     "http://www.w3.org/ns/prov#used",
     "https://knb.ecoinformatics.org/knb/d1/mn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1")
 relations <- getRelationships(dp)
-resMap <- new("ResourceMap", relations)
+resMap <- new("ResourceMap")
 resMap <- createFromTriples(resMap, relations, getIdentifiers(dp))
-serializeToRDF("ResourceMap", file="myResMap.rdf")
+\dontrun{
+tf <- tempfile(fileext=".rdf")
+serializeRDF(resMap, file=tf)
 }
 }
 \seealso{
