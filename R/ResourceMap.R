@@ -106,17 +106,19 @@ setMethod("initialize", "ResourceMap", function(.Object, id = as.character(NA)) 
 #'   predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
 #' relations <- getRelationships(dp)
 #' @export
-setGeneric("createFromTriples", function(x, relations, ...) { standardGeneric("createFromTriples")})
+setGeneric("createFromTriples", function(x, ...) { standardGeneric("createFromTriples")})
 
 #' @rdname createFromTriples
 #' @param identifiers A list of the identifiers of data objects cotained in the associated data package
 #' @param resolveURI A character string containing a URI to prepend to datapackage identifiers.
-setMethod("createFromTriples", signature("ResourceMap", "data.frame"), function(x, relations, identifiers, 
-                                                                                             resolveURI=as.character(NA),...) {
+setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, identifiers, 
+                                                                  resolveURI=as.character(NA),...) {
+  stopifnot(is.data.frame(relations))
+  stopifnot(all(is.character(identifiers)))
+  
   x@relations <- relations
-
   # Hard coded for now, get this from dataone package in future
-  D1ResolveURI <- "https://cn.dataone.org/cn/v1/resolve"
+  D1ResolveURI <- "https://cn.dataone.org/cn/v2/resolve"
   
   if(is.na(resolveURI)) {
     pkgResolveURI <- D1ResolveURI

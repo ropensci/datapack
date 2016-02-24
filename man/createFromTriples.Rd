@@ -3,20 +3,20 @@
 \docType{methods}
 \name{createFromTriples}
 \alias{createFromTriples}
-\alias{createFromTriples,ResourceMap,data.frame-method}
+\alias{createFromTriples,ResourceMap-method}
 \title{Populate a ResourceMap with RDF relationships from data.frame.}
 \usage{
-createFromTriples(x, relations, ...)
+createFromTriples(x, ...)
 
-\S4method{createFromTriples}{ResourceMap,data.frame}(x, relations, identifiers,
+\S4method{createFromTriples}{ResourceMap}(x, relations, identifiers,
   resolveURI = as.character(NA), ...)
 }
 \arguments{
 \item{x}{a ResourceMap}
 
-\item{relations}{A data.frame to read relationships from}
-
 \item{...}{(Additional parameters)}
+
+\item{relations}{A data.frame to read relationships from}
 
 \item{identifiers}{A list of the identifiers of data objects cotained in the associated data package}
 
