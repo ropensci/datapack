@@ -182,14 +182,14 @@ setGeneric("SystemMetadata", function(...) {
 #' an XML representation of the SystemMetadata.
 #' @rdname SystemMetadata
 #' @aliases SystemMetadata
-#' @param sysmeta A value of type \code{"XMLInternalElementNode"}, containing the parsed XML element with SystemMetadata fields.
+#' @param x A value of type \code{"XMLInternalElementNode"}, containing the parsed XML element with SystemMetadata fields.
 #' @import XML
 #' @export
-setMethod("SystemMetadata", signature("XMLInternalElementNode"), function(sysmeta, ...) {
+setMethod("SystemMetadata", signature("XMLInternalElementNode"), function(x, ...) {
     
     ## create new SystemMetadata object, and parse the XML to populate fields
     sm_obj <- new("SystemMetadata")
-    sm_obj <- parseSystemMetadata(sm_obj, sysmeta)
+    sm_obj <- parseSystemMetadata(sm_obj, x)
     return(sm_obj)
 })
 
@@ -202,34 +202,37 @@ setMethod("SystemMetadata", signature("XMLInternalElementNode"), function(sysmet
 #' @description
 #' Parse an XML representation of system metadata, and set the object slots of a SystemMetadata object 
 #' the with obtained values.
-#' @param sysmeta The \code{SystemMetadata} object
-#' @param xml The XML representation of the capabilities, as an XMLInternalElementNode
+#' @param x The \code{SystemMetadata} object
 #' @param ... Additional arguments passed to other functions or methods
 #' @import XML
 #' @seealso \code{\link{SystemMetadata-class}}
 #' @export
-setGeneric("parseSystemMetadata", function(sysmeta, xml, ...) {
+setGeneric("parseSystemMetadata", function(x, ...) {
   standardGeneric("parseSystemMetadata")
 })
 
 #' @rdname parseSystemMetadata
+#' @param xml The XML representation of the capabilities, as an XMLInternalElementNode
 #' @examples
 #' library(XML)
 #' doc <- xmlParseDoc(system.file("testfiles/sysmeta.xml", package="datapackage"), asText=FALSE)
 #' sysmeta <- new("SystemMetadata")
 #' sysmeta <- parseSystemMetadata(sysmeta, xmlRoot(doc))
 #' @return the SystemMetadata object representing an object
-setMethod("parseSystemMetadata", signature("SystemMetadata", "XMLInternalElementNode"), function(sysmeta, xml, ...) {
+setMethod("parseSystemMetadata", signature("SystemMetadata"), function(x, xml, ...) {
   
-  sysmeta@serialVersion <- as.numeric(xmlValue(xml[["serialVersion"]]))
-  sysmeta@identifier <- xmlValue(xml[["identifier"]])
-  sysmeta@formatId <- xmlValue(xml[["formatId"]])
-  sysmeta@size <- as.numeric(xmlValue(xml[["size"]]))
-  sysmeta@checksum <- xmlValue(xml[["checksum"]])
+  # Test arguments
+  stopifnot(is.element("XMLInternalElementNode", class(xml)))
+  
+  x@serialVersion <- as.numeric(xmlValue(xml[["serialVersion"]]))
+  x@identifier <- xmlValue(xml[["identifier"]])
+  x@formatId <- xmlValue(xml[["formatId"]])
+  x@size <- as.numeric(xmlValue(xml[["size"]]))
+  x@checksum <- xmlValue(xml[["checksum"]])
   csattrs <- xmlAttrs(xml[["checksum"]])
-  sysmeta@checksumAlgorithm <- csattrs[[1]]
-  sysmeta@submitter <- xmlValue(xml[["submitter"]])
-  sysmeta@rightsHolder <- xmlValue(xml[["rightsHolder"]])
+  x@checksumAlgorithm <- csattrs[[1]]
+  x@submitter <- xmlValue(xml[["submitter"]])
+  x@rightsHolder <- xmlValue(xml[["rightsHolder"]])
   accessList <- xmlChildren(xml[["accessPolicy"]])
   for (accessNode in accessList) {
     nodeName <- xmlName(accessNode)
@@ -251,7 +254,7 @@ setMethod("parseSystemMetadata", signature("SystemMetadata", "XMLInternalElement
       for (subj in subjects) {
         for (perm in permissions) {
           accessRecord <- data.frame(subject=subj, permission=perm)
-          sysmeta@accessPolicy <- rbind(sysmeta@accessPolicy, accessRecord)
+          x@accessPolicy <- rbind(x@accessPolicy, accessRecord)
         }
       }
     }
@@ -259,34 +262,34 @@ setMethod("parseSystemMetadata", signature("SystemMetadata", "XMLInternalElement
   rpattrs <- xmlAttrs(xml[["replicationPolicy"]])
   repAllowed <- grepl('true', rpattrs[["replicationAllowed"]], ignore.case=TRUE)
   if (repAllowed) {
-    sysmeta@replicationAllowed = TRUE
-    sysmeta@numberReplicas = as.numeric(rpattrs[["numberReplicas"]])
+    x@replicationAllowed = TRUE
+    x@numberReplicas = as.numeric(rpattrs[["numberReplicas"]])
     pbMNList <- xmlChildren(xml[["replicationPolicy"]])
     for (pbNode in pbMNList) {
       nodeName <- xmlName(pbNode)
       if (grepl("preferredMemberNode", nodeName)) {
-        sysmeta@preferredNodes <- lappend(sysmeta@preferredNodes, xmlValue(pbNode))
+        x@preferredNodes <- lappend(x@preferredNodes, xmlValue(pbNode))
       } else if (grepl("blockedMemberNode", nodeName)) {
-        sysmeta@blockedNodes <- lappend(sysmeta@blockedNodes, xmlValue(pbNode))
+        x@blockedNodes <- lappend(x@blockedNodes, xmlValue(pbNode))
       }
     }
   }
-  sysmeta@obsoletes <- xmlValue(xml[["obsoletes"]])
-  sysmeta@obsoletedBy <- xmlValue(xml[["obsoletedBy"]])
-  sysmeta@archived <- as.logical(xmlValue(xml[["archived"]]))
-  sysmeta@dateUploaded <- xmlValue(xml[["dateUploaded"]])
-  sysmeta@dateSysMetadataModified <- xmlValue(xml[["dateSysMetadataModified"]])
-  sysmeta@originMemberNode <- xmlValue(xml[["originMemberNode"]])
-  sysmeta@authoritativeMemberNode <- xmlValue(xml[["authoritativeMemberNode"]])
+  x@obsoletes <- xmlValue(xml[["obsoletes"]])
+  x@obsoletedBy <- xmlValue(xml[["obsoletedBy"]])
+  x@archived <- as.logical(xmlValue(xml[["archived"]]))
+  x@dateUploaded <- xmlValue(xml[["dateUploaded"]])
+  x@dateSysMetadataModified <- xmlValue(xml[["dateSysMetadataModified"]])
+  x@originMemberNode <- xmlValue(xml[["originMemberNode"]])
+  x@authoritativeMemberNode <- xmlValue(xml[["authoritativeMemberNode"]])
   
   # DataONE v2 elements
-  if (!is.null(xmlValue(xml[["seriesId"]]))) sysmeta@seriesId <- xmlValue(xml[["seriesId"]]) 
-  if (!is.null(xmlValue(xml[["mediaType"]]))) sysmeta@mediaType <- xmlValue(xml[["mediaType"]])
-  if (!is.null(xmlValue(xml[["fileName"]]))) sysmeta@fileName <- xmlValue(xml[["fileName"]])
+  if (!is.null(xmlValue(xml[["seriesId"]]))) x@seriesId <- xmlValue(xml[["seriesId"]]) 
+  if (!is.null(xmlValue(xml[["mediaType"]]))) x@mediaType <- xmlValue(xml[["mediaType"]])
+  if (!is.null(xmlValue(xml[["fileName"]]))) x@fileName <- xmlValue(xml[["fileName"]])
   
-  #TODO: sysmeta@replica    
+  #TODO: x@replica    
   
-  return(sysmeta)
+  return(x)
 })
 
 
@@ -295,13 +298,13 @@ setMethod("parseSystemMetadata", signature("SystemMetadata", "XMLInternalElement
 #' written to a file.
 #' @details If the \code{'version'} parameter is specified as *v2* then the SystemMetadata
 #' object is serialized according to the DataONE version 2.0 system metdata format.
-#' @param sysmeta The SystemMetadata instance to be serialized.
+#' @param x The SystemMetadata instance to be serialized.
 #' @param ... (Not currently used)
 #' @return A character value of the filename that the XML representation of the SystemMetadata object was written to.
 #' @import XML
 #' @seealso \code{\link{SystemMetadata-class}}
 #' @export
-setGeneric("serializeSystemMetadata", function(sysmeta, ...) {
+setGeneric("serializeSystemMetadata", function(x, ...) {
   standardGeneric("serializeSystemMetadata")
 })
 #' @rdname serializeSystemMetadata
@@ -313,7 +316,7 @@ setGeneric("serializeSystemMetadata", function(sysmeta, ...) {
 #' sysmeta <- new("SystemMetadata")
 #' sysmeta <- parseSystemMetadata(sysmeta, xmlRoot(doc))
 #' sysmetaXML <- serializeSystemMetadata(sysmeta, version="v2")
-setMethod("serializeSystemMetadata", signature("SystemMetadata"), function(sysmeta, version="v1",...) {
+setMethod("serializeSystemMetadata", signature("SystemMetadata"), function(x, version="v1",...) {
   
   if(version == "v1") {
     d1Namespace <- "d1"
@@ -328,56 +331,56 @@ setMethod("serializeSystemMetadata", signature("SystemMetadata"), function(sysme
                   namespace=d1Namespace,
                   namespaceDefinitions = d1NamespaceDef)
 
-  root <- addChildren(root, xmlNode("serialVersion", sysmeta@serialVersion))
-  root <- addChildren(root, xmlNode("identifier", sysmeta@identifier))
-  root <- addChildren(root, xmlNode("formatId", sysmeta@formatId))
-  root <- addChildren(root, xmlNode("size", format(as.numeric(sysmeta@size), scientific=FALSE)))
-  root <- addChildren(root, xmlNode("checksum", sysmeta@checksum, attrs = c(algorithm = sysmeta@checksumAlgorithm)))
-  root <- addChildren(root, xmlNode("submitter", sysmeta@submitter))
-  root <- addChildren(root, xmlNode("rightsHolder", sysmeta@rightsHolder))
-  if (nrow(sysmeta@accessPolicy) > 0) {
+  root <- addChildren(root, xmlNode("serialVersion", x@serialVersion))
+  root <- addChildren(root, xmlNode("identifier", x@identifier))
+  root <- addChildren(root, xmlNode("formatId", x@formatId))
+  root <- addChildren(root, xmlNode("size", format(as.numeric(x@size), scientific=FALSE)))
+  root <- addChildren(root, xmlNode("checksum", x@checksum, attrs = c(algorithm = x@checksumAlgorithm)))
+  root <- addChildren(root, xmlNode("submitter", x@submitter))
+  root <- addChildren(root, xmlNode("rightsHolder", x@rightsHolder))
+  if (nrow(x@accessPolicy) > 0) {
     accessPolicy <- xmlNode("accessPolicy")
-    for(i in 1:nrow(sysmeta@accessPolicy)) {
+    for(i in 1:nrow(x@accessPolicy)) {
       accessRule <- xmlNode("allow")
-      accessRule <- addChildren(accessRule, xmlNode("subject", sysmeta@accessPolicy[i,]$subject))
-      accessRule <- addChildren(accessRule, xmlNode("permission", sysmeta@accessPolicy[i,]$permission))
+      accessRule <- addChildren(accessRule, xmlNode("subject", x@accessPolicy[i,]$subject))
+      accessRule <- addChildren(accessRule, xmlNode("permission", x@accessPolicy[i,]$permission))
       accessPolicy <- addChildren(accessPolicy, accessRule)
     }
     root <- addChildren(root, accessPolicy)
   }
   
-  if (!is.null(sysmeta@replicationAllowed)) {
-    rpolicy <- xmlNode("replicationPolicy", attrs = c(replicationAllowed=tolower(as.character(sysmeta@replicationAllowed)), numberReplicas=sysmeta@numberReplicas))
-    pnodes <- lapply(sysmeta@preferredNodes, xmlNode, name="preferredMemberNode")
-    bnodes <- lapply(sysmeta@blockedNodes, xmlNode, name="blockedMemberNode")
+  if (!is.null(x@replicationAllowed)) {
+    rpolicy <- xmlNode("replicationPolicy", attrs = c(replicationAllowed=tolower(as.character(x@replicationAllowed)), numberReplicas=x@numberReplicas))
+    pnodes <- lapply(x@preferredNodes, xmlNode, name="preferredMemberNode")
+    bnodes <- lapply(x@blockedNodes, xmlNode, name="blockedMemberNode")
     rpolicy <- addChildren(rpolicy, kids=c(pnodes, bnodes))
     root <- addChildren(root, rpolicy)
   }
-  if (!is.na(sysmeta@obsoletes)) {
-    root <- addChildren(root, xmlNode("obsoletes", sysmeta@obsoletes))
+  if (!is.na(x@obsoletes)) {
+    root <- addChildren(root, xmlNode("obsoletes", x@obsoletes))
   }
-  if (!is.na(sysmeta@obsoletedBy)) {
-    root <- addChildren(root, xmlNode("obsoletedBy", sysmeta@obsoletedBy))
+  if (!is.na(x@obsoletedBy)) {
+    root <- addChildren(root, xmlNode("obsoletedBy", x@obsoletedBy))
   }
-  root <- addChildren(root, xmlNode("archived", tolower(as.character(sysmeta@archived))))
+  root <- addChildren(root, xmlNode("archived", tolower(as.character(x@archived))))
   # Serialize this optional field if it is defined
-  if(!is.na(sysmeta@dateUploaded)) root <- addChildren(root, xmlNode("dateUploaded", sysmeta@dateUploaded))
-  root <- addChildren(root, xmlNode("dateSysMetadataModified", sysmeta@dateSysMetadataModified))
-  root <- addChildren(root, xmlNode("originMemberNode", sysmeta@originMemberNode))
-  if(!is.na(sysmeta@authoritativeMemberNode)) {
-    root <- addChildren(root, xmlNode("authoritativeMemberNode", sysmeta@authoritativeMemberNode))
+  if(!is.na(x@dateUploaded)) root <- addChildren(root, xmlNode("dateUploaded", x@dateUploaded))
+  root <- addChildren(root, xmlNode("dateSysMetadataModified", x@dateSysMetadataModified))
+  root <- addChildren(root, xmlNode("originMemberNode", x@originMemberNode))
+  if(!is.na(x@authoritativeMemberNode)) {
+    root <- addChildren(root, xmlNode("authoritativeMemberNode", x@authoritativeMemberNode))
   }
   #TODO: sysmeta@replica (but not really needed for anything, so low priority)
   # Add v2 elements
   if (version >= "v2") {
-    if(!is.na(sysmeta@seriesId)) {
-      root <- addChildren(root, xmlNode("seriesId", sysmeta@seriesId))
+    if(!is.na(x@seriesId)) {
+      root <- addChildren(root, xmlNode("seriesId", x@seriesId))
     }
-    if(!is.na(sysmeta@mediaType)) {
-      root <- addChildren(root, xmlNode("mediaType", sysmeta@mediaType))
+    if(!is.na(x@mediaType)) {
+      root <- addChildren(root, xmlNode("mediaType", x@mediaType))
     }
-    if(!is.na(sysmeta@fileName)) {
-      root <- addChildren(root, xmlNode("fileName", sysmeta@fileName))
+    if(!is.na(x@fileName)) {
+      root <- addChildren(root, xmlNode("fileName", x@fileName))
     } 
   }
   
@@ -389,7 +392,7 @@ setMethod("serializeSystemMetadata", signature("SystemMetadata"), function(sysme
 #' @title Validate a SystemMetadata object. 
 #' @description
 #' Validate a system metadata object, ensuring that required fields are present and of the right type.
-#' @param object the instance to be validated
+#' @param x the instance to be validated
 #' @param ... (Additional parameters)
 #' @seealso \code{\link{SystemMetadata-class}}
 #' @examples 
@@ -399,23 +402,25 @@ setMethod("serializeSystemMetadata", signature("SystemMetadata"), function(sysme
 #' sysmeta <- parseSystemMetadata(sysmeta, xmlRoot(doc))
 #' valid <- validate(sysmeta)
 #' @export
-setGeneric("validate", function(object, ...) {
+setGeneric("validate", function(x, ...) {
     standardGeneric("validate")
 })
 
 #' @rdname validate
 #' @return logical, \code{TRUE} if the SystemMetadata object is valid, else a list of strings detailing errors
-setMethod("validate", signature("SystemMetadata"), function(object, ...) validate_function(object))
+setMethod("validate", signature("SystemMetadata"), function(x, ...) validate_function(x))
 
 #' @title Add access rules to an object such as system metadata 
 #' @description Add one or more access rules to a SystemMetadata object.
 #' @param x The object instance to which to add the rules
-#' @param y The subject of the rule to be added, or a data frame of subject/permission tuples
-#' @param ... (Not yet used)
+#' @param ... Additional arguments
+#' \itemize{
+#'   \item{permission The permission to be applied to subject if x is character (read, write, changePermission)}
+#' }
 #' @seealso \code{\link{SystemMetadata-class}}
 #' @export
-setGeneric("addAccessRule", function(x, y, ...) {
-    standardGeneric("addAccessRule")
+setGeneric("addAccessRule", function(x, ...) {
+  standardGeneric("addAccessRule")
 })
 #' @rdname addAccessRule
 #' @param y The subject of the rule to be added, or a data frame of subject/permission tuples
@@ -461,13 +466,13 @@ setMethod("addAccessRule", signature("SystemMetadata"), function(x, y, ...) {
 #' @description Each SystemMetadata document may contain a set of (subject, permission) tuples
 #' that represent the access rules for its associated object. This method determines
 #' whether a particular access rule already exists within the set.
-#' @param sysmeta the SystemMetadata instance to which to add the rules
+#' @param x the SystemMetadata instance to which to add the rules
 #' @param subject the subject of the rule to be checked
 #' @param ... Additional arguments
 #' @return A logical value: if TRUE the access rule was found, if FALSE it was not found.
 #' @seealso \code{\link{SystemMetadata-class}}
 #' @export
-setGeneric("hasAccessRule", function(sysmeta, subject, ...) {
+setGeneric("hasAccessRule", function(x, subject, ...) {
     standardGeneric("hasAccessRule")
 })
 #' @rdname hasAccessRule
@@ -481,8 +486,8 @@ setGeneric("hasAccessRule", function(sysmeta, subject, ...) {
 #' ruleExists <- hasAccessRule(sysmeta, subject="uid=smith,ou=Account,dc=example,dc=com", 
 #'   permission="write")
 #' @return boolean TRUE if the access rule exists already, FALSE otherwise
-setMethod("hasAccessRule", signature("SystemMetadata", "character"), function(sysmeta, subject, permission) {
-    found <- any(grepl(subject, sysmeta@accessPolicy$subject) & grepl(permission, sysmeta@accessPolicy$permission))
+setMethod("hasAccessRule", signature("SystemMetadata", "character"), function(x, subject, permission) {
+    found <- any(grepl(subject, x@accessPolicy$subject) & grepl(permission, x@accessPolicy$permission))
     return(found)
 })
 

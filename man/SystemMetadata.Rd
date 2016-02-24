@@ -8,12 +8,12 @@
 \usage{
 SystemMetadata(...)
 
-\S4method{SystemMetadata}{XMLInternalElementNode}(sysmeta, ...)
+\S4method{SystemMetadata}{XMLInternalElementNode}(x, ...)
 }
 \arguments{
 \item{...}{Additional arguments}
 
-\item{sysmeta}{A value of type \code{"XMLInternalElementNode"}, containing the parsed XML element with SystemMetadata fields.}
+\item{x}{A value of type \code{"XMLInternalElementNode"}, containing the parsed XML element with SystemMetadata fields.}
 }
 \description{
 A class representing DataONE SystemMetadata, which is core information about objects stored in a repository

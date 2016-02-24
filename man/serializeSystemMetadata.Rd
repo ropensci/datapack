@@ -6,13 +6,12 @@
 \alias{serializeSystemMetadata,SystemMetadata-method}
 \title{Serialize a SystemMetadata object to an XML representation}
 \usage{
-serializeSystemMetadata(sysmeta, ...)
+serializeSystemMetadata(x, ...)
 
-\S4method{serializeSystemMetadata}{SystemMetadata}(sysmeta, version = "v1",
-  ...)
+\S4method{serializeSystemMetadata}{SystemMetadata}(x, version = "v1", ...)
 }
 \arguments{
-\item{sysmeta}{The SystemMetadata instance to be serialized.}
+\item{x}{The SystemMetadata instance to be serialized.}
 
 \item{...}{(Not currently used)}
 

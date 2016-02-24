@@ -6,12 +6,12 @@
 \alias{validate,SystemMetadata-method}
 \title{Validate a SystemMetadata object.}
 \usage{
-validate(object, ...)
+validate(x, ...)
 
-\S4method{validate}{SystemMetadata}(object, ...)
+\S4method{validate}{SystemMetadata}(x, ...)
 }
 \arguments{
-\item{object}{the instance to be validated}
+\item{x}{the instance to be validated}
 
 \item{...}{(Additional parameters)}
 }

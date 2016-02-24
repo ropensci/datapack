@@ -3,20 +3,19 @@
 \docType{methods}
 \name{parseSystemMetadata}
 \alias{parseSystemMetadata}
-\alias{parseSystemMetadata,SystemMetadata,XMLInternalElementNode-method}
+\alias{parseSystemMetadata,SystemMetadata-method}
 \title{Parse an external XML document and populate a SystemMetadata object with the parsed data}
 \usage{
-parseSystemMetadata(sysmeta, xml, ...)
+parseSystemMetadata(x, ...)
 
-\S4method{parseSystemMetadata}{SystemMetadata,XMLInternalElementNode}(sysmeta,
-  xml, ...)
+\S4method{parseSystemMetadata}{SystemMetadata}(x, xml, ...)
 }
 \arguments{
-\item{sysmeta}{The \code{SystemMetadata} object}
-
-\item{xml}{The XML representation of the capabilities, as an XMLInternalElementNode}
+\item{x}{The \code{SystemMetadata} object}
 
 \item{...}{Additional arguments passed to other functions or methods}
+
+\item{xml}{The XML representation of the capabilities, as an XMLInternalElementNode}
 }
 \value{
 the SystemMetadata object representing an object
