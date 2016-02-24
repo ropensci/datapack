@@ -3,29 +3,25 @@
 \docType{methods}
 \name{insertRelationship}
 \alias{insertRelationship}
-\alias{insertRelationship,DataPackage,character,character,character-method}
-\alias{insertRelationship,DataPackage,character,character,missing-method}
+\alias{insertRelationship,DataPackage-method}
 \title{Record relationships of objects in a DataPackage}
 \usage{
-insertRelationship(x, subjectID, objectIDs, predicate, ...)
+insertRelationship(x, ...)
 
-\S4method{insertRelationship}{DataPackage,character,character,missing}(x,
-  subjectID, objectIDs)
-
-\S4method{insertRelationship}{DataPackage,character,character,character}(x,
-  subjectID, objectIDs, predicate, subjectType = as.character(NA),
+\S4method{insertRelationship}{DataPackage}(x, subjectID, objectIDs,
+  predicate = as.character(NA), subjectType = as.character(NA),
   objectTypes = as.character(NA), dataTypeURIs = as.character(NA))
 }
 \arguments{
 \item{x}{A DataPackage object}
+
+\item{...}{(Additional parameters)}
 
 \item{subjectID}{The identifier of the subject of the relationship}
 
 \item{objectIDs}{A list of identifiers of the object of the relationships (a relationship is recorded for each objectID)}
 
 \item{predicate}{The IRI of the predicate of the relationship}
-
-\item{...}{(Additional parameters)}
 
 \item{subjectType}{the type to assign the subject, values can be 'uri', 'blank'}
 

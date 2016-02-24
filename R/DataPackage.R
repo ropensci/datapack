@@ -222,25 +222,26 @@ setMethod("addData", signature("DataPackage", "DataObject"), function(x, do, mo=
 #' @param ... (Additional parameters)
 #' @seealso \code{\link{DataPackage-class}}
 #' @export
-setGeneric("insertRelationship", function(x, subjectID, objectIDs, predicate, ...) {
+setGeneric("insertRelationship", function(x, ...) {
   standardGeneric("insertRelationship")
 })
 
-#' @rdname insertRelationship
-#' @export
-setMethod("insertRelationship",  signature("DataPackage", "character", "character", "missing"), function(x, subjectID, objectIDs) {
-  
-  insertRelationship(x, subjectID, objectIDs, "http://purl.org/spar/cito/documents")
-  
-  for (obj in objectIDs) {
-    insertRelationship(x, obj, subjectID, "http://purl.org/spar/cito/isDocumentedBy")
-  }
-})
+## @rdname insertRelationship
+## @export
+#setMethod("insertRelationship",  signature("DataPackage", "character", "character", "missing"), function(x, subjectID, objectIDs) {
+#  
+#  insertRelationship(x, subjectID, objectIDs, "http://purl.org/spar/cito/documents")
+#  
+#  for (obj in objectIDs) {
+#    insertRelationship(x, obj, subjectID, "http://purl.org/spar/cito/isDocumentedBy")
+#  }
+#})
 
 #' @rdname insertRelationship
 #' @param subjectType the type to assign the subject, values can be 'uri', 'blank'
 #' @param objectTypes the types to assign the objects (cal be single value or list), each value can be 'uri', 'blank', or 'literal'
 #' @param dataTypeURIs An RDF data type that specifies the type of the object
+#' @export
 #' @examples
 #' \dontrun{
 #' dp <- new("DataPackage")
@@ -261,58 +262,72 @@ setMethod("insertRelationship",  signature("DataPackage", "character", "characte
 #'     objectIDs="http://www.example.com/home", predicate="http://www.example.com/hadHome",
 #'                    subjectType="uri", objectType="literal")                
 #' }
-setMethod("insertRelationship", signature("DataPackage", "character", "character", "character"),
-          function(x, subjectID, objectIDs, predicate, 
+setMethod("insertRelationship", signature("DataPackage"),
+          function(x, subjectID, objectIDs, predicate=as.character(NA), 
                    subjectType=as.character(NA), objectTypes=as.character(NA), dataTypeURIs=as.character(NA)) {
+
+  # Argument has to be character
+  stopifnot(all(is.character(subjectID)))
+  stopifnot(all(is.character(objectIDs)))
   
-  # Append new relationships to previously stored ones.
-  if (has.key("relations", x@relations)) {
-    relations <- x@relations[["relations"]]
-  } else {
-    relations <- data.frame()
-  }
-  
-  # If the subjectID or objectIDs were not specified or NULL then the user is requesting that these be "anonymous"
-  # blank nodes, i.e. a blank node identifier is automatically assigned. Assign a uuid now vs having redland
-  # RDF package assign a node, so that we don't have to remember that this node is special.
-  if (is.na(subjectID)) {
-    subjectID <- sprintf("_:%s", UUIDgenerate())
-    subjectType <- "blank"
-  }
-  
-  if (all(is.na(objectIDs))) {
-    objectIDs <- sprintf("_:%s", UUIDgenerate())
-    objectTypes <- "blank"
-  }
-  
-  # Add all triples to the data frame. If the length of objectTypes or dataTypeURIs is less
-  # that the length of objectIDs, then values will be set to NA
-  i <- 0
-  for (obj in objectIDs) {
-    i <- i + 1
-    # Check that the subjectType is a valid type for an RDF subject
-    if (!is.element(subjectType[i], c("uri", "blank", as.character(NA)))) {
-      stop(sprintf("Invalid subject type: %s\n", subjectType[i]))
-    }
-    # Check that the objectType is a valid type for an RDF object
-    if(!is.element(objectTypes[i], c("uri", "literal", "blank", as.character(NA)))) {
-      stop(sprintf("Invalid objct type: %s\n", objectTypes[i]))
-    }
-    newRels <- data.frame(subject=subjectID, predicate=predicate, object=obj, 
-                        subjectType=subjectType, objectType=objectTypes[i], 
-                        dataTypeURI=dataTypeURIs[i], row.names = NULL, stringsAsFactors = FALSE)
+  # If a predicate wasn't provided, then insert the default relationship of 
+  # subjectID -> documents -> objectID; objectID -> documentedBy -> subjectID
+  if (is.na(predicate)) {
+    insertRelationship(x, subjectID, objectIDs, "http://purl.org/spar/cito/documents")
     
-    # Has a relation been added previously?
-    if (nrow(relations) == 0) {
-      relations <- newRels
-    } else {
-      relations <- rbind(relations, newRels)
+    for (obj in objectIDs) {
+      insertRelationship(x, obj, subjectID, "http://purl.org/spar/cito/isDocumentedBy")
     }
+  } else {
+    # Append new relationships to previously stored ones.
+    if (has.key("relations", x@relations)) {
+      relations <- x@relations[["relations"]]
+    } else {
+      relations <- data.frame()
+    }
+    
+    # If the subjectID or objectIDs were not specified or NULL then the user is requesting that these be "anonymous"
+    # blank nodes, i.e. a blank node identifier is automatically assigned. Assign a uuid now vs having redland
+    # RDF package assign a node, so that we don't have to remember that this node is special.
+    if (is.na(subjectID)) {
+      subjectID <- sprintf("_:%s", UUIDgenerate())
+      subjectType <- "blank"
+    }
+    
+    if (all(is.na(objectIDs))) {
+      objectIDs <- sprintf("_:%s", UUIDgenerate())
+      objectTypes <- "blank"
+    }
+    
+    # Add all triples to the data frame. If the length of objectTypes or dataTypeURIs is less
+    # that the length of objectIDs, then values will be set to NA
+    i <- 0
+    for (obj in objectIDs) {
+      i <- i + 1
+      # Check that the subjectType is a valid type for an RDF subject
+      if (!is.element(subjectType[i], c("uri", "blank", as.character(NA)))) {
+        stop(sprintf("Invalid subject type: %s\n", subjectType[i]))
+      }
+      # Check that the objectType is a valid type for an RDF object
+      if(!is.element(objectTypes[i], c("uri", "literal", "blank", as.character(NA)))) {
+        stop(sprintf("Invalid objct type: %s\n", objectTypes[i]))
+      }
+      newRels <- data.frame(subject=subjectID, predicate=predicate, object=obj, 
+                            subjectType=subjectType, objectType=objectTypes[i], 
+                            dataTypeURI=dataTypeURIs[i], row.names = NULL, stringsAsFactors = FALSE)
+      
+      # Has a relation been added previously?
+      if (nrow(relations) == 0) {
+        relations <- newRels
+      } else {
+        relations <- rbind(relations, newRels)
+      }
+    }
+    
+    # Use a slot that is a hash, so that we can update the datapackage without having to 
+    # return the datapackage object to the caller (since S4 methods don't pass args by reference)
+    x@relations[["relations"]] <- relations
   }
-  
-  # Use a slot that is a hash, so that we can update the datapackage without having to 
-  # return the datapackage object to the caller (since S4 methods don't pass args by reference)
-  x@relations[["relations"]] <- relations
 })
 
 #' Record derivation relationships between objects in a DataPackage
