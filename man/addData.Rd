@@ -3,19 +3,19 @@
 \docType{methods}
 \name{addData}
 \alias{addData}
-\alias{addData,DataPackage-method}
+\alias{addData,DataPackage,DataObject-method}
 \title{Add a DataObject to the DataPackage}
 \usage{
-addData(x, ...)
+addData(x, do, ...)
 
-\S4method{addData}{DataPackage}(x, do, mo = as.character(NA))
+\S4method{addData}{DataPackage,DataObject}(x, do, mo = as.character(NA))
 }
 \arguments{
 \item{x}{A DataPackage instance}
 
-\item{...}{(Additional parameters)}
-
 \item{do}{A DataObject instance}
+
+\item{...}{(Additional parameters)}
 
 \item{mo}{A DataObject (containing metadata describing \code{"do"} ) to associate with the science object.}
 }

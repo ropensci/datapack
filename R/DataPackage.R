@@ -162,15 +162,15 @@ setMethod("getIdentifiers", "DataPackage", function(x) {
 #' Add a DataObject to the DataPackage
 #' @description The DataObject is added to the DataPackage.
 #' @param x A DataPackage instance
+#' @param do A DataObject instance
 #' @param ... (Additional parameters)
 #' @seealso \code{\link{DataPackage-class}}
 #' @export
-setGeneric("addData", function(x, ...) { 
+setGeneric("addData", function(x, do, ...) { 
     standardGeneric("addData")
 })
 
 #' @rdname addData
-#' @param do A DataObject instance
 #' @description The DataObject \code{do} is added to the data package \code{x}.
 #' @details If the optional \code{mo} parameter is specified, then it is assumed that this DataObject is a metadata
 #' object that describes the science object that is being added. The \code{addData} function will add a relationship
@@ -189,7 +189,7 @@ setGeneric("addData", function(x, ...) {
 #' # to the package  automatically, since it hasn't been added yet.
 #' addData(dpkg, do, md)
 #' @export
-setMethod("addData", signature("DataPackage"), function(x, do, mo=as.character(NA)) {
+setMethod("addData", signature("DataPackage", "DataObject"), function(x, do, mo=as.character(NA)) {
   x@objects[[do@sysmeta@identifier]] <- do
   # If a metadata object identifier is specified on the command line, then add the relationship to this package
   # that associates this science object with the metadata object.
