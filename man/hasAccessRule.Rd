@@ -3,19 +3,19 @@
 \docType{methods}
 \name{hasAccessRule}
 \alias{hasAccessRule}
-\alias{hasAccessRule,SystemMetadata,character-method}
+\alias{hasAccessRule,SystemMetadata-method}
 \title{Determine if a particular access rules exists within SystemMetadata.}
 \usage{
-hasAccessRule(x, subject, ...)
+hasAccessRule(x, ...)
 
-\S4method{hasAccessRule}{SystemMetadata,character}(x, subject, permission)
+\S4method{hasAccessRule}{SystemMetadata}(x, subject, permission)
 }
 \arguments{
 \item{x}{the SystemMetadata instance to which to add the rules}
 
-\item{subject}{the subject of the rule to be checked}
-
 \item{...}{Additional arguments}
+
+\item{subject}{the subject of the rule to be checked}
 
 \item{permission}{the permission to be applied to subject if x is character}
 }

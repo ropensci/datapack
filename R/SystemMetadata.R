@@ -472,7 +472,7 @@ setMethod("addAccessRule", signature("SystemMetadata"), function(x, y, ...) {
 #' @return A logical value: if TRUE the access rule was found, if FALSE it was not found.
 #' @seealso \code{\link{SystemMetadata-class}}
 #' @export
-setGeneric("hasAccessRule", function(x, subject, ...) {
+setGeneric("hasAccessRule", function(x, ...) {
     standardGeneric("hasAccessRule")
 })
 #' @rdname hasAccessRule
@@ -486,7 +486,7 @@ setGeneric("hasAccessRule", function(x, subject, ...) {
 #' ruleExists <- hasAccessRule(sysmeta, subject="uid=smith,ou=Account,dc=example,dc=com", 
 #'   permission="write")
 #' @return boolean TRUE if the access rule exists already, FALSE otherwise
-setMethod("hasAccessRule", signature("SystemMetadata", "character"), function(x, subject, permission) {
+setMethod("hasAccessRule", signature("SystemMetadata"), function(x, subject, permission) {
     found <- any(grepl(subject, x@accessPolicy$subject) & grepl(permission, x@accessPolicy$permission))
     return(found)
 })
