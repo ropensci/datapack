@@ -169,15 +169,6 @@ setGeneric("SystemMetadata", function(...) {
     standardGeneric("SystemMetadata")
 })
 
-# ## @rdname construct-SystemMetadata
-# ## @aliases construct-SystemMetadata
-# ## @return the SystemMetadata object
-# setMethod("SystemMetadata", signature(), function(...) {
-#     ## create new SystemMetadata object
-#     sysmeta <- new("SystemMetadata")
-#     return(sysmeta)
-# })
-
 #' @description If the *sysmeta* parameter is specified, then construct a new SystemMetadata instance by using the fields from 
 #' an XML representation of the SystemMetadata.
 #' @rdname SystemMetadata
