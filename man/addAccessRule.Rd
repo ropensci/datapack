@@ -3,53 +3,37 @@
 \docType{methods}
 \name{addAccessRule}
 \alias{addAccessRule}
-\alias{addAccessRule,DataObject,character-method}
-\alias{addAccessRule,DataObject,data.frame-method}
-\alias{addAccessRule,SystemMetadata,character-method}
-\alias{addAccessRule,SystemMetadata,data.frame-method}
+\alias{addAccessRule,DataObject-method}
+\alias{addAccessRule,SystemMetadata-method}
 \title{Add access rules to an object such as system metadata}
 \usage{
-addAccessRule(x, y, ...)
+addAccessRule(x, ...)
 
-\S4method{addAccessRule}{SystemMetadata,character}(x, y, permission)
+\S4method{addAccessRule}{SystemMetadata}(x, y, ...)
 
-\S4method{addAccessRule}{SystemMetadata,data.frame}(x, y)
-
-\S4method{addAccessRule}{DataObject,character}(x, y, permission)
-
-\S4method{addAccessRule}{DataObject,data.frame}(x, y)
+\S4method{addAccessRule}{DataObject}(x, y, ...)
 }
 \arguments{
 \item{x}{The object instance to which to add the rules}
 
+\item{...}{Additional arguments
+\itemize{
+  \item{permission The permission to be applied to subject if x is character (read, write, changePermission)}
+}}
+
 \item{y}{The subject of the rule to be added, or a data frame of subject/permission tuples}
-
-\item{...}{(Not yet used)}
-
-\item{permission}{The permission to be applied to subject if x is character (read, write, changePermission)}
-}
-\value{
-DataObject with modified access rules
 }
 \description{
 Add one or more access rules to a SystemMetadata object.
-
-Add a Rule to the AccessPolicy
-}
-\details{
-To be called prior to creating the object in DataONE.  When called before 
-creating the object, adds rules to the access policy for this object that
-control access when uploaded to DataONE.  If called after creation, it 
-will only change the system metadata locally, and will not have any effect
-on remotely uploaded copies of the DataObject.
 }
 \examples{
+# Parameter "y" can be character string containing the subject of the access rule:
 sysmeta <- new("SystemMetadata")
 sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
 accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", 
   "uid=slaughter,o=unaffiliated,dc=example,dc=org"), permission=c("write", "changePermission"))
 sysmeta <- addAccessRule(sysmeta, accessRules)
-sysmeta <- new("SystemMetadata")
+# Alternatively, parameter "y" can be a data.frame containing one or more access rules:
 sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
 accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", 
   "uid=slaughter,o=unaffiliated,dc=example,dc=org"), permission=c("write", "changePermission"))
@@ -57,11 +41,6 @@ sysmeta <- addAccessRule(sysmeta, accessRules)
 data <- charToRaw("1,2,3\\n4,5,6\\n")
 obj <- new("DataObject", id="1234", data=data, format="text/csv")
 obj <- addAccessRule(obj, "uid=smith,ou=Account,dc=example,dc=com", "write")
-\dontrun{
-accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", 
-  "uid=slaughter,o=unaffiliated,dc=example,dc=org"), permission=c("write", "changePermission"))
-sciObj <- addAccessRule(sciObj, accessRules)
-}
 }
 \seealso{
 \code{\link{SystemMetadata-class}}

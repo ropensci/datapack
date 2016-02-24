@@ -291,36 +291,28 @@ setMethod("setPublicAccess", signature("DataObject"), function(x) {
 #' data <- charToRaw("1,2,3\n4,5,6\n")
 #' obj <- new("DataObject", id="1234", data=data, format="text/csv")
 #' obj <- addAccessRule(obj, "uid=smith,ou=Account,dc=example,dc=com", "write")
-setMethod("addAccessRule", signature("DataObject", "character"), function(x, y, permission) {
-  accessRecord <- data.frame(subject=y, permission=permission)
-  x <- addAccessRule(x, accessRecord)
-  return(x)
-})
-
-#' Add a Rule to the AccessPolicy
-#' @details To be called prior to creating the object in DataONE.  When called before 
-#' creating the object, adds rules to the access policy for this object that
-#' control access when uploaded to DataONE.  If called after creation, it 
-#' will only change the system metadata locally, and will not have any effect
-#' on remotely uploaded copies of the DataObject. 
-#' @return DataObject with modified access rules
-#' @examples \dontrun{
-#' accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", 
-#'   "uid=slaughter,o=unaffiliated,dc=example,dc=org"), permission=c("write", "changePermission"))
-#' sciObj <- addAccessRule(sciObj, accessRules)
-#' }
-#' @export
-#' @rdname addAccessRule
-#' @aliases addAccessRule
-#' @examples
-#' data <- charToRaw("1,2,3\n4,5,6\n")
-#' do <- new("DataObject", "id1", dataobj=data, "text/csv", 
-#'   "uid=jones,DC=example,DC=com", "urn:node:KNB")
-#' ap <- data.frame(subject=c("user1", "user2"), permission= c("changePermission", "write"))
-#' do <- addAccessRule(do, ap)
-setMethod("addAccessRule", signature("DataObject", "data.frame"), function(x, y) {
-  # Add the access rules to the DataObjects system metadata object    
-  x@sysmeta <- addAccessRule(x@sysmeta, y)
+setMethod("addAccessRule", signature("DataObject"), function(x, y, ...) {
+  if(class(y) == "data.frame") {
+    x@sysmeta <- addAccessRule(x@sysmeta, y)
+  } else if (class(y) == "character") {
+    argList <- list(...)
+    argListLen <- length(argList)
+    # Check for "permission" as named argument, i.e. 'permission="write"'
+    if (!"permission" %in% names(argList)) {
+      if(argListLen < 1) {
+        stop("A \"permission\" argument is missing")
+      } else {
+        # Permission is an unnamed argument, so get it's value from the position in the argument list
+        permission <- argList[[1]]
+      }
+    } else {
+      permission <- argList$permission
+    }
+    accessRecord <- data.frame(subject=y, permission=permission)
+    x <- addAccessRule(x, accessRecord)
+  } else {
+    warning("Invalid datatype for parameter \"y\": %s", class(y))
+  }
   return(x)
 })
 

@@ -418,31 +418,43 @@ setGeneric("addAccessRule", function(x, y, ...) {
     standardGeneric("addAccessRule")
 })
 #' @rdname addAccessRule
-#' @param permission The permission to be applied to subject if x is character (read, write, changePermission)
+#' @param y The subject of the rule to be added, or a data frame of subject/permission tuples
 #' @examples 
+#' # Parameter "y" can be character string containing the subject of the access rule:
 #' sysmeta <- new("SystemMetadata")
 #' sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
 #' accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", 
 #'   "uid=slaughter,o=unaffiliated,dc=example,dc=org"), permission=c("write", "changePermission"))
 #' sysmeta <- addAccessRule(sysmeta, accessRules)
-setMethod("addAccessRule", signature("SystemMetadata", "character"), function(x, y, permission) {
-    accessRecord <- data.frame(subject=y, permission=permission)
-    x <- addAccessRule(x, accessRecord)
-    return(x)
-})
-
-#' @rdname addAccessRule
-#' @examples 
-#' sysmeta <- new("SystemMetadata")
+#' # Alternatively, parameter "y" can be a data.frame containing one or more access rules:
 #' sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
 #' accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", 
 #'   "uid=slaughter,o=unaffiliated,dc=example,dc=org"), permission=c("write", "changePermission"))
 #' sysmeta <- addAccessRule(sysmeta, accessRules)
-setMethod("addAccessRule", signature("SystemMetadata", "data.frame"), function(x, y) {
+#' @export
+setMethod("addAccessRule", signature("SystemMetadata"), function(x, y, ...) {
+  if(class(y) == "data.frame") {
     x@accessPolicy <- rbind(x@accessPolicy, y)
     # Remove duplicate access rules
     x@accessPolicy <- unique(x@accessPolicy)
-    return(x)
+  } else if (class(y) == "character") {
+    argList <- list(...)
+    argListLen <- length(argList)
+    # Check for "permission" as named argument, i.e. 'permission="write"'
+    if (!"permission" %in% names(argList)) {
+      if(argListLen < 1) {
+        stop("A \"permission\" argument is missing")
+      } else {
+        # Permission is an unnamed argument, so get it's value from the position in the argument list
+        permission <- argList[[1]]
+      }
+    } else {
+      permission <- argList$permission
+    }
+    accessRecord <- data.frame(subject=y, permission=permission)
+    x <- addAccessRule(x, accessRecord)
+  }
+  return(x)
 })
 
 #' @title Determine if a particular access rules exists within SystemMetadata.
