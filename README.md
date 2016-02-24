@@ -2,6 +2,7 @@
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/datapackage)](http://cran.r-project.org/package=datapackage)
 
 - **Author**: Matthew B. Jones and Peter Slaughter ([NCEAS](http://www.nceas.ucsb.edu))
+- [doi:10.5063/F1QV3JGM](http://doi.org/10.5063/F1QV3JGM)
 - **License**: [Apache 2](http://opensource.org/licenses/Apache-2.0)
 - [Package source code on Github](https://github.com/ropensci/datapackage)
 - [**Submit Bugs and feature requests**](https://github.com/ropensci/datapackage/issues)
