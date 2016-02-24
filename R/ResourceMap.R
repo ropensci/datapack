@@ -146,8 +146,10 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
     aggregationId <- sprintf("%s#aggregation", x@id)
     resMapURI <- x@id
   } else {
-    aggregationId <- sprintf("%s/%s#aggregation", pkgResolveURI, x@id)
-    resMapURI <- paste(pkgResolveURI, x@id, sep="/")
+    # Make sure that identifiers and DataONE URLs conform to the addition constraints that
+    # DataONE puts on resource maps, described at purl.dataone.org/architecture/design/DataPackage.html#generating-resource-maps 
+    aggregationId <- sprintf("%s/%s#aggregation", pkgResolveURI, URLencode(x@id))
+    resMapURI <- paste(pkgResolveURI, URLencode(x@id), sep="/")
   }
   
   # Add each triple from the input data.frame into the Redland RDF model.
@@ -180,6 +182,10 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
     } else {
       URIid <- id
     }
+    # Make sure that identifiers and DataONE URLs conform to the addition constraints that
+    # DataONE puts on resource maps, described at purl.dataone.org/architecture/design/DataPackage.html#generating-resource-maps 
+    id <- URLdecode(id)
+    URIid <- URLencode(id)
     # Add the Dublic Core identifier relation for each object added to the data package
     statement <- new("Statement", x@world, subject=URIid, predicate=DCidentifier, object=id, objectType="literal", datatype_uri=xsdStringURI)
     
@@ -253,11 +259,12 @@ setGeneric("serializeRDF", function(x, ...) { standardGeneric("serializeRDF")})
 #' serializeRDF(resmap, tf)
 #' }
 setMethod("serializeRDF", signature("ResourceMap"), function(x, 
-                                                                          file, 
-                                                                          syntaxName="rdfxml", 
-                                                                          mimeType="application/rdf+xml", 
-                                                                          namespaces=data.frame(namespace=character(), prefix=character(), stringsAsFactors=FALSE),
-                                                                          syntaxURI=as.character(NA)) {
+                                                             file, 
+                                                             syntaxName="rdfxml", 
+                                                             mimeType="application/rdf+xml", 
+                                                             namespaces=data.frame(namespace=character(), 
+                                                             prefix=character(), stringsAsFactors=FALSE),
+                                                             syntaxURI=as.character(NA)) {
   
   # Define default namespaces used by DataONE ORE Resource Maps,
   defaultNS <- data.frame(namespace=character(), prefix=character(), stringsAsFactors=FALSE)
