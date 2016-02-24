@@ -556,6 +556,7 @@ setGeneric("serializeToBagIt", function(x, ...) {
 })
 
 #' @rdname serializeToBagIt
+#' @import utils
 #' @import uuid
 #' @import digest
 #' @param mapId A unique identifier for the package resource map. If not specified, one will be 
