@@ -611,12 +611,12 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=as.cha
   # Create a temp working area where the BagIt directory structure will be created
   tmpDir <- tempdir()
   bagDir <- sprintf("%s/bag", tmpDir)
-  if(dir.exists(bagDir)) {
+  if(file.exists(bagDir)) {
     unlink(bagDir, recursive=TRUE)
   } 
   dir.create(bagDir)
   payloadDir <- sprintf("%s/data", bagDir)
-  if(!dir.exists(payloadDir)) dir.create(payloadDir)
+  if(!file.exists(payloadDir)) dir.create(payloadDir)
   
   # Create a ResourceMap object and serialize it to the specified file
   if(is.na(mapId)) {
