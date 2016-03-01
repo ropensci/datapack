@@ -44,9 +44,12 @@ sudo port install redland
 
 Then enter these commands in the R console:
 ```
-install.packages("datapackage")
-library(datapackage)
+install.packages("redland", type="source")
+library(redland)
 ```
+
+Please note that the *install.packages* command specifies a "source" installation. Installing from
+source is only necessary if Macports is being used, and is not a requirement if Homebrew is used.
 
 The *datapackage* R package should be available for use at this point
 
