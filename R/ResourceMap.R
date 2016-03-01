@@ -214,7 +214,7 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
   #statement <- new("Statement", x@world, subject=resMapURI, predicate=DCmodified, object=currentTime, objectType="literal", datatype_uri=xsdDateTimeURI)
     
   # Add the identifier for the ResourceMap
-  statement <- new("Statement", x@world, subject=resMapURI, predicate=DCidentifier, object=URLencode(x@id, reserved=TRUE),
+  statement <- new("Statement", x@world, subject=resMapURI, predicate=DCidentifier, object=URLdecode(x@id),
                    objectType="literal", datatype_uri=xsdStringURI)
   
   addStatement(x@model, statement)
