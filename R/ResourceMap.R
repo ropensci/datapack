@@ -74,7 +74,7 @@ setMethod("initialize", "ResourceMap", function(.Object, id = as.character(NA)) 
   .Object@storage <- new("Storage", .Object@world, "hashes", name="", options="hash-type='memory'")
   .Object@model   <- new("Model", .Object@world, .Object@storage, options="")
   if (is.na(id)) {
-    .Object@id <- sprintf("%s_%s", "resourceMap_", UUIDgenerate())
+    .Object@id <- sprintf("%s_%s", "resourceMap", UUIDgenerate())
   } else {
     .Object@id <- id
   }
