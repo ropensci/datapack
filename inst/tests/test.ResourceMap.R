@@ -14,10 +14,12 @@ test_that("ResourceMap creation from DataPackage triples", {
   
   D1ResolveURI <- "https://cn.dataone.org/cn/v2/resolve/"
   dp <- new("DataPackage")
-  mdId <- sprintf("scimetaId_%s", UUIDgenerate())
-  doInId <- sprintf("scidataId_%s", UUIDgenerate())
-  doOutId <- sprintf("sciprodId_%s", UUIDgenerate())
-  executionId <- sprintf("execution_%s", UUIDgenerate())
+  # Add colons to the id names, so we can check the URL encoding, decoding
+  # in the serialzed resource map (URLs encoded, dcterms:identifier not encoded).
+  mdId <- sprintf("scimetaId:%s", UUIDgenerate())
+  doInId <- sprintf("scidataId:%s", UUIDgenerate())
+  doOutId <- sprintf("sciprodId:%s", UUIDgenerate())
+  executionId <- sprintf("execution:%s", UUIDgenerate())
  
   # See if the resolve URI is added only once to serialized id
   doId2 <- paste(D1ResolveURI, "id2", sep="")
@@ -49,7 +51,7 @@ test_that("ResourceMap creation from DataPackage triples", {
   expect_that(relations[relations$subject == mdId, 'predicate'], matches("documents"))
   
   # Now initialize a ResourceMap with the relationships.
-  resMapId <- sprintf("%s%s", "resourceMap_", UUIDgenerate())  
+  resMapId <- sprintf("resourceMap:%s", UUIDgenerate())  
   resMap <- new("ResourceMap", id=resMapId)
   expect_that(class(resMap)[[1]], equals("ResourceMap"))
   resMap <- createFromTriples(resMap, relations, getIdentifiers(dp))
