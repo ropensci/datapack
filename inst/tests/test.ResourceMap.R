@@ -12,12 +12,13 @@ test_that("ResourceMap creation from DataPackage triples", {
   library(redland)
   library(uuid)
   
-  D1ResolveURI <- "https://cn.dataone.org/cn/v1/resolve/"
+  D1ResolveURI <- "https://cn.dataone.org/cn/v2/resolve/"
   dp <- new("DataPackage")
-  mdId <- "scimeta_id"
-  doInId <- "scidataId"
-  doOutId <- paste0("urn:uuid:", UUIDgenerate())
-  executionId <- paste(D1ResolveURI, "execution1", sep="")
+  mdId <- sprintf("scimetaId_%s", UUIDgenerate())
+  doInId <- sprintf("scidataId_%s", UUIDgenerate())
+  doOutId <- sprintf("sciprodId_%s", UUIDgenerate())
+  executionId <- sprintf("execution_%s", UUIDgenerate())
+ 
   # See if the resolve URI is added only once to serialized id
   doId2 <- paste(D1ResolveURI, "id2", sep="")
  
@@ -57,7 +58,7 @@ test_that("ResourceMap creation from DataPackage triples", {
   filePath <- sprintf("%s/%s.rdf", tempdir(), resMapId)
   status <- serializeRDF(resMap, filePath)
   found <- grep("wasDerivedFrom", readLines(filePath))
-  expect_that(found, is_more_than(0))
+  expect_that(length(found), is_more_than(0))
   
   freeResourceMap(resMap)
   rm(resMap)
