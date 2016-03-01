@@ -23,6 +23,7 @@ test_that("ResourceMap creation from DataPackage triples", {
  
   # See if the resolve URI is added only once to serialized id
   doId2 <- paste(D1ResolveURI, "id2", sep="")
+  doId2 <- sprintf("%s/id2:%s", D1ResolveURI, UUIDgenerate())
  
   user <- "smith"
   data <- charToRaw("1,2,3\n4,5,6")
