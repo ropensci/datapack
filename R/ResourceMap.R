@@ -96,6 +96,7 @@ setMethod("initialize", "ResourceMap", function(.Object, id = as.character(NA)) 
 #' @param ... (Additional parameters)
 #' @seealso \code{\link{ResourceMap-class}}
 #' @examples 
+#' library(datapackage)
 #' dp <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6")
 #' do1 <- new("DataObject", id="id1", data, format="text/csv")
@@ -105,6 +106,9 @@ setMethod("initialize", "ResourceMap", function(.Object, id = as.character(NA)) 
 #' insertRelationship(dp, subjectID="id1", objectIDs="id2", 
 #'   predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
 #' relations <- getRelationships(dp)
+#' resMapId <- sprintf("%s%s", "resourceMap_", UUIDgenerate())  
+#' resMap <- new("ResourceMap", id=resMapId)
+#' resMap <- createFromTriples(resMap, relations, getIdentifiers(dp)) 
 #' @export
 setGeneric("createFromTriples", function(x, ...) { standardGeneric("createFromTriples")})
 
