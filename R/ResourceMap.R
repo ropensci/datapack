@@ -152,8 +152,8 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
   } else {
     # Make sure that identifiers and DataONE URLs conform to the addition constraints that
     # DataONE puts on resource maps, described at purl.dataone.org/architecture/design/DataPackage.html#generating-resource-maps 
-    aggregationId <- sprintf("%s/%s#aggregation", pkgResolveURI, URLencode(x@id))
-    resMapURI <- paste(pkgResolveURI, URLencode(x@id), sep="/")
+    aggregationId <- sprintf("%s/%s#aggregation", pkgResolveURI, URLencode(x@id, reserved=TRUE))
+    resMapURI <- paste(pkgResolveURI, URLencode(x@id, reserved=TRUE), sep="/")
   }
   
   # Add each triple from the input data.frame into the Redland RDF model.
@@ -165,10 +165,12 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
     # Prepend the DataONE Production CN resolve URI to each identifier in the datapackage, when
     # that identifier appears in the subject or object of a triple.
     if (is.element(subjectId, identifiers) && ! grepl(pkgResolveURI, subjectId) && ! grepl("^http", subjectId)) {
+      subjectId <- URLencode(subjectId, reserved=TRUE)
       subjectId <- paste(pkgResolveURI, subjectId, sep="/")
     }
     
     if (is.element(objectId, identifiers) && ! grepl(pkgResolveURI, objectId) && ! grepl("^http", objectId)) {
+      objectId <- URLencode(objectId, reserved=TRUE)
       objectId <- paste(pkgResolveURI, objectId, sep="/")
     }
     
@@ -181,18 +183,17 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
   for(id in identifiers) {
     # Check if the 'resolve' URI has already been appended to this identifier, i.e. this is a local
     # identifier that is being promoted to a DataONE pid. 
+    # Also, Make sure that identifiers and DataONE URLs conform to the addition constraints that
+    # DataONE puts on resource maps, described at purl.dataone.org/architecture/design/DataPackage.html#generating-resource-maps 
+    # URLs are encoded, dcterms:identifier is not.
     if (! grepl(pkgResolveURI, id) && ! grepl("http", id)) {
-      URIid <- sprintf("%s/%s", pkgResolveURI, id)
+      URIid <- sprintf("%s/%s", pkgResolveURI, URLencode(id, reserved=TRUE))
     } else {
       URIid <- id
     }
-    # Make sure that identifiers and DataONE URLs conform to the addition constraints that
-    # DataONE puts on resource maps, described at purl.dataone.org/architecture/design/DataPackage.html#generating-resource-maps 
-    id <- URLdecode(id)
-    URIid <- URLencode(id)
+    
     # Add the Dublic Core identifier relation for each object added to the data package
     statement <- new("Statement", x@world, subject=URIid, predicate=DCidentifier, object=id, objectType="literal", datatype_uri=xsdStringURI)
-    
     addStatement(x@model, statement)
     
     # Add triples for each object that is aggregated
@@ -213,7 +214,8 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
   #statement <- new("Statement", x@world, subject=resMapURI, predicate=DCmodified, object=currentTime, objectType="literal", datatype_uri=xsdDateTimeURI)
     
   # Add the identifier for the ResourceMap
-  statement <- new("Statement", x@world, subject=resMapURI, predicate=DCidentifier, object=x@id, objectType="literal", datatype_uri=xsdStringURI)
+  statement <- new("Statement", x@world, subject=resMapURI, predicate=DCidentifier, object=URLencode(x@id, reserved=TRUE),
+                   objectType="literal", datatype_uri=xsdStringURI)
   
   addStatement(x@model, statement)
   
