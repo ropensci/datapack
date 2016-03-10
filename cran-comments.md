@@ -17,13 +17,8 @@
       - BagIt (15:9, 15:34)
       - OAI (12:9, 13:9)
     - Found the following (possibly) invalid URLs:
-        URL: 
-           From: README.md
-           Message: Empty URL 
-      All URLs in the README.md have been check and resolve.
-    - indicating an invalid URL http://cran.r-project.org/package=datapackage, which
-      does not resolve because this is a new package submission
-  - A NOTE indicating that the non-standard file 'cran-comments.md' was found
+        - URL: http://cran.r-project.org/package=datapackage
+        - which does not resolve because this is a new package submission
 
 ## Downstream dependencies
 
