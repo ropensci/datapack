@@ -36,6 +36,7 @@ DataPackage member identifiers in the resulting resource map. If no resolveURI v
 is specified, then 'https://cn.dataone.org/cn/v1/resolve' is used.
 }
 \examples{
+library(datapackage)
 dp <- new("DataPackage")
 data <- charToRaw("1,2,3\\n4,5,6")
 do1 <- new("DataObject", id="id1", data, format="text/csv")
@@ -45,6 +46,9 @@ addData(dp, do2)
 insertRelationship(dp, subjectID="id1", objectIDs="id2", 
   predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
 relations <- getRelationships(dp)
+resMapId <- sprintf("\%s\%s", "resourceMap_", UUIDgenerate())  
+resMap <- new("ResourceMap", id=resMapId)
+resMap <- createFromTriples(resMap, relations, getIdentifiers(dp)) 
 }
 \seealso{
 \code{\link{ResourceMap-class}}
