@@ -551,7 +551,7 @@ setMethod("serializePackage", signature("DataPackage"), function(x, file,
   status <- serializeRDF(resMap, file, syntaxName, mimeType, namespaces, syntaxURI)
   freeResourceMap(resMap)
   rm(resMap)
-  invisible(status)
+  return(status)
 })
 
 #' Serialize A DataPackage into a BagIt Archive File
