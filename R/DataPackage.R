@@ -388,7 +388,7 @@ setMethod("getRelationships", signature("DataPackage"), function(x, ...) {
   
   # Reorder output data frame by "subject" column
   relationships <- relationships[order(relationships$subject, relationships$predicate, relationships$object),]
-  invisible(relationships)
+  return(relationships)
 })
 
 #' Returns true if the specified object is a member of the package
