@@ -606,6 +606,8 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=as.cha
                                                                  mimeType=as.character(NA),
                                                                  syntaxURI=as.character(NA),
                                                                  resolveURI=as.character(NA), ...) {
+  cwd <- getwd()
+  on.exit(expr = setwd(cwd))
   pidMap <- as.character()
   manifest <- as.character()
   # Create a temp working area where the BagIt directory structure will be created
