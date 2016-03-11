@@ -134,7 +134,7 @@ addData(dp, sciObj)
 ids <- getIdentifiers(dp)
 ```
 
-Add a relationship to the DataPackage that shows that the metadata describes ("documents") the science data:
+Add a relationship to the DataPackage that shows that the metadata describes, or "documents", the science data:
 
 ```
 insertRelationship(dp, subjectID=mdId, objectIDs=sciId)
