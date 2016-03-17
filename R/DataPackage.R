@@ -243,14 +243,13 @@ setGeneric("insertRelationship", function(x, ...) {
 #' @param dataTypeURIs An RDF data type that specifies the type of the object
 #' @export
 #' @examples
-#' \dontrun{
 #' dp <- new("DataPackage")
 #' # Create a relationship
 #' insertRelationship(dp, "/Users/smith/scripts/genFields.R",
 #'     "http://www.w3.org/ns/prov#used",
 #'     "https://knb.ecoinformatics.org/knb/d1/mn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1")
 #' # Create a relationshp with the subject as a blank node with an automatically assigned blank node id
-#' insertRelationship(dp, subjectID=NULL, objectIDs="thing6", predicate="http://www.myns.org/wasThing")
+#' insertRelationship(dp, subjectID=as.character(NA), objectIDs="thing6", predicate="http://www.myns.org/wasThing")
 #' # Create a relationshp with the subject as a blank node with a user assigned blank node id
 #' insertRelationship(dp, subjectID="_:BL1234", objectIDs="thing7", 
 #'     predicate="http://www.myns.org/hadThing")
@@ -261,7 +260,6 @@ setGeneric("insertRelationship", function(x, ...) {
 #' insertRelationship(dp, subjectID="orcid.org/0000-0002-2192-403X", 
 #'     objectIDs="http://www.example.com/home", predicate="http://www.example.com/hadHome",
 #'                    subjectType="uri", objectType="literal")                
-#' }
 setMethod("insertRelationship", signature("DataPackage"),
           function(x, subjectID, objectIDs, predicate=as.character(NA), 
                    subjectType=as.character(NA), objectTypes=as.character(NA), dataTypeURIs=as.character(NA)) {
@@ -286,7 +284,7 @@ setMethod("insertRelationship", signature("DataPackage"),
       relations <- data.frame()
     }
     
-    # If the subjectID or objectIDs were not specified or NULL then the user is requesting that these be "anonymous"
+    # If the subjectID or objectIDs were not specified then the user is requesting that these be "anonymous"
     # blank nodes, i.e. a blank node identifier is automatically assigned. Assign a uuid now vs having redland
     # RDF package assign a node, so that we don't have to remember that this node is special.
     if (is.na(subjectID)) {
@@ -294,16 +292,17 @@ setMethod("insertRelationship", signature("DataPackage"),
       subjectType <- "blank"
     }
     
-    if (all(is.na(objectIDs))) {
-      objectIDs <- sprintf("_:%s", UUIDgenerate())
-      objectTypes <- "blank"
-    }
-    
     # Add all triples to the data frame. If the length of objectTypes or dataTypeURIs is less
     # that the length of objectIDs, then values will be set to NA
     i <- 0
     for (obj in objectIDs) {
       i <- i + 1
+      # Generate a blank node identifier if id is not specified
+      if (is.na(obj)) {
+        obj <- sprintf("_:%s", UUIDgenerate())
+        objectTypes[i] <- "blank"
+      }
+      
       # Check that the subjectType is a valid type for an RDF subject
       if (!is.element(subjectType[i], c("uri", "blank", as.character(NA)))) {
         stop(sprintf("Invalid subject type: %s\n", subjectType[i]))
