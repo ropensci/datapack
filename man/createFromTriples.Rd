@@ -36,7 +36,7 @@ DataPackage member identifiers in the resulting resource map. If no resolveURI v
 is specified, then 'https://cn.dataone.org/cn/v1/resolve' is used.
 }
 \examples{
-library(datapackage)
+library(datapack)
 dp <- new("DataPackage")
 data <- charToRaw("1,2,3\\n4,5,6")
 do1 <- new("DataObject", id="id1", data, format="text/csv")

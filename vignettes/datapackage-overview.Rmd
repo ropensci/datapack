@@ -1,17 +1,17 @@
 ---
-title: "datapackage R package overview"
+title: "datapack R package overview"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 <!-- output: pdf_document -->
 vignette: >
-  %\VignetteIndexEntry{datapackage R Package Overview}
+  %\VignetteIndexEntry{datapack R Package Overview}
   %\VignetteEngine{knitr::rmarkdown}
   %\usepackage[utf8]{inputenc}
 ---
 
 ## Overview
 
-The *datapackage* R package provides an abstraction for collating heterogeneous collections of data 
+The *datapack* R package provides an abstraction for collating heterogeneous collections of data 
 objects and metadata into a bundle that can be transported and loaded into a single composite file.  
 
 The methods in this package provide a convenient way to load data from common repositories 
@@ -19,16 +19,16 @@ such as DataONE into the R environment, and to document, serialize, and save dat
 data repositories. 
 
 ## Create a Single Object 
-The *datapackage* DataObject class is a wrapper that contains both data and system metadata that describes the data. 
+The *datapack* DataObject class is a wrapper that contains both data and system metadata that describes the data. 
 The data can be either R `raw` data or a data file, for example a CSV file. The system metadata includes attributes such as the 
 object identifier, type, size, checksum, owner, version relationship to other objects, access rules, and other critical metadata. 
 
 The following example shows how to create a DataObject from a CSV file:
 
 ```{r}
-library(datapackage)
+library(datapack)
 library(uuid)
-csvfile <- system.file("extdata/sample-data.csv", package="datapackage")
+csvfile <- system.file("extdata/sample-data.csv", package="datapack")
 myId <- paste("urn:uuid:", UUIDgenerate(), sep="")
 myObj <- new("DataObject", id=myId, format="text/csv", filename=csvfile)
 ```
@@ -108,11 +108,11 @@ of objects into a packaging file, or uploading all package member objects to a d
 This example creates a DataPackage with one DataObject containing metadata and two others containing science data:
 
 ```{r}
-metadataFile <- system.file("extdata/sample-eml.xml", package="datapackage")
+metadataFile <- system.file("extdata/sample-eml.xml", package="datapack")
 metadataId <- "metadataId"
 metadataObj <- new("DataObject", id=metadataId, format="eml://ecoinformatics.org/eml-2.1.0", file=metadataFile)
 
-csvfile <- system.file("extdata/sample-data.csv", package="datapackage")
+csvfile <- system.file("extdata/sample-data.csv", package="datapack")
 sciId <- "sciId1"
 sciObj <- new("DataObject", id=sciId, format="text/csv", filename=csvfile)
 

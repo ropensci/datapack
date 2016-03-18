@@ -56,7 +56,7 @@
 #'   \item{\code{\link{addAccessRule}}}{: Add a Rule to the AccessPolicy}
 #'   \item{\code{\link{canRead}}}{: Test whether the provided subject can read an object.}
 #' }
-#' @seealso \code{\link{datapackage}}
+#' @seealso \code{\link{datapack}}
 #' @examples
 #' data <- charToRaw("1,2,3\n4,5,6\n")
 #' do <- new("DataObject", "id1", dataobj=data, "text/csv", 

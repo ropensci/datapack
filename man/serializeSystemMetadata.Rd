@@ -32,7 +32,7 @@ object is serialized according to the DataONE version 2.0 system metdata format.
 }
 \examples{
 library(XML)
-doc <- xmlParseDoc(system.file("testfiles/sysmeta.xml", package="datapackage"), asText=FALSE)
+doc <- xmlParseDoc(system.file("testfiles/sysmeta.xml", package="datapack"), asText=FALSE)
 sysmeta <- new("SystemMetadata")
 sysmeta <- parseSystemMetadata(sysmeta, xmlRoot(doc))
 sysmetaXML <- serializeSystemMetadata(sysmeta, version="v2")

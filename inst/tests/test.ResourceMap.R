@@ -1,14 +1,14 @@
 context("ResourceMap")
 test_that("datapackage library loads", {
-  library(datapackage)
+  library(datapack)
 })
 test_that("ResourceMap initialization", {
-  library(datapackage)
+  library(datapack)
   resMap <- new("ResourceMap")
 
 })
 test_that("ResourceMap creation from DataPackage triples", {
-  library(datapackage)
+  library(datapack)
   library(redland)
   library(uuid)
   

@@ -44,7 +44,7 @@ serializeRDF(resMap, file=tf)
 }
 }
 \seealso{
-\code{\link{datapackage}}
+\code{\link{datapack}}
 }
 \keyword{resourceMap}
 

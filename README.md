@@ -1,5 +1,5 @@
-## datapackage
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/datapackage)](http://cran.r-project.org/package=datapackage)
+## datapack
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/datapack)](http://cran.r-project.org/package=datapack)
 
 - **Author**: Matthew B. Jones and Peter Slaughter ([NCEAS](http://www.nceas.ucsb.edu))
 - [doi:10.5063/F1QV3JGM](http://doi.org/10.5063/F1QV3JGM)
@@ -7,7 +7,7 @@
 - [Package source code on Github](https://github.com/ropensci/datapackage)
 - [**Submit Bugs and feature requests**](https://github.com/ropensci/datapackage/issues)
 
-The datapackage R package provides an abstraction for collating 
+The datapack R package provides an abstraction for collating 
 heterogeneous collections of data objects and metadata into a bundle that can 
 be transported and loaded into a single composite file.  The methods in 
 this package provide a convenient way to load data from common repositories 
@@ -16,8 +16,8 @@ data from R to data repositories worldwide.
 
 ## Installation Notes 
 
-The *datapackage* R package requires the R package *redland*,  which requires the Redland C libraries. 
-The following instructions illustrate how to install *datapackage* and its requirements.
+The *datapack* R package requires the R package *redland*,  which requires the Redland C libraries. 
+The following instructions illustrate how to install *datapack* and its requirements.
 
 ### Installing on Mac OS X
 
@@ -34,10 +34,10 @@ port version
 If the *port* command is not found, then skip to the [Installing with HomeBrew](#homebrew) section.
 
 ### Installing with Macports
-If you are already using the MacPorts package manager, you can install *datapackage* with the following commands, 
+If you are already using the MacPorts package manager, you can install *datapack* with the following commands, 
 otherwise, it is recommended that you skip to the next section [Installing with HomeBrew](#homebrew). 
 
-To install the *datapackage* R package with MacPorts, enter this commands at a terminal window:
+To install the *datapack* R package with MacPorts, enter this commands at a terminal window:
 ```
 sudo port install redland
 ```
@@ -51,7 +51,7 @@ library(redland)
 Please note that the *install.packages* command specifies a "source" installation. Installing from
 source is only necessary if Macports is being used, and is not a requirement if Homebrew is used.
 
-The *datapackage* R package should be available for use at this point
+The *datapack* R package should be available for use at this point
 
 ### <a id="homebrew"></a>Installing with HomeBrew
 On Mac OS X you can use the package management system [HomeBrew](http://brew.sh) to install the 
@@ -67,14 +67,14 @@ Once HomeBrew has been installed, you can then enter the following command in a 
 brew install redland
 ```
 
-Next, install the *datapackage* R package with these commands typed at the R console window:
+Next, install the *datapack* R package with these commands typed at the R console window:
 
 ```
-install.packages("datapackage")
-library(datapackage)
+install.packages("datapack")
+library(datapack)
 ```
  
-The *datapackage* R package should be available for use at this point
+The *datapack* R package should be available for use at this point
 
 ## Installing on Ubuntu
 
@@ -89,11 +89,11 @@ sudo apt-get install librdf0 librdf0-dev
 Then install the R packages from the R console:
 
 ```
-install.packages("datapackage")
-library(datapackage)
+install.packages("datapack")
+library(datapack)
 ```
 
-The *datapackage* R package should be available for use at this point
+The *datapack* R package should be available for use at this point
 
 ## Installing on Windows
 
@@ -103,8 +103,8 @@ necessary to install any additional system libraries.
 To install the R packages from the R console:
 
 ```
-install.packages("datapackage")
-library(datapackage)
+install.packages("datapack")
+library(datapack)
 ```
 
 ## Quick Start
@@ -112,22 +112,22 @@ library(datapackage)
 See the full manual for documentation, but once installed, the package can be run in R using:
 
 ```
-library(datapackage)
-help("datapackage")
+library(datapack)
+help("datapack")
 ```
 
 Create a DataPackage and add metadata and science data DataObjects to it:
 
 ```
-library(datapackage)
+library(datapack)
 library(uuid)
 dp <- new("DataPackage")
-mdFile <- system.file("extdata/sample-eml.xml", package="datapackage")
+mdFile <- system.file("extdata/sample-eml.xml", package="datapack")
 mdId <- paste("urn:uuid:", UUIDgenerate(), sep="")
 md <- new("DataObject", id=mdId, format="eml://ecoinformatics.org/eml-2.1.0", file=mdFile)
 addData(dp, md)
 
-csvfile <- system.file("extdata/sample-data.csv", package="datapackage")
+csvfile <- system.file("extdata/sample-data.csv", package="datapack")
 sciId <- paste("urn:uuid:", UUIDgenerate(), sep="")
 sciObj <- new("DataObject", id=sciId, format="text/csv", filename=csvfile)
 addData(dp, sciObj)

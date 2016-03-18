@@ -50,7 +50,7 @@
 #'  \item{\code{\link{createFromTriples}}}{: Get the data content of a specified data object}
 #'  \item{\code{\link{serializeRDF}}}{: Get the Count of Objects in the Package}
 #' }
-#' @seealso \code{\link{datapackage}}
+#' @seealso \code{\link{datapack}}
 #' @export
 #' 
 setClass("ResourceMap", slots = c(relations = "data.frame",
@@ -96,7 +96,7 @@ setMethod("initialize", "ResourceMap", function(.Object, id = as.character(NA)) 
 #' @param ... (Additional parameters)
 #' @seealso \code{\link{ResourceMap-class}}
 #' @examples 
-#' library(datapackage)
+#' library(datapack)
 #' dp <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6")
 #' do1 <- new("DataObject", id="id1", data, format="text/csv")

@@ -1,11 +1,11 @@
 context("DataObject")
 
-test_that("datapackage library loads", {
-    library(datapackage)
+test_that("datapack library loads", {
+    library(datapack)
 })
 
 test_that("DataObject constructors work", {
-    library(datapackage)
+    library(datapack)
     library(digest)
     identifier <- "id1"
     user <- "matt"
@@ -57,7 +57,7 @@ test_that("DataObject constructors work", {
     unlink(tf)
 })
 test_that("DataObject accessPolicy methods", {
-    library(datapackage)
+    library(datapack)
     library(digest)
     identifier <- "id1"
     user <- "matt"

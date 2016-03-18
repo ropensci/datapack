@@ -1,13 +1,13 @@
 context("DataPackage")
 
-test_that("datapackage library loads", {
-    library(datapackage)
+test_that("datapack library loads", {
+    library(datapack)
 })
 
-test_that("DataPackage initialization works", {
+test_that("datapack initialization works", {
   # Test that contructor bug is fix, i.e. internal structures being
   # reused in newly created objects: https://github.com/ropensci/datapackage/issues/26)
-  library(datapackage)
+  library(datapack)
   testdf <- data.frame(x=1:10,y=11:20)
   csvfile <- tempfile(pattern = "file", tmpdir = tempdir(), fileext = ".csv")
   write.csv(testdf, csvfile, row.names=FALSE)
@@ -23,8 +23,8 @@ test_that("DataPackage initialization works", {
   expect_equal(length(ids), 0)
 })
 
-test_that("DataPackage methods work", {
-    library(datapackage)
+test_that("datapack methods work", {
+    library(datapack)
     id1 <- "id1"
     id2 <- "id2"
     user <- "matt"
@@ -281,7 +281,7 @@ test_that("Package serialization works", {
 test_that("BagIt serialization works", {
   
   library(uuid)
-  library(datapackage)
+  library(datapack)
   # Test BagIt serializatin of a DataPackage
   # Test bagging with both in-memory DataObjects and file baseed
   testdf <- data.frame(x=1:10,y=11:20)

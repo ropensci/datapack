@@ -38,6 +38,6 @@ uploaded to a data repository or archived.
 }
 }
 \seealso{
-\code{\link{datapackage}}
+\code{\link{datapack}}
 }
 

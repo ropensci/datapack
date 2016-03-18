@@ -66,7 +66,7 @@ do <- new("DataObject", "id1", format="text/csv", user="uid=jones,DC=example,DC=
   mnNodeId="urn:node:KNB", filename=tf)
 }
 \seealso{
-\code{\link{datapackage}}
+\code{\link{datapack}}
 }
 \keyword{classes}
 

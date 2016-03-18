@@ -5,7 +5,7 @@ authors <-  c(
     person("Matthew B.", "Jones", email="jones@nceas.ucsb.edu", role=c("aut", "cre")),
     person("Peter", "Slaughter", role = "aut", email = "slaughter@nceas.ucsb.edu"))
 bibentry(bibtype = "Manual",
-         title = paste0("{datapackage}: ", title),
+         title = paste0("{datapack}: ", title),
          author = authors,
          year = year,
          note = note,

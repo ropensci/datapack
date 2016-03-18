@@ -23,7 +23,7 @@ Validate a system metadata object, ensuring that required fields are present and
 }
 \examples{
 library(XML)
-doc <- xmlParseDoc(system.file("testfiles/sysmeta.xml", package="datapackage"), asText=FALSE)
+doc <- xmlParseDoc(system.file("testfiles/sysmeta.xml", package="datapack"), asText=FALSE)
 sysmeta <- new("SystemMetadata")
 sysmeta <- parseSystemMetadata(sysmeta, xmlRoot(doc))
 valid <- validate(sysmeta)

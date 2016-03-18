@@ -48,7 +48,7 @@
 #'  \item{\code{\link{serializePackage}}}{: Create an OAI-ORE resource map from the package}
 #'  \item{\code{\link{serializeToBagIt}}}{: Serialize A DataPackage into a BagIt Archive File}
 #' }
-#' @seealso \code{\link{datapackage}}
+#' @seealso \code{\link{datapack}}
 #' @export
 setClass("DataPackage", slots = c(
     relations               = "hash",

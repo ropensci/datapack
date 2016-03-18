@@ -7,6 +7,8 @@ NEW FEATURES
 
 * Provides an API for building and serializing packages of data and associated metadata.
 
+* The package name has been changed from 'datapackage' to 'datapack'
+
 NEW S4 CLASSES
 
 * Class DataPackage for building and serializing data packages.

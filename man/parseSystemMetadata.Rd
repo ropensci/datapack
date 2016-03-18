@@ -26,7 +26,7 @@ the with obtained values.
 }
 \examples{
 library(XML)
-doc <- xmlParseDoc(system.file("testfiles/sysmeta.xml", package="datapackage"), asText=FALSE)
+doc <- xmlParseDoc(system.file("testfiles/sysmeta.xml", package="datapack"), asText=FALSE)
 sysmeta <- new("SystemMetadata")
 sysmeta <- parseSystemMetadata(sysmeta, xmlRoot(doc))
 }

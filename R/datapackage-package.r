@@ -1,6 +1,6 @@
 #' datapackage, a container for packages of data and associated metadata
 #'
-#' @name datapackage
+#' @name datapack
 #' @docType package
 #' @author Matthew B. Jones (NCEAS), Peter Slaughter (NCEAS)
 #' @description The datapackage R package provides an abstraction for collating 

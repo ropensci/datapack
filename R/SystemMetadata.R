@@ -57,7 +57,7 @@
 #'  \item{\code{\link{addAccessRule}}}{: Add access rules to an object such as system metadata}
 #'  \item{\code{\link{hasAccessRule}}}{: Determine if a particular access rules exists within SystemMetadata.}
 #' }
-#' @seealso \code{\link{datapackage}}
+#' @seealso \code{\link{datapack}}
 #' @export
 setClass("SystemMetadata", slots = c(
     serialVersion           = "numeric",
@@ -206,7 +206,7 @@ setGeneric("parseSystemMetadata", function(x, ...) {
 #' @param xml The XML representation of the capabilities, as an XMLInternalElementNode
 #' @examples
 #' library(XML)
-#' doc <- xmlParseDoc(system.file("testfiles/sysmeta.xml", package="datapackage"), asText=FALSE)
+#' doc <- xmlParseDoc(system.file("testfiles/sysmeta.xml", package="datapack"), asText=FALSE)
 #' sysmeta <- new("SystemMetadata")
 #' sysmeta <- parseSystemMetadata(sysmeta, xmlRoot(doc))
 #' @return the SystemMetadata object representing an object
@@ -303,7 +303,7 @@ setGeneric("serializeSystemMetadata", function(x, ...) {
 #' @return the character string representing a SystemMetadata object
 #' @examples 
 #' library(XML)
-#' doc <- xmlParseDoc(system.file("testfiles/sysmeta.xml", package="datapackage"), asText=FALSE)
+#' doc <- xmlParseDoc(system.file("testfiles/sysmeta.xml", package="datapack"), asText=FALSE)
 #' sysmeta <- new("SystemMetadata")
 #' sysmeta <- parseSystemMetadata(sysmeta, xmlRoot(doc))
 #' sysmetaXML <- serializeSystemMetadata(sysmeta, version="v2")
@@ -388,7 +388,7 @@ setMethod("serializeSystemMetadata", signature("SystemMetadata"), function(x, ve
 #' @seealso \code{\link{SystemMetadata-class}}
 #' @examples 
 #' library(XML)
-#' doc <- xmlParseDoc(system.file("testfiles/sysmeta.xml", package="datapackage"), asText=FALSE)
+#' doc <- xmlParseDoc(system.file("testfiles/sysmeta.xml", package="datapack"), asText=FALSE)
 #' sysmeta <- new("SystemMetadata")
 #' sysmeta <- parseSystemMetadata(sysmeta, xmlRoot(doc))
 #' valid <- validate(sysmeta)

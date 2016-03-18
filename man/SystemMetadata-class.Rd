@@ -71,6 +71,6 @@ access policy, replication policy, and related metadata.
 }
 }
 \seealso{
-\code{\link{datapackage}}
+\code{\link{datapack}}
 }
 
