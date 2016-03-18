@@ -36,5 +36,5 @@ Collate:
     'DataObject.R'
     'DataPackage.R'
     'ResourceMap.R'
-    'datapackage-package.r'
+    'datapack-package.r'
 RoxygenNote: 5.0.1
