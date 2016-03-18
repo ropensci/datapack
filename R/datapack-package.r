@@ -1,9 +1,9 @@
-#' datapackage, a container for packages of data and associated metadata
+#' datapack, a container for packages of data and associated metadata
 #'
 #' @name datapack
 #' @docType package
 #' @author Matthew B. Jones (NCEAS), Peter Slaughter (NCEAS)
-#' @description The datapackage R package provides an abstraction for collating 
+#' @description The datapack R package provides an abstraction for collating 
 #' heterogeneous collections of data objects and metadata into a bundle that can 
 #' be transported and loaded into a single composite file.  The methods in
 #' this package provide a convenient way
@@ -35,7 +35,7 @@
 #' expand to a common directory structure with a predictable set of metadata that
 #' describes the structure and content of the bag.  Conformance with the BagIt
 #' specification is handled by the DataPackage class.
-#' @aliases datapackage
+#' @aliases datapack
 #' @section Classes:
 #' \itemize{
 #'  \item{\code{\link{DataPackage-class}}}{: A class representing a data package, which can contain data objects}
