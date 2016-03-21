@@ -31,6 +31,7 @@ The DataObject \code{do} is added to the data package \code{x}.
 If the optional \code{mo} parameter is specified, then it is assumed that this DataObject is a metadata
 object that describes the science object that is being added. The \code{addData} function will add a relationship
 to the resource map that indicates that the metadata object describes the science object, using CiTO, the Citation Typing Ontology
+Note: this method updates the passed-in DataPackage object.
 \code{documents} and \code{isDocumentedBy} relationship.
 }
 \examples{

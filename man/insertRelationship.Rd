@@ -45,6 +45,7 @@ If multiple values are specified for argument objectIDS, a relationship is creat
 is not specified for subjectType or objectType, then NA is assigned. Note that if these relationships are fetched via the getRelationships()
 function, and passed to the createFromTriples() function to initialize a ResourceMap object, the underlying redland package will assign
 appropriate values for subjects and objects.
+Note: This method updates the passed-in DataPackage object.
 }
 \examples{
 dp <- new("DataPackage")
