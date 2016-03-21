@@ -249,7 +249,8 @@ setGeneric("insertRelationship", function(x, ...) {
 #'     "http://www.w3.org/ns/prov#used",
 #'     "https://knb.ecoinformatics.org/knb/d1/mn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1")
 #' # Create a relationshp with the subject as a blank node with an automatically assigned blank node id
-#' insertRelationship(dp, subjectID=as.character(NA), objectIDs="thing6", predicate="http://www.myns.org/wasThing")
+#' insertRelationship(dp, subjectID=as.character(NA), objectIDs="thing6", 
+#'     predicate="http://www.myns.org/wasThing")
 #' # Create a relationshp with the subject as a blank node with a user assigned blank node id
 #' insertRelationship(dp, subjectID="_:BL1234", objectIDs="thing7", 
 #'     predicate="http://www.myns.org/hadThing")
