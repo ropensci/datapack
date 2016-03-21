@@ -25,7 +25,7 @@ The identifiers of the objects in the package are retrieved and returned as a li
 dp <- new("DataPackage")
 data <- charToRaw("1,2,3\\n4,5,6")
 do <- new("DataObject", dataobj=data, format="text/csv", user="jsmith")
-addData(dp, do)
+dp <- addData(dp, do)
 getIdentifiers(dp)
 }
 \seealso{

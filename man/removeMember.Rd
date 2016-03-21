@@ -25,7 +25,7 @@ representation of the member.
 dp <- new("DataPackage")
 data <- charToRaw("1,2,3\\n4,5,6")
 do <- new("DataObject", id="myNewId", dataobj=data, format="text/csv", user="jsmith")
-addData(dp, do)
+dp <- addData(dp, do)
 removeMember(dp, "myNewId")
 }
 \seealso{

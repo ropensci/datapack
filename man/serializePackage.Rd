@@ -60,10 +60,10 @@ If no resolveURI value is specified, then 'https://cn.dataone.org/cn/v1/resolve'
 dp <- new("DataPackage")
 data <- charToRaw("1,2,3\\n4,5,6")
 do <- new("DataObject", id="do1", dataobj=data, format="text/csv", user="jsmith")
-addData(dp, do)
+dp <- addData(dp, do)
 data2 <- charToRaw("7,8,9\\n4,10,11")
 do2 <- new("DataObject", id="do2", dataobj=data2, format="text/csv", user="jsmith")
-addData(dp, do2)
+dp <- addData(dp, do2)
 recordDerivation(dp, "do2", "do2")
 status <- serializePackage(dp, file="/tmp/resmap.json", syntaxName="json", 
   mimeType="application/json")

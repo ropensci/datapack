@@ -100,7 +100,7 @@ setMethod("initialize", "DataPackage", function(.Object, packageId) {
 #' dp <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6")
 #' do1 <- new("DataObject", id="id1", data, format="text/csv", user="smith", mnNodeId="urn:node:KNB")
-#' addData(dp, do1)
+#' dp <- addData(dp, do1)
 #' bytes <- getData(dp, "id1")
 #' @export
 setMethod("getData", signature("DataPackage"), function(x, id) {
@@ -127,7 +127,7 @@ setGeneric("getSize", function(x, ...) { standardGeneric("getSize")} )
 #' dp <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6")
 #' do <- new("DataObject", dataobj=data, format="text/csv", user="jsmith")
-#' addData(dp, do)
+#' dp <- addData(dp, do)
 #' getSize(dp)
 #' @export
 setMethod("getSize", "DataPackage", function(x) {
@@ -152,7 +152,7 @@ setGeneric("getIdentifiers", function(x, ...) { standardGeneric("getIdentifiers"
 #' dp <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6")
 #' do <- new("DataObject", dataobj=data, format="text/csv", user="jsmith")
-#' addData(dp, do)
+#' dp <- addData(dp, do)
 #' getIdentifiers(dp)
 #' @export
 setMethod("getIdentifiers", "DataPackage", function(x) {
@@ -177,6 +177,7 @@ setGeneric("addData", function(x, do, ...) {
 #' to the resource map that indicates that the metadata object describes the science object, using CiTO, the Citation Typing Ontology
 #' \code{documents} and \code{isDocumentedBy} relationship.
 #' @param mo A DataObject (containing metadata describing \code{"do"} ) to associate with the science object.
+#' @return the updated DataPackage object
 #' @examples
 #' dpkg <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6")
@@ -187,7 +188,7 @@ setGeneric("addData", function(x, do, ...) {
 #'   mnNodeId="urn:node:KNB")
 #' # Associate the metadata object with the science object. The 'mo' object will be added 
 #' # to the package  automatically, since it hasn't been added yet.
-#' addData(dpkg, do, md)
+#' dpkg <- addData(dpkg, do, md)
 #' @export
 setMethod("addData", signature("DataPackage", "DataObject"), function(x, do, mo=as.character(NA)) {
   x@objects[[do@sysmeta@identifier]] <- do
@@ -202,6 +203,7 @@ setMethod("addData", signature("DataPackage", "DataObject"), function(x, do, mo=
     # Now add the CITO "documents" and "isDocumentedBy" relationships
     insertRelationship(x, getIdentifier(mo), getIdentifier(do))
   }
+  return(x)
 })
 
 #' Record relationships of objects in a DataPackage
@@ -410,7 +412,7 @@ setGeneric("containsId", function(x, ...) {
 #' data <- charToRaw("1,2,3\n4,5,6")
 #' id <- "myNewId"
 #' do <- new("DataObject", id=id, dataobj=data, format="text/csv", user="jsmith")
-#' addData(dp, do)
+#' dp <- addData(dp, do)
 #' isInPackage <- containsId(dp, identifier="myNewId")
 #' @export
 setMethod("containsId", signature("DataPackage"), function(x, identifier) {
@@ -436,7 +438,7 @@ setGeneric("removeMember", function(x, ...) {
 #' dp <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6")
 #' do <- new("DataObject", id="myNewId", dataobj=data, format="text/csv", user="jsmith")
-#' addData(dp, do)
+#' dp <- addData(dp, do)
 #' removeMember(dp, "myNewId")
 #' @export
 setMethod("removeMember", signature("DataPackage"), function(x, identifier) {
@@ -464,7 +466,7 @@ setGeneric("getMember", function(x, ...) {
 #' dp <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6")
 #' do <- new("DataObject", id="myNewId", dataobj=data, format="text/csv", user="jsmith")
-#' addData(dp, do)
+#' dp <- addData(dp, do)
 #' do2 <- getMember(dp, "myNewId")
 setMethod("getMember", signature("DataPackage"), function(x, identifier) {
     if (containsId(x, identifier)) {
@@ -515,10 +517,10 @@ setGeneric("serializePackage", function(x, ...) {
 #' dp <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6")
 #' do <- new("DataObject", id="do1", dataobj=data, format="text/csv", user="jsmith")
-#' addData(dp, do)
+#' dp <- addData(dp, do)
 #' data2 <- charToRaw("7,8,9\n4,10,11")
 #' do2 <- new("DataObject", id="do2", dataobj=data2, format="text/csv", user="jsmith")
-#' addData(dp, do2)
+#' dp <- addData(dp, do2)
 #' recordDerivation(dp, "do2", "do2")
 #' status <- serializePackage(dp, file="/tmp/resmap.json", syntaxName="json", 
 #'   mimeType="application/json")
@@ -592,11 +594,11 @@ setGeneric("serializeToBagIt", function(x, ...) {
 #' dp <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6")
 #' do <- new("DataObject", id="do1", dataobj=data, format="text/csv", user="jsmith")
-#' addData(dp, do)
+#' dp <- addData(dp, do)
 #' # Create a second data object
 #' data2 <- charToRaw("7,8,9\n4,10,11")
 #' do2 <- new("DataObject", id="do2", dataobj=data2, format="text/csv", user="jsmith")
-#' addData(dp, do2)
+#' dp <- addData(dp, do2)
 #' # Create a relationship between the two data objects
 #' recordDerivation(dp, "do2", "do2")
 #' # Write out the data package to a BagIt file

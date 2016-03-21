@@ -19,6 +19,9 @@ addData(x, do, ...)
 
 \item{mo}{A DataObject (containing metadata describing \code{"do"} ) to associate with the science object.}
 }
+\value{
+the updated DataPackage object
+}
 \description{
 The DataObject is added to the DataPackage.
 
@@ -40,7 +43,7 @@ do <- new("DataObject", id="id1", dataobj=data, format="text/csv", user="smith",
   mnNodeId="urn:node:KNB")
 # Associate the metadata object with the science object. The 'mo' object will be added 
 # to the package  automatically, since it hasn't been added yet.
-addData(dpkg, do, md)
+dpkg <- addData(dpkg, do, md)
 }
 \seealso{
 \code{\link{DataPackage-class}}

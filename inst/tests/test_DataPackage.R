@@ -14,7 +14,7 @@ test_that("datapack initialization works", {
   mnId <- "urn:node:mnSandboxUCSB2"
   dp <- new("DataPackage")
   sciObj <- new("DataObject", format="text/csv", user="uid=slaughter,ou=Account,dc=ecoinformatics,dc=org", mnNodeId=mnId, filename=csvfile)
-  addData(dp, sciObj)
+  dp <- addData(dp, sciObj)
   ids <- getIdentifiers(dp)
   expect_equal(length(ids), 1)
   rm(dp)
@@ -36,7 +36,7 @@ test_that("datapack methods work", {
     expect_that(class(dpkg)[[1]], equals("DataPackage"))
     expect_that(getSize(dpkg), equals(0))
     do <- new("DataObject", id1, data, format, user, node)
-    addData(dpkg, do)
+    dpkg <- addData(dpkg, do)
     expect_that(getSize(dpkg), equals(1))
     expect_that(getIdentifiers(dpkg)[[1]], equals(id1))
     expect_that(containsId(dpkg, id1), equals(TRUE))
@@ -49,7 +49,7 @@ test_that("datapack methods work", {
     expect_that(class(do), matches("DataObject"))
     expect_that(getIdentifier(do), matches(id1))
     do2 <- new("DataObject", id2, data, format, user, node)
-    addData(dpkg, do2)
+    dpkg <- addData(dpkg, do2)
     expect_that(getSize(dpkg), equals(2))
     expect_that(getIdentifiers(dpkg)[[1]], equals(id1))
     expect_that(getIdentifiers(dpkg)[[2]], equals(id2))
@@ -69,9 +69,9 @@ test_that("datapack methods work", {
     md <- new("DataObject", mdId, data, format, user, node)
     # The 'mdId' parameter indicates that this is a metadata object that is
     # to be associated with the 'id1' parameter
-    #addData(dpkg, md)
+    #dpkg <- addData(dpkg, md)
     do <- new("DataObject", id1, data, format, user, node)
-    addData(dpkg, do, md)
+    dpkg <- addData(dpkg, do, md)
     expect_that(getSize(dpkg), equals(2))
     expect_that(containsId(dpkg, id1), equals(TRUE))
     expect_that(containsId(dpkg, mdId), equals(TRUE))
@@ -100,8 +100,8 @@ test_that("InsertRelationship methods work", {
   do2 <- new("DataObject", id=doId2, data, format, user, node)
   mdId <- "md1"
   md1 <- new("DataObject", id=mdId, data, format="eml://ecoinformatics.org/eml-2.1.1", user, node)
-  addData(dp, do1)
-  addData(dp, do2)
+  dp <- addData(dp, do1)
+  dp <- addData(dp, do2)
   
   dp <- insertRelationship(dp, subjectID=mdId, objectIDs=c(doId1, doId2))
   relations <- getRelationships(dp, quiet=quietOn)
@@ -122,8 +122,8 @@ test_that("InsertRelationship methods work", {
   format <- "text/csv"
   do1 <- new("DataObject", id=doId1, data, format, user, node)
   do2 <- new("DataObject", id=doId2, data, format, user, node)
-  addData(dp, do1)
-  addData(dp, do2)
+  dp <- addData(dp, do1)
+  dp <- addData(dp, do2)
   
   # Test invalid argument values
   err <- try(dp <- insertRelationship(dp, subjectID=doId1, objectIDs=doId2, predicate="http://www.w3.org/ns/prov#wasDerivedFrom", subjectType='literal'), silent=TRUE)
@@ -229,12 +229,14 @@ test_that("Package serialization works", {
   md1 <- new("DataObject", id=mdId, data, format="eml://ecoinformatics.org/eml-2.1.1", user, node)
   doIn <- new("DataObject", id=doInId, data, format, user, node)
   doOut <- new("DataObject", id=doOutId, data, format, user, node)
-  addData(dp, md1)
-  addData(dp, doIn)
-  addData(dp, doOut)
+  dp <- addData(dp, md1)
+  expect_match(class(dp), "DataPackage")
+  dp <- addData(dp, doIn)
+  dp <- addData(dp, doOut)
   
   # Insert metadata document <-> relationships
   dp <- insertRelationship(dp, subjectID=mdId, objectIDs=c(doOutId))
+  expect_match(class(dp), "DataPackage")
   
   # Insert a typical provenance relationship
   dp <- insertRelationship(dp, subjectID=doOutId, objectIDs=doInId, predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
@@ -317,9 +319,9 @@ test_that("BagIt serialization works", {
   md1 <- new("DataObject", id=mdId, dataobj=charToRaw(someEML), format="eml://ecoinformatics.org/eml-2.1.1", user=user, mnNodeId=node)
   doIn <- new("DataObject", id=doInId, dataobj=data, format="text/csv", user=user, mnNodeId=node)
   doOut <- new("DataObject", id=doOutId, filename=csvfile, format="text/csv", user=user, mnNodeId=node)
-  addData(dp, md1)
-  addData(dp, doIn)
-  addData(dp, doOut)
+  dp <- addData(dp, md1)
+  dp <- addData(dp, doIn)
+  dp <- addData(dp, doOut)
   
   # Insert metadata document <-> relationships
   dp <- insertRelationship(dp, subjectID=mdId, objectIDs=c(doOutId))
