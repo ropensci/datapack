@@ -5,7 +5,7 @@
 \alias{addAccessRule}
 \alias{addAccessRule,DataObject-method}
 \alias{addAccessRule,SystemMetadata-method}
-\title{Add access rules to an object such as system metadata}
+\title{Add access rules to the specified object.}
 \usage{
 addAccessRule(x, ...)
 
@@ -23,8 +23,13 @@ addAccessRule(x, ...)
 
 \item{y}{The subject of the rule to be added, or a data frame of subject/permission tuples}
 }
+\value{
+the SystemMetadata object with the updated access policy.
+
+the DataObject with the updated access policy
+}
 \description{
-Add one or more access rules to a SystemMetadata object.
+Add one or more access rules to the access policy of the specified object.
 }
 \examples{
 # Parameter "y" can be character string containing the subject of the access rule:

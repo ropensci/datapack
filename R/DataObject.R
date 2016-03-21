@@ -287,6 +287,7 @@ setMethod("setPublicAccess", signature("DataObject"), function(x) {
 })
 
 #' @rdname addAccessRule
+#' @return the DataObject with the updated access policy
 #' @examples 
 #' data <- charToRaw("1,2,3\n4,5,6\n")
 #' obj <- new("DataObject", id="1234", data=data, format="text/csv")

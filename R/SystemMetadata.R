@@ -401,8 +401,8 @@ setGeneric("validate", function(x, ...) {
 #' @return logical, \code{TRUE} if the SystemMetadata object is valid, else a list of strings detailing errors
 setMethod("validate", signature("SystemMetadata"), function(x, ...) validate_function(x))
 
-#' @title Add access rules to an object such as system metadata 
-#' @description Add one or more access rules to a SystemMetadata object.
+#' @title Add access rules to the specified object.
+#' @description Add one or more access rules to the access policy of the specified object.
 #' @param x The object instance to which to add the rules
 #' @param ... Additional arguments
 #' \itemize{
@@ -415,6 +415,7 @@ setGeneric("addAccessRule", function(x, ...) {
 })
 #' @rdname addAccessRule
 #' @param y The subject of the rule to be added, or a data frame of subject/permission tuples
+#' @return the SystemMetadata object with the updated access policy.
 #' @examples 
 #' # Parameter "y" can be character string containing the subject of the access rule:
 #' sysmeta <- new("SystemMetadata")
