@@ -100,7 +100,7 @@ myObj &lt;-<span class="st"> </span><span class="kw">new</span>(<span class="st"
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(myObj@sysmeta)</code></pre></div>
 <pre><code>## Formal class 'SystemMetadata' [package &quot;roxygen_devtest&quot;] with 23 slots
 ##   ..@ serialVersion          : num 1
-##   ..@ identifier             : chr &quot;urn:uuid:f838023d-be01-4778-a16d-2f6b2eabf6a9&quot;
+##   ..@ identifier             : chr &quot;urn:uuid:e2a31136-073b-4c30-87aa-a3b9a9f85575&quot;
 ##   ..@ formatId               : chr &quot;text/csv&quot;
 ##   ..@ size                   : num 7718
 ##   ..@ checksum               : chr &quot;aa767c3d9fe95ea1670cf3df82922872550f3a81&quot;
@@ -118,7 +118,7 @@ myObj &lt;-<span class="st"> </span><span class="kw">new</span>(<span class="st"
 ##   ..@ obsoletedBy            : chr NA
 ##   ..@ archived               : logi FALSE
 ##   ..@ dateUploaded           : chr NA
-##   ..@ dateSysMetadataModified: chr &quot;2016-03-17T23:10:16Z&quot;
+##   ..@ dateSysMetadataModified: chr &quot;2016-03-18T05:39:09Z&quot;
 ##   ..@ originMemberNode       : chr NA
 ##   ..@ authoritativeMemberNode: chr NA
 ##   ..@ seriesId               : chr NA
@@ -161,7 +161,7 @@ sciObj2 &lt;-<span class="st"> </span><span class="kw">new</span>(<span class="s
 <p>The identifier values used in this example are simple and easily recognizable for demonstraction purposes. A more standard unique identifier can be created with the statement:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">myid &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;urn:uuid:&quot;</span>, <span class="kw">UUIDgenerate</span>(), <span class="dt">sep=</span><span class="st">&quot;&quot;</span>)
 myid</code></pre></div>
-<pre><code>## [1] &quot;urn:uuid:ce021fb7-9912-4803-bbef-ab5dbc7c9c7b&quot;</code></pre>
+<pre><code>## [1] &quot;urn:uuid:9e7b88d2-0176-4313-aa3b-3ea96730d949&quot;</code></pre>
 <p>Next a DataPackage object is created and the DataObjects added to it:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dp &lt;-<span class="st"> </span><span class="kw">new</span>(<span class="st">&quot;DataPackage&quot;</span>)
 <span class="kw">addData</span>(dp, metadataObj)

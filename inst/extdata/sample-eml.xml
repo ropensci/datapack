@@ -12,7 +12,7 @@
   </access>
   <dataset scope="document">
     <shortName>Sample test data</shortName>
-    <title>Sample test data for R package "datapackage"</title>
+    <title>Sample test data for R package "datapack"</title>
     <creator scope="document">
       <individualName>
         <salutation>Mr.</salutation>
@@ -32,7 +32,7 @@
     </creator>
     <pubDate>2013-04-10</pubDate>
     <abstract>
-      <para>This is test data for the R package "datapackage".</para>
+      <para>This is test data for the R package "datapack".</para>
     </abstract>
     <coverage scope="document">
       <geographicCoverage id="ABUR" scope="document">
@@ -57,7 +57,7 @@
     </coverage>
     <dataTable scope="document">
       <entityName>sample-data.csv</entityName>
-      <entityDescription>sample data for R datapackage</entityDescription>
+      <entityDescription>sample data for R package "datapack"</entityDescription>
       <physical scope="document">
         <objectName>sample-data.csv</objectName>
         <characterEncoding>ASCII</characterEncoding>

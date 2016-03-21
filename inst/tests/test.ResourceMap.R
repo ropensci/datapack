@@ -1,5 +1,5 @@
 context("ResourceMap")
-test_that("datapackage library loads", {
+test_that("datapack library loads", {
   library(datapack)
 })
 test_that("ResourceMap initialization", {

@@ -19,10 +19,10 @@
 #
 
 #' Print a debugging message to stderr.
-#' @details Only print the message if the option "datapackage.debugging_mode" is TRUE.
+#' @details Only print the message if the option "datapack.debugging_mode" is TRUE.
 #' @param msg the message to be printed
 dmsg <- function(msg) {
-    dbg <- getOption("datapackage.debugging_mode", default = FALSE)
+    dbg <- getOption("datapack.debugging_mode", default = FALSE)
     if (dbg) {
         message(msg)
     }

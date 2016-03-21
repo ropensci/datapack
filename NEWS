@@ -3,7 +3,7 @@ Version 1.0.0
 
 NEW FEATURES
 
-* Initial version (see help topic for 'datapackage', e.g. "?datapackage")
+* Initial version (see help topic for 'datapack', e.g. "?datapack")
 
 * Provides an API for building and serializing packages of data and associated metadata.
 

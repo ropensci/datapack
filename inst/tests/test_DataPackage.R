@@ -6,7 +6,7 @@ test_that("datapack library loads", {
 
 test_that("datapack initialization works", {
   # Test that contructor bug is fix, i.e. internal structures being
-  # reused in newly created objects: https://github.com/ropensci/datapackage/issues/26)
+  # reused in newly created objects: https://github.com/ropensci/datapack/issues/26)
   library(datapack)
   testdf <- data.frame(x=1:10,y=11:20)
   csvfile <- tempfile(pattern = "file", tmpdir = tempdir(), fileext = ".csv")

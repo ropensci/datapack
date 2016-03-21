@@ -6,6 +6,11 @@
 * Windows 7, R 3.1.3
 * Windows (via win-builder): x86_64-w64-mingw32 (64-bit), R 3.2.3, and R-devel
 
+## Changes since initial submission
+
+* The package name has been changed from 'datapackage' to 'datapack' as requested by
+  CRAN reviewers.
+
 ## R CMD check results
 
 * There were no ERRORs or WARNINGs.
@@ -17,7 +22,7 @@
       - BagIt (15:9, 15:34)
       - OAI (12:9, 13:9)
     - Found the following (possibly) invalid URLs:
-        - URL: http://cran.r-project.org/package=datapackage
+        - URL: http://cran.r-project.org/package=datapack
         - which does not resolve because this is a new package submission
 
 ## Downstream dependencies

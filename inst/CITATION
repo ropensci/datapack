@@ -9,5 +9,5 @@ bibentry(bibtype = "Manual",
          author = authors,
          year = year,
          note = note,
-         url = "https://github.com/ropensci/datapackage",
+         url = "https://github.com/ropensci/datapack",
          doi = "10.5063/F1QV3JGM")

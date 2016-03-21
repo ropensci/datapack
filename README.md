@@ -4,8 +4,8 @@
 - **Author**: Matthew B. Jones and Peter Slaughter ([NCEAS](http://www.nceas.ucsb.edu))
 - [doi:10.5063/F1QV3JGM](http://doi.org/10.5063/F1QV3JGM)
 - **License**: [Apache 2](http://opensource.org/licenses/Apache-2.0)
-- [Package source code on Github](https://github.com/ropensci/datapackage)
-- [**Submit Bugs and feature requests**](https://github.com/ropensci/datapackage/issues)
+- [Package source code on Github](https://github.com/ropensci/datapack)
+- [**Submit Bugs and feature requests**](https://github.com/ropensci/datapack/issues)
 
 The datapack R package provides an abstraction for collating 
 heterogeneous collections of data objects and metadata into a bundle that can 

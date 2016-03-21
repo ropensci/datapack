@@ -27,7 +27,7 @@ Suggests:
     testthat,
     knitr
 License: Apache License (== 2.0)
-BugReports: https://github.com/ropensci/datapackage/issues
+BugReports: https://github.com/ropensci/datapack/issues
 LazyData: true
 VignetteBuilder: knitr
 Collate:
