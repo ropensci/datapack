@@ -175,6 +175,7 @@ setGeneric("addData", function(x, do, ...) {
 #' @details If the optional \code{mo} parameter is specified, then it is assumed that this DataObject is a metadata
 #' object that describes the science object that is being added. The \code{addData} function will add a relationship
 #' to the resource map that indicates that the metadata object describes the science object, using CiTO, the Citation Typing Ontology
+#' Note: this method updates the passed-in DataPackage object.
 #' \code{documents} and \code{isDocumentedBy} relationship.
 #' @param mo A DataObject (containing metadata describing \code{"do"} ) to associate with the science object.
 #' @return the updated DataPackage object
@@ -217,6 +218,7 @@ setMethod("addData", signature("DataPackage", "DataObject"), function(x, do, mo=
 #' is not specified for subjectType or objectType, then NA is assigned. Note that if these relationships are fetched via the getRelationships()
 #' function, and passed to the createFromTriples() function to initialize a ResourceMap object, the underlying redland package will assign
 #' appropriate values for subjects and objects.
+#' Note: This method updates the passed-in DataPackage object.
 #' @param x A DataPackage object
 #' @param subjectID The identifier of the subject of the relationship
 #' @param objectIDs A list of identifiers of the object of the relationships (a relationship is recorded for each objectID)
