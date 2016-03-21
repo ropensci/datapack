@@ -41,9 +41,9 @@ dp <- new("DataPackage")
 data <- charToRaw("1,2,3\\n4,5,6")
 do1 <- new("DataObject", id="id1", data, format="text/csv")
 do2 <- new("DataObject", id="id2", data, format="text/csv")
-addData(dp, do1)
-addData(dp, do2)
-insertRelationship(dp, subjectID="id1", objectIDs="id2", 
+dp <- addData(dp, do1)
+dp <- addData(dp, do2)
+dp <- insertRelationship(dp, subjectID="id1", objectIDs="id2", 
   predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
 relations <- getRelationships(dp)
 resMapId <- sprintf("\%s\%s", "resourceMap_", uuid::UUIDgenerate())  
