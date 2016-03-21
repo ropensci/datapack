@@ -220,6 +220,7 @@ setMethod("addData", signature("DataPackage", "DataObject"), function(x, do, mo=
 #' @param objectIDs A list of identifiers of the object of the relationships (a relationship is recorded for each objectID)
 #' @param predicate The IRI of the predicate of the relationship
 #' @param ... (Additional parameters)
+#' @return the updated DataPackage object
 #' @seealso \code{\link{DataPackage-class}}
 #' @export
 setGeneric("insertRelationship", function(x, ...) {
@@ -245,20 +246,20 @@ setGeneric("insertRelationship", function(x, ...) {
 #' @examples
 #' dp <- new("DataPackage")
 #' # Create a relationship
-#' insertRelationship(dp, "/Users/smith/scripts/genFields.R",
+#' dp <- insertRelationship(dp, "/Users/smith/scripts/genFields.R",
 #'     "http://www.w3.org/ns/prov#used",
 #'     "https://knb.ecoinformatics.org/knb/d1/mn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1")
 #' # Create a relationshp with the subject as a blank node with an automatically assigned blank node id
-#' insertRelationship(dp, subjectID=as.character(NA), objectIDs="thing6", 
+#' dp <- insertRelationship(dp, subjectID=as.character(NA), objectIDs="thing6", 
 #'     predicate="http://www.myns.org/wasThing")
 #' # Create a relationshp with the subject as a blank node with a user assigned blank node id
-#' insertRelationship(dp, subjectID="_:BL1234", objectIDs="thing7", 
+#' dp <- insertRelationship(dp, subjectID="_:BL1234", objectIDs="thing7", 
 #'     predicate="http://www.myns.org/hadThing")
 #' # Create multiple relationships with the same subject, predicate, but different objects
-#' insertRelationship(dp, subjectID="_:bl2", objectIDs=c("thing4", "thing5"), 
+#' dp <- insertRelationship(dp, subjectID="_:bl2", objectIDs=c("thing4", "thing5"), 
 #'     predicate="http://www.myns.org/hadThing")
 #' # Create multiple relationships with subject and object types specified
-#' insertRelationship(dp, subjectID="orcid.org/0000-0002-2192-403X", 
+#' dp <- insertRelationship(dp, subjectID="orcid.org/0000-0002-2192-403X", 
 #'     objectIDs="http://www.example.com/home", predicate="http://www.example.com/hadHome",
 #'                    subjectType="uri", objectType="literal")                
 setMethod("insertRelationship", signature("DataPackage"),
@@ -328,6 +329,7 @@ setMethod("insertRelationship", signature("DataPackage"),
     # return the datapackage object to the caller (since S4 methods don't pass args by reference)
     x@relations[["relations"]] <- relations
   }
+  return(x)
 })
 
 #' Record derivation relationships between objects in a DataPackage

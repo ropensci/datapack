@@ -103,7 +103,7 @@ test_that("InsertRelationship methods work", {
   addData(dp, do1)
   addData(dp, do2)
   
-  insertRelationship(dp, subjectID=mdId, objectIDs=c(doId1, doId2))
+  dp <- insertRelationship(dp, subjectID=mdId, objectIDs=c(doId1, doId2))
   relations <- getRelationships(dp, quiet=quietOn)
   # Test if the data frame with relationships was constructed correctly
   expect_that(nrow(relations), equals(4))
@@ -126,14 +126,14 @@ test_that("InsertRelationship methods work", {
   addData(dp, do2)
   
   # Test invalid argument values
-  err <- try(insertRelationship(dp, subjectID=doId1, objectIDs=doId2, predicate="http://www.w3.org/ns/prov#wasDerivedFrom", subjectType='literal'), silent=TRUE)
+  err <- try(dp <- insertRelationship(dp, subjectID=doId1, objectIDs=doId2, predicate="http://www.w3.org/ns/prov#wasDerivedFrom", subjectType='literal'), silent=TRUE)
   expect_that(class(err), (matches("try-error")))
-  err <- try(insertRelationship(dp, subjectID=doId1, objectIDs=doId2, predicate="http://www.w3.org/ns/prov#wasDerivedFrom", objectType='foo'), silent=TRUE)
+  err <- try(dp <- insertRelationship(dp, subjectID=doId1, objectIDs=doId2, predicate="http://www.w3.org/ns/prov#wasDerivedFrom", objectType='foo'), silent=TRUE)
   expect_that(class(err), (matches("try-error")))
   
   nrel <- 1
   # Insert a typical provenance relationship
-  insertRelationship(dp, subjectID=doId1, objectIDs=doId2, predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
+  dp <- insertRelationship(dp, subjectID=doId1, objectIDs=doId2, predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
   # Test if the data frame with retrieved relationships was constructed correctly
   relations <- getRelationships(dp, quiet=quietOn)
   expect_that(nrow(relations), equals(nrel))
@@ -143,7 +143,7 @@ test_that("InsertRelationship methods work", {
   expect_that(relations[relations$subject == doId1, 'objectType'], equals(as.character(NA)))
   
   # Test assingment of subjectType, objectType
-  insertRelationship(dp, subjectID="orcid.org/0000-0002-2192-403X", objectIDs="http://www.example.com/home", predicate="http://www.example.com/hadHome",
+  dp <- insertRelationship(dp, subjectID="orcid.org/0000-0002-2192-403X", objectIDs="http://www.example.com/home", predicate="http://www.example.com/hadHome",
                      subjectType="uri", objectType="literal")  
   relations <- getRelationships(dp, quiet=quietOn)
   expect_that(nrow(relations), equals(nrel <- nrel + 1))
@@ -153,7 +153,7 @@ test_that("InsertRelationship methods work", {
   expect_that(relations[relations$subject == "orcid.org/0000-0002-2192-403X", 'objectType'], equals("literal"))
   
   # Test that an unspecified objectType (where length(objetIDs) > length(objectTypes)) is set to as.character(NA)
-  insertRelationship(dp, subjectID="_:bl1", objectIDs=c("thing1", "thing2", "thing3"), predicate="http://www.myns.org/hadThing", subjectType="blank",
+  dp <- insertRelationship(dp, subjectID="_:bl1", objectIDs=c("thing1", "thing2", "thing3"), predicate="http://www.myns.org/hadThing", subjectType="blank",
                      objectTypes=c("literal", "literal"))
   relations <- getRelationships(dp, quiet=quietOn)
   expect_that(nrow(relations), equals(nrel<-nrel + 3))
@@ -166,7 +166,7 @@ test_that("InsertRelationship methods work", {
   expect_that(relations[relations$object == "thing3", 'objectType'], equals(as.character(NA)))
   
   # Multiple objectTypes, first one 'NA'
-  insertRelationship(dp, subjectID="_:bl2", objectIDs=c("thing4", "thing5"), predicate="http://www.myns.org/hadThing", subjectType="blank",
+  dp <- insertRelationship(dp, subjectID="_:bl2", objectIDs=c("thing4", "thing5"), predicate="http://www.myns.org/hadThing", subjectType="blank",
                      objectTypes=c(NA, "literal"))
   relations <- getRelationships(dp, quiet=quietOn)
   expect_that(nrow(relations), equals(nrel<-nrel + 2))
@@ -174,7 +174,7 @@ test_that("InsertRelationship methods work", {
   expect_that(relations[relations$object == "thing5", 'objectType'], equals("literal"))
   
   # Subject passed in as NA, which means create an "anonymous" blank node for these (software assigns the blank node id, not user)
-  insertRelationship(dp, subjectID=as.character(NA), objectIDs="thing6", predicate="http://www.myns.org/wasThing", objectTypes="literal")
+  dp <- insertRelationship(dp, subjectID=as.character(NA), objectIDs="thing6", predicate="http://www.myns.org/wasThing", objectTypes="literal")
   relations <- getRelationships(dp, quiet=quietOn)
   expect_that(nrow(relations), equals(nrel<-nrel + 1))
   expect_that(relations[relations$object == "thing6", 'predicate'], matches("wasThing"))
@@ -182,7 +182,7 @@ test_that("InsertRelationship methods work", {
   expect_that(relations[relations$object == "thing6", 'subject'], matches("_:"))
   
   # No objectID specified
-  insertRelationship(dp, subjectID="urn:uuid5678", objectIDs=as.character(NA), predicate="http://www.myns.org/gaveThing")
+  dp <- insertRelationship(dp, subjectID="urn:uuid5678", objectIDs=as.character(NA), predicate="http://www.myns.org/gaveThing")
   relations <- getRelationships(dp, quiet=quietOn)
   expect_that(nrow(relations), equals(nrel <- nrel + 1))
   expect_that(relations[relations$subject == "urn:uuid5678", 'predicate'], matches("gaveThing"))
@@ -190,7 +190,7 @@ test_that("InsertRelationship methods work", {
   expect_that(relations[relations$subject == "urn:uuid5678", 'object'], matches("_:"))
   
   # Specify dataTypeURIs
-  insertRelationship(dp, subjectID="urn:uuid:abcd", objectIDs="Wed Mar 18 06:26:44 PDT 2015", 
+  dp <- insertRelationship(dp, subjectID="urn:uuid:abcd", objectIDs="Wed Mar 18 06:26:44 PDT 2015", 
                      predicate="http://www.w3.org/ns/prov#startedAt", subjectType="uri", 
                      objectTypes="literal",
                      dataTypeURIs="http://www.w3.org/2001/XMLSchema#string")
@@ -234,13 +234,13 @@ test_that("Package serialization works", {
   addData(dp, doOut)
   
   # Insert metadata document <-> relationships
-  insertRelationship(dp, subjectID=mdId, objectIDs=c(doOutId))
+  dp <- insertRelationship(dp, subjectID=mdId, objectIDs=c(doOutId))
   
   # Insert a typical provenance relationship
-  insertRelationship(dp, subjectID=doOutId, objectIDs=doInId, predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
-  insertRelationship(dp, subjectID=executionId, objectIDs=doInId, predicate="http://www.w3.org/ns/prov#used")
-  insertRelationship(dp, subjectID=doOutId, objectIDs=executionId, predicate="http://www.w3.org/ns/prov#wasGeneratedBy")
-  insertRelationship(dp, subjectID="urn:uuid:abcd", objectIDs="Wed Mar 18 06:26:44 PDT 2015", 
+  dp <- insertRelationship(dp, subjectID=doOutId, objectIDs=doInId, predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
+  dp <- insertRelationship(dp, subjectID=executionId, objectIDs=doInId, predicate="http://www.w3.org/ns/prov#used")
+  dp <- insertRelationship(dp, subjectID=doOutId, objectIDs=executionId, predicate="http://www.w3.org/ns/prov#wasGeneratedBy")
+  dp <- insertRelationship(dp, subjectID="urn:uuid:abcd", objectIDs="Wed Mar 18 06:26:44 PDT 2015", 
                      predicate="http://www.w3.org/ns/prov#startedAt", subjectType="uri", 
                      objectTypes="literal",
                      dataTypeURIs="http://www.w3.org/2001/XMLSchema#string")
@@ -322,13 +322,13 @@ test_that("BagIt serialization works", {
   addData(dp, doOut)
   
   # Insert metadata document <-> relationships
-  insertRelationship(dp, subjectID=mdId, objectIDs=c(doOutId))
+  dp <- insertRelationship(dp, subjectID=mdId, objectIDs=c(doOutId))
   
   # Insert a typical provenance relationship
-  insertRelationship(dp, subjectID=doOutId, objectIDs=doInId, predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
-  insertRelationship(dp, subjectID=executionId, objectIDs=doInId, predicate="http://www.w3.org/ns/prov#used")
-  insertRelationship(dp, subjectID=doOutId, objectIDs=executionId, predicate="http://www.w3.org/ns/prov#wasGeneratedBy")
-  insertRelationship(dp, subjectID="urn:uuid:abcd", objectIDs="Wed Mar 18 06:26:44 PDT 2015", 
+  dp <- insertRelationship(dp, subjectID=doOutId, objectIDs=doInId, predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
+  dp <- insertRelationship(dp, subjectID=executionId, objectIDs=doInId, predicate="http://www.w3.org/ns/prov#used")
+  dp <- insertRelationship(dp, subjectID=doOutId, objectIDs=executionId, predicate="http://www.w3.org/ns/prov#wasGeneratedBy")
+  dp <- insertRelationship(dp, subjectID="urn:uuid:abcd", objectIDs="Wed Mar 18 06:26:44 PDT 2015", 
                      predicate="http://www.w3.org/ns/prov#startedAt", subjectType="uri", 
                      objectTypes="literal",
                      dataTypeURIs="http://www.w3.org/2001/XMLSchema#string")

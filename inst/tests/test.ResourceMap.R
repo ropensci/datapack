@@ -37,14 +37,14 @@ test_that("ResourceMap creation from DataPackage triples", {
   addData(dp, doOut)
   
   # Insert metadata document <-> relationships
-  insertRelationship(dp, subjectID=mdId, objectIDs=c(doOutId))
+  dp <- insertRelationship(dp, subjectID=mdId, objectIDs=c(doOutId))
   
   # Insert a typical provenance relationship
-  insertRelationship(dp, subjectID=doOutId, objectIDs=doInId, predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
-  insertRelationship(dp, subjectID=executionId, objectIDs=doInId, predicate="http://www.w3.org/ns/prov#used")
-  insertRelationship(dp, subjectID=doOutId, objectIDs=executionId, predicate="http://www.w3.org/ns/prov#wasGeneratedBy")
-  insertRelationship(dp, subjectID=doId2, objectIDs=doOutId, predicate="http://www.w3.org/ns/prov#wasInformedBy")
-  insertRelationship(dp, subjectID=executionId, objectIDs="2015-01-01T10:02:00", predicate="http://www.w3.org/ns/prov#startedAtTime")
+  dp <- insertRelationship(dp, subjectID=doOutId, objectIDs=doInId, predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
+  dp <- insertRelationship(dp, subjectID=executionId, objectIDs=doInId, predicate="http://www.w3.org/ns/prov#used")
+  dp <- insertRelationship(dp, subjectID=doOutId, objectIDs=executionId, predicate="http://www.w3.org/ns/prov#wasGeneratedBy")
+  dp <- insertRelationship(dp, subjectID=doId2, objectIDs=doOutId, predicate="http://www.w3.org/ns/prov#wasInformedBy")
+  dp <- insertRelationship(dp, subjectID=executionId, objectIDs="2015-01-01T10:02:00", predicate="http://www.w3.org/ns/prov#startedAtTime")
   
   relations <- getRelationships(dp)
   # Test if the data frame with retrieved relationships was constructed correctly

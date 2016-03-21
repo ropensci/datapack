@@ -171,7 +171,7 @@ need to be specified in this case. For example, with the example DataPackage cre
 we can add the *documents* relationship:
 
 ```{r}
-insertRelationship(dp, subjectID=metadataId, objectIDs=sciId)
+dp <- insertRelationship(dp, subjectID=metadataId, objectIDs=sciId)
 ```
 
 These relationships can be examined with the statements:
@@ -203,7 +203,7 @@ Relationships can be fully specified, as shown in the following statement that a
 relationship between two objects in the example package:
 
 ```{r, eval=F}
-insertRelationship(dp, subjectID=sciId2, objectIDs=sciId,
+dp <- insertRelationship(dp, subjectID=sciId2, objectIDs=sciId,
                    predicate="http://www.w3.org/ns/prov#wasDerivedFrom") 
 ``` 
 
