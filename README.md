@@ -33,7 +33,7 @@ port version
 
 If the *port* command is not found, then skip to the [Installing with HomeBrew](#homebrew) section.
 
-### Installing with Macports
+### Mac OS X install option 1: install using Macports
 If you are already using the MacPorts package manager, you can install *datapack* with the following commands, 
 otherwise, it is recommended that you skip to the next section [Installing with HomeBrew](#homebrew). 
 
@@ -53,7 +53,8 @@ source is only necessary if Macports is being used, and is not a requirement if 
 
 The *datapack* R package should be available for use at this point
 
-### <a id="homebrew"></a>Installing with HomeBrew
+### <a id="homebrew"></a> Mac OS X install option 2: install using HomeBrew
+
 On Mac OS X you can use the package management system [HomeBrew](http://brew.sh) to install the 
 necessary libraries. The HomeBrew software can be installed with the following command entered at a terminal window:
 
@@ -130,14 +131,14 @@ addData(dp, md)
 csvfile <- system.file("extdata/sample-data.csv", package="datapack")
 sciId <- paste("urn:uuid:", UUIDgenerate(), sep="")
 sciObj <- new("DataObject", id=sciId, format="text/csv", filename=csvfile)
-addData(dp, sciObj)
+dp <- addData(dp, sciObj)
 ids <- getIdentifiers(dp)
 ```
 
 Add a relationship to the DataPackage that shows that the metadata describes, or "documents", the science data:
 
 ```
-insertRelationship(dp, subjectID=mdId, objectIDs=sciId)
+dp <- insertRelationship(dp, subjectID=mdId, objectIDs=sciId)
 relations <- getRelationships(dp)
 ```  
 
