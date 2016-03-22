@@ -24,21 +24,21 @@ the updated DataPackage object
 }
 \description{
 The DataObject is added to the DataPackage.
-
-The DataObject \code{do} is added to the data package \code{x}.
 }
 \details{
-If the optional \code{mo} parameter is specified, then it is assumed that this DataObject is a metadata
-object that describes the science object that is being added. The \code{addData} function will add a relationship
-to the resource map that indicates that the metadata object describes the science object, using CiTO, the Citation Typing Ontology
+The DataObject \code{"do"} is added to the DataPackage. If the optional \code{"mo"} parameter is specified, then it is 
+assumed that the DataObject \code{"mo"} is a metadata
+object that describes the science object \code{"do"} that is being added. The \code{addData} function will add a relationship
+to the DataPackage resource map that indicates that the metadata object describes the science object using the 
+Citation Typing Ontology (CITO).
 Note: this method updates the passed-in DataPackage object.
 \code{documents} and \code{isDocumentedBy} relationship.
 }
 \examples{
 dpkg <- new("DataPackage")
 data <- charToRaw("1,2,3\\n4,5,6")
-metadata <- charToRaw("This is the good data\\n")
-md <- new("DataObject", id="md1", dataobj=data, format="text/csv", user="smith", 
+metadata <- charToRaw("EML or other metadata document text goes here\\n")
+md <- new("DataObject", id="md1", dataobj=metadata, format="text/xml", user="smith", 
   mnNodeId="urn:node:KNB")
 do <- new("DataObject", id="id1", dataobj=data, format="text/csv", user="smith", 
   mnNodeId="urn:node:KNB")
