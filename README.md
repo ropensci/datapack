@@ -45,7 +45,8 @@ sudo port install redland
 Then enter these commands in the R console:
 ```
 install.packages("redland", type="source")
-library(redland)
+install.packages("datapack")
+library(datapack)
 ```
 
 Please note that the *install.packages* command specifies a "source" installation. Installing from
