@@ -1,6 +1,6 @@
 ## Test environments
 
-* OS X 10.10.5, R 3.2.4
+* OS X 10.10.3, 10.10.5, R 3.2.4
 * OS X 10.11.1, R 3.2.3
 * Ubuntu 14.04, R 3.2.3
 * Windows 7, R 3.1.3
