@@ -67,10 +67,10 @@ str(myObj@sysmeta)
 
 The system metadata contains access policy information for the DataObject that could be used
 by a data repository that the object is uploaded to. For example, when a DataObject is
-uploaded to a [DataONE Member Nodes](https://www.dataone.org/current-member-nodes), the access policy is applied to the uploaded data
+uploaded to a [DataONE Member Node](https://www.dataone.org/current-member-nodes), the access policy is applied to the uploaded data
 and controls access to the data on the Member Node by DataONE users.
 
-Before the DataObject is uploaed, access can be set so that anyone can read the uploaded data:
+Before the DataObject is uploaded, access can be set so that anyone can read the uploaded data:
 ```{r}
 myObj <- setPublicAccess(myObj)
 ```
