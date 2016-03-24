@@ -1,10 +1,10 @@
 ## Test environments
 
-* OS X 10.10.5, R 3.2.3
+* OS X 10.10.5, R 3.2.4
 * OS X 10.11.1, R 3.2.3
 * Ubuntu 14.04, R 3.2.3
 * Windows 7, R 3.1.3
-* Windows (via win-builder): x86_64-w64-mingw32 (64-bit), R 3.2.3, and R-devel
+* Windows (via win-builder): x86_64-w64-mingw32 (64-bit), R 3.2.4, and R-devel
 
 ## Changes since initial submission
 
