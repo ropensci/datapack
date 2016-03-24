@@ -224,7 +224,14 @@ setMethod("parseSystemMetadata", signature("SystemMetadata"), function(x, xml, .
   x@checksumAlgorithm <- csattrs[[1]]
   x@submitter <- xmlValue(xml[["submitter"]])
   x@rightsHolder <- xmlValue(xml[["rightsHolder"]])
-  accessList <- xmlChildren(xml[["accessPolicy"]])
+  ap <- xml[["accessPolicy"]]
+  # Allow for a blank access policy
+  if (is.null(ap)) {
+    accessList <- list()
+    x@accessPolicy <- data.frame(subject=character(), permission=character())
+  } else {
+    accessList <- xmlChildren(ap)
+  }
   for (accessNode in accessList) {
     nodeName <- xmlName(accessNode)
     if (grepl("allow", nodeName)) {
