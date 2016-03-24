@@ -22,8 +22,9 @@
       - BagIt (15:9, 15:34)
       - OAI (12:9, 13:9)
     - Found the following (possibly) invalid URLs:
-        - URL: http://cran.r-project.org/package=datapack
+        - URL: https://cran.r-project.org/package=datapack
         - which does not resolve because this is a new package submission
+        - updated this URL to use the https protocol
 
 ## Downstream dependencies
 
