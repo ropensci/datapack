@@ -1,6 +1,6 @@
 Package: datapack
 Title: A Flexible Container to Transport and Manipulate Data and Associated Resources 
-Version: 1.0.0
+Version: 1.0.1
 Authors@R: c( person("Matthew B.", "Jones", role = c("aut", "cre"), email = "jones@nceas.ucsb.edu"),
   person("Peter", "Slaughter", role = "aut", email = "slaughter@nceas.ucsb.edu"),
   person("Regents of the University of California", role = c("cph")))
@@ -13,7 +13,7 @@ Description: Provides a flexible container to transport and
     can be serialized and transported as structured files that have been created following 
     the BagIt specification. The BagIt specification is described at 
     <https://tools.ietf.org/html/draft-kunze-bagit-08>.
-Date: 2016-03-24
+Date: 2016-03-28
 Depends:
     R (>= 3.1.1)
 Imports:

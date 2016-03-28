@@ -1,3 +1,11 @@
+Version 1.0.1
+-------------
+
+BUGS
+
+* Fixed bug where Roxygen example for serializePackage() was writing to the "/tmp" 
+  directory
+
 Version 1.0.0
 -------------
 
