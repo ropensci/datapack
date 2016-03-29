@@ -43,7 +43,7 @@ rawData <- getData(myObj)
 
 This raw data can be converted back to CSV format using the R commands:
 
-```{r}
+```{r,eval=FALSE}
 tf <- tempfile(fileext=".csv")
 write.csv(rawToChar(rawData), tf, quote=F, row.names=F)
 ```
@@ -226,7 +226,7 @@ written to a file in this case, that conforms to the OAI-ORE specification.
 
 To create a resource map for the example DataPackage:
 
-```{r}
+```{r, eval=FALSE}
 tf <- tempfile()
 packageId <- paste("urn:uuid:", UUIDgenerate(), sep="")
 serializePackage(dp, file=tf, id=packageId)
@@ -238,7 +238,7 @@ that could be used to access this data object if the package is uploaded to a Da
 A different value to be prepended to each identifier can be specified with the *resoveURI* argument. 
 To specify that no value be prepended to the identifier URLs, specify a zero-length character:
 
-```{r}
+```{r, eval=FALSE}
 tf <- tempfile()
 packageId <- paste("urn:uuid:", UUIDgenerate(), sep="")
 serializePackage(dp, file=tf, id=packageId, resolveURI="")
@@ -246,7 +246,7 @@ serializePackage(dp, file=tf, id=packageId, resolveURI="")
 
 It is also possible to create a JSON serialization, if desired:
 
-```{r}
+```{r, eval=FALSE}
 tf <- tempfile()
 packageId <- paste("urn:uuid:", UUIDgenerate(), sep="")
 serializePackage(dp, file=tf, id=packageId, syntaxName="json", mimeType="application/json", resolveURI="")
