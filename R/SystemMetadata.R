@@ -257,8 +257,14 @@ setMethod("parseSystemMetadata", signature("SystemMetadata"), function(x, xml, .
       }
     }
   }
-  rpattrs <- xmlAttrs(xml[["replicationPolicy"]])
-  repAllowed <- grepl('true', rpattrs[["replicationAllowed"]], ignore.case=TRUE)
+  repPolicy <- xml[["replicationPolicy"]]
+  if (is.null(repPolicy)) {
+    repAllowed <- FALSE
+    x@replicationAllowed = FALSE
+  } else {
+    rpattrs <- xmlAttrs(xml[["replicationPolicy"]])
+    repAllowed <- grepl('true', rpattrs[["replicationAllowed"]], ignore.case=TRUE)
+  }
   if (repAllowed) {
     x@replicationAllowed = TRUE
     x@numberReplicas = as.numeric(rpattrs[["numberReplicas"]])
