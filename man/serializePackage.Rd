@@ -57,7 +57,6 @@ The resolveURI string value is prepended to DataPackage member identifiers in th
 If no resolveURI value is specified, then 'https://cn.dataone.org/cn/v1/resolve' is used.
 }
 \examples{
-\dontrun{
 dp <- new("DataPackage")
 data <- charToRaw("1,2,3\\n4,5,6")
 do <- new("DataObject", id="do1", dataobj=data, format="text/csv", user="jsmith")
@@ -66,6 +65,7 @@ data2 <- charToRaw("7,8,9\\n10,11,12")
 do2 <- new("DataObject", id="do2", dataobj=data2, format="text/csv", user="jsmith")
 dp <- addData(dp, do2)
 recordDerivation(dp, "do", "do2")
+\dontrun{
 td <- tempdir()
 status <- serializePackage(dp, file=paste(td, "resmap.json", sep="/"), syntaxName="json",  
     mimeType="application/json")

@@ -59,7 +59,9 @@ dp <- addData(dp, do2)
 # Create a relationship between the two data objects
 recordDerivation(dp, "do2", "do2")
 # Write out the data package to a BagIt file
+\dontrun{
 bagitFile <- serializeToBagIt(dp, syntaxName="json", mimeType="application/json")
+}
 }
 \seealso{
 \code{\link{DataPackage-class}}

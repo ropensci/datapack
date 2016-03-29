@@ -58,12 +58,14 @@ do <- setPublicAccess(do)
 canRead(do, "public")
 canRead(do, "uid=anybody,DC=example,DC=com")
 # Also can create using a file for storage, rather than memory
+\dontrun{
 tf <- tempfile()
 con <- file(tf, "wb")
 writeBin(data, con)
 close(con)
 do <- new("DataObject", "id1", format="text/csv", user="uid=jones,DC=example,DC=com", 
   mnNodeId="urn:node:KNB", filename=tf)
+}
 }
 \seealso{
 \code{\link{datapack}}

@@ -516,7 +516,7 @@ setGeneric("serializePackage", function(x, ...) {
 #' @param syntaxURI URI of the serialization syntax
 #' @param resolveURI A character string containing a URI to prepend to datapackage identifiers
 #' @export
-#' @examples \dontrun{
+#' @examples
 #' dp <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6")
 #' do <- new("DataObject", id="do1", dataobj=data, format="text/csv", user="jsmith")
@@ -525,6 +525,7 @@ setGeneric("serializePackage", function(x, ...) {
 #' do2 <- new("DataObject", id="do2", dataobj=data2, format="text/csv", user="jsmith")
 #' dp <- addData(dp, do2)
 #' recordDerivation(dp, "do", "do2")
+#' \dontrun{
 #' td <- tempdir()
 #' status <- serializePackage(dp, file=paste(td, "resmap.json", sep="/"), syntaxName="json",  
 #'     mimeType="application/json")
@@ -607,7 +608,9 @@ setGeneric("serializeToBagIt", function(x, ...) {
 #' # Create a relationship between the two data objects
 #' recordDerivation(dp, "do2", "do2")
 #' # Write out the data package to a BagIt file
+#' \dontrun{
 #' bagitFile <- serializeToBagIt(dp, syntaxName="json", mimeType="application/json")
+#' }
 #' @export
 setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=as.character(NA),
                                                                  syntaxName=as.character(NA),

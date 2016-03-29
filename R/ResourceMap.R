@@ -248,7 +248,7 @@ setGeneric("serializeRDF", function(x, ...) { standardGeneric("serializeRDF")})
 #' @param namespaces a data frame containing one or more namespaces and their associated prefix
 #' @param syntaxURI A URI of the serialized syntax
 #' @return status of the serialization (non)
-#' @examples 
+#' @examples
 #' dp <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6")
 #' do1 <- new("DataObject", id="id1", data, format="text/csv")
@@ -257,11 +257,11 @@ setGeneric("serializeRDF", function(x, ...) { standardGeneric("serializeRDF")})
 #' dp <- addData(dp, do2)
 #' dp <- insertRelationship(dp, subjectID="id1", objectIDs="id2", 
 #'   predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
-#' tf <- tempfile(fileext=".xml")
 #' relations <- getRelationships(dp)
 #' resmap <- new("ResourceMap")
 #' resmap <- createFromTriples(resmap, relations, id="myuniqueid")
 #' \dontrun{
+#' tf <- tempfile(fileext=".xml")
 #' serializeRDF(resmap, tf)
 #' }
 setMethod("serializeRDF", signature("ResourceMap"), function(x, 

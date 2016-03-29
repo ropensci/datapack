@@ -44,11 +44,11 @@ dp <- addData(dp, do1)
 dp <- addData(dp, do2)
 dp <- insertRelationship(dp, subjectID="id1", objectIDs="id2", 
   predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
-tf <- tempfile(fileext=".xml")
 relations <- getRelationships(dp)
 resmap <- new("ResourceMap")
 resmap <- createFromTriples(resmap, relations, id="myuniqueid")
 \dontrun{
+tf <- tempfile(fileext=".xml")
 serializeRDF(resmap, tf)
 }
 }
