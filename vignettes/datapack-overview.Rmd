@@ -132,8 +132,8 @@ myid
 Next a DataPackage object is created and the DataObjects added to it:
 ```{r}
 dp <- new("DataPackage")
-dp <- addData(dp, metadataObj)
-dp <- addData(dp, sciObj)
+dp <- addData(dp, do = metadataObj)
+dp <- addData(dp, do = sciObj)
 # The second object will be added in the next section 
 ```
 
@@ -186,7 +186,7 @@ A quick way to add this *documents* relationship is to include the metadata obje
 object is added to the package:
 
 ```{r}
-dp <- addData(dp, sciObj2, metadataObj)
+dp <- addData(dp, do = sciObj2, mo = metadataObj)
 ```
 
 When a second object is included with the `addData` call, the `insertRelationship` method is
