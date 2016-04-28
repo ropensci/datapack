@@ -344,13 +344,27 @@ setMethod("serializeSystemMetadata", signature("SystemMetadata"), function(x, ve
   root <- addChildren(root, xmlNode("rightsHolder", x@rightsHolder))
   if (nrow(x@accessPolicy) > 0) {
     accessPolicy <- xmlNode("accessPolicy")
-    for(i in 1:nrow(x@accessPolicy)) {
-      accessRule <- xmlNode("allow")
-      accessRule <- addChildren(accessRule, xmlNode("subject", x@accessPolicy[i,]$subject))
-      accessRule <- addChildren(accessRule, xmlNode("permission", x@accessPolicy[i,]$permission))
-      accessPolicy <- addChildren(accessPolicy, accessRule)
+    
+    # Find unique subjects so permissions can be grouped by subject
+    subjects <- unique(x@accessPolicy$subject)
+    
+    for (i in seq_along(subjects)) {
+        accessRule <- xmlNode("allow")
+        accessRule <- addChildren(accessRule, xmlNode("subject", subjects[i]))
+        
+        # Find unique permissions for this subject so no permissions get
+        # duplicated
+        permissions <- unique(x@accessPolicy[x@accessPolicy$subject == subjects[i],"permission"])
+        
+        for (j in seq_along(permissions)) {
+            accessRule <- addChildren(accessRule, xmlNode("permission", permissions[j]))
+        }
+        
+        accessPolicy <- addChildren(accessPolicy, accessRule)
     }
+    
     root <- addChildren(root, accessPolicy)
+    
   }
   
   if (!is.null(x@replicationAllowed)) {
