@@ -138,3 +138,13 @@ test_that("SystemMetadata accessPolicy can be constructed and changed", {
     expect_that(as.character(sysmeta@accessPolicy$subject[[4]]), matches("baz"))    
 })
 
+test_that("access policy rules are nested by subject", {
+    sysmeta <- new("SystemMetadata",
+                   identifier = "test-nesting")
+    sysmeta <- addAccessRule(sysmeta, "someone", c("read", "write", "changePermission"))
+    doc <- XML::xmlParse(serializeSystemMetadata(sysmeta))
+    permissions <- XML::getNodeSet(doc, "//accessPolicy/allow/permission")
+    
+    expect_true(length(permissions) == 3)
+    expect_true(length(setdiff(c("read", "write", "changePermission"), XML::xmlValue(permissions))) == 0)
+})
