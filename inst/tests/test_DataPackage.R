@@ -250,7 +250,6 @@ test_that("Package serialization works", {
   # Serialize the ResourceMap to a file.
   serializationId <- sprintf("%s%s", "resourceMap1", UUIDgenerate())
   filePath <- file.path(sprintf("%s/%s.rdf", tempdir(), serializationId))
-  message(filePath)
   status <- serializePackage(dp, filePath, id=serializationId)
   expect_that(file.exists(filePath), is_true())
   found <- grep("wasDerivedFrom", readLines(filePath))
@@ -278,6 +277,31 @@ test_that("Package serialization works", {
   }
   unlink(dpFile)
   
+})
+
+test_that("Package serialization works with minimal DataPackage", {
+    
+    # Test methods with a DataPackage that has only one member and no package relationships
+    library(uuid)
+    dp <- new("DataPackage")
+    mdId <- paste("urn:uuid:", UUIDgenerate(), sep="")
+    data <- charToRaw("1,2,3\n4,5,6")
+    format <- "text/csv"
+    md1 <- new("DataObject", id=mdId, data, format="eml://ecoinformatics.org/eml-2.1.1")
+    dp <- addData(dp, md1)
+    expect_match(class(dp), "DataPackage")
+    
+    # Serialize the ResourceMap to a file.
+    serializationId <- sprintf("%s%s", "resourceMap1", UUIDgenerate())
+    filePath <- file.path(sprintf("%s/%s.rdf", tempdir(), serializationId))
+    status <- serializePackage(dp, filePath, id=serializationId)
+    expect_that(file.exists(filePath), is_true())
+    found <- grep(mdId, readLines(filePath))
+    expect_that(found, is_more_than(0))
+    unlink(filePath)
+    # Compare relationships
+    rels <- getRelationships(dp)
+    expect_equal(nrow(rels), 0)
 })
 
 test_that("BagIt serialization works", {
