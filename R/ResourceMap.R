@@ -121,6 +121,7 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
   stopifnot(all(is.character(identifiers)))
   
   x@relations <- relations
+  
   # Hard coded for now, get this from dataone package in future
   D1ResolveURI <- "https://cn.dataone.org/cn/v2/resolve"
   
@@ -157,26 +158,28 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
   }
   
   # Add each triple from the input data.frame into the Redland RDF model.
-  for(i in 1:nrow(relations)) {
-    triple <- relations[i,]
-    subjectId <- triple[['subject']]
-    objectId <- triple[['object']]
-    
-    # Prepend the DataONE Production CN resolve URI to each identifier in the datapackage, when
-    # that identifier appears in the subject or object of a triple.
-    if (is.element(subjectId, identifiers) && ! grepl(pkgResolveURI, subjectId) && ! grepl("^http", subjectId)) {
-      subjectId <- URLencode(subjectId, reserved=TRUE)
-      subjectId <- paste(pkgResolveURI, subjectId, sep="/")
-    }
-    
-    if (is.element(objectId, identifiers) && ! grepl(pkgResolveURI, objectId) && ! grepl("^http", objectId)) {
-      objectId <- URLencode(objectId, reserved=TRUE)
-      objectId <- paste(pkgResolveURI, objectId, sep="/")
-    }
-    
-    statement <- new("Statement", x@world, subjectId, triple[['predicate']], objectId, 
-                     triple[['subjectType']], triple[['objectType']], triple[['dataTypeURI']])
-    addStatement(x@model, statement)
+  if(nrow(relations) > 0) {
+      for(i in 1:nrow(relations)) {
+          triple <- relations[i,]
+          subjectId <- triple[['subject']]
+          objectId <- triple[['object']]
+          
+          # Prepend the DataONE Production CN resolve URI to each identifier in the datapackage, when
+          # that identifier appears in the subject or object of a triple.
+          if (is.element(subjectId, identifiers) && ! grepl(pkgResolveURI, subjectId) && ! grepl("^http", subjectId)) {
+              subjectId <- URLencode(subjectId, reserved=TRUE)
+              subjectId <- paste(pkgResolveURI, subjectId, sep="/")
+          }
+          
+          if (is.element(objectId, identifiers) && ! grepl(pkgResolveURI, objectId) && ! grepl("^http", objectId)) {
+              objectId <- URLencode(objectId, reserved=TRUE)
+              objectId <- paste(pkgResolveURI, objectId, sep="/")
+          }
+          
+          statement <- new("Statement", x@world, subjectId, triple[['predicate']], objectId, 
+                           triple[['subjectType']], triple[['objectType']], triple[['dataTypeURI']])
+          addStatement(x@model, statement)
+      }
   }
   
   # Loop through the datapackage objects and add the required ORE properties for each id.
@@ -290,11 +293,13 @@ setMethod("serializeRDF", signature("ResourceMap"), function(x,
   serializer <- new("Serializer", x@world, name=syntaxName, mimeType=mimeType, typeUri=syntaxURI)
 
   # Add default and additional namespaces to the serializer
-  for(i in 1:nrow(namespaces)) {
-    thisNamespace <- namespaces[i,]
-    namespace <- as.character(thisNamespace['namespace'])
-    prefix <- as.character(thisNamespace['prefix'])
-    status <- setNameSpace(serializer, x@world, namespace=namespace, prefix=prefix)
+  if(nrow(namespaces) > 0) {
+      for(i in 1:nrow(namespaces)) {
+          thisNamespace <- namespaces[i,]
+          namespace <- as.character(thisNamespace['namespace'])
+          prefix <- as.character(thisNamespace['prefix'])
+          status <- setNameSpace(serializer, x@world, namespace=namespace, prefix=prefix)
+      }
   }
   
   status <- serializeToFile(serializer, x@world, x@model, file)

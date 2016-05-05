@@ -389,10 +389,16 @@ setGeneric("getRelationships", function(x, ...) {
 setMethod("getRelationships", signature("DataPackage"), function(x, ...) {
   
   # Get the relationships stored by insertRelationship
-  relationships <- x@relations[["relations"]]
-  
-  # Reorder output data frame by "subject" column
-  relationships <- relationships[order(relationships$subject, relationships$predicate, relationships$object),]
+  if (has.key("relations", x@relations)) {
+      relationships <- x@relations[["relations"]]
+      # Reorder output data frame by "subject" column
+      if (nrow(relationships > 0)) {
+          relationships <- relationships[order(relationships$subject, relationships$predicate, relationships$object),]
+      }
+  } else {
+      relationships <- data.frame()
+  }
+    
   return(relationships)
 })
 
