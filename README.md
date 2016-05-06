@@ -7,7 +7,7 @@
 - [Package source code on Github](https://github.com/ropensci/datapack)
 - [**Submit Bugs and feature requests**](https://github.com/ropensci/datapack/issues)
 
-The datapack R package provides an abstraction for collating 
+The *datapack* R package provides an abstraction for collating 
 heterogeneous collections of data objects and metadata into a bundle that can 
 be transported and loaded into a single composite file.  The methods in 
 this package provide a convenient way to load data from common repositories 
@@ -16,67 +16,23 @@ data from R to data repositories worldwide.
 
 ## Installation Notes 
 
-The *datapack* R package requires the R package *redland*,  which requires the Redland C libraries. 
+The *datapack* R package requires the R package *redland*. If you are installing on Ubuntu then the Redland C libraries
+must be installed before the *redland* and *datapack* package can be installed. If you are installing on Mac OS X or Windows then installing these libraries is not required.
+
 The following instructions illustrate how to install *datapack* and its requirements.
 
 ### Installing on Mac OS X
 
-On Mac OS X, the required Redland C libraries can be installed with either [Mac Ports](https://www.macports.org) package manager
-or the [HomeBrew](http://brew.sh) package manager. The HomeBrew package manager can be significantly faster to install
-but either one will work provided the directions shown below are followed.
-
-You can check if you have MacPorts installed by entering the following command in a terminal window:
-
-```
-port version
-```
-
-If the *port* command is not found, then skip to the [Installing with HomeBrew](#homebrew) section.
-
-### Mac OS X install option 1: install using Macports
-If you are already using the MacPorts package manager, you can install *datapack* with the following commands, 
-otherwise, it is recommended that you skip to the next section [Installing with HomeBrew](#homebrew). 
-
-To install the *datapack* R package with MacPorts, enter this commands at a terminal window:
-```
-sudo port install redland
-```
-
-Then enter these commands in the R console:
-```
-install.packages("redland", type="source")
-install.packages("datapack")
-library(datapack)
-```
-
-Please note that the *install.packages* command specifies a "source" installation. Installing from
-source is only necessary if Macports is being used, and is not a requirement if Homebrew is used.
-
-The *datapack* R package should be available for use at this point
-
-### <a id="homebrew"></a> Mac OS X install option 2: install using HomeBrew
-
-On Mac OS X you can use the package management system [HomeBrew](http://brew.sh) to install the 
-necessary libraries. The HomeBrew software can be installed with the following command entered at a terminal window:
-
-```
-ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-```
-
-Once HomeBrew has been installed, you can then enter the following command in a terminal windows to install the Redland C libraries:
-
-```
-brew install redland
-```
-
-Next, install the *datapack* R package with these commands typed at the R console window:
+On Mac OS X datapack can be installed with the following commands:
 
 ```
 install.packages("datapack")
 library(datapack)
 ```
- 
-The *datapack* R package should be available for use at this point
+
+The *datapack* R package should be available for use at this point.
+
+Note: if you wish to build the required *redland* package from source before installing *datapack*, please see the redland [installation instructions]( https://github.com/ropensci/redland-bindings/tree/master/R/redland).
 
 ## Installing on Ubuntu
 
@@ -118,7 +74,7 @@ library(datapack)
 help("datapack")
 ```
 
-Create a DataPackage and add metadata and science data DataObjects to it:
+Create a DataPackage and add metadata and data DataObjects to it:
 
 ```
 library(datapack)
