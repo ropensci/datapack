@@ -66,8 +66,22 @@ test_that("XML SystemMetadata serialization works", {
     sysmeta <- parseSystemMetadata(sysmeta, xmlRoot(xml))
     expect_that(sysmeta@identifier, matches(testid))
     expect_that(sysmeta@archived, is_true())
+    # Check if the access policy is serialized grouped by subjects
+    sysmeta <- addAccessRule(sysmeta, "bob", "read")
+    sysmeta <- addAccessRule(sysmeta, "alice", "read")
+    sysmeta <- addAccessRule(sysmeta, "bob", "write")
+    sysmeta <- addAccessRule(sysmeta, "alice", "write")
+    # Add an existing rule, to ensure that rules aren't duplicated in the serialized sysmeta
+    sysmeta <- addAccessRule(sysmeta, "CN=Subject2,O=Google,C=US,DC=cilogon,DC=org", "write")
     xml <- serializeSystemMetadata(sysmeta)
+    # Compare the updated, serialized sysmeta with a reference
+    xmlRef <- xmlParseDoc("../testfiles/sysmeta-updated.xml", asText=FALSE)
+    sysmetaRef <- new("SystemMetadata")
+    sysmetaUpdated <- parseSystemMetadata(sysmetaRef, xmlRoot(xmlRef))
+    xmlRef <- serializeSystemMetadata(sysmetaUpdated)
+    expect_equal(xml, xmlRef)
     #cat(xml)
+    # Search for specific, expected items in the serialized sysmeta
     expect_that(xml, matches("<d1:systemMetadata"))
     expect_that(xml, matches("<blockedMemberNode>urn:node:BADNODE</blockedMemberNode>"))
     expect_that(xml, matches("<preferredMemberNode>urn:node:KNB</preferredMemberNode>"))
