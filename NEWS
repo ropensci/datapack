@@ -5,7 +5,11 @@ BUGS
 
 * Fixed bug where Roxygen example for serializePackage() was writing to the "/tmp" 
   directory
-
+  
+* Serializing system metadata to XML with serializeSystemMetadata() now gathers all
+  <permission> elements together for a <subject> so that the subject does not appear
+  under multiple <allow> elements.
+  
 Version 1.0.0
 -------------
 
