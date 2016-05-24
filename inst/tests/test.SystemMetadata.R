@@ -152,3 +152,11 @@ test_that("SystemMetadata accessPolicy can be constructed and changed", {
     expect_that(as.character(sysmeta@accessPolicy$subject[[4]]), matches("baz"))    
 })
 
+test_that("SystemMetadata accessPolicy can be cleared", {
+    sysmeta <- new("SystemMetadata")
+    sysmeta <- addAccessRule(sysmeta, "public", "read")
+    expect_true(nrow(sysmeta@accessPolicy) == 1)
+    
+    sysmeta <- clearAccessPolicy(sysmeta)
+    expect_true(nrow(sysmeta@accessPolicy) == 0)
+})
