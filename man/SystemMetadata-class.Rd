@@ -68,6 +68,7 @@ access policy, replication policy, and related metadata.
  \item{\code{\link{validate}}}{: Validate a SystemMetadata object}
  \item{\code{\link{addAccessRule}}}{: Add access rules to an object such as system metadata}
  \item{\code{\link{hasAccessRule}}}{: Determine if a particular access rules exists within SystemMetadata.}
+ \item{\code{\link{clearAccessPolicy}}}{: Clear the accessPolicy from the specified object.}
 }
 }
 \seealso{

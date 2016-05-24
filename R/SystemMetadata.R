@@ -56,6 +56,7 @@
 #'  \item{\code{\link{validate}}}{: Validate a SystemMetadata object}
 #'  \item{\code{\link{addAccessRule}}}{: Add access rules to an object such as system metadata}
 #'  \item{\code{\link{hasAccessRule}}}{: Determine if a particular access rules exists within SystemMetadata.}
+#'  \item{\code{\link{clearAccessPolicy}}}{: Clear the accessPolicy from the specified object.}
 #' }
 #' @seealso \code{\link{datapack}}
 #' @export
@@ -502,6 +503,29 @@ setGeneric("hasAccessRule", function(x, ...) {
 setMethod("hasAccessRule", signature("SystemMetadata"), function(x, subject, permission) {
     found <- any(grepl(subject, x@accessPolicy$subject) & grepl(permission, x@accessPolicy$permission))
     return(found)
+})
+
+#' @title Clear the accessPolicy from the specified object.
+#' @description Clears the accessPolicy from the specified object by overwriting
+#' all existing access rules set on the object with an empty set.
+#' @param x the instance to clear access rules from.
+#' @param ... (Additional parameters)
+#' @seealso \code{\link{SystemMetadata-class}}
+#' @export
+setGeneric("clearAccessPolicy", function(x, ...) {
+    standardGeneric("clearAccessPolicy")
+})
+#' @rdname clearAccessPolicy
+#' @return The SystemMetadata object with the cleared access policy.
+#' @examples 
+#' sysmeta <- new("SystemMetadata")
+#' sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
+#' sysmeta <- clearAccessPolicy(sysmeta)
+#' @export
+setMethod("clearAccessPolicy", signature("SystemMetadata"), function(x, ...) {
+    x@accessPolicy <- data.frame()
+    
+    return(x)
 })
 
 ########################################################################################
