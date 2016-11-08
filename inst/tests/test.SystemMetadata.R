@@ -35,6 +35,7 @@ test_that("XML SystemMetadata parsing works", {
   rm(xml)
   rm(doc)
   rm(csattrs)
+  
   # Parse v2.0 system metadata
   testid <- "0007f892-0d8f-4451-94e9-94d02ba5dd0d_0"
   sysmeta <- new("SystemMetadata")
@@ -53,6 +54,15 @@ test_that("XML SystemMetadata parsing works", {
   expect_equal(sysmeta@mediaType, "text/csv")
   expect_equal(sysmeta@fileName, "testData.csv")
   
+  # Parse v2.0 system metadata, checking parsing of replication policy
+  testid <- "0007f892-0d8f-4451-94e9-94d02ba5dd0d_0"
+  sysmeta <- new("SystemMetadata")
+  expect_that(sysmeta@serialVersion, equals(1))
+  doc <- xmlParseDoc("../testfiles/sysmeta-v2-repfalse.xml", asText=FALSE)
+  expect_that(xmlValue(xmlRoot(doc)[["identifier"]]), matches(testid))
+  xml <- xmlRoot(doc)
+  sysmeta <- parseSystemMetadata(sysmeta, xmlRoot(xml))
+  expect_false(sysmeta@replicationAllowed)
 })
 
 test_that("XML SystemMetadata serialization works", {

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<d1_v2.0:systemMetadata xmlns:d1_v2.0="http://ns.dataone.org/service/types/v2.0" xmlns:d1="http://ns.dataone.org/service/types/v1">
+  <seriesId>3</seriesId>
+  <mediaType>text/csv</mediaType>
+  <fileName>testData.csv</fileName>
+  <serialVersion>7</serialVersion>
+  <identifier>0007f892-0d8f-4451-94e9-94d02ba5dd0d_0</identifier>
+  <formatId>http://www.openarchives.org/ore/terms</formatId>
+  <size>2904</size>
+  <checksum algorithm="SHA-1">c27e3570c2f845d05302e1560ddbd848d1c18179</checksum>
+  <submitter>CN=Christopher Jones A2108,O=Google,C=US,DC=cilogon,DC=org</submitter>
+  <rightsHolder>CN=Christopher Jones A2108,O=Google,C=US,DC=cilogon,DC=org</rightsHolder>
+  <accessPolicy>
+    <allow>
+      <subject>public</subject>
+      <permission>read</permission>
+    </allow>
+  </accessPolicy>
+  <replicationPolicy replicationAllowed="false" numberReplicas="0"/>
+  <archived>false</archived>
+  <dateUploaded>2015-08-24T22:19:33.523+00:00</dateUploaded>
+  <dateSysMetadataModified>2015-08-25T14:54:44.593+00:00</dateSysMetadataModified>
+  <originMemberNode>urn:node:mnDevUNM1</originMemberNode>
+  <authoritativeMemberNode>urn:node:mnDevUNM1</authoritativeMemberNode>
+  <replica>
+    <replicaMemberNode>urn:node:mnDevUNM1</replicaMemberNode>
+    <replicationStatus>completed</replicationStatus>
+    <replicaVerified>2015-08-25T14:42:50.086+00:00</replicaVerified>
+  </replica>
+  <replica>
+    <replicaMemberNode>urn:node:cnDev2</replicaMemberNode>
+    <replicationStatus>completed</replicationStatus>
+    <replicaVerified>2015-08-25T14:42:50.199+00:00</replicaVerified>
+  </replica>
+  <replica>
+    <replicaMemberNode>urn:node:mnDevUCSB2</replicaMemberNode>
+    <replicationStatus>completed</replicationStatus>
+    <replicaVerified>2015-08-25T14:54:38.070+00:00</replicaVerified>
+  </replica>
+  <replica>
+    <replicaMemberNode>urn:node:mnDevUNM2</replicaMemberNode>
+    <replicationStatus>completed</replicationStatus>
+    <replicaVerified>2015-08-25T14:54:39.526+00:00</replicaVerified>
+  </replica>
+</d1_v2.0:systemMetadata>

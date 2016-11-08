@@ -265,9 +265,7 @@ setMethod("parseSystemMetadata", signature("SystemMetadata"), function(x, xml, .
   } else {
     rpattrs <- xmlAttrs(xml[["replicationPolicy"]])
     repAllowed <- grepl('true', rpattrs[["replicationAllowed"]], ignore.case=TRUE)
-  }
-  if (repAllowed) {
-    x@replicationAllowed = TRUE
+    x@replicationAllowed = repAllowed
     x@numberReplicas = as.numeric(rpattrs[["numberReplicas"]])
     pbMNList <- xmlChildren(xml[["replicationPolicy"]])
     for (pbNode in pbMNList) {
