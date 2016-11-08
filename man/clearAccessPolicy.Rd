@@ -20,7 +20,7 @@ The SystemMetadata object with the cleared access policy.
 }
 \description{
 Clears the accessPolicy from the specified object by overwriting
-all existing access rules set on the object.
+all existing access rules set on the object with an empty set.
 }
 \examples{
 sysmeta <- new("SystemMetadata")
