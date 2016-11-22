@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<d1_v2.0:systemMetadata xmlns:d1_v2.0="http://ns.dataone.org/service/types/v2.0" xmlns:d1="http://ns.dataone.org/service/types/v1">
+  <serialVersion>1</serialVersion>
+  <identifier>arctic-data.9794.1</identifier>
+  <formatId>text/csv</formatId>
+  <size>2944</size>
+  <checksum algorithm="MD5">1328389b7b5cf33727a9bb0aaadc76b7</checksum>
+  <submitter>http://orcid.org/0000-0001-9790-3510</submitter>
+  <rightsHolder>http://orcid.org/0000-0001-9790-3510</rightsHolder>
+  <accessPolicy>
+    <allow>
+      <subject>CN=arctic-data-admins,DC=dataone,DC=org</subject>
+      <permission>read</permission>
+      <permission>write</permission>
+      <permission>changePermission</permission>
+    </allow>
+    <allow>
+      <subject>http://orcid.org/0000-0001-9790-3510</subject>
+      <permission>read</permission>
+      <permission>write</permission>
+      <permission>changePermission</permission>
+    </allow>
+    <allow>
+      <subject>public</subject>
+      <permission>read</permission>
+    </allow>
+  </accessPolicy>
+  <replicationPolicy/>
+  <archived>false</archived>
+  <dateUploaded>2016-11-17T00:00:00.000+00:00</dateUploaded>
+  <dateSysMetadataModified>2016-11-16T22:07:24.685+00:00</dateSysMetadataModified>
+  <originMemberNode>urn:node:ARCTIC</originMemberNode>
+  <authoritativeMemberNode>urn:node:ARCTIC</authoritativeMemberNode>
+</d1_v2.0:systemMetadata>

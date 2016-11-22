@@ -260,13 +260,19 @@ setMethod("parseSystemMetadata", signature("SystemMetadata"), function(x, xml, .
   }
   repPolicy <- xml[["replicationPolicy"]]
   if (is.null(repPolicy)) {
-    repAllowed <- FALSE
-    x@replicationAllowed = FALSE
+    x@replicationAllowed <- FALSE
   } else {
     rpattrs <- xmlAttrs(xml[["replicationPolicy"]])
-    repAllowed <- grepl('true', rpattrs[["replicationAllowed"]], ignore.case=TRUE)
-    x@replicationAllowed = repAllowed
-    x@numberReplicas = as.numeric(rpattrs[["numberReplicas"]])
+    if (any(grepl('replicationAllowed', names(rpattrs), ignore.case=TRUE))) {
+        x@replicationAllowed <- grepl('true', rpattrs[["replicationAllowed"]], ignore.case=TRUE)
+    } else {
+        x@replicationAllowed <- FALSE
+    }
+    if (any(grepl('numberReplicas', names(rpattrs), ignore.case=TRUE))) {
+        x@numberReplicas <- as.numeric(rpattrs[["numberReplicas"]])
+    } else {
+        x@numberReplicas <- 0
+    }
     pbMNList <- xmlChildren(xml[["replicationPolicy"]])
     for (pbNode in pbMNList) {
       nodeName <- xmlName(pbNode)

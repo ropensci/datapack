@@ -63,6 +63,16 @@ test_that("XML SystemMetadata parsing works", {
   xml <- xmlRoot(doc)
   sysmeta <- parseSystemMetadata(sysmeta, xmlRoot(xml))
   expect_false(sysmeta@replicationAllowed)
+  
+  # Parse v2.0 system metadata, checking parsing when missing numReplicas
+  testid <- "arctic-data.9794.1"
+  sysmeta <- new("SystemMetadata")
+  expect_that(sysmeta@serialVersion, equals(1))
+  doc <- xmlParseDoc("../testfiles/sysmeta-v2-repfalse-zero-reps.xml", asText=FALSE)
+  expect_that(xmlValue(xmlRoot(doc)[["identifier"]]), matches(testid))
+  xml <- xmlRoot(doc)
+  sysmeta <- parseSystemMetadata(sysmeta, xmlRoot(xml))
+  expect_false(sysmeta@replicationAllowed)
 })
 
 test_that("XML SystemMetadata serialization works", {
