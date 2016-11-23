@@ -1,14 +1,20 @@
 ## Test environments
 
-* OS X 10.10.3, 10.10.5, R 3.2.4, R 3.3.0
-* Ubuntu 14.04, R 3.2.3, R 3.3.0
-* Windows 7, R 3.2.4, R 3.3.0
-* Windows (via win-builder): x86_64-w64-mingw32 (64-bit), R 3.3.0 and unstable (2016-05-18 r70631)
+* OS X 10.11.6, R 3.3.2, R 3.4.0
+* Ubuntu 14.04, R 3.3.2
+* Windows 7, R 3.3.2
+* Windows (via win-builder): x86_64-w64-mingw32 (64-bit), R 3.3.2 and R unstable (2016-11-22 r71678)
 
 ## Changes since last release
 
-* This patch release fixes a bug where a file was mistakenly created 
-  in the "/tmp" directory in example code.
+* This minor release fixes a bug where `replicationAllowed` was not set correctly when parsing if it is
+  false (#61)
+  
+* Also fixed a bug where `numberReplicas` was not set correctly when parsing (#63)
+
+NEW FEATURES
+
+* Added new function to reset access policies `clearAccessPolicy()` (#56)
 
 ## R CMD check results
 
@@ -22,4 +28,4 @@
 
 ## Downstream dependencies
 
-* There are currently no downstream dependencies for this package.
+* `dataone` is currently the only downstream dependency 
