@@ -118,7 +118,7 @@ setClass("SystemMetadata", slots = c(
 #' @param mediaType value of type \code{"character"}, the IANA Media Type (aka MIME-Type) of the object, e.g. "text/csv".
 #' @param fileName value of type \code{"character"}, a suggested file name for the object (if the object containing this sysmeta is serialized).
 #' @return the SystemMetadata instance representing an object
-#' @seealso \url{http://mule1.dataone.org/ArchitectureDocs-current/apis/Types.html#Types.SystemMetadata}
+#' @seealso \url{https://releases.dataone.org/online/api-documentation-v2.0/apis/Types.html}
 #' @seealso \code{\link{SystemMetadata-class}}
 #' @export
 #' 

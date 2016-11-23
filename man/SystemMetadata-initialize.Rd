@@ -76,7 +76,7 @@ needed to manage objects across repository systems. SystemMetadata contains basi
 access policy, replication policy, and related metadata.
 }
 \seealso{
-\url{http://mule1.dataone.org/ArchitectureDocs-current/apis/Types.html#Types.SystemMetadata}
+\url{https://releases.dataone.org/online/api-documentation-v2.0/apis/Types.html}
 
 \code{\link{SystemMetadata-class}}
 }
