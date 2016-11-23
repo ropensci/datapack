@@ -5,6 +5,7 @@ BUGS
 
 * Fixed bug where replicationAllowed was not set correctly when parsing if it is
   false (#61)
+* Fixed bug where numberReplicas was not set correctly when parsing (#63)
 
 NEW FEATURES
 
