@@ -364,3 +364,37 @@ test_that("BagIt serialization works", {
  expect_that(file.info(bagitFile)[['size']] > 0, is_true())
 
 }) 
+
+test_that("Adding provenance relationships to an execution workds", {
+    
+    library(dataone)
+    library(datapack)
+    dp <- new("DataPackage")
+    inIds <- list()
+    outIds <- list()
+    doProg <- new("DataObject", format="text/plain", 
+                  filename=system.file("./extdata/pkg-example/logit-regression-example.R", package="datapack"),
+                  suggestedFilename="logit regression example R script")
+    progId <- getIdentifier(doProg)
+    dp <- addData(dp, doProg)
+    doIn <- new("DataObject", format="text/csv", 
+                filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"),
+                suggestedFilename="binary response data")
+    inIds[[length(inIds)+1]] <- getIdentifier(doIn)
+    dp <- addData(dp, doIn)
+    doOut <- new("DataObject", format="image/png", 
+                 filename=system.file("./extdata/pkg-example/gre-predicted.png", package="datapack"),
+                 suggestedFilename="plot of gre predicted")
+    outIds[[length(outIds)+1]] <- getIdentifier(doOut)
+    dp <- addData(dp, doOut)
+    # Add the provenenace relationshps for the script execution
+    dp <- addRunProv(dp, progId, inIds, outIds)
+    
+    # Test if the data frame with retrieved relationships was constructed correctly
+    relations <- getRelationships(dp, quiet=quietOn)
+    expect_that(relations[relations$subject == progId, 'predicate'], matches("rdf-syntax-ns#type"))
+    expect_that(relations[relations$subject == progId, 'object'], matches("ontology#Program"))
+    expect_match(relations[relations$subject == getIdentifier(doIn),'object'], 'Data')
+    expect_gt(nrow(relations[relations$subject == getIdentifier(doIn),]), 0)
+    expect_gt(nrow(relations[relations$subject == getIdentifier(doOut),]), 0)
+})

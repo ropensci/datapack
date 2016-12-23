@@ -31,6 +31,7 @@ BugReports: https://github.com/ropensci/datapack/issues
 LazyData: true
 VignetteBuilder: knitr
 Collate:
+    'Constants.R'
     'SystemMetadata.R'
     'dmsg.R'
     'DataObject.R'
