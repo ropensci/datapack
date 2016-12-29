@@ -851,17 +851,17 @@ setMethod("addRunProv", signature("DataPackage"), function(x, scriptId, inIds=li
     D1_URL <- sprintf("%s/%s", resolveURI, URLencode(planId, reserved=T))
     # Qualified association
     # Subject id of NA will cause a random blank node identifier to be produced
-    dp <- insertRelationship(dp, subjectID=executionIdURL, objectIDs=associationId, predicate=provQualifiedAssociation, objectTypes="blank")
+    x <- insertRelationship(x, subjectID=executionIdURL, objectIDs=associationId, predicate=provQualifiedAssociation, objectTypes="blank")
     # Execution rdf type
-    dp <- insertRelationship(dp, subjectID=executionIdURL, objectIDs=provONEexecution, predicate=rdfType, objectTypes="uri")
+    x <- insertRelationship(x, subjectID=executionIdURL, objectIDs=provONEexecution, predicate=rdfType, objectTypes="uri")
     # prov:hadPlan
-    dp <- insertRelationship(dp, subjectID=associationId, objectIDs=planId, predicate=provHadPlan, subjectType="blank", objectTypes="uri")
+    x <- insertRelationship(x, subjectID=associationId, objectIDs=planId, predicate=provHadPlan, subjectType="blank", objectTypes="uri")
     # prov rdf type declaration for association
-    dp <- insertRelationship(dp, subjectID=associationId, objectIDs=provAssociation, predicate=rdfType, subjectType="blank", objectTypes="uri")
+    x <- insertRelationship(x, subjectID=associationId, objectIDs=provAssociation, predicate=rdfType, subjectType="blank", objectTypes="uri")
     # prov rdf type declaration for program
-    dp <- insertRelationship(dp, subjectID=planId, objectIDs=provONEprogram, predicate=rdfType, objectType="uri") 
+    x <- insertRelationship(x, subjectID=planId, objectIDs=provONEprogram, predicate=rdfType, objectType="uri") 
     # The dataone::uploadDataPackage() method will create a dcterms:indentifier for every object that is in the DataPackage. Because executions
-    dp <- insertRelationship(dp, subjectID=executionIdURL, objectIDs=executionId, predicate=DCidentifier, objectTypes="literal", dataTypeURIs=xsdStringURI)
+    x <- insertRelationship(x, subjectID=executionIdURL, objectIDs=executionId, predicate=DCidentifier, objectTypes="literal", dataTypeURIs=xsdStringURI)
     
     inputIds <- list()
     outputIds <- list()
@@ -872,9 +872,9 @@ setMethod("addRunProv", signature("DataPackage"), function(x, scriptId, inIds=li
             D1_URL <- sprintf("%s/%s", resolveURI, URLencode(thisPid, reserved=T))
             inputIds[[length(inputIds)+1]] <- thisPid
             # Record prov:used relationship between the input dataset and the execution
-            dp <- insertRelationship(dp, subjectID=executionIdURL, objectIDs=thisPid, predicate=provUsed)
+            x <- insertRelationship(x, subjectID=executionIdURL, objectIDs=thisPid, predicate=provUsed)
             # Record relationship identifying this dataset as a provone:Data
-            dp <- insertRelationship(dp, subjectID=thisPid, objectIDs=provONEdata, predicate=rdfType, objectTypes="uri")
+            x <- insertRelationship(x, subjectID=thisPid, objectIDs=provONEdata, predicate=rdfType, objectTypes="uri")
         }
     }
     
@@ -885,9 +885,9 @@ setMethod("addRunProv", signature("DataPackage"), function(x, scriptId, inIds=li
             D1_URL <- sprintf("%s/%s", resolveURI, URLencode(thisPid, reserved=T))
             outputIds[[length(outputIds)+1]] <- thisPid
             # Record prov:wasGeneratedBy relationship between the output dataset and the execution
-            dp <- insertRelationship(dp, subjectID=thisPid, objectIDs=executionIdURL, predicate=provWasGeneratedBy)
+            x <- insertRelationship(x, subjectID=thisPid, objectIDs=executionIdURL, predicate=provWasGeneratedBy)
             # Record relationship identifying this dataset as a provone:Data
-            dp <- insertRelationship(dp, subjectID=thisPid, objectIDs=provONEdata, predicate=rdfType, objectTypes="uri")
+            x <- insertRelationship(x, subjectID=thisPid, objectIDs=provONEdata, predicate=rdfType, objectTypes="uri")
         }
     }
     
@@ -899,10 +899,10 @@ setMethod("addRunProv", signature("DataPackage"), function(x, scriptId, inIds=li
             for (iInput in 1:length(inputIds)) {
                 outputId <- outputIds[[iOutput]]
                 inputId <- inputIds[[iInput]]
-                dp <- insertRelationship(dp, subjectID=outputId, objectIDs=inputId, predicate=provWasDerivedFrom)
+                x <- insertRelationship(x, subjectID=outputId, objectIDs=inputId, predicate=provWasDerivedFrom)
             }
         }
     }
-    return(dp)
+    return(x)
 })
 
