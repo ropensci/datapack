@@ -11,6 +11,8 @@ NEW FEATURES
 
 * Added new function to reset access policies `clearAccessPolicy()` (#56)
 
+* Added new function `addRunProv` to add run provenance relationships to a DataPackage (#64)
+
 Version 1.0.1
 -------------
 
