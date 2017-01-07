@@ -365,7 +365,7 @@ test_that("BagIt serialization works", {
 
 }) 
 
-test_that("Adding provenance relationships to an execution workds", {
+test_that("Adding provenance relationships to an execution works", {
     
     library(dataone)
     library(datapack)
