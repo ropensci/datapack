@@ -35,7 +35,7 @@ uploaded to a data repository or archived.
  \item{\code{\link{getMember}}}{: Return the Package Member by Identifier}
  \item{\code{\link{serializePackage}}}{: Create an OAI-ORE resource map from the package}
  \item{\code{\link{serializeToBagIt}}}{: Serialize A DataPackage into a BagIt Archive File}
- \item{\code{\link{addRunProv}}}{: Add provenance relationships to a DataPackage for a script execution.}
+ \item{\code{\link{insertDerivation}}}{: Add provenance relationships to a DataPackage for an R script.}
 }
 }
 \seealso{
