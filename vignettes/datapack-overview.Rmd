@@ -116,9 +116,9 @@ csvfile <- system.file("extdata/sample-data.csv", package="datapack")
 sciId <- "sciId1"
 sciObj <- new("DataObject", id=sciId, format="text/csv", filename=csvfile)
 
-data <- charToRaw("1,2,3\n4,5,6\n")
+outFile <- system.file("extdata/sample-data-filtered.csv", package="datapack")
 sciId2 <- "sciId2"
-sciObj2 <- new("DataObject", id=sciId2, data, format="text/csv")
+sciObj2 <- new("DataObject", id=sciId2, filename=outFile, format="text/csv")
 ```
 
 The identifier values used in this example are simple and easily recognizable for demonstraction
@@ -163,6 +163,9 @@ mySciObj <- getMember(dp, sciId)
 Relationships between DataObjects in a DataPackage can be recorded in the DataPackage. For example, 
 a typical relationship is that a DataObject containing metadata
 can describe, or document, DataObjects containing science data. 
+
+Adding relationship information about data package members may assist a consumer of the package
+in better understanding the contents of the package and how to make use of the package.
 
 Relationships between DataPackage member 
 DataObjects can be recorded with the *insertRelationship* method. This relationship between metadata
@@ -209,6 +212,45 @@ dp <- insertRelationship(dp, subjectID=sciId2, objectIDs=sciId,
 
 The relationships contained in a DataPackage conform to the [Resource Description Framework](https://www.w3.org/RDF/) (RDF), which is a [World Wide Web Consortium](https://www.w3.org/)
 standard for describing web accessible resources.
+
+## Data Provenance Relationships Between Objects
+
+Relationship that describe the processing history of package members can be added. For example,
+a program that performs a modeling calculation might read one or more input data files, perform 
+a calculation based on the data read, then write a data or graphics file characterizing the results
+of the model run. 
+
+The `datapack` package uses the [ProvONE](https://purl.dataone.org/provone-v1-devo) data model to represent provenance relationships.
+
+The following example demonstrates how to insert provenance relationships into a DataPackage
+for the R program `logit-regression.R` that read the data file `binary.csv` and 
+generates the image file `gre-predicted.png`. Using the example DataPackage for which 
+DataObjects for the program input and output have already been added, we create a 
+DataObject for the program, and call `insertDerivation` to add the necessary provenance
+relationships:
+
+```{r}
+dp <- new("DataPackage")
+progObj <- new("DataObject", format="application/R", 
+               filename=system.file("extdata/pkg-example/logit-regression-example.R", package="datapack"))
+dp <- addData(dp, progObj)
+
+doIn <- new("DataObject", format="text/csv", 
+             filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"),
+             suggestedFilename="binary.csv")
+dp <- addData(dp, doIn)
+
+doOut <- new("DataObject", format="image/png", 
+             filename=system.file("./extdata/pkg-example/gre-predicted.png", package="datapack"),
+             suggestedFilename="gre-predicted.png")
+dp <- addData(dp, doOut)
+
+# The arguments "sources" and "derivations" can also contain lists of "DataObjects"
+dp <- insertDerivation(dp, sources=doIn, program=progObj, derivations=doOut)
+```
+
+Note that in this example, the R script had previously been run and generated the image
+file before `insertDerivation()` is called.
 
 ## Describing The Contents of a DataPackage 
 

@@ -13,7 +13,7 @@ library(Rcpp)
 # We have generated hypothetical data, which can be obtained from our website from within R. 
 # Note that R requires forward slashes (/) not back slashes (\) when specifying a file location even if the file is on your hard drive.
 
-mydata <- read.csv(system.file("./extdata/pkg-example/binary.csv"))
+mydata <- read.csv(system.file("./extdata/pkg-example/binary.csv", package="datapack"))
 
 mydata$rank <- factor(mydata$rank)
 mylogit <- glm(admit ~ gre + gpa + rank, data = mydata, family = "binomial")
