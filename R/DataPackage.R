@@ -820,6 +820,9 @@ setMethod("insertDerivation", signature("DataPackage"), function(x, sources=list
     # DataObject or character (for DataObject id). Build a list of member ids for
     # use later.
     inIds <- list()
+    # Special case, if the user passed in a single DataObject for inputs, stick it in 
+    # a list.
+    if(class(sources) == "DataObject") sources <- list(sources)
     if(length(sources) > 0) {
         for (isrc in 1:length(sources)) {
             obj <- sources[[isrc]]
@@ -835,6 +838,9 @@ setMethod("insertDerivation", signature("DataPackage"), function(x, sources=list
     # Check each "derivation" list member and check if it is the correct type, either
     # DataObject or character (for DataObject id). Build a list of member ids for use
     # later.
+    # Special case, if the user passed in a single DataObject for inputs, stick it in 
+    # a list.
+    if(class(derivations) == "DataObject") derivations <- list(derivations)
     outIds <- list()
     if(length(derivations) > 0) {
         for (idst in 1:length(derivations)) {
