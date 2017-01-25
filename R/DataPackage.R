@@ -817,9 +817,26 @@ setMethod("insertDerivation", signature("DataPackage"), function(x, sources=list
     # DataObject or character (for DataObject id). Build a list of member ids for
     # use later.
     inIds <- list()
-    # Special case, if the user passed in a single DataObject for inputs, stick it in 
-    # a list.
+    # Special case, if the user passed in a single DataObject for sources or derivations,
+    # convert it to a list to facilitate easier processing in tests below.
     if(class(sources) == "DataObject") sources <- list(sources)
+    if(class(derivations) == "DataObject") derivations <- list(derivations)
+    
+    # Warn user if they haven't provided enough info to insert any prov relationships
+    if(missing(program)) {
+        if(length(sources) == 0) {
+            stop("Both arguments \"program\" and \"sources\" are missing.")
+        }
+        if(length(derivations) == 0) {
+            stop("Both arguments \"program\" and \"derivations\" are missing.")
+        }
+    } else {
+        # Program was specified, but no inputs, outputs
+        if(length(sources) == 0 && length(derivations) == 0) {
+            stop("Argument \"program\" is specified, but both \"sources\" and \"derivations\" are missing.")
+        }
+    }
+    
     if(length(sources) > 0) {
         for (isrc in 1:length(sources)) {
             obj <- sources[[isrc]]
@@ -837,7 +854,6 @@ setMethod("insertDerivation", signature("DataPackage"), function(x, sources=list
     # later.
     # Special case, if the user passed in a single DataObject for inputs, stick it in 
     # a list.
-    if(class(derivations) == "DataObject") derivations <- list(derivations)
     outIds <- list()
     if(length(derivations) > 0) {
         for (idst in 1:length(derivations)) {
