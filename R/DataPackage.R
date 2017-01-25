@@ -769,7 +769,7 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=as.cha
 #' it used and the files that it generated.
 #' @details This method operates on a DataPackage that has had DataObjects for the script, inputs and outputs
 #' previously added to it. Provenance relationships from the ProvONE data model are added to the package. The
-#' ProvONE data model can be viewed at \url{https://purl.dataone.org/provone-v1-dev}
+#' ProvONE data model can be viewed at \url{https://purl.dataone.org/provone-v1-dev}.
 #' @param x The \code{DataPackage} to add provenance relationships to.
 #' @param ... Additional parameters
 setGeneric("insertDerivation", function(x, ...) {
