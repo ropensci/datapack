@@ -786,7 +786,6 @@ setGeneric("insertDerivation", function(x, ...) {
 #' @import utils
 #' @export
 #' @examples
-#' library(dataone)
 #' library(datapack)
 #' dp <- new("DataPackage")
 #' inputs <- list()
