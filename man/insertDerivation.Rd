@@ -9,10 +9,12 @@
 insertDerivation(x, ...)
 
 \S4method{insertDerivation}{DataPackage}(x, sources = list(),
-  program = as.character(NA), derivations = list())
+  program = as.character(NA), derivations = list(), ...)
 }
 \arguments{
 \item{x}{The \code{DataPackage} to add provenance relationships to.}
+
+\item{...}{Additional parameters}
 
 \item{sources}{A list of DataObjects for files that were read by the program. Alternatively, a list 
 of DataObject identifiers can be specified.}

@@ -815,7 +815,7 @@ setGeneric("insertDerivation", function(x, ...) {
 #' head(getRelationships(dp))
 setMethod("insertDerivation", signature("DataPackage"), function(x, sources=list(), 
                                                                   program=as.character(NA), 
-                                                                  derivations=list()) {
+                                                                  derivations=list(), ...) {
     
     # Check each "source" list member and check if it is the correct type, either
     # DataObject or character (for DataObject id). Build a list of member ids for
