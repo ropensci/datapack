@@ -369,19 +369,24 @@ test_that("Adding provenance relationships to a DataPackage via insertDerivation
     
     library(dataone)
     library(datapack)
+    # 
+    # Test insertDerivation using DataObject ids
     dp <- new("DataPackage")
     inIds <- list()
     outIds <- list()
+    # Add the program object to the package
     doProg <- new("DataObject", format="application/R", 
                   filename=system.file("./extdata/pkg-example/logit-regression-example.R", package="datapack"),
                   suggestedFilename="logit-regression-example.R")
     progId <- getIdentifier(doProg)
     dp <- addData(dp, doProg)
+    # Add the input object to the package
     doIn <- new("DataObject", format="text/csv", 
                 filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"),
                 suggestedFilename="binary.csv")
     inIds[[length(inIds)+1]] <- getIdentifier(doIn)
     dp <- addData(dp, doIn)
+    # Add the output object to the package
     doOut <- new("DataObject", format="image/png", 
                  filename=system.file("./extdata/pkg-example/gre-predicted.png", package="datapack"),
                  suggestedFilename="gre-predicted.png")
@@ -389,15 +394,18 @@ test_that("Adding provenance relationships to a DataPackage via insertDerivation
     dp <- addData(dp, doOut)
     # Add the provenenace relationships for the script execution, using ids for 'sources, program, derivation' arguments
     dp <- insertDerivation(dp, sources=inIds, program=progId, derivations=outIds)
-    
     # Test if the data frame with retrieved relationships was constructed correctly
     relations <- getRelationships(dp, quiet=quietOn)
-    expect_that(relations[relations$subject == progId, 'predicate'], matches("rdf-syntax-ns#type"))
-    expect_that(relations[relations$subject == progId, 'object'], matches("ontology#Program"))
-    expect_match(relations[relations$subject == getIdentifier(doIn),'object'], 'Data')
-    expect_gt(nrow(relations[relations$subject == getIdentifier(doIn),]), 0)
-    expect_gt(nrow(relations[relations$subject == getIdentifier(doOut),]), 0)
-    
+    execId <- relations[relations$object == datapack:::provONEexecution,'subject']
+    expect_match(relations[relations$predicate == datapack:::provWasGeneratedBy,'subject'], getIdentifier(doOut))
+    expect_match(relations[relations$predicate == datapack:::provUsed,'object'], getIdentifier(doIn))
+    expect_match(relations[relations$predicate == datapack:::provWasGeneratedBy,'object'], execId)
+    expect_match(relations[relations$predicate == datapack:::provUsed,'subject'], execId)
+    expect_match(relations[relations$predicate == datapack:::provHadPlan,'object'], progId)
+    expect_match(relations[relations$predicate == datapack:::provWasDerivedFrom,'subject'], getIdentifier(doOut))
+    expect_match(relations[relations$predicate == datapack:::provWasDerivedFrom,'object'], getIdentifier(doIn))
+   
+    # 
     # Now do the same test passing DataObjects to insertDerivation
     rm(dp)
     dp <- new("DataPackage")
@@ -407,6 +415,7 @@ test_that("Adding provenance relationships to a DataPackage via insertDerivation
                   filename=system.file("./extdata/pkg-example/logit-regression-example.R", package="datapack"),
                   suggestedFilename="logit-regression-example R script")
     dp <- addData(dp, doProg)
+    progId <- getIdentifier(doProg)
     doIn <- new("DataObject", format="text/csv", 
                 filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"),
                 suggestedFilename="binary.csv")
@@ -417,17 +426,18 @@ test_that("Adding provenance relationships to a DataPackage via insertDerivation
                  suggestedFilename="gre-predicted.png")
     dp <- addData(dp, doOut)
     outputs[[length(outputs)+1]] <- doOut
-    # Add the provenenace relationships for the script execution, using DataObjects for 'sources, program, derivations' arguments
     dp <- insertDerivation(dp, sources=inputs, program=doProg, derivations=outputs)
-    
-    # Test if the data frame with retrieved relationships was constructed correctly
     relations <- getRelationships(dp, quiet=quietOn)
-    expect_that(relations[relations$subject == getIdentifier(doProg), 'predicate'], matches("rdf-syntax-ns#type"))
-    expect_that(relations[relations$subject == getIdentifier(doProg), 'object'], matches("ontology#Program"))
-    expect_match(relations[relations$subject == getIdentifier(doIn),'object'], 'Data')
-    expect_gt(nrow(relations[relations$subject == getIdentifier(doIn),]), 0)
-    expect_gt(nrow(relations[relations$subject == getIdentifier(doOut),]), 0)
+    execId <- relations[relations$object == datapack:::provONEexecution,'subject']
+    expect_match(relations[relations$predicate == datapack:::provWasGeneratedBy,'subject'], getIdentifier(doOut))
+    expect_match(relations[relations$predicate == datapack:::provUsed,'object'], getIdentifier(doIn))
+    expect_match(relations[relations$predicate == datapack:::provWasGeneratedBy,'object'], execId)
+    expect_match(relations[relations$predicate == datapack:::provUsed,'subject'], execId)
+    expect_match(relations[relations$predicate == datapack:::provHadPlan,'object'], progId) 
+    expect_match(relations[relations$predicate == datapack:::provWasDerivedFrom,'subject'], getIdentifier(doOut))
+    expect_match(relations[relations$predicate == datapack:::provWasDerivedFrom,'object'], getIdentifier(doIn))
     
+    #
     # Now do the same test without the R script, so that only 'prov:wasDerivedFrom' between inputs
     # and outputs will be inserted.
     rm(dp)
@@ -444,12 +454,69 @@ test_that("Adding provenance relationships to a DataPackage via insertDerivation
                  suggestedFilename="gre-predicted.png")
     dp <- addData(dp, doOut)
     outputs[[length(outputs)+1]] <- doOut
-    # Add the provenenace relationships for the script execution, using DataObjects for 'sources, program, derivations' arguments
     dp <- insertDerivation(dp, sources=inputs, derivations=outputs)
+    relations <- getRelationships(dp, quiet=quietOn)
+    expect_match(relations[relations$predicate == datapack:::provWasDerivedFrom,'subject'], getIdentifier(doOut))
+    expect_match(relations[relations$predicate == datapack:::provWasDerivedFrom,'object'], getIdentifier(doIn))
     
-    # Test if the data frame with retrieved relationships was constructed correctly
+    #
+    # Now do the same test without the inputs so that 'prov:used' are not inserted, but other
+    # relationships are.
+    rm(dp)
+    dp <- new("DataPackage")
+    inputs <- list()
+    outputs <- list()
+    doProg <- new("DataObject", format="application/R", 
+                  filename=system.file("./extdata/pkg-example/logit-regression-example.R", package="datapack"),
+                  suggestedFilename="logit-regression-example R script")
+    dp <- addData(dp, doProg)
+    progId <- getIdentifier(doProg)
+    doOut <- new("DataObject", format="image/png", 
+                 filename=system.file("./extdata/pkg-example/gre-predicted.png", package="datapack"),
+                 suggestedFilename="gre-predicted.png")
+    dp <- addData(dp, doOut)
+    outputs[[length(outputs)+1]] <- doOut
+    dp <- insertDerivation(dp, program=doProg, derivations=outputs)
+    relations <- getRelationships(dp, quiet=quietOn)
+    execId <- relations[relations$object == datapack:::provONEexecution,'subject']
+    expect_match(relations[relations$predicate == datapack:::provWasGeneratedBy,'subject'], getIdentifier(doOut))
+    expect_match(relations[relations$predicate == datapack:::provWasGeneratedBy,'object'], execId)
+    expect_match(relations[relations$predicate == datapack:::provHadPlan,'object'], progId) 
+    
+    #
+    # Now do the same test without the outputs so that 'prov:generqtedBy' are not inserted, but other
+    # relationships are.
+    rm(dp)
+    dp <- new("DataPackage")
+    inputs <- list()
+    doProg <- new("DataObject", format="application/R", 
+                  filename=system.file("./extdata/pkg-example/logit-regression-example.R", package="datapack"),
+                  suggestedFilename="logit-regression-example R script")
+    dp <- addData(dp, doProg)
+    progId <- getIdentifier(doProg)
+
+    doIn <- new("DataObject", format="text/csv", 
+                filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"),
+                suggestedFilename="binary.csv")
+    dp <- addData(dp, doIn)
+    inputs[[length(inputs)+1]] <- doIn
+    dp <- insertDerivation(dp, sources=inputs, program=doProg)
     relations <- getRelationships(dp, quiet=quietOn)
     expect_match(relations[relations$subject == getIdentifier(doIn),'object'], 'Data')
-    expect_gt(nrow(relations[relations$subject == getIdentifier(doIn),]), 0)
-    expect_gt(nrow(relations[relations$subject == getIdentifier(doOut),]), 0)
+    execId <- relations[relations$object == datapack:::provONEexecution,'subject']
+    expect_match(relations[relations$predicate == datapack:::provUsed,'object'], getIdentifier(doIn))
+    expect_match(relations[relations$predicate == datapack:::provUsed,'subject'], execId)
+    expect_match(relations[relations$predicate == datapack:::provHadPlan,'object'], progId) 
+    
+    # 
+    # Test if passing only inputs fails
+    err <- try(dp <- insertDerivation(dp, sources=inputs), silent=TRUE)
+    expect_that(class(err), matches("try-error"))
+    # Test if passing only outputs fails
+    err <- try(dp <- insertDerivation(dp, derivations=outputs), silent=TRUE)
+    expect_that(class(err), matches("try-error"))
+    # Test if passing only program fails
+    err <- try(dp <- insertDerivation(dp, program=doProg), silent=TRUE)
+    expect_that(class(err), matches("try-error"))
+    
 })
