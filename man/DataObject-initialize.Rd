@@ -10,7 +10,7 @@
   dataobj = NA, format = as.character(NA), user = as.character(NA),
   mnNodeId = as.character(NA), filename = as.character(NA),
   seriesId = as.character(NA), mediaType = as.character(NA),
-  suggestedFilename = as.character(NA))
+  suggestedFilename = as.character(NA), mediaTypeProperty = list())
 }
 \arguments{
 \item{.Object}{the DataObject instance to be initialized}
@@ -32,6 +32,8 @@
 \item{mediaType}{The When specified, indicates the IANA Media Type (aka MIME-Type) of the object. The value should include the media type and subtype (e.g. text/csv).}
 
 \item{suggestedFilename}{A suggested filename to use when this object is serialized. If not specified, defaults to the basename of the filename parameter.}
+
+\item{mediaTypeProperty}{A list, indicates IANA Media Type properties to be associated with the parameter \code{"mediaType"}}
 }
 \description{
 When initializing a DataObject using passed in data, one can either pass 

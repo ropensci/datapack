@@ -57,6 +57,8 @@ access policy, replication policy, and related metadata.
 \item{\code{mediaType}}{value of type \code{"character"}, the IANA Media Type (aka MIME-Type) of the object, e.g. "text/csv".}
 
 \item{\code{fileName}}{value of type \code{"character"}, a suggested file name for the object.}
+
+\item{\code{mediaTypeProperty}}{value of type a \code{"list"} of \code{"character"}, IANA Media Type properties for the \code{"mediaType"} argument}
 }}
 \section{Methods}{
 

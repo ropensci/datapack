@@ -51,8 +51,8 @@ test_that("XML SystemMetadata parsing works", {
   csattrs <- xmlAttrs(xml[["checksum"]])
   expect_that(sysmeta@checksumAlgorithm, matches(csattrs[[1]]))
   expect_equal(sysmeta@seriesId, "3")
-  expect_equal(sysmeta@mediaType, "text/csv")
-  expect_equal(sysmeta@fileName, "testData.csv")
+  expect_equal(sysmeta@mediaType, "application/rdf+xml")
+  expect_equal(sysmeta@fileName, "testresmap.rdf")
   
   # Parse v2.0 system metadata, checking parsing of replication policy
   testid <- "0007f892-0d8f-4451-94e9-94d02ba5dd0d_0"

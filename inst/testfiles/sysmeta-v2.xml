@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <d1_v2.0:systemMetadata xmlns:d1_v2.0="http://ns.dataone.org/service/types/v2.0" xmlns:d1="http://ns.dataone.org/service/types/v1">
   <seriesId>3</seriesId>
-  <mediaType>text/csv</mediaType>
-  <fileName>testData.csv</fileName>
+  <mediaType name="application/rdf+xml"></mediaType>
+  <fileName>testresmap.rdf</fileName>
   <serialVersion>7</serialVersion>
   <identifier>0007f892-0d8f-4451-94e9-94d02ba5dd0d_0</identifier>
   <formatId>http://www.openarchives.org/ore/terms</formatId>

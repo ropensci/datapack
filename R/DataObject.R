@@ -110,6 +110,7 @@ setClass("DataObject", slots = c(
 #' @param seriesId A unique string to identifier the latest of multiple revisions of the object.
 #' @param mediaType The When specified, indicates the IANA Media Type (aka MIME-Type) of the object. The value should include the media type and subtype (e.g. text/csv).
 #' @param suggestedFilename A suggested filename to use when this object is serialized. If not specified, defaults to the basename of the filename parameter.
+#' @param mediaTypeProperty A list, indicates IANA Media Type properties to be associated with the parameter \code{"mediaType"}
 #' @import digest
 #' @examples
 #' data <- charToRaw("1,2,3\n4,5,6\n")
@@ -118,7 +119,7 @@ setClass("DataObject", slots = c(
 #' @seealso \code{\link{DataObject-class}}
 setMethod("initialize", "DataObject", function(.Object, id=as.character(NA), dataobj=NA, format=as.character(NA), user=as.character(NA), 
                                                mnNodeId=as.character(NA), filename=as.character(NA), seriesId=as.character(NA),
-                                               mediaType=as.character(NA), suggestedFilename=as.character(NA)) {
+                                               mediaType=as.character(NA), suggestedFilename=as.character(NA), mediaTypeProperty=list()) {
   
     # If no value has been passed in for 'id', then create a UUID for it.
     if (class(id) != "SystemMetadata" && is.na(id)) {
@@ -163,7 +164,8 @@ setMethod("initialize", "DataObject", function(.Object, id=as.character(NA), dat
         # to serialze to v1 format which does not include seriesId, mediaType, fileName.
         .Object@sysmeta <- new("SystemMetadata", identifier=id, formatId=format, size=size, submitter=user, rightsHolder=user, 
                                checksum=sha1, originMemberNode=mnNodeId, authoritativeMemberNode=mnNodeId, 
-                               seriesId=seriesId, mediaType=mediaType, fileName=suggestedFilename)
+                               seriesId=seriesId, mediaType=mediaType, fileName=suggestedFilename, 
+                               mediaTypeProperty=mediaTypeProperty)
         if (!is.na(dataobj[[1]])) { 
             .Object@data <- dataobj
         }

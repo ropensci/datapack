@@ -18,7 +18,8 @@
   originMemberNode = as.character(NA),
   authoritativeMemberNode = as.character(NA), preferredNodes = list(),
   blockedNodes = list(), seriesId = as.character(NA),
-  mediaType = as.character(NA), fileName = as.character(NA))
+  mediaType = as.character(NA), fileName = as.character(NA),
+  mediaTypeProperty = list())
 }
 \arguments{
 \item{.Object}{The object being initialized}
@@ -66,6 +67,8 @@
 \item{mediaType}{value of type \code{"character"}, the IANA Media Type (aka MIME-Type) of the object, e.g. "text/csv".}
 
 \item{fileName}{value of type \code{"character"}, a suggested file name for the object (if the object containing this sysmeta is serialized).}
+
+\item{mediaTypeProperty}{value of type a \code{"list"} of \code{"character"}, IANA Media Type properties for the \code{"mediaType"} argument}
 }
 \value{
 the SystemMetadata instance representing an object

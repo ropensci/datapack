@@ -771,6 +771,7 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=as.cha
 #' previously added to it. Provenance relationships from the ProvONE data model are added to the package. The
 #' ProvONE data model can be viewed at \url{https://purl.dataone.org/provone-v1-dev}
 #' @param x The \code{DataPackage} to add provenance relationships to.
+#' @param ... Additional parameters
 setGeneric("insertDerivation", function(x, ...) {
     standardGeneric("insertDerivation")
 })
@@ -792,7 +793,8 @@ setGeneric("insertDerivation", function(x, ...) {
 #' outputs <- list()
 #' # Add the script to the DataPackage
 #' progObj <- new("DataObject", format="application/R", 
-#'               filename=system.file("./extdata/pkg-example/logit-regression-example.R", package="datapack"), 
+#'               filename=system.file("./extdata/pkg-example/logit-regression-example.R", 
+#'               package="datapack"), 
 #'               suggestedFilename="logit-regression-example.R")
 #' dp <- addData(dp, progObj)
 #' # Add a script input to the DataPackage

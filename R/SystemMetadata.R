@@ -47,6 +47,7 @@
 #' @slot seriesId value of type \code{"character"}, a unique Unicode string that identifies an object revision chain. A seriesId will resolve to the latest version of an object.
 #' @slot mediaType value of type \code{"character"}, the IANA Media Type (aka MIME-Type) of the object, e.g. "text/csv".
 #' @slot fileName value of type \code{"character"}, a suggested file name for the object.
+#' @slot mediaTypeProperty value of type a \code{"list"} of \code{"character"}, IANA Media Type properties for the \code{"mediaType"} argument
 #' @section Methods:
 #' \itemize{
 #'  \item{\code{\link[=SystemMetadata-initialize]{initialize}}}{: Initialize a DataONE SystemMetadata object with default values or values passed in to the constructor object}
@@ -83,7 +84,8 @@ setClass("SystemMetadata", slots = c(
     authoritativeMemberNode = "character",
     seriesId                = "character",
     mediaType               = "character",
-    fileName                = "character"
+    fileName                = "character",
+    mediaTypeProperty       = "list"
     #replica                 = "character",
     ))
 
@@ -117,6 +119,7 @@ setClass("SystemMetadata", slots = c(
 #' @param seriesId value of type \code{"character"}, a unique Unicode string that identifies an object revision chain. A seriesId will resolve to the latest version of an object.
 #' @param mediaType value of type \code{"character"}, the IANA Media Type (aka MIME-Type) of the object, e.g. "text/csv".
 #' @param fileName value of type \code{"character"}, a suggested file name for the object (if the object containing this sysmeta is serialized).
+#' @param mediaTypeProperty value of type a \code{"list"} of \code{"character"}, IANA Media Type properties for the \code{"mediaType"} argument
 #' @return the SystemMetadata instance representing an object
 #' @seealso \url{https://releases.dataone.org/online/api-documentation-v2.0/apis/Types.html}
 #' @seealso \code{\link{SystemMetadata-class}}
@@ -128,7 +131,7 @@ setMethod("initialize", signature = "SystemMetadata", definition = function(.Obj
     replicationAllowed=TRUE, numberReplicas=3, obsoletes=as.character(NA), obsoletedBy=as.character(NA), archived=FALSE, 
     dateUploaded=as.character(NA), dateSysMetadataModified=as.character(NA), 
     originMemberNode=as.character(NA), authoritativeMemberNode=as.character(NA), preferredNodes=list(), blockedNodes=list(),
-    seriesId=as.character(NA), mediaType=as.character(NA), fileName=as.character(NA)) {
+    seriesId=as.character(NA), mediaType=as.character(NA), fileName=as.character(NA), mediaTypeProperty=list()) {
     # defaults here
     .Object@serialVersion <- 1
     .Object@identifier <- as.character(identifier)
@@ -154,6 +157,7 @@ setMethod("initialize", signature = "SystemMetadata", definition = function(.Obj
     .Object@seriesId  <- as.character(seriesId)
     .Object@mediaType <- as.character(mediaType)
     .Object@fileName <- as.character(fileName)
+    .Object@mediaTypeProperty <- mediaTypeProperty
     return(.Object)
 })
 
@@ -293,7 +297,27 @@ setMethod("parseSystemMetadata", signature("SystemMetadata"), function(x, xml, .
   
   # DataONE v2 elements
   if (!is.null(xmlValue(xml[["seriesId"]]))) x@seriesId <- xmlValue(xml[["seriesId"]]) 
-  if (!is.null(xmlValue(xml[["mediaType"]]))) x@mediaType <- xmlValue(xml[["mediaType"]])
+  mt <- xml[["mediaType"]]
+  if (!is.null(mt)) {
+      mtAttrs <- xmlAttrs(mt)
+      x@mediaType <- mtAttrs[['name']]
+      mtp <- xmlChildren(mt)
+      if(!is.null(mtp)) {
+          pList <- list()
+          for(inode in mtp) {
+              nodeName <- xmlName(inode)
+              if (grepl("property", nodeName)) {
+                  pVal <- xmlValue(inode)
+                  attr(pVal, 'name') <- xmlAttrs(inode)[['name']]
+                  pList[[length(pList)+1]] <- pVal
+              }
+          }
+          x@mediaTypeProperty <- pList
+      }
+  } else {
+      x@mediaType <- as.character(NA)
+      x@mediaTypeProperty <- list()
+  }
   if (!is.null(xmlValue(xml[["fileName"]]))) x@fileName <- xmlValue(xml[["fileName"]])
   
   #TODO: x@replica    
@@ -394,7 +418,15 @@ setMethod("serializeSystemMetadata", signature("SystemMetadata"), function(x, ve
       root <- addChildren(root, xmlNode("seriesId", x@seriesId))
     }
     if(!is.na(x@mediaType)) {
-      root <- addChildren(root, xmlNode("mediaType", x@mediaType))
+      mtNode <- xmlNode("mediaType", attrs=c(name=x@mediaType))
+      if(length(x@mediaTypeProperty) > 0) {
+        for(iprop in x@mediaTypeProperty) {
+          pname <- attr(iprop, 'name')
+          pval <- iprop[[1]]
+          mtNode <- addChildren(mtNode, xmlNode("property", pval, attrs=c(name=pname)))
+        }
+      }
+      root <- addChildren(root, mtNode)
     }
     if(!is.na(x@fileName)) {
       root <- addChildren(root, xmlNode("fileName", x@fileName))
