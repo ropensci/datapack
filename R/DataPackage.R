@@ -789,28 +789,24 @@ setGeneric("insertDerivation", function(x, ...) {
 #' @examples
 #' library(datapack)
 #' dp <- new("DataPackage")
-#' inputs <- list()
-#' outputs <- list()
 #' # Add the script to the DataPackage
-#' progObj <- new("DataObject", format="application/R", 
-#'               filename=system.file("./extdata/pkg-example/logit-regression-example.R", 
-#'               package="datapack"), 
-#'               suggestedFilename="logit-regression-example.R")
+#' progFile <- system.file("./extdata/pkg-example/logit-regression-example.R", package="datapack")
+#' progObj <- new("DataObject", format="application/R", filename=progFile)
 #' dp <- addData(dp, progObj)
+#' 
 #' # Add a script input to the DataPackage
-#' inObj <- new("DataObject", format="text/csv", 
-#'             filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"), 
-#'             suggestedFilename="binary.csv")
+#' inFile <- system.file("./extdata/pkg-example/binary.csv", package="datapack") 
+#' inObj <- new("DataObject", format="text/csv", filename=inFile)
 #' dp <- addData(dp, inObj)
-#' inputs[[length(inputs)+1]] <- inObj
+#' 
 #' # Add a script output to the DataPackage
-#' outObj <- new("DataObject", format="image/png", 
-#'              filename=system.file("./extdata/pkg-example/gre-predicted.png", package="datapack"), 
-#'              suggestedFilename="gre-predicted.png")
+#' outFile <- system.file("./extdata/pkg-example/gre-predicted.png", package="datapack")
+#' outObj <- new("DataObject", format="image/png", file=outFile)
 #' dp <- addData(dp, outObj)
-#' outputs[[length(outputs)+1]] <- outObj
+#' 
 #' # Add the provenenace relationshps, linking the input and output to the script execution
-#' dp <- insertDerivation(dp, sources = inputs, program = progObj, derivations = outputs) 
+#' # Note: 'sources' and 'derivations' can also be lists of "DataObjects" or "DataObject' identifiers
+#' dp <- insertDerivation(dp, sources = inObj, program = progObj, derivations = outObj) 
 #' # View the results
 #' head(getRelationships(dp))
 setMethod("insertDerivation", signature("DataPackage"), function(x, sources=list(), 
