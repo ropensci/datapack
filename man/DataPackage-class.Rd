@@ -3,12 +3,29 @@
 \docType{class}
 \name{DataPackage-class}
 \alias{DataPackage-class}
-\title{A class representing a data package, which can contain data objects}
+\title{A class representing a data package}
 \description{
-The DataPackage class provides methods for added and extracting
-data objects from a datapackage. The contents of a package
-can be determined and the package can be prepared for transport before being
-uploaded to a data repository or archived.
+The DataPackage class provides methods for adding and extracting
+data objects from a data package. The contents of a package
+can include arbitrary types of objects, including data files, program code,
+visualizations and images, animations, and any other type of file. The DataPackage
+stores the individual members of the package along with key system-level metadata
+about each object, including its size, checksum, identifier, and other key information
+needed to effectively archive the members of the package.  In addition, the
+DataPackage can include key provenance metadata about the relationships among
+the objects in the package.  For example, the package can document that one object
+provides documentation for another (\code{cito:documents}), and that one object was
+derived from another (\code{prov:wasDerivedFrom}) by executing a program that 
+used source data (\code{prov:used}) to create a derived data object 
+{\code{prov:wasGeneratedBy}}.  These relationships are integral to the package,
+and can be visualized by programs that understand the ProvONE provenance 
+model (see \url{https://purl.dataone.org/provone-v1-dev}). 
+
+The DataPackage class is an R representation of an underlying Open Archives 
+Initiative ORE model (Object Reuse and Exchange; 
+see \url{https://www.openarchives.org/ore/}), and follows the DataONE Data
+Packaging model
+(see \url{https://releases.dataone.org/online/api-documentation-v2.0.1/design/DataPackage.html}).
 }
 \section{Slots}{
 

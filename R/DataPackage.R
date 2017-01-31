@@ -18,11 +18,28 @@
 #   limitations under the License.
 #
 
-#' @title A class representing a data package, which can contain data objects
-#' @description The DataPackage class provides methods for added and extracting
-#' data objects from a datapackage. The contents of a package
-#' can be determined and the package can be prepared for transport before being
-#' uploaded to a data repository or archived.
+#' @title A class representing a data package
+#' @description The DataPackage class provides methods for adding and extracting
+#' data objects from a data package. The contents of a package
+#' can include arbitrary types of objects, including data files, program code,
+#' visualizations and images, animations, and any other type of file. The DataPackage
+#' stores the individual members of the package along with key system-level metadata
+#' about each object, including its size, checksum, identifier, and other key information
+#' needed to effectively archive the members of the package.  In addition, the
+#' DataPackage can include key provenance metadata about the relationships among
+#' the objects in the package.  For example, the package can document that one object
+#' provides documentation for another (\code{cito:documents}), and that one object was
+#' derived from another (\code{prov:wasDerivedFrom}) by executing a program that 
+#' used source data (\code{prov:used}) to create a derived data object 
+#' {\code{prov:wasGeneratedBy}}.  These relationships are integral to the package,
+#' and can be visualized by programs that understand the ProvONE provenance 
+#' model (see \url{https://purl.dataone.org/provone-v1-dev}). 
+#' 
+#' The DataPackage class is an R representation of an underlying Open Archives 
+#' Initiative ORE model (Object Reuse and Exchange; 
+#' see \url{https://www.openarchives.org/ore/}), and follows the DataONE Data
+#' Packaging model
+#' (see \url{https://releases.dataone.org/online/api-documentation-v2.0.1/design/DataPackage.html}).
 #' @include dmsg.R
 #' @include DataObject.R
 #' @include SystemMetadata.R
@@ -763,13 +780,31 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=as.cha
   return(zipFile)
 })
 
-#' @title Add provenance relationships to a DataPackage for a script execution.
-#' @description A DataPackage can store provenance relationships between the DataObjects in the package. 
-#' The method \code{insertDerivation} will add provenance relationships between an R script, the files that
-#' it used and the files that it generated.
-#' @details This method operates on a DataPackage that has had DataObjects for the script, inputs and outputs
-#' previously added to it. Provenance relationships from the ProvONE data model are added to the package. The
-#' ProvONE data model can be viewed at \url{https://purl.dataone.org/provone-v1-dev}.
+#' @title Add data derivation information to a DataPackage
+#' @description Add information about the relationships among DataObject members 
+#' in a DataPackage, retrospectively describing the way in which derived data were 
+#' created from source data using a processing program such as an R script.  These provenance
+#' relationships allow the derived data to be understood sufficiently for users
+#' to be able to reproduce the computations that created the derived data, and to
+#' trace lineage of the derived data objects. The method \code{insertDerivation} 
+#' will add provenance relationships between a script that was executed, the files 
+#' that it used as sources, and the derived files that it generated.
+#' @details This method operates on a DataPackage that has had DataObjects for 
+#' the script, data sources (inputs), and data derivations (outputs) previously 
+#' added to it, or can reference identifiers for objects that exist in other DataPackage
+#' instances. This allows a user to create a standalone package that contains all of
+#' its source, script, and derived data, or a set of data packages that are chained
+#' together via a set of derivation relationships between the members of those packages.
+#' 
+#' Provenance relationships are described following the the ProvONE data model, which
+#' can be viewed at \url{https://purl.dataone.org/provone-v1-dev}.  In particular, 
+#' the following relationships are inserted (among others):
+#' \itemize{
+#'  \item{\code{prov:used}} {indicates which source data was used by a program execution}
+#'  \item{\code{prov:generatedBy}} {indicates which derived data was created by a program execution}
+#'  \item{\code{prov:wasDerivedFrom}} {indicates the source data from which derived data were created using the program}
+#' }
+#'   
 #' @param x The \code{DataPackage} to add provenance relationships to.
 #' @param ... Additional parameters
 setGeneric("insertDerivation", function(x, ...) {
@@ -778,11 +813,12 @@ setGeneric("insertDerivation", function(x, ...) {
 
 #' @rdname insertDerivation
 #' @param sources A list of DataObjects for files that were read by the program. Alternatively, a list 
-#' of DataObject identifiers can be specified.
-#' @param program The DataObject created for the R script. Alternatively the DataObject identifier can
+#' of DataObject identifiers can be specified as a list of character strings.
+#' @param program The DataObject created for the program such as an R script. Alternatively the DataObject identifier can
 #' be specified. 
 #' @param derivations A list of DataObjects for files that were generated by the program. Alternatively, a list 
-#' of DataObject identifiers can be specified.
+#' of DataObject identifiers can be specified as a list of character strings.
+#' @seealso The \code{\link{recordr}} package for run-time recording of provenance relationships.
 #' @import uuid
 #' @import utils
 #' @export
