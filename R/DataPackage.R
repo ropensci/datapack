@@ -20,18 +20,18 @@
 
 #' @title A class representing a data package
 #' @description The DataPackage class provides methods for adding and extracting
-#' data objects from a data package. The contents of a package
+#' data objects from a data package. The contents of a data package
 #' can include arbitrary types of objects, including data files, program code,
-#' visualizations and images, animations, and any other type of file. The DataPackage
-#' stores the individual members of the package along with key system-level metadata
+#' visualizations and images, animations, and any other type of file. The DataPackage class
+#' stores the individual members of the data package along with key system-level metadata
 #' about each object, including its size, checksum, identifier, and other key information
 #' needed to effectively archive the members of the package.  In addition, the
-#' DataPackage can include key provenance metadata about the relationships among
-#' the objects in the package.  For example, the package can document that one object
+#' DataPackage class can include key provenance metadata about the relationships among
+#' the objects in the data package.  For example, the data package can document that one object
 #' provides documentation for another (\code{cito:documents}), and that one object was
 #' derived from another (\code{prov:wasDerivedFrom}) by executing a program that 
 #' used source data (\code{prov:used}) to create a derived data object 
-#' {\code{prov:wasGeneratedBy}}.  These relationships are integral to the package,
+#' {\code{prov:wasGeneratedBy}}.  These relationships are integral to the data package,
 #' and can be visualized by programs that understand the ProvONE provenance 
 #' model (see \url{https://purl.dataone.org/provone-v1-dev}). 
 #' 
@@ -47,22 +47,22 @@
 #' @rdname DataPackage-class
 #' @aliases DataPackage-class
 #' @slot relations A hash containing provenance relationships of package objects
-#' @slot objects A hash containing identifiers for data object in the DataPackage
+#' @slot objects A hash containing identifiers for objects in the DataPackage
 #' @slot sysmeta A SystemMetadata class instance describing the package
 #' @section Methods:
 #' \itemize{
 #'  \item{\code{\link[=DataPackage-initialize]{initialize}}}{: Initialize a DataPackage object}
 #'  \item{\code{\link{getData}}}{: Get the data content of a specified data object}
-#'  \item{\code{\link{getSize}}}{: Get the Count of Objects in the Package}
-#'  \item{\code{\link{getIdentifiers}}}{: Get the Identifiers of Package Members}
+#'  \item{\code{\link{getSize}}}{: Get the Count of Objects in the DataPackage}
+#'  \item{\code{\link{getIdentifiers}}}{: Get the Identifiers of DataPackage members}
 #'  \item{\code{\link{addData}}}{: Add a DataObject to the DataPackage}
-#'  \item{\code{\link{insertRelationship}}}{: Record relationships of objects in a DataPackage}
+#'  \item{\code{\link{insertRelationship}}}{: Insert relationships between objects in a DataPackage}
 #'  \item{\code{\link{recordDerivation}}}{: Record derivation relationships between objects in a DataPackage}
-#'  \item{\code{\link{getRelationships}}}{: Retrieve relationships of package objects}
-#'  \item{\code{\link{containsId}}}{: Returns true if the specified object is a member of the package}
-#'  \item{\code{\link{removeMember}}}{: Remove the Specified Member from the Package}
-#'  \item{\code{\link{getMember}}}{: Return the Package Member by Identifier}
-#'  \item{\code{\link{serializePackage}}}{: Create an OAI-ORE resource map from the package}
+#'  \item{\code{\link{getRelationships}}}{: Retrieve relationships of data package objects}
+#'  \item{\code{\link{containsId}}}{: Returns true if the specified object is a member of the data package}
+#'  \item{\code{\link{removeMember}}}{: Remove the Specified Member from the DataPackage}
+#'  \item{\code{\link{getMember}}}{: Return the DataPackage Member by Identifier}
+#'  \item{\code{\link{serializePackage}}}{: Create an OAI-ORE resource map from the data package}
 #'  \item{\code{\link{serializeToBagIt}}}{: Serialize A DataPackage into a BagIt Archive File}
 #'  \item{\code{\link{insertDerivation}}}{: Add provenance relationships to a DataPackage for an R script.}
 #' }
