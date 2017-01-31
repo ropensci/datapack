@@ -204,7 +204,7 @@ test_that("InsertRelationship methods work", {
   # Insert derivation relationships
   source <- "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1"
   derived <- "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.45.1"
-  recordDerivation(dp, sourceID=source, derivedIDs=derived)
+  dp <- suppressWarnings(recordDerivation(dp, sourceID=source, derivedIDs=derived))
   relations <- getRelationships(dp, quiet=quietOn)
   
   # Test if the data frame with retrieved relationships was constructed correctly

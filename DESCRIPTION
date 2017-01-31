@@ -38,4 +38,5 @@ Collate:
     'DataPackage.R'
     'ResourceMap.R'
     'datapack-package.r'
+    'zzz.R'
 RoxygenNote: 5.0.1

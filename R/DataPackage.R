@@ -372,6 +372,7 @@ setMethod("insertRelationship", signature("DataPackage"),
 #' @seealso \code{\link{DataPackage-class}}
 #' @export
 setGeneric("recordDerivation", function(x, ...) {
+    .Deprecated("insertDerivation", "datapack")
     standardGeneric("recordDerivation")
 })
 
