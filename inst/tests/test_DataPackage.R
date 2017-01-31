@@ -201,6 +201,8 @@ test_that("InsertRelationship methods work", {
   expect_that(relations[relations$subject == "urn:uuid:abcd", 'objectType'], equals("literal"))
   expect_that(relations[relations$subject == "urn:uuid:abcd", 'predicate'], matches("startedAt"))
 
+  rm(dp)
+  dp <- new("DataPackage")
   # Insert derivation relationships
   source <- "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1"
   derived <- "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.45.1"
@@ -208,9 +210,10 @@ test_that("InsertRelationship methods work", {
   relations <- getRelationships(dp, quiet=quietOn)
   
   # Test if the data frame with retrieved relationships was constructed correctly
-  expect_that(nrow(relations), equals(nrel <- nrel + 1))
-  expect_that(relations[relations$subject == derived, 'predicate'], matches("wasDerivedFrom"))
-  expect_that(relations[relations$subject == derived, 'object'], equals(source))
+  expect_that(nrow(relations), equals(3))
+  expect_that(nrow(relations[relations$object == datapack:::provONEdata,]), equals(2))
+  expect_equal(relations[relations$predicate == datapack:::provWasDerivedFrom, 'subject'], derived)
+  expect_equal(relations[relations$predicate == datapack:::provWasDerivedFrom, 'object'], source)
 })
 
 test_that("Package serialization works", {

@@ -380,9 +380,7 @@ setGeneric("recordDerivation", function(x, ...) {
 #' @param sourceID the identifier of the source object in the relationship
 #' @param derivedIDs an identifier or list of identifiers of objects that were derived from the source 
 setMethod("recordDerivation",  signature("DataPackage"), function(x, sourceID, derivedIDs, ...) {
-    for (obj in derivedIDs) {
-        insertRelationship(x, subjectID=obj, objectIDs=sourceID, predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
-    }
+    insertDerivation(x, sources=sourceID, derivations=derivedIDs, ...)
 })
 
 #' Retrieve relationships of package objects
@@ -925,6 +923,9 @@ setMethod("insertDerivation", signature("DataPackage"), function(x, sources=list
     }
     if(length(inIds) > 0) {
         for (iCnt in 1:length(inIds)) {
+            # The user can specify an existing DataONE pid, e.g. 
+            # "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1"
+            if(grepl("\\s*https?:.*", inIds[[iCnt]], perl=T)) next
             if (!is.element(inIds[[iCnt]], pkgIds)) {
                 stop(sprintf("Argument \'sources[[%d]]\' is not a package memmber.", iCnt))
             }
@@ -932,6 +933,9 @@ setMethod("insertDerivation", signature("DataPackage"), function(x, sources=list
     }
     if(length(outIds) > 0) {
         for (iCnt in 1:length(outIds)) {
+            # The user can specify an existing DataONE pid, e.g. 
+            # "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.45.1"
+            if(grepl("\\s*https?:.*", outIds[[iCnt]], perl=T)) next
             if (!is.element(outIds[[iCnt]], pkgIds)) {
                 stop(sprintf("Argument \'derivations[[%s]]\' is not a package memmber.", iCnt))
             }
