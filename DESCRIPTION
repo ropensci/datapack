@@ -13,7 +13,7 @@ Description: Provides a flexible container to transport and
     can be serialized and transported as structured files that have been created following 
     the BagIt specification. The BagIt specification is described at 
     <https://tools.ietf.org/html/draft-kunze-bagit-08>.
-Date: 2016-11-23
+Date: 2017-02-01
 Depends:
     R (>= 3.1.1)
 Imports:
