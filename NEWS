@@ -5,13 +5,26 @@ BUGS
 
 * Fixed bug where replicationAllowed was not set correctly when parsing if it is
   false (#61)
+  
 * Fixed bug where numberReplicas was not set correctly when parsing (#63)
+
+* Fixed bug where the `mediaType` argument to DataObject `initialize()`
+  was not being handled correctly and resulted in an invalid system metadata
+  object to be serialized from the DataObject. (#67)
+  
+* Added argument 'mediaTypeProperty' to DataObject `initialize()` which was
+  needed to fully support 'mediaType'. (#67)
 
 NEW FEATURES
 
 * Added new function to reset access policies `clearAccessPolicy()` (#56)
 
-* Added new function `addRunProv` to add run provenance relationships to a DataPackage (#64)
+* Added new function `insertDerivation` to add run provenance relationships to a DataPackage (#64)
+
+DEPRECATED 
+
+* The method `recordDerivation` is deprecated in this release and may be marked as Defunct and
+  removed in a future release (#68)
 
 Version 1.0.1
 -------------
