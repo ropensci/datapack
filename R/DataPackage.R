@@ -921,12 +921,47 @@ setMethod("insertDerivation", signature("DataPackage"), function(x, sources=list
             stop(sprintf("Argument \'program\'is not a package memmber."))
         }
     }
+    # Process inputs and outputs separately from the program identifier, as there may not
+    # have been a program specified.
     if(length(inIds) > 0) {
         for (iCnt in 1:length(inIds)) {
             # The user can specify an existing DataONE pid, e.g. 
             # "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1"
-            if(grepl("\\s*https?:.*", inIds[[iCnt]], perl=T)) next
-            if (!is.element(inIds[[iCnt]], pkgIds)) {
+            pidURL <- inIds[[iCnt]]
+            if(grepl("\\s*https?:.*", pidURL, perl=T)) {
+                # If this is an existing DataONE pid, we have to add relationships for this
+                # PID so that DataONE can properly index it. The first task is to 
+                # strip off the identifier from the service URL. If we don't find either 
+                # 'resolve', or 'object', then we can't id this as a DataONE PID
+                if(grepl('/resolve/', pidURL, perl=T)) {
+                    result <- unlist(strsplit(pidURL, "/resolve/"))
+                    serviceURL <- result[[1]]
+                    pid <- result[[2]]
+                    # Add the relationship that identifies this object to DataONE as a DataONE PID
+                    # DataONE requires that the PID portion of the URL be encoded
+                    newURL <- sprintf("%s/resolve/%s", serviceURL, URLencode(pid, reserved=TRUE))
+                    x <- insertRelationship(x, subjectID=newURL, objectIDs=pid,
+                                            predicate=DCidentifier, objectTypes="literal", dataTypeURIs=xsdStringURI)
+                    x <- insertRelationship(x, subjectID=newURL, objectIDs=provONEdata, predicate=rdfType, objectTypes="uri")
+                    # Replace the URLencoded version of the pid into the input list, so that this version will be used
+                    # in any subsequent relationships
+                    inIds[[iCnt]] <- newURL
+                } else if (grepl('/object/', pidURL, perl=T)) {
+                    result <- unlist(strsplit(pidURL, "/object/"))
+                    serviceURL <- result[[1]]
+                    pid <- result[[2]]
+                    # Add the relationship that identifies this object to DataONE as a DataONE PID
+                    newURL <- sprintf("%s/object/%s", serviceURL, URLencode(pid, reserved=TRUE))
+                    x <- insertRelationship(x, subjectID=newURL, objectIDs=pid,
+                                            predicate=DCidentifier, objectTypes="literal", dataTypeURIs=xsdStringURI)
+                    x <- insertRelationship(x, subjectID=newURL, objectIDs=provONEdata, predicate=rdfType, objectTypes="uri")
+                    inIds[[iCnt]] <- newURL
+                } 
+            } else if (is.element(inIds[[iCnt]], pkgIds)) {
+                # This is a package member identifier, so use the 'bare' identifier (no service URL portion) for this item, 
+                # it will be 'promoted' to a full DataONE resolve URL during creation of resourceMap, i.e. serializeRDF()
+                x <- insertRelationship(x, subjectID=inIds[[iCnt]], objectIDs=provONEdata, predicate=rdfType, objectTypes="uri")
+            } else {
                 stop(sprintf("Argument \'sources[[%d]]\' is not a package memmber.", iCnt))
             }
         }
@@ -935,16 +970,56 @@ setMethod("insertDerivation", signature("DataPackage"), function(x, sources=list
         for (iCnt in 1:length(outIds)) {
             # The user can specify an existing DataONE pid, e.g. 
             # "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.45.1"
-            if(grepl("\\s*https?:.*", outIds[[iCnt]], perl=T)) next
-            if (!is.element(outIds[[iCnt]], pkgIds)) {
+            pidURL <- outIds[[iCnt]]
+            if(grepl("\\s*https?:.*", pidURL, perl=T)) {
+                # If this is an existing DataONE pid, we have to add relationships for this
+                # PID so that DataONE can properly index it. The first task is to 
+                # strip off the identifier from the service URL. If we don't find either 
+                # 'resolve', or 'object', then we can't id this as a DataONE PID
+                if(grepl('/resolve/', pidURL, perl=T)) {
+                    result <- unlist(strsplit(pidURL, "/resolve/"))
+                    serviceURL <- result[[1]]
+                    pid <- result[[2]]
+                    # Add the relationship that identifies this object to DataONE as a DataONE PID
+                    newURL <- sprintf("%s/resolve/%s", serviceURL, URLencode(pid, reserved=TRUE))
+                    x <- insertRelationship(x, subjectID=newURL, objectIDs=pid,
+                                            predicate=DCidentifier, objectTypes="literal", dataTypeURIs=xsdStringURI)
+                    x <- insertRelationship(x, subjectID=newURL, objectIDs=provONEdata, predicate=rdfType, objectTypes="uri")
+                    # Replace the URLencoded version of the pid into the input list, so that this version will be used
+                    # in any subsequent relationships
+                    outIds[[iCnt]] <- newURL
+                } else if (grepl('/object/', pidURL, perl=T)) {
+                    result <- unlist(strsplit(pidURL, "/object/"))
+                    serviceURL <- result[[1]]
+                    pid <- result[[2]]
+                    # Add the relationship that identifies this object to DataONE as a DataONE PID
+                    newURL <- sprintf("%s/object/%s", serviceURL, URLencode(pid, reserved=TRUE))
+                    x <- insertRelationship(x, subjectID=newURL, objectIDs=pid,
+                                            predicate=DCidentifier, objectTypes="literal", dataTypeURIs=xsdStringURI)
+                    x <- insertRelationship(x, subjectID=newURL, objectIDs=provONEdata, predicate=rdfType, objectTypes="uri")
+                    outIds[[iCnt]] <- newURL
+                }
+            } else if (is.element(outIds[[iCnt]], pkgIds)) {
+                # This is a package member identifier, so use the 'bare' identifier (no service URL portion) for this item, 
+                # it will be 'promoted' to a full DataONE resolve URL during creation of resourceMap, i.e. serializeRDF()
+                x <- insertRelationship(x, subjectID=outIds[[iCnt]], objectIDs=provONEdata, predicate=rdfType, objectTypes="uri")
+            } else {
                 stop(sprintf("Argument \'derivations[[%s]]\' is not a package memmber.", iCnt))
             }
         }
     }
-      
     # If a program argument was not specified, then just record derivations from the inputs to the
     # outputs
     if(!is.na(scriptId)) {
+        # The script identifier must be for the local package, it is not supported to specify
+        # a script from another package using this method, primarily because it is the identifier of the Execution
+        # object that is required to establish the relationships "executionPid -> prov:used -> dataPid" and 
+        # "dataPid -> wasGeneratedBy -> executionPid". We do not know the Execution id for the scriptId, which
+        # is needed to set the other relationships required for indexing.
+        if(grepl("\\s*https?:.*", scriptId, perl=T)) {
+            stop(sprintf("The \"program\" parameter must specify an identifier that is a member of the current package.\nThe identifier %s is not valid", scriptId))
+        }
+            
         # Currently we have to have a prov:execution associated with each R script, so that metacatui will
         # render the used and gen files with the R script, via the qualified association and hadPlan, OK!
         executionId <- sprintf("urn:uuid:%s", UUIDgenerate())
@@ -972,8 +1047,6 @@ setMethod("insertDerivation", signature("DataPackage"), function(x, sources=list
                 thisPid <- inIds[[iCnt]]
                 # Record prov:used relationship between the input dataset and the execution
                 x <- insertRelationship(x, subjectID=executionId, objectIDs=thisPid, predicate=provUsed)
-                # Record relationship identifying this dataset as a provone:Data
-                x <- insertRelationship(x, subjectID=thisPid, objectIDs=provONEdata, predicate=rdfType, objectTypes="uri")
             }
         }
         
@@ -992,16 +1065,9 @@ setMethod("insertDerivation", signature("DataPackage"), function(x, sources=list
     if(length(outIds) > 0 && length(inIds) > 0) {
         for (iOut in 1:length(outIds)) {
             outputId <- outIds[[iOut]]
-            # Record relationship identifying this dataset as a provone:Data
-            x <- insertRelationship(x, subjectID=outputId, objectIDs=provONEdata, predicate=rdfType, objectTypes="uri")
             for (iIn in 1:length(inIds)) {
                 inputId <- inIds[[iIn]]
                 x <- insertRelationship(x, subjectID=outputId, objectIDs=inputId, predicate=provWasDerivedFrom)
-                # Only insert this relationship once for each input (i.e. the first loop iteration)
-                if(iOut == 1) {
-                  # Record relationship identifying this dataset as a provone:Data
-                  x <- insertRelationship(x, subjectID=inputId, objectIDs=provONEdata, predicate=rdfType, objectTypes="uri")
-                }
             }
         }
     }

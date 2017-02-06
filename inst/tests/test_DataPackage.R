@@ -210,10 +210,12 @@ test_that("InsertRelationship methods work", {
   relations <- getRelationships(dp, quiet=quietOn)
   
   # Test if the data frame with retrieved relationships was constructed correctly
-  expect_that(nrow(relations), equals(3))
+  expect_that(nrow(relations), equals(5))
   expect_that(nrow(relations[relations$object == datapack:::provONEdata,]), equals(2))
   expect_equal(relations[relations$predicate == datapack:::provWasDerivedFrom, 'subject'], derived)
   expect_equal(relations[relations$predicate == datapack:::provWasDerivedFrom, 'object'], source)
+  expect_that(nrow(relations[relations$predicate == datapack:::DCidentifier,]), equals(2))
+  
 })
 
 test_that("Package serialization works", {
@@ -522,4 +524,19 @@ test_that("Adding provenance relationships to a DataPackage via insertDerivation
     err <- try(dp <- insertDerivation(dp, program=doProg), silent=TRUE)
     expect_that(class(err), matches("try-error"))
     
+    # Test prov:wasDerivedFrom with pids that are not package members
+    rm(dp)
+    dp <- new("DataPackage")
+    # Insert derivation relationships
+    source <- "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1"
+    derived <- "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.45.1"
+    dp <- suppressWarnings(recordDerivation(dp, sourceID=source, derivedIDs=derived))
+    relations <- getRelationships(dp, quiet=quietOn)
+    
+    # Test if the data frame with retrieved relationships was constructed correctly
+    expect_that(nrow(relations), equals(5))
+    expect_that(nrow(relations[relations$object == datapack:::provONEdata,]), equals(2))
+    expect_equal(relations[relations$predicate == datapack:::provWasDerivedFrom, 'subject'], derived)
+    expect_equal(relations[relations$predicate == datapack:::provWasDerivedFrom, 'object'], source)
+    expect_that(nrow(relations[relations$predicate == datapack:::DCidentifier,]), equals(2))
 })
