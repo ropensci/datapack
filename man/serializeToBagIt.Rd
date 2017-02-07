@@ -57,7 +57,7 @@ data2 <- charToRaw("7,8,9\\n4,10,11")
 do2 <- new("DataObject", id="do2", dataobj=data2, format="text/csv", user="jsmith")
 dp <- addData(dp, do2)
 # Create a relationship between the two data objects
-recordDerivation(dp, "do2", "do2")
+dp <- insertDerivation(dp, sources="do2", derivations="do2")
 # Write out the data package to a BagIt file
 \dontrun{
 bagitFile <- serializeToBagIt(dp, syntaxName="json", mimeType="application/json")

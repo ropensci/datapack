@@ -77,6 +77,6 @@ dp <- insertDerivation(dp, sources = inObj, program = progObj, derivations = out
 head(getRelationships(dp))
 }
 \seealso{
-The \code{\link{recordr}} package for run-time recording of provenance relationships.
+The R 'recordr' package for run-time recording of provenance relationships.
 }
 

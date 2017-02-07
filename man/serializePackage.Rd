@@ -64,7 +64,7 @@ dp <- addData(dp, do)
 data2 <- charToRaw("7,8,9\\n10,11,12")
 do2 <- new("DataObject", id="do2", dataobj=data2, format="text/csv", user="jsmith")
 dp <- addData(dp, do2)
-recordDerivation(dp, "do", "do2")
+dp <- insertDerivation(dp, sources=do, derivations=do2)
 \dontrun{
 td <- tempdir()
 status <- serializePackage(dp, file=paste(td, "resmap.json", sep="/"), syntaxName="json",  
