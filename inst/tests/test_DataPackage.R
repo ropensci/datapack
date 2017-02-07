@@ -212,8 +212,8 @@ test_that("InsertRelationship methods work", {
   # Test if the data frame with retrieved relationships was constructed correctly
   expect_that(nrow(relations), equals(5))
   expect_that(nrow(relations[relations$object == datapack:::provONEdata,]), equals(2))
-  expect_equal(relations[relations$predicate == datapack:::provWasDerivedFrom, 'subject'], derived)
-  expect_equal(relations[relations$predicate == datapack:::provWasDerivedFrom, 'object'], source)
+  expect_match(URLdecode(relations[relations$predicate == datapack:::provWasDerivedFrom, 'subject']), derived)
+  expect_equal(URLdecode(relations[relations$predicate == datapack:::provWasDerivedFrom, 'object']), source)
   expect_that(nrow(relations[relations$predicate == datapack:::DCidentifier,]), equals(2))
   
 })
@@ -536,7 +536,7 @@ test_that("Adding provenance relationships to a DataPackage via insertDerivation
     # Test if the data frame with retrieved relationships was constructed correctly
     expect_that(nrow(relations), equals(5))
     expect_that(nrow(relations[relations$object == datapack:::provONEdata,]), equals(2))
-    expect_equal(relations[relations$predicate == datapack:::provWasDerivedFrom, 'subject'], derived)
-    expect_equal(relations[relations$predicate == datapack:::provWasDerivedFrom, 'object'], source)
+    expect_equal(URLdecode(relations[relations$predicate == datapack:::provWasDerivedFrom, 'subject']), derived)
+    expect_equal(URLdecode(relations[relations$predicate == datapack:::provWasDerivedFrom, 'object']), source)
     expect_that(nrow(relations[relations$predicate == datapack:::DCidentifier,]), equals(2))
 })
