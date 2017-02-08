@@ -93,6 +93,7 @@ setMethod("initialize", "ResourceMap", function(.Object, id = as.character(NA)) 
 #' is specified, then 'https://cn.dataone.org/cn/v1/resolve' is used.
 #' @param x a ResourceMap
 #' @param relations A data.frame to read relationships from
+#' @param externalIdentifiers A list of indentifiers that are referenced from the package, but are not package members.
 #' @param ... (Additional parameters)
 #' @seealso \code{\link{ResourceMap-class}}
 #' @examples 
@@ -116,7 +117,7 @@ setGeneric("createFromTriples", function(x, ...) { standardGeneric("createFromTr
 #' @param identifiers A list of the identifiers of data objects cotained in the associated data package
 #' @param resolveURI A character string containing a URI to prepend to datapackage identifiers.
 setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, identifiers, 
-                                                                  resolveURI=as.character(NA),...) {
+                                                                  resolveURI=as.character(NA), externalIdentifiers=list(), ...) {
   stopifnot(is.data.frame(relations))
   stopifnot(all(is.character(identifiers)))
   
@@ -157,6 +158,8 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
     resMapURI <- paste(pkgResolveURI, URLencode(x@id, reserved=TRUE), sep="/")
   }
   
+  relations <- unique(relations)
+  
   # Add each triple from the input data.frame into the Redland RDF model.
   if(nrow(relations) > 0) {
       for(i in 1:nrow(relations)) {
@@ -164,6 +167,18 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
           subjectId <- triple[['subject']]
           objectId <- triple[['object']]
           
+          # Prepend the DataONE Production CN resolve URI to each identifier in the datapackage, when
+          # that identifier appears in the subject or object of a triple.
+          if (is.element(subjectId, externalIdentifiers) && ! grepl(pkgResolveURI, subjectId)) {
+              subjectId <- URLencode(subjectId, reserved=TRUE)
+              subjectId <- paste(pkgResolveURI, subjectId, sep="/")
+          }
+          
+          if (is.element(objectId, externalIdentifiers) && ! grepl(pkgResolveURI, objectId)) {
+              objectId <- URLencode(objectId, reserved=TRUE)
+              objectId <- paste(pkgResolveURI, objectId, sep="/")
+          }
+     
           # Prepend the DataONE Production CN resolve URI to each identifier in the datapackage, when
           # that identifier appears in the subject or object of a triple.
           if (is.element(subjectId, identifiers) && ! grepl(pkgResolveURI, subjectId) && ! grepl("^http", subjectId)) {
@@ -205,6 +220,18 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
     
     # Add triples identifying the ids that this aggregation aggregates
     statement <- new("Statement", x@world, subject=aggregationId, predicate=aggregates, object=URIid)
+    addStatement(x@model, statement)
+  }
+  
+  for(id in externalIdentifiers) {
+    if (! grepl(pkgResolveURI, id)) {
+        URIid <- sprintf("%s/%s", pkgResolveURI, URLencode(id, reserved=TRUE))
+        cat(sprintf("Promoting pid: %s", id))
+    } else {
+        URIid <- id
+    }
+    # Add the Dublic Core identifier relation for each object added to the data package
+    statement <- new("Statement", x@world, subject=URIid, predicate=DCidentifier, object=id, objectType="literal", datatype_uri=xsdStringURI)
     addStatement(x@model, statement)
   }
 

@@ -35,6 +35,8 @@ Packaging model
 \item{\code{objects}}{A hash containing identifiers for objects in the DataPackage}
 
 \item{\code{sysmeta}}{A SystemMetadata class instance describing the package}
+
+\item{\code{externalIds}}{A list containing identifiers for objects associated with the DataPackage}
 }}
 \section{Methods}{
 

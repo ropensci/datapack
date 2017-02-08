@@ -33,8 +33,7 @@ specification, namely, "http://www.w3.org/ns/prov#wasDerivedFrom"
 \examples{
 \dontrun{
 dp <- new("DataPackage")
-recordDerivation(dp, "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1",
-                     "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.45.1")
+recordDerivation(dp, "doi:1234/_030MXTI009R00_20030812.40.1", "doi:1234/_030MXTI009R00_20030812.45.1")
                      }
 }
 \seealso{

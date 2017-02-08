@@ -9,7 +9,7 @@
 createFromTriples(x, ...)
 
 \S4method{createFromTriples}{ResourceMap}(x, relations, identifiers,
-  resolveURI = as.character(NA), ...)
+  resolveURI = as.character(NA), externalIdentifiers = list(), ...)
 }
 \arguments{
 \item{x}{a ResourceMap}
@@ -21,6 +21,8 @@ createFromTriples(x, ...)
 \item{identifiers}{A list of the identifiers of data objects cotained in the associated data package}
 
 \item{resolveURI}{A character string containing a URI to prepend to datapackage identifiers.}
+
+\item{externalIdentifiers}{A list of indentifiers that are referenced from the package, but are not package members.}
 }
 \description{
 RDF relationships are added to a ResourceMap object from a data.frame that
