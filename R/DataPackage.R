@@ -49,6 +49,7 @@
 #' @slot relations A hash containing provenance relationships of package objects
 #' @slot objects A hash containing identifiers for objects in the DataPackage
 #' @slot sysmeta A SystemMetadata class instance describing the package
+#' @slot externalIds A list containing identifiers for objects associated with the DataPackage
 #' @section Methods:
 #' \itemize{
 #'  \item{\code{\link[=DataPackage-initialize]{initialize}}}{: Initialize a DataPackage object}
@@ -71,7 +72,8 @@
 setClass("DataPackage", slots = c(
     relations               = "hash",
     objects                 = "hash",          # key=identifier, value=DataObject
-    sysmeta                 = "SystemMetadata" # system metadata about the package
+    sysmeta                 = "SystemMetadata", # system metadata about the package
+    externalIds             = "list"
     )
 )
 
@@ -108,6 +110,7 @@ setMethod("initialize", "DataPackage", function(.Object, packageId) {
     }
     .Object@relations = hash()
     .Object@objects = hash()
+    .Object@externalIds = list()
    return(.Object)
 })
 
@@ -367,8 +370,7 @@ setMethod("insertRelationship", signature("DataPackage"),
 #' @param ... Additional parameters
 #' @examples \dontrun{
 #' dp <- new("DataPackage")
-#' recordDerivation(dp, "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1",
-#'                      "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.45.1")
+#' recordDerivation(dp, "doi:1234/_030MXTI009R00_20030812.40.1", "doi:1234/_030MXTI009R00_20030812.45.1")
 #'                      }
 #' @seealso \code{\link{DataPackage-class}}
 #' @export
@@ -579,7 +581,8 @@ setMethod("serializePackage", signature("DataPackage"), function(x, file,
   
   # Create a resource map from previously stored triples, for example, from the relationships in a DataPackage
   resMap <- new("ResourceMap", id)
-  resMap <- createFromTriples(resMap, relations=relations, identifiers=getIdentifiers(x), resolveURI=resolveURI)  
+  resMap <- createFromTriples(resMap, relations=relations, identifiers=getIdentifiers(x), resolveURI=resolveURI, 
+                              externalIdentifiers=x@externalIds)  
   status <- serializeRDF(resMap, file, syntaxName, mimeType, namespaces, syntaxURI)
   freeResourceMap(resMap)
   rm(resMap)
@@ -926,87 +929,22 @@ setMethod("insertDerivation", signature("DataPackage"), function(x, sources=list
     # have been a program specified.
     if(length(inIds) > 0) {
         for (iCnt in 1:length(inIds)) {
-            # The user can specify an existing DataONE pid, e.g. 
-            # "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1"
-            pidURL <- inIds[[iCnt]]
-            if(grepl("\\s*https?:.*", pidURL, perl=T)) {
-                # If this is an existing DataONE pid, we have to add relationships for this
-                # PID so that DataONE can properly index it. The first task is to 
-                # strip off the identifier from the service URL. If we don't find either 
-                # 'resolve', or 'object', then we can't id this as a DataONE PID
-                if(grepl('/resolve/', pidURL, perl=T)) {
-                    result <- unlist(strsplit(pidURL, "/resolve/"))
-                    serviceURL <- result[[1]]
-                    pid <- result[[2]]
-                    # Add the relationship that identifies this object to DataONE as a DataONE PID
-                    # DataONE requires that the PID portion of the URL be encoded
-                    newURL <- sprintf("%s/resolve/%s", serviceURL, URLencode(pid, reserved=TRUE))
-                    x <- insertRelationship(x, subjectID=newURL, objectIDs=pid,
-                                            predicate=DCidentifier, objectTypes="literal", dataTypeURIs=xsdStringURI)
-                    x <- insertRelationship(x, subjectID=newURL, objectIDs=provONEdata, predicate=rdfType, objectTypes="uri")
-                    # Replace the URLencoded version of the pid into the input list, so that this version will be used
-                    # in any subsequent relationships
-                    inIds[[iCnt]] <- newURL
-                } else if (grepl('/object/', pidURL, perl=T)) {
-                    result <- unlist(strsplit(pidURL, "/object/"))
-                    serviceURL <- result[[1]]
-                    pid <- result[[2]]
-                    # Add the relationship that identifies this object to DataONE as a DataONE PID
-                    newURL <- sprintf("%s/object/%s", serviceURL, URLencode(pid, reserved=TRUE))
-                    x <- insertRelationship(x, subjectID=newURL, objectIDs=pid,
-                                            predicate=DCidentifier, objectTypes="literal", dataTypeURIs=xsdStringURI)
-                    x <- insertRelationship(x, subjectID=newURL, objectIDs=provONEdata, predicate=rdfType, objectTypes="uri")
-                    inIds[[iCnt]] <- newURL
-                } 
-            } else if (is.element(inIds[[iCnt]], pkgIds)) {
-                # This is a package member identifier, so use the 'bare' identifier (no service URL portion) for this item, 
-                # it will be 'promoted' to a full DataONE resolve URL during creation of resourceMap, i.e. serializeRDF()
-                x <- insertRelationship(x, subjectID=inIds[[iCnt]], objectIDs=provONEdata, predicate=rdfType, objectTypes="uri")
-            } else {
-                stop(sprintf("Argument \'sources[[%d]]\' is not a package memmber.", iCnt))
+            pid <- inIds[[iCnt]]
+            # This pid is not a package member, so add it to the list of external pids
+            if (!is.element(pid, pkgIds)) {
+                x@externalIds[[length(x@externalIds)+1]] <- pid
             }
+            x <- insertRelationship(x, subjectID=pid, objectIDs=provONEdata, predicate=rdfType, objectTypes="uri")
         }
     }
     if(length(outIds) > 0) {
         for (iCnt in 1:length(outIds)) {
-            # The user can specify an existing DataONE pid, e.g. 
-            # "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.45.1"
-            pidURL <- outIds[[iCnt]]
-            if(grepl("\\s*https?:.*", pidURL, perl=T)) {
-                # If this is an existing DataONE pid, we have to add relationships for this
-                # PID so that DataONE can properly index it. The first task is to 
-                # strip off the identifier from the service URL. If we don't find either 
-                # 'resolve', or 'object', then we can't id this as a DataONE PID
-                if(grepl('/resolve/', pidURL, perl=T)) {
-                    result <- unlist(strsplit(pidURL, "/resolve/"))
-                    serviceURL <- result[[1]]
-                    pid <- result[[2]]
-                    # Add the relationship that identifies this object to DataONE as a DataONE PID
-                    newURL <- sprintf("%s/resolve/%s", serviceURL, URLencode(pid, reserved=TRUE))
-                    x <- insertRelationship(x, subjectID=newURL, objectIDs=pid,
-                                            predicate=DCidentifier, objectTypes="literal", dataTypeURIs=xsdStringURI)
-                    x <- insertRelationship(x, subjectID=newURL, objectIDs=provONEdata, predicate=rdfType, objectTypes="uri")
-                    # Replace the URLencoded version of the pid into the input list, so that this version will be used
-                    # in any subsequent relationships
-                    outIds[[iCnt]] <- newURL
-                } else if (grepl('/object/', pidURL, perl=T)) {
-                    result <- unlist(strsplit(pidURL, "/object/"))
-                    serviceURL <- result[[1]]
-                    pid <- result[[2]]
-                    # Add the relationship that identifies this object to DataONE as a DataONE PID
-                    newURL <- sprintf("%s/object/%s", serviceURL, URLencode(pid, reserved=TRUE))
-                    x <- insertRelationship(x, subjectID=newURL, objectIDs=pid,
-                                            predicate=DCidentifier, objectTypes="literal", dataTypeURIs=xsdStringURI)
-                    x <- insertRelationship(x, subjectID=newURL, objectIDs=provONEdata, predicate=rdfType, objectTypes="uri")
-                    outIds[[iCnt]] <- newURL
-                }
-            } else if (is.element(outIds[[iCnt]], pkgIds)) {
-                # This is a package member identifier, so use the 'bare' identifier (no service URL portion) for this item, 
-                # it will be 'promoted' to a full DataONE resolve URL during creation of resourceMap, i.e. serializeRDF()
-                x <- insertRelationship(x, subjectID=outIds[[iCnt]], objectIDs=provONEdata, predicate=rdfType, objectTypes="uri")
-            } else {
-                stop(sprintf("Argument \'derivations[[%s]]\' is not a package memmber.", iCnt))
+            pid <- outIds[[iCnt]]
+            # This pid is not a package member, so add it to the list of external pids
+            if (!is.element(pid, pkgIds)) {
+                x@externalIds[[length(x@externalIds)+1]] <- pid
             }
+            x <- insertRelationship(x, subjectID=pid, objectIDs=provONEdata, predicate=rdfType, objectTypes="uri")
         }
     }
     # If a program argument was not specified, then just record derivations from the inputs to the
