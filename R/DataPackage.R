@@ -1045,3 +1045,64 @@ setMethod("insertDerivation", signature("DataPackage"), function(x, sources=list
     }
     return(x)
 })
+
+setMethod("show", "DataPackage",
+    #function(object)print(rbind(x = object@x, y=object@y))
+    function(object) {
+        ids <- getIdentifiers(object)
+              
+        identifierWidth <- 10
+        formatIdWidth <- 15
+        submitterWidth <- 15
+        rightsHolderWidth <- 15
+        mediaTypeWidth <- 15
+        fileNameWidth <- 20
+        sizeWidth <- 10
+        fmt <- paste("%-", sprintf("%2d", identifierWidth), "s ",
+            "%-", sprintf("%2d", formatIdWidth), "s ",
+            "%-", sprintf("%2d", submitterWidth), "s ",
+            "%-", sprintf("%2d", rightsHolderWidth), "s ",
+            "%-", sprintf("%2d", mediaTypeWidth), "s ",
+            "%-", sprintf("%2d", fileNameWidth), "s ",
+            "%-", sprintf("%2d", sizeWidth), "s ",
+            "\n", sep="")
+        cat(sprintf("Members:\n\n"))
+        cat(sprintf(fmt, "identifier", "format", "submitter", "rightsHolder", "mediaType", "filename", "size"))
+        lapply(ids, function(id) { cat(sprintf(fmt, 
+            condenseStr(object@objects[[id]]@sysmeta@identifier, identifierWidth),
+            condenseStr(object@objects[[id]]@sysmeta@formatId, formatIdWidth),
+            condenseStr(object@objects[[id]]@sysmeta@submitter, submitterWidth),
+            condenseStr(object@objects[[id]]@sysmeta@rightsHolder, rightsHolderWidth),
+            condenseStr(object@objects[[id]]@sysmeta@mediaType, mediaTypeWidth),
+            condenseStr(object@objects[[id]]@sysmeta@fileName, fileNameWidth),
+            condenseStr(object@objects[[id]]@sysmeta@size, sizeWidth)))
+            }
+        )
+        cat(sprintf("\nRelationships:\n\n"))
+        show(getRelationships(object, condense=TRUE))
+    }
+)
+
+# Return a shortened version of a string to the specified length. The
+# beginning and end of the string is returned, with ellipses inbetween
+# to denote the removed portion, e.g. 
+#    condenseStr("/Users/smith/data/urn:uuid:a84c2234-d07f-41d6-8c53-61b570afc79f.csv", 30)
+#    "/Users/smith...1b570afc79f.csv"
+condenseStr <- function(inStr, newLength) {
+    if(is.na(inStr)) return(inStr)
+    strLen <- nchar(inStr)[[1]]
+    if(newLength >= strLen) return(inStr)
+    # Requested length too short, so return first part of string
+    if(newLength < 5) return(substr(inStr, 1, newLength))
+    # Substract space for ellipses
+    charLen <- as.integer(newLength - 3)
+    # Get str before ellipses
+    len1 <- as.integer(charLen / 2)
+    # Add additional char at end if desired length is odd
+    len2 <- as.integer(charLen / 2) + charLen %% 2
+    # Get str after ellipses
+    str1 <- substr(inStr, 1, len1)
+    str2 <- substr(inStr, strLen-(len2-1), strLen)
+    newStr <- sprintf("%s...%s", str1, str2)
+    return(newStr)
+}
