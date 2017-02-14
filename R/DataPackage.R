@@ -399,6 +399,7 @@ setGeneric("getRelationships", function(x, ...) {
 })
 
 #' @rdname getRelationships
+#' @param condense A logical value, if TRUE then a more easily viewed version of ralationships are returned.
 #' @examples
 #' dp <- new("DataPackage")
 #' insertRelationship(dp, "/Users/smith/scripts/genFields.R",
@@ -406,7 +407,7 @@ setGeneric("getRelationships", function(x, ...) {
 #'     "https://knb.ecoinformatics.org/knb/d1/mn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1")
 #' rels <- getRelationships(dp)
 #' @export
-setMethod("getRelationships", signature("DataPackage"), function(x, ...) {
+setMethod("getRelationships", signature("DataPackage"), function(x, condense=F, ...) {
   
   # Get the relationships stored by insertRelationship
   if (has.key("relations", x@relations)) {
@@ -418,8 +419,40 @@ setMethod("getRelationships", signature("DataPackage"), function(x, ...) {
   } else {
       relationships <- data.frame()
   }
+    if(condense) {
+        consoleWidth <- getOption("width")
+        if(is.na(consoleWidth)) consoleWidth <- 80
+        paddingWidth <- 10
+        nColumns <- 3
+        # Set the max column width according to the current console width,
+        # leave enough room for 3 columsn with padding, etc.
+        # Note: this is only an approximation, as the columns may take less
+        # width that this.
+        maxColumnWidth <- as.integer((consoleWidth-paddingWidth)/nColumns)
+        condensedRels <- apply(relationships, c(1,2), function(term) {
+            #cat(sprintf("item: %s\n", item))
+            if(is.na(term)) return(term)
+            for(ins in 1:nrow(knownNamespaces)) {
+                ns <- knownNamespaces[ins, 'namespace']
+                prefix <- knownNamespaces[ins, 'prefix']
+                if(grepl(ns, term, fixed=T)) {
+                    return(condenseStr(sub(ns, paste(prefix, ':', sep=""), term), maxColumnWidth))
+                }
+            }
+            # Didn't match any known namespace, check if the item is a package member identifier,
+            # and use the source filename if it exists.
+            if(is.element(term, getIdentifiers(x))) {
+                fn <- x@objects[[term]]@filename
+                if(!is.na(fn)) {
+                   term <- basename(fn)
+                }
+            }
+            return(condenseStr(term, maxColumnWidth))
+        })
+        return(condensedRels[,1:3])
+    }
     
-  return(relationships)
+ return(relationships)
 })
 
 #' Returns true if the specified object is a member of the package

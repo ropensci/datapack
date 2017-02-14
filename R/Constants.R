@@ -27,3 +27,17 @@ provONEuser              <- sprintf("%s%s", provONE_NS, "User")
 xsdString                <- sprintf("http://www.w3.org/2001/XMLSchema#string")
 D1_CN_URL                <- "https://cn.dataone.org/cn/v2"
 D1_CN_Resolve_URL        <- sprintf("%s/%s", D1_CN_URL, "resolve")
+
+knownNamespaces <- data.frame(namespace=character(), prefix=character(), stringsAsFactors=FALSE)
+knownNamespaces <- rbind(knownNamespaces, data.frame(namespace=RDF_NS, prefix="rdf", row.names = NULL, stringsAsFactors = FALSE))
+knownNamespaces <- rbind(knownNamespaces, data.frame(namespace="http://www.w3.org/2001/XMLSchema#", prefix="xsd", row.names = NULL, stringsAsFactors = FALSE))
+knownNamespaces <- rbind(knownNamespaces, data.frame(namespace="http://www.w3.org/2000/01/rdf-schema#", prefix="rdfs", row.names = NULL, stringsAsFactors = FALSE))
+knownNamespaces <- rbind(knownNamespaces, data.frame(namespace=provNS, prefix="prov", row.names = NULL, stringsAsFactors = FALSE))
+knownNamespaces <- rbind(knownNamespaces, data.frame(namespace=provONE_NS, prefix="provone", row.names = NULL, stringsAsFactors = FALSE))
+knownNamespaces <- rbind(knownNamespaces, data.frame(namespace="http://purl.org/dc/elements/1.1/", prefix="dc", row.names = NULL, stringsAsFactors = FALSE))
+knownNamespaces <- rbind(knownNamespaces, data.frame(namespace="http://purl.org/dc/terms/", prefix="dcterms", row.names = NULL, stringsAsFactors = FALSE))
+knownNamespaces <- rbind(knownNamespaces, data.frame(namespace="http://xmlns.com/foaf/0.1/", prefix="foaf", row.names = NULL, stringsAsFactors = FALSE))
+knownNamespaces <- rbind(knownNamespaces, data.frame(namespace="http://www.openarchives.org/ore/terms/", prefix="ore", row.names = NULL, stringsAsFactors = FALSE))
+knownNamespaces <- rbind(knownNamespaces, data.frame(namespace="http://purl.org/spar/cito/", prefix="cito", row.names = NULL, stringsAsFactors = FALSE))
+knownNamespaces <- rbind(knownNamespaces, data.frame(namespace="http://www.w3.org/ns/prov#", prefix="prov", row.names = NULL, stringsAsFactors = FALSE))
+
