@@ -8,12 +8,14 @@
 \usage{
 getRelationships(x, ...)
 
-\S4method{getRelationships}{DataPackage}(x, ...)
+\S4method{getRelationships}{DataPackage}(x, condense = F, ...)
 }
 \arguments{
 \item{x}{A DataPackage object}
 
 \item{...}{(Not yet used)}
+
+\item{condense}{A logical value, if TRUE then a more easily viewed version of ralationships are returned.}
 }
 \description{
 Relationships of objects in a package are defined using the \code{'insertRelationship'} call and retrieved
