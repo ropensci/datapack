@@ -370,7 +370,8 @@ setMethod("insertRelationship", signature("DataPackage"),
 #' @param ... Additional parameters
 #' @examples \dontrun{
 #' dp <- new("DataPackage")
-#' recordDerivation(dp, "doi:1234/_030MXTI009R00_20030812.40.1", "doi:1234/_030MXTI009R00_20030812.45.1")
+#' recordDerivation(dp, "doi:1234/_030MXTI009R00_20030812.40.1", 
+#'                  "doi:1234/_030MXTI009R00_20030812.45.1")
 #'                      }
 #' @seealso \code{\link{DataPackage-class}}
 #' @export
