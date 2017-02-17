@@ -435,6 +435,7 @@ setMethod("getRelationships", signature("DataPackage"), function(x, condense=F, 
             for(ins in 1:nrow(knownNamespaces)) {
                 ns <- knownNamespaces[ins, 'namespace']
                 prefix <- knownNamespaces[ins, 'prefix']
+                # use namespace in term
                 if(grepl(ns, term, fixed=T)) {
                     return(condenseStr(sub(ns, paste(prefix, ':', sep=""), term), maxColumnWidth))
                 }
@@ -449,7 +450,7 @@ setMethod("getRelationships", signature("DataPackage"), function(x, condense=F, 
             }
             return(condenseStr(term, maxColumnWidth))
         })
-        return(condensedRels[,1:3])
+        return(as.data.frame(condensedRels[,1:3]))
     }
     
  return(relationships)
