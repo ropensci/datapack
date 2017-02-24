@@ -226,7 +226,6 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
   for(id in externalIdentifiers) {
     if (! grepl(pkgResolveURI, id)) {
         URIid <- sprintf("%s/%s", pkgResolveURI, URLencode(id, reserved=TRUE))
-        cat(sprintf("Promoting pid: %s", id))
     } else {
         URIid <- id
     }
