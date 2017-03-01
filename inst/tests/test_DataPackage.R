@@ -370,7 +370,6 @@ test_that("BagIt serialization works", {
 
 test_that("Adding provenance relationships to a DataPackage via insertDerivation works", {
     
-    library(dataone)
     library(datapack)
     # 
     # Test insertDerivation using DataObject ids
