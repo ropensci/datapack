@@ -1,4 +1,4 @@
-Version 1.1.0
+Version 1.2.0
 -------------
 
 BUGS
@@ -21,10 +21,16 @@ NEW FEATURES
 
 * Added new function `insertDerivation` to add run provenance relationships to a DataPackage (#64)
 
+* Added 'Show' methods for DataObject and DataPackage classes. (#71, #73)
+
 DEPRECATED 
 
 * The method `recordDerivation` is deprecated in this release and may be marked as Defunct and
   removed in a future release (#68)
+  
+Version 1.1.0
+
+This version was not released publically.
 
 Version 1.0.1
 -------------
