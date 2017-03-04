@@ -1,18 +1,29 @@
 ## Test environments
 
-* OS X 10.11.6, R 3.3.2, R 3.4.0
-* Ubuntu 14.04, R 3.3.2
-* Windows 7, R 3.3.2
-* Windows (via win-builder): x86_64-w64-mingw32 (64-bit), R 3.3.2 and R unstable (2016-11-22 r71678)
+* macOS 10.12.3, R 3.3.2
+* Ubuntu 14.04.5, R 3.3.2
+* Windows 7, R 3.3.2 
+* Windows 7, R (unstable) (2017-02-28 r72286)
+* Windows (via win-builder): x86_64-w64-mingw32 (64-bit), R version 3.3.2 (2016-10-31)
 
 ## Changes since last release
 
-* This minor release fixes a bug where `replicationAllowed` was not set correctly when parsing if it is
+* This release added 'insertDerivations()' method which adds provenance relationships to a DataPackage
+  for a script execution, or just between related data files. (#64)
+  
+* Added 'Show' methods for DataObject and DataPackage classes. (#71, #73)
+
+* Fixed a bug where `replicationAllowed` was not set correctly when parsing if it is
   false (#61)
   
 * Also fixed a bug where `numberReplicas` was not set correctly when parsing (#63)
 
-NEW FEATURES
+* Fixed bug where the `mediaType` argument to DataObject `initialize()`
+  was not being handled correctly and resulted in an invalid system metadata
+  object to be serialized from the DataObject. (#67)
+  
+* Added argument 'mediaTypeProperty' to DataObject `initialize()` which was
+  needed to fully support 'mediaType'. (#67)
 
 * Added new function to reset access policies `clearAccessPolicy()` (#56)
 
