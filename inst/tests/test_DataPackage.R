@@ -44,10 +44,10 @@ test_that("datapack methods work", {
     rdata <- getData(dpkg, id1)
     expect_that(length(rdata), equals(length(data)))
     nodata <- getData(dpkg, "bad_id")
-    expect_that(nodata, is_null())
+    expect_null(nodata)
     rdo <- getMember(dpkg, id1)
-    expect_that(class(do), matches("DataObject"))
-    expect_that(getIdentifier(do), matches(id1))
+    expect_match(class(do), "DataObject")
+    expect_match(getIdentifier(do), id1)
     do2 <- new("DataObject", id2, data, format, user, node)
     dpkg <- addData(dpkg, do2)
     expect_that(getSize(dpkg), equals(2))
@@ -79,9 +79,9 @@ test_that("datapack methods work", {
     # Test that the addData() function adds the 'documents' relationship if a metadata object is 
     # specified
     relations <- getRelationships(dpkg)
-    expect_that(relations[relations$subject == id1, 'predicate'], matches("isDocumentedBy"))
+    expect_match(relations[relations$subject == id1, 'predicate'], "isDocumentedBy")
     expect_that(relations[relations$subject == id1, 'object'], equals(mdId))
-    expect_that(relations[relations$subject == mdId, 'predicate'], matches("documents"))
+    expect_match(relations[relations$subject == mdId, 'predicate'], "documents")
     expect_that(relations[relations$subject == mdId, 'object'], equals(id1))
 })
 
@@ -109,8 +109,8 @@ test_that("InsertRelationship methods work", {
   expect_that(nrow(relations), equals(4))
   expect_that(relations[relations$object == doId1, 'subject'], equals(mdId))
   expect_that(relations[relations$object == doId2, 'subject'], equals(mdId))
-  expect_that(relations[relations$subject == mdId, 'predicate'], matches('documents'))
-  expect_that(relations[relations$subject == doId1, 'predicate'], matches('isDocumentedBy'))
+  expect_match(relations[relations$subject == mdId, 'predicate'], 'documents')
+  expect_match(relations[relations$subject == doId1, 'predicate'], 'isDocumentedBy')
   rm(dp)
   
   # Now test the second 'insertRelationships' that allows specifying the predicate of the relationship
@@ -127,9 +127,9 @@ test_that("InsertRelationship methods work", {
   
   # Test invalid argument values
   err <- try(dp <- insertRelationship(dp, subjectID=doId1, objectIDs=doId2, predicate="http://www.w3.org/ns/prov#wasDerivedFrom", subjectType='literal'), silent=TRUE)
-  expect_that(class(err), (matches("try-error")))
+  expect_match(class(err), ("try-error"))
   err <- try(dp <- insertRelationship(dp, subjectID=doId1, objectIDs=doId2, predicate="http://www.w3.org/ns/prov#wasDerivedFrom", objectType='foo'), silent=TRUE)
-  expect_that(class(err), (matches("try-error")))
+  expect_match(class(err), ("try-error"))
   
   nrel <- 1
   # Insert a typical provenance relationship
@@ -137,7 +137,7 @@ test_that("InsertRelationship methods work", {
   # Test if the data frame with retrieved relationships was constructed correctly
   relations <- getRelationships(dp, quiet=quietOn)
   expect_that(nrow(relations), equals(nrel))
-  expect_that(relations[relations$subject == doId1, 'predicate'], matches("wasDerivedFrom"))
+  expect_match(relations[relations$subject == doId1, 'predicate'], "wasDerivedFrom")
   expect_that(relations[relations$subject == doId1, 'object'], equals(doId2))
   expect_that(relations[relations$subject == doId1, 'subjectType'], equals(as.character(NA)))
   expect_that(relations[relations$subject == doId1, 'objectType'], equals(as.character(NA)))
@@ -147,8 +147,8 @@ test_that("InsertRelationship methods work", {
                      subjectType="uri", objectType="literal")  
   relations <- getRelationships(dp, quiet=quietOn)
   expect_that(nrow(relations), equals(nrel <- nrel + 1))
-  expect_that(relations[relations$subject == "orcid.org/0000-0002-2192-403X", 'predicate'], matches("hadHome"))
-  expect_that(relations[relations$subject == "orcid.org/0000-0002-2192-403X", 'object'], matches("www.example.com/home"))
+  expect_match(relations[relations$subject == "orcid.org/0000-0002-2192-403X", 'predicate'], "hadHome")
+  expect_match(relations[relations$subject == "orcid.org/0000-0002-2192-403X", 'object'], "www.example.com/home")
   expect_that(relations[relations$subject == "orcid.org/0000-0002-2192-403X", 'subjectType'], equals("uri"))
   expect_that(relations[relations$subject == "orcid.org/0000-0002-2192-403X", 'objectType'], equals("literal"))
   
@@ -157,8 +157,8 @@ test_that("InsertRelationship methods work", {
                      objectTypes=c("literal", "literal"))
   relations <- getRelationships(dp, quiet=quietOn)
   expect_that(nrow(relations), equals(nrel<-nrel + 3))
-  expect_that(relations[relations$object == "thing1", 'predicate'], matches("hadThing"))
-  expect_that(relations[relations$object == "thing1", 'subject'], matches("_:bl1"))
+  expect_match(relations[relations$object == "thing1", 'predicate'], "hadThing")
+  expect_match(relations[relations$object == "thing1", 'subject'], "_:bl1")
   expect_that(relations[relations$object == "thing1", 'subjectType'], equals("blank"))
   expect_that(relations[relations$object == "thing1", 'objectType'], equals("literal"))
   expect_that(relations[relations$object == "thing2", 'subjectType'], equals("blank"))
@@ -177,17 +177,17 @@ test_that("InsertRelationship methods work", {
   dp <- insertRelationship(dp, subjectID=as.character(NA), objectIDs="thing6", predicate="http://www.myns.org/wasThing", objectTypes="literal")
   relations <- getRelationships(dp, quiet=quietOn)
   expect_that(nrow(relations), equals(nrel<-nrel + 1))
-  expect_that(relations[relations$object == "thing6", 'predicate'], matches("wasThing"))
+  expect_match(relations[relations$object == "thing6", 'predicate'], "wasThing")
   expect_that(relations[relations$object == "thing6", 'subjectType'], equals("blank"))
-  expect_that(relations[relations$object == "thing6", 'subject'], matches("_:"))
+  expect_match(relations[relations$object == "thing6", 'subject'], "_:")
   
   # No objectID specified
   dp <- insertRelationship(dp, subjectID="urn:uuid5678", objectIDs=as.character(NA), predicate="http://www.myns.org/gaveThing")
   relations <- getRelationships(dp, quiet=quietOn)
   expect_that(nrow(relations), equals(nrel <- nrel + 1))
-  expect_that(relations[relations$subject == "urn:uuid5678", 'predicate'], matches("gaveThing"))
+  expect_match(relations[relations$subject == "urn:uuid5678", 'predicate'], "gaveThing")
   expect_that(relations[relations$subject == "urn:uuid5678", 'objectType'], equals("blank"))
-  expect_that(relations[relations$subject == "urn:uuid5678", 'object'], matches("_:"))
+  expect_match(relations[relations$subject == "urn:uuid5678", 'object'], "_:")
   
   # Specify dataTypeURIs
   dp <- insertRelationship(dp, subjectID="urn:uuid:abcd", objectIDs="Wed Mar 18 06:26:44 PDT 2015", 
@@ -196,10 +196,10 @@ test_that("InsertRelationship methods work", {
                      dataTypeURIs="http://www.w3.org/2001/XMLSchema#string")
   relations <- getRelationships(dp, quiet=quietOn)
   expect_that(nrow(relations), equals(nrel <- nrel + 1))
-  expect_that(relations[relations$subject == "urn:uuid:abcd", 'dataTypeURI'], matches("string"))
+  expect_match(relations[relations$subject == "urn:uuid:abcd", 'dataTypeURI'], "string")
   expect_that(relations[relations$subject == "urn:uuid:abcd", 'subjectType'], equals("uri"))
   expect_that(relations[relations$subject == "urn:uuid:abcd", 'objectType'], equals("literal"))
-  expect_that(relations[relations$subject == "urn:uuid:abcd", 'predicate'], matches("startedAt"))
+  expect_match(relations[relations$subject == "urn:uuid:abcd", 'predicate'], "startedAt")
 
   rm(dp)
   dp <- new("DataPackage")
@@ -513,13 +513,13 @@ test_that("Adding provenance relationships to a DataPackage via insertDerivation
     # 
     # Test if passing only inputs fails
     err <- try(dp <- insertDerivation(dp, sources=inputs), silent=TRUE)
-    expect_that(class(err), matches("try-error"))
+    expect_match(class(err), "try-error")
     # Test if passing only outputs fails
     err <- try(dp <- insertDerivation(dp, derivations=outputs), silent=TRUE)
-    expect_that(class(err), matches("try-error"))
+    expect_match(class(err), "try-error")
     # Test if passing only program fails
     err <- try(dp <- insertDerivation(dp, program=doProg), silent=TRUE)
-    expect_that(class(err), matches("try-error"))
+    expect_match(class(err), "try-error")
     
     # Test prov:wasDerivedFrom with pids that are not package members
     rm(dp)

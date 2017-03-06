@@ -53,7 +53,7 @@ test_that("DataObject constructors work", {
     expect_that(getFormatId(do), equals(format))
     data2 <- getData(do)
     sha1_get_data <- digest(data2, algo="sha1", serialize=FALSE, file=FALSE)
-    expect_that(sha1_get_data, matches(sha1))
+    expect_match(sha1_get_data, sha1)
     unlink(tf)
 })
 test_that("DataObject accessPolicy methods", {

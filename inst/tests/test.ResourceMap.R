@@ -49,7 +49,7 @@ test_that("ResourceMap creation from DataPackage triples", {
   relations <- getRelationships(dp)
   # Test if the data frame with retrieved relationships was constructed correctly
   expect_that(nrow(relations), equals(7))
-  expect_that(relations[relations$subject == mdId, 'predicate'], matches("documents"))
+  expect_match(relations[relations$subject == mdId, 'predicate'], "documents")
   
   # Now initialize a ResourceMap with the relationships.
   resMapId <- sprintf("resourceMap:%s", UUIDgenerate())  
