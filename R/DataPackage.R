@@ -420,7 +420,8 @@ setMethod("getRelationships", signature("DataPackage"), function(x, condense=F, 
   } else {
       relationships <- data.frame()
   }
-    if(condense) {
+    
+    if(nrow(relationships) > 0 && condense) {
         consoleWidth <- getOption("width")
         if(is.na(consoleWidth)) consoleWidth <- 80
         paddingWidth <- 10
@@ -1068,20 +1069,30 @@ setMethod("show", "DataPackage",
             "%-", sprintf("%2d", fileNameWidth), "s ",
             "%-", sprintf("%2d", sizeWidth), "s ",
             "\n", sep="")
-        cat(sprintf("Members:\n\n"))
-        cat(sprintf(fmt, "identifier", "format", "submitter", "rightsHolder", "mediaType", "filename", "size"))
-        lapply(ids, function(id) { cat(sprintf(fmt, 
-            condenseStr(object@objects[[id]]@sysmeta@identifier, identifierWidth),
-            condenseStr(object@objects[[id]]@sysmeta@formatId, formatIdWidth),
-            condenseStr(object@objects[[id]]@sysmeta@submitter, submitterWidth),
-            condenseStr(object@objects[[id]]@sysmeta@rightsHolder, rightsHolderWidth),
-            condenseStr(object@objects[[id]]@sysmeta@mediaType, mediaTypeWidth),
-            condenseStr(object@objects[[id]]@sysmeta@fileName, fileNameWidth),
-            condenseStr(object@objects[[id]]@sysmeta@size, sizeWidth)))
+        if(length(ids) > 0) {
+            cat(sprintf("Members:\n\n"))
+            cat(sprintf(fmt, "identifier", "format", "submitter", "rightsHolder", "mediaType", "filename", "size"))
+            lapply(ids, function(id) { cat(sprintf(fmt, 
+                                                   condenseStr(object@objects[[id]]@sysmeta@identifier, identifierWidth),
+                                                   condenseStr(object@objects[[id]]@sysmeta@formatId, formatIdWidth),
+                                                   condenseStr(object@objects[[id]]@sysmeta@submitter, submitterWidth),
+                                                   condenseStr(object@objects[[id]]@sysmeta@rightsHolder, rightsHolderWidth),
+                                                   condenseStr(object@objects[[id]]@sysmeta@mediaType, mediaTypeWidth),
+                                                   condenseStr(object@objects[[id]]@sysmeta@fileName, fileNameWidth),
+                                                   condenseStr(object@objects[[id]]@sysmeta@size, sizeWidth)))
             }
-        )
-        cat(sprintf("\nRelationships:\n\n"))
-        show(getRelationships(object, condense=TRUE))
+            )
+        } else {
+            cat(sprintf("This package does not contain any DataObjects:\n"))
+        }
+
+        relationships <- getRelationships(object, condense=TRUE)
+        if(nrow(relationships) > 0) {
+          cat(sprintf("\nRelationships:\n\n"))
+          show(relationships)
+        } else {
+          cat(sprintf("\nThis package doesn not contain any provenance relationships."))  
+        }
     }
 )
 
