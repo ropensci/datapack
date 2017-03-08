@@ -58,14 +58,13 @@
 #'  \item{\code{\link{getIdentifiers}}}{: Get the Identifiers of DataPackage members}
 #'  \item{\code{\link{addData}}}{: Add a DataObject to the DataPackage}
 #'  \item{\code{\link{insertRelationship}}}{: Insert relationships between objects in a DataPackage}
-#'  \item{\code{\link{recordDerivation}}}{: Record derivation relationships between objects in a DataPackage}
 #'  \item{\code{\link{getRelationships}}}{: Retrieve relationships of data package objects}
 #'  \item{\code{\link{containsId}}}{: Returns true if the specified object is a member of the data package}
 #'  \item{\code{\link{removeMember}}}{: Remove the Specified Member from the DataPackage}
 #'  \item{\code{\link{getMember}}}{: Return the DataPackage Member by Identifier}
 #'  \item{\code{\link{serializePackage}}}{: Create an OAI-ORE resource map from the data package}
 #'  \item{\code{\link{serializeToBagIt}}}{: Serialize A DataPackage into a BagIt Archive File}
-#'  \item{\code{\link{insertDerivation}}}{: Add provenance relationships to a DataPackage for an R script.}
+#'  \item{\code{\link{describeWorkflow}}}{: Add data derivation information to a DataPackage}
 #' }
 #' @seealso \code{\link{datapack}}
 #' @export
@@ -376,7 +375,7 @@ setMethod("insertRelationship", signature("DataPackage"),
 #' @seealso \code{\link{DataPackage-class}}
 #' @export
 setGeneric("recordDerivation", function(x, ...) {
-    .Deprecated("insertDerivation", "datapack")
+    .Deprecated("describeWorkflow", "datapack")
     standardGeneric("recordDerivation")
 })
 
@@ -384,7 +383,7 @@ setGeneric("recordDerivation", function(x, ...) {
 #' @param sourceID the identifier of the source object in the relationship
 #' @param derivedIDs an identifier or list of identifiers of objects that were derived from the source 
 setMethod("recordDerivation",  signature("DataPackage"), function(x, sourceID, derivedIDs, ...) {
-    insertDerivation(x, sources=sourceID, derivations=derivedIDs, ...)
+    describeWorkflow(x, sources=sourceID, derivations=derivedIDs, ...)
 })
 
 #' Retrieve relationships of package objects
@@ -584,7 +583,7 @@ setGeneric("serializePackage", function(x, ...) {
 #' data2 <- charToRaw("7,8,9\n10,11,12")
 #' do2 <- new("DataObject", id="do2", dataobj=data2, format="text/csv", user="jsmith")
 #' dp <- addData(dp, do2)
-#' dp <- insertDerivation(dp, sources=do, derivations=do2)
+#' dp <- describeWorkflow(dp, sources=do, derivations=do2)
 #' \dontrun{
 #' td <- tempdir()
 #' status <- serializePackage(dp, file=paste(td, "resmap.json", sep="/"), syntaxName="json",  
@@ -667,7 +666,7 @@ setGeneric("serializeToBagIt", function(x, ...) {
 #' do2 <- new("DataObject", id="do2", dataobj=data2, format="text/csv", user="jsmith")
 #' dp <- addData(dp, do2)
 #' # Create a relationship between the two data objects
-#' dp <- insertDerivation(dp, sources="do2", derivations="do2")
+#' dp <- describeWorkflow(dp, sources="do2", derivations="do2")
 #' # Write out the data package to a BagIt file
 #' \dontrun{
 #' bagitFile <- serializeToBagIt(dp, syntaxName="json", mimeType="application/json")
@@ -825,7 +824,7 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=as.cha
 #' created from source data using a processing program such as an R script.  These provenance
 #' relationships allow the derived data to be understood sufficiently for users
 #' to be able to reproduce the computations that created the derived data, and to
-#' trace lineage of the derived data objects. The method \code{insertDerivation} 
+#' trace lineage of the derived data objects. The method \code{describeWorkflow} 
 #' will add provenance relationships between a script that was executed, the files 
 #' that it used as sources, and the derived files that it generated.
 #' @details This method operates on a DataPackage that has had DataObjects for 
@@ -846,11 +845,11 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=as.cha
 #'   
 #' @param x The \code{DataPackage} to add provenance relationships to.
 #' @param ... Additional parameters
-setGeneric("insertDerivation", function(x, ...) {
-    standardGeneric("insertDerivation")
+setGeneric("describeWorkflow", function(x, ...) {
+    standardGeneric("describeWorkflow")
 })
 
-#' @rdname insertDerivation
+#' @rdname describeWorkflow
 #' @param sources A list of DataObjects for files that were read by the program. Alternatively, a list 
 #' of DataObject identifiers can be specified as a list of character strings.
 #' @param program The DataObject created for the program such as an R script. Alternatively the DataObject identifier can
@@ -881,10 +880,10 @@ setGeneric("insertDerivation", function(x, ...) {
 #' 
 #' # Add the provenenace relationshps, linking the input and output to the script execution
 #' # Note: 'sources' and 'derivations' can also be lists of "DataObjects" or "DataObject' identifiers
-#' dp <- insertDerivation(dp, sources = inObj, program = progObj, derivations = outObj) 
+#' dp <- describeWorkflow(dp, sources = inObj, program = progObj, derivations = outObj) 
 #' # View the results
 #' head(getRelationships(dp))
-setMethod("insertDerivation", signature("DataPackage"), function(x, sources=list(), 
+setMethod("describeWorkflow", signature("DataPackage"), function(x, sources=list(), 
                                                                   program=as.character(NA), 
                                                                   derivations=list(), ...) {
     

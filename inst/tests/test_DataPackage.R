@@ -368,11 +368,11 @@ test_that("BagIt serialization works", {
 
 }) 
 
-test_that("Adding provenance relationships to a DataPackage via insertDerivation works", {
+test_that("Adding provenance relationships to a DataPackage via describeWorkflow works", {
     
     library(datapack)
     # 
-    # Test insertDerivation using DataObject ids
+    # Test describeWorkflow using DataObject ids
     dp <- new("DataPackage")
     inIds <- list()
     outIds <- list()
@@ -395,7 +395,7 @@ test_that("Adding provenance relationships to a DataPackage via insertDerivation
     outIds[[length(outIds)+1]] <- getIdentifier(doOut)
     dp <- addData(dp, doOut)
     # Add the provenenace relationships for the script execution, using ids for 'sources, program, derivation' arguments
-    dp <- insertDerivation(dp, sources=inIds, program=progId, derivations=outIds)
+    dp <- describeWorkflow(dp, sources=inIds, program=progId, derivations=outIds)
     # Test if the data frame with retrieved relationships was constructed correctly
     relations <- getRelationships(dp, quiet=quietOn)
     execId <- relations[relations$object == datapack:::provONEexecution,'subject']
@@ -408,7 +408,7 @@ test_that("Adding provenance relationships to a DataPackage via insertDerivation
     expect_match(relations[relations$predicate == datapack:::provWasDerivedFrom,'object'], getIdentifier(doIn))
    
     # 
-    # Now do the same test passing DataObjects to insertDerivation
+    # Now do the same test passing DataObjects to describeWorkflow
     rm(dp)
     dp <- new("DataPackage")
     inputs <- list()
@@ -428,7 +428,7 @@ test_that("Adding provenance relationships to a DataPackage via insertDerivation
                  suggestedFilename="gre-predicted.png")
     dp <- addData(dp, doOut)
     outputs[[length(outputs)+1]] <- doOut
-    dp <- insertDerivation(dp, sources=inputs, program=doProg, derivations=outputs)
+    dp <- describeWorkflow(dp, sources=inputs, program=doProg, derivations=outputs)
     relations <- getRelationships(dp, quiet=quietOn)
     execId <- relations[relations$object == datapack:::provONEexecution,'subject']
     expect_match(relations[relations$predicate == datapack:::provWasGeneratedBy,'subject'], getIdentifier(doOut))
@@ -456,7 +456,7 @@ test_that("Adding provenance relationships to a DataPackage via insertDerivation
                  suggestedFilename="gre-predicted.png")
     dp <- addData(dp, doOut)
     outputs[[length(outputs)+1]] <- doOut
-    dp <- insertDerivation(dp, sources=inputs, derivations=outputs)
+    dp <- describeWorkflow(dp, sources=inputs, derivations=outputs)
     relations <- getRelationships(dp, quiet=quietOn)
     expect_match(relations[relations$predicate == datapack:::provWasDerivedFrom,'subject'], getIdentifier(doOut))
     expect_match(relations[relations$predicate == datapack:::provWasDerivedFrom,'object'], getIdentifier(doIn))
@@ -478,7 +478,7 @@ test_that("Adding provenance relationships to a DataPackage via insertDerivation
                  suggestedFilename="gre-predicted.png")
     dp <- addData(dp, doOut)
     outputs[[length(outputs)+1]] <- doOut
-    dp <- insertDerivation(dp, program=doProg, derivations=outputs)
+    dp <- describeWorkflow(dp, program=doProg, derivations=outputs)
     relations <- getRelationships(dp, quiet=quietOn)
     execId <- relations[relations$object == datapack:::provONEexecution,'subject']
     expect_match(relations[relations$predicate == datapack:::provWasGeneratedBy,'subject'], getIdentifier(doOut))
@@ -502,7 +502,7 @@ test_that("Adding provenance relationships to a DataPackage via insertDerivation
                 suggestedFilename="binary.csv")
     dp <- addData(dp, doIn)
     inputs[[length(inputs)+1]] <- doIn
-    dp <- insertDerivation(dp, sources=inputs, program=doProg)
+    dp <- describeWorkflow(dp, sources=inputs, program=doProg)
     relations <- getRelationships(dp, quiet=quietOn)
     expect_match(relations[relations$subject == getIdentifier(doIn),'object'], 'Data')
     execId <- relations[relations$object == datapack:::provONEexecution,'subject']
@@ -512,13 +512,13 @@ test_that("Adding provenance relationships to a DataPackage via insertDerivation
     
     # 
     # Test if passing only inputs fails
-    err <- try(dp <- insertDerivation(dp, sources=inputs), silent=TRUE)
+    err <- try(dp <- describeWorkflow(dp, sources=inputs), silent=TRUE)
     expect_match(class(err), "try-error")
     # Test if passing only outputs fails
-    err <- try(dp <- insertDerivation(dp, derivations=outputs), silent=TRUE)
+    err <- try(dp <- describeWorkflow(dp, derivations=outputs), silent=TRUE)
     expect_match(class(err), "try-error")
     # Test if passing only program fails
-    err <- try(dp <- insertDerivation(dp, program=doProg), silent=TRUE)
+    err <- try(dp <- describeWorkflow(dp, program=doProg), silent=TRUE)
     expect_match(class(err), "try-error")
     
     # Test prov:wasDerivedFrom with pids that are not package members

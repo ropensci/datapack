@@ -38,6 +38,7 @@ Packaging model
 
 \item{\code{externalIds}}{A list containing identifiers for objects associated with the DataPackage}
 }}
+
 \section{Methods}{
 
 \itemize{
@@ -47,17 +48,16 @@ Packaging model
  \item{\code{\link{getIdentifiers}}}{: Get the Identifiers of DataPackage members}
  \item{\code{\link{addData}}}{: Add a DataObject to the DataPackage}
  \item{\code{\link{insertRelationship}}}{: Insert relationships between objects in a DataPackage}
- \item{\code{\link{recordDerivation}}}{: Record derivation relationships between objects in a DataPackage}
  \item{\code{\link{getRelationships}}}{: Retrieve relationships of data package objects}
  \item{\code{\link{containsId}}}{: Returns true if the specified object is a member of the data package}
  \item{\code{\link{removeMember}}}{: Remove the Specified Member from the DataPackage}
  \item{\code{\link{getMember}}}{: Return the DataPackage Member by Identifier}
  \item{\code{\link{serializePackage}}}{: Create an OAI-ORE resource map from the data package}
  \item{\code{\link{serializeToBagIt}}}{: Serialize A DataPackage into a BagIt Archive File}
- \item{\code{\link{insertDerivation}}}{: Add provenance relationships to a DataPackage for an R script.}
+ \item{\code{\link{describeWorkflow}}}{: Add data derivation information to a DataPackage}
 }
 }
+
 \seealso{
 \code{\link{datapack}}
 }
-

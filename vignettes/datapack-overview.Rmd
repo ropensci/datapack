@@ -224,7 +224,7 @@ The following example demonstrates how to insert provenance relationships into a
 for the R program `logit-regression.R` that read the data file `binary.csv` and 
 generates the image file `gre-predicted.png`. Using the example DataPackage for which 
 DataObjects for the program input and output have already been added, we create a 
-DataObject for the program, and call `insertDerivation` to add the necessary provenance
+DataObject for the program, and call `describeWorkflow` to add the necessary provenance
 relationships:
 
 ```{r}
@@ -244,10 +244,10 @@ doOut <- new("DataObject", format="image/png",
 dp <- addData(dp, doOut)
 
 # The arguments "sources" and "derivations" can also contain lists of "DataObjects"
-dp <- insertDerivation(dp, sources=doIn, program=progObj, derivations=doOut)
+dp <- describeWorkflow(dp, sources=doIn, program=progObj, derivations=doOut)
 ```
 
-The following statement shows the provenance relationships that were added by `insertDerivations`:
+The following statement shows the provenance relationships that were added by `describeWorkflows`:
 
 ```{r, out.width=120}
 rels <- getRelationships(dp, condense=T)
@@ -255,9 +255,9 @@ rels[grepl("prov:", rels$predicate),]
 ```
 
 Note that in this example, the R script had previously been run and generated the image
-file before `insertDerivation()` is called.
+file before `describeWorkflow()` is called.
 
-The `sources` and `derivations` arguments for `insertDerivations` can be lists of either DataObjects or
+The `sources` and `derivations` arguments for `describeWorkflows` can be lists of either DataObjects or
 the identifiers of DataObjects.
 
 ## Describing The Contents of a DataPackage 
