@@ -1,14 +1,14 @@
 ## Test environments
 
-* macOS 10.12.3, R 3.3.2
-* Ubuntu 14.04.5, R 3.3.2
+* macOS 10.12.3, R 3.3.3
+* Ubuntu 14.04.5, R 3.3.2, R 3.3.3
 * Windows 7, R 3.3.2 
-* Windows 7, R (unstable) (2017-02-28 r72286)
-* Windows (via win-builder): x86_64-w64-mingw32 (64-bit), R version 3.3.2 (2016-10-31)
+* Windows (via win-builder): x86_64-w64-mingw32 (64-bit), R version 3.3.3 (2017-03-06)
+* Windows (via win-builder): x86_64-w64-mingw32 (64-bit), R (unstable) (2017-03-07 r72317)
 
 ## Changes since last release
 
-* This release added 'insertDerivations()' method which adds provenance relationships to a DataPackage
+* This release added 'describeWorkflow()' method which adds provenance relationships to a DataPackage
   for a script execution, or just between related data files. (#64)
   
 * Added 'Show' methods for DataObject and DataPackage classes. (#71, #73)
