@@ -19,7 +19,7 @@ NEW FEATURES
 
 * Added new function to reset access policies `clearAccessPolicy()` (#56)
 
-* Added new function `insertDerivation` to add run provenance relationships to a DataPackage (#64)
+* Added new function `describeWorkflow()` to add run provenance relationships to a DataPackage (#64)
 
 * Added 'Show' methods for DataObject and DataPackage classes. (#71, #73)
 
