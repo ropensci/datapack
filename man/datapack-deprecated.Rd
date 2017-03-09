@@ -13,5 +13,5 @@ marked as Defunct and removed in a future version.
  \item{\code{\link{recordDerivation}}}{: Record derivation relationships between objects in a DataPackage.}
 }
 }
-\keyword{internal}
 
+\keyword{internal}

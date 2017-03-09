@@ -30,4 +30,3 @@ sysmeta <- clearAccessPolicy(sysmeta)
 \seealso{
 \code{\link{SystemMetadata-class}}
 }
-

@@ -55,4 +55,3 @@ serializeRDF(resmap, tf)
 \seealso{
 \code{\link{ResourceMap-class}}
 }
-

@@ -34,4 +34,3 @@ isInPackage <- containsId(dp, identifier="myNewId")
 \seealso{
 \code{\link{DataPackage-class}}
 }
-

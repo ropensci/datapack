@@ -40,4 +40,3 @@ recordDerivation(dp, "doi:1234/_030MXTI009R00_20030812.40.1",
 \seealso{
 \code{\link{DataPackage-class}}
 }
-

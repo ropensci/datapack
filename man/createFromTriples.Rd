@@ -55,4 +55,3 @@ resMap <- createFromTriples(resMap, relations, getIdentifiers(dp))
 \seealso{
 \code{\link{ResourceMap-class}}
 }
-

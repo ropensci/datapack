@@ -3,8 +3,8 @@
 \docType{methods}
 \name{addAccessRule}
 \alias{addAccessRule}
-\alias{addAccessRule,DataObject-method}
 \alias{addAccessRule,SystemMetadata-method}
+\alias{addAccessRule,DataObject-method}
 \title{Add access rules to the specified object.}
 \usage{
 addAccessRule(x, ...)
@@ -50,4 +50,3 @@ obj <- addAccessRule(obj, "uid=smith,ou=Account,dc=example,dc=com", "write")
 \seealso{
 \code{\link{SystemMetadata-class}}
 }
-

@@ -60,6 +60,7 @@ access policy, replication policy, and related metadata.
 
 \item{\code{mediaTypeProperty}}{value of type a \code{"list"} of \code{"character"}, IANA Media Type properties for the \code{"mediaType"} argument}
 }}
+
 \section{Methods}{
 
 \itemize{
@@ -73,7 +74,7 @@ access policy, replication policy, and related metadata.
  \item{\code{\link{clearAccessPolicy}}}{: Clear the accessPolicy from the specified object.}
 }
 }
+
 \seealso{
 \code{\link{datapack}}
 }
-

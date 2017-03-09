@@ -49,4 +49,3 @@ dpkg <- addData(dpkg, do, md)
 \seealso{
 \code{\link{DataPackage-class}}
 }
-

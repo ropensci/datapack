@@ -2,8 +2,8 @@
 % Please edit documentation in R/DataObject.R
 \docType{methods}
 \name{initialize,DataObject-method}
-\alias{DataObject-initialize}
 \alias{initialize,DataObject-method}
+\alias{DataObject-initialize}
 \title{Initialize a DataObject}
 \usage{
 \S4method{initialize}{DataObject}(.Object, id = as.character(NA),
@@ -55,4 +55,3 @@ do <- new("DataObject", "id1", dataobj=data, "text/csv",
 \seealso{
 \code{\link{DataObject-class}}
 }
-

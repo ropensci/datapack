@@ -41,4 +41,3 @@ ruleExists <- hasAccessRule(sysmeta, subject="uid=smith,ou=Account,dc=example,dc
 \seealso{
 \code{\link{SystemMetadata-class}}
 }
-

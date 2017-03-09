@@ -31,4 +31,3 @@ removeMember(dp, "myNewId")
 \seealso{
 \code{\link{DataPackage-class}}
 }
-

@@ -31,4 +31,3 @@ getIdentifiers(dp)
 \seealso{
 \code{\link{DataPackage-class}}
 }
-

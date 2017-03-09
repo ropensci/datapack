@@ -34,6 +34,7 @@ contents of the data or file as a raw value (but this will read all of the data 
 
 \item{\code{filename}}{A character value that contains the fully-qualified path to the object data on disk}
 }}
+
 \section{Methods}{
 
 \itemize{
@@ -46,6 +47,7 @@ contents of the data or file as a raw value (but this will read all of the data 
   \item{\code{\link{canRead}}}{: Test whether the provided subject can read an object.}
 }
 }
+
 \examples{
 data <- charToRaw("1,2,3\\n4,5,6\\n")
 do <- new("DataObject", "id1", dataobj=data, "text/csv", 
@@ -71,4 +73,3 @@ do <- new("DataObject", "id1", format="text/csv", user="uid=jones,DC=example,DC=
 \code{\link{datapack}}
 }
 \keyword{classes}
-
