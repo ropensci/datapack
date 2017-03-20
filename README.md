@@ -120,6 +120,15 @@ for example:
 vignette("upload-data", package="dataone")
 ```
 
+## Acknowledgements
+Work on this package was supported by:
+
+- NSF-ABI grant #1262458 to C. Gries, M. B. Jones, and S. Collins.
+- NSF-DATANET grants #0830944 and #1430508 to W. Michener, M. B. Jones, D. Vieglais, S. Allard and P. Cruse
+- NSF DIBBS grant #1443062 to T. Habermann and M. B. Jones
+
+Additional support was provided for working group collaboration by the National Center for Ecological Analysis and Synthesis, a Center funded by the University of California, Santa Barbara, and the State of California.
+
 [![nceas_footer](https://www.nceas.ucsb.edu/files/newLogo_0.png)](http://www.nceas.ucsb.edu)
 
 [![ropensci_footer](http://ropensci.org/public_images/github_footer.png)](http://ropensci.org)
