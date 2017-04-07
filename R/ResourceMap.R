@@ -224,7 +224,7 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
   }
   
   for(id in externalIdentifiers) {
-    if (! grepl(pkgResolveURI, id)) {
+    if (! grepl(pkgResolveURI, id) && ! grepl("http", id)) {
         URIid <- sprintf("%s/%s", pkgResolveURI, URLencode(id, reserved=TRUE))
     } else {
         URIid <- id
