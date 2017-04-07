@@ -1171,7 +1171,7 @@ setGeneric("describeWorkflow", function(x, ...) {
 #' head(getRelationships(dp))
 setMethod("describeWorkflow", signature("DataPackage"), function(x, sources=list(), 
                                                                   program=as.character(NA), 
-                                                                  derivations=list(), ...) {
+                                                                  derivations=list(), insertDerivations=TRUE, ...) {
     
     # Check each "source" list member and check if it is the correct type, either
     # DataObject or character (for DataObject id). Build a list of member ids for
