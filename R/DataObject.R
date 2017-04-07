@@ -119,17 +119,22 @@ setClass("DataObject", slots = c(
 #' @seealso \code{\link{DataObject-class}}
 setMethod("initialize", "DataObject", function(.Object, id=as.character(NA), dataobj=NA, format=as.character(NA), user=as.character(NA), 
                                                mnNodeId=as.character(NA), filename=as.character(NA), seriesId=as.character(NA),
-                                               mediaType=as.character(NA), suggestedFilename=as.character(NA), mediaTypeProperty=list()) {
+                                               mediaType=as.character(NA), suggestedFilename=as.character(NA), mediaTypeProperty=list(),
+                                               dataURL=as.character(NA)) {
   
     # If no value has been passed in for 'id', then create a UUID for it.
     if (class(id) != "SystemMetadata" && is.na(id)) {
       id <- paste0("urn:uuid:", UUIDgenerate())
     }
-      
+  
     # Validate: either dataobj or filename must be provided
-    if (is.na(dataobj[[1]]) && is.na(filename)) {
-        stop("Either the dataobj parameter containing raw data or the file parameter with a file reference to the data must be provided.")
+    # If this data object is being lazy loaded from the MN, then it is legal for it to
+    # be initialized without a dataobj or filename.
+    if (is.na(dataobj[[1]]) && is.na(filename) && is.na(dataURL)) {
+        stop("Either the dataobj parameter containing raw data or the file parameter with a file reference to the data\n or the 'dataURL' parameter must be provided.")
     }
+  
+    .Object@dataURL <- dataURL
     
     # Validate: dataobj must be raw if provided
     if (!is.na(dataobj[[1]])) {
@@ -178,6 +183,10 @@ setMethod("initialize", "DataObject", function(.Object, id=as.character(NA), dat
         .Object@filename <- filename
     }
     
+    
+    # Test if this DataObject is brand new, or possibly created from an existing object, i.e.
+    # downloaded from a data repository
+    .Object@updated <- hash( keys=c("sysmeta", "data"), values=c(FALSE, FALSE))
     return(.Object)
 })
 
@@ -201,17 +210,35 @@ setGeneric("getData", function(x, ...) {
 #'   "uid=jones,DC=example,DC=com", "urn:node:KNB")
 #' bytes <- getData(do)
 setMethod("getData", signature("DataObject"), function(x) {
-    if (is.na(x@filename)) {
-        return(x@data)
-    } else {
-        # TODO: read the file from disk and return the contents
-        stopifnot(!is.na(x@filename))
-        fileinfo <- file.info(x@filename)
-        con <- file(x@filename, "rb")
-        temp <- readBin(con, raw(), x@sysmeta@size)
-        close(con)
-        return(temp)
+  if (length(x@data) > 0) {
+    return(x@data)
+  } else if(!is.na(x@filename)) {
+    # Read the file from disk and return the contents as raw
+    stopifnot(!is.na(x@filename))
+    fileinfo <- file.info(x@filename)
+    con <- file(x@filename, "rb")
+    temp <- readBin(con, raw(), x@sysmeta@size)
+    close(con)
+    return(temp)
+  } else if (!is.na(x@dataURL)) {
+    # This DataObject was created by downloading an object from
+    # a repository, but the size of the object to downlaod was too
+    # large, so downloading the data was deferred. Now the user is
+    # trying to get the data, so we have to download the data, regardless
+    # of size.
+    # TODO: this request may fail if the data isn't publicly readable, as this isn't
+    # request doesn't use the dataone authorized request, i.e. dataone::getObject
+    response <- httr::GET(x@dataURL)
+    if (response$status != "200") {
+      errorMsg <- http_status(response)$message
+      stop(sprintf("getData() error: %s\n", errormsg))
     }
+    # Can't set a slot in the DataObject to hold the data, as we
+    # are returning data and not the modified DataObject
+    data <- content(response, as = "raw")
+    return(data)
+  }
+  
 })
 
 #' Get the Identifier of the DataObject
