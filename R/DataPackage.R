@@ -578,6 +578,94 @@ setMethod("selectMember", signature("DataPackage"), function(x, name, value) {
         return(matchingIds)
     }
 })
+#' Return identifiers for objects that match search criteria
+#' @description Given the identifier of a member of the data package, return the DataObject
+#' @param x A DataPackage instance
+#' @param ... (Not yet used)
+#' @seealso \code{\link{DataPackage-class}}
+#' @export
+setGeneric("setValue", function(x, ...) {
+  standardGeneric("setValue")
+})
+
+#' @rdname setValue
+#' @param identifier A DataObject identifier
+#' @return A DataObject if the member is found, or NULL if not
+#' @export
+#' @examples
+#' dp <- new("DataPackage")
+#' data <- charToRaw("1,2,3\n4,5,6")
+#' do <- new("DataObject", id="myNewId", dataobj=data, format="text/csv", user="jsmith")
+#' dp <- addData(dp, do)
+#' do2 <- getMember(dp, "myNewId")
+setMethod("setValue", signature("DataPackage"), function(x, name, value, identifiers=as.character(NA)) {
+  # First look at the top level slot names for a match with 'field'
+  matchingIds <- list()
+  if(length(keys(x@objects)) > 0) {
+    for(iKey in keys(x@objects)) {
+      if(! iKey %in% identifiers) next
+      cat(sprintf("Updating %s\n", iKey))
+      tmpObj <- x@objects[[iKey]]
+      if (class(value) == "character") {
+          if(is.na(value)) {
+              cat(sprintf("setting char NA value: %s\n", value))
+              setStr <- sprintf("x@objects[[\'%s\']]@%s <- as.character(%s)", iKey, as.character(name), value)
+          } else {
+              cat(sprintf("setting char value: %s\n", value))
+              setStr <- sprintf("x@objects[[\'%s\']]@%s <- \"%s\"", iKey, as.character(name), value)
+          }
+      } else {
+          cat(sprintf("setting non char value: %s\n", value))
+          setStr <- sprintf("x@objects[[\'%s\']]@%s <- %s", iKey, as.character(name), value)
+      }
+      eval(parse(text=setStr))
+      if (! identical(tmpObj@sysmeta, x@objects[[iKey]]@sysmeta)) x@objects[[iKey]]@updated[['sysmeta']] <- TRUE
+      if (length(tmpObj@data) != length(x@objects[[iKey]]@data)) x@objects[[iKey]]@updated[['data']] <- TRUE
+      if (identical(tmpObj@filename, x@objects[[iKey]]@filename)) x@objects[[iKey]]@updated[['data']] <- TRUE
+      #if(identical(testValue, value)) matchingIds[[length(matchingIds)+1]] <- iKey
+    }
+  } else {
+    stop("The specified package has no members")
+  }
+})
+
+#' Return identifiers for objects that match search criteria
+#' @description Given the identifier of a member of the data package, return the DataObject
+#' @param x A DataPackage instance
+#' @param ... (Not yet used)
+#' @seealso \code{\link{DataPackage-class}}
+#' @export
+setGeneric("getValue", function(x, ...) {
+    standardGeneric("getValue")
+})
+
+#' @rdname setValue
+#' @param identifier A DataObject identifier
+#' @return A DataObject if the member is found, or NULL if not
+#' @export
+#' @examples
+#' dp <- new("DataPackage")
+#' data <- charToRaw("1,2,3\n4,5,6")
+#' do <- new("DataObject", id="myNewId", dataobj=data, format="text/csv", user="jsmith")
+#' dp <- addData(dp, do)
+#' do2 <- getMember(dp, "myNewId")
+setMethod("getValue", signature("DataPackage"), function(x, name, identifiers=as.character(NA)) {
+    values <- list()
+    if(is.na(identifiers)) identifiers <- getIdentifiers(x)
+    if(length(keys(x@objects)) > 0) {
+        for(iKey in keys(x@objects)) {
+            if(! iKey %in% identifiers) next
+            slotStr <- sprintf("value <- x@objects[[\'%s\']]@%s", iKey, as.character(name))
+            eval(parse(text=slotStr))
+            #values[[length(values)+1]] <- value
+            values[[iKey]] <- value
+        }
+    } else {
+        stop("The specified package has no members")
+    }
+    values
+})
+
 #' Create an OAI-ORE resource map from the package
 #' @description The Datapackage is serialized as a OAI-ORE resource map to the specified file.
 #' @param x A DataPackage object
