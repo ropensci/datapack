@@ -40,9 +40,12 @@
 #' @slot sysmeta A value of type \code{"SystemMetadata"}, containing the metadata about the object
 #' @slot data A value of type \code{"raw"}, containing the data represented in this object
 #' @slot filename A character value that contains the fully-qualified path to the object data on disk
+#' @slot dataURL A character vector for the URL used to load data into this DataObject
+#' @slot updated A hash containing logical values which indicate if system metadata or the data object have been updated.
 #' @rdname DataObject-class
 #' @keywords classes
 #' @import methods
+#' @import hash
 #' @include dmsg.R
 #' @include SystemMetadata.R
 #' @aliases DataObject-class
@@ -55,6 +58,9 @@
 #'   \item{\code{\link{setPublicAccess}}}{: Add a Rule to the AccessPolicy to make the object publicly readable.}
 #'   \item{\code{\link{addAccessRule}}}{: Add a Rule to the AccessPolicy}
 #'   \item{\code{\link{canRead}}}{: Test whether the provided subject can read an object.}
+#'   \item{\code{\link{updateFile}}}{: Update the file that contains data for this DataObject.}
+#'   \item{\code{\link{updateData}}}{: Update the data that this DataObject contains.}
+#'   
 #' }
 #' @seealso \code{\link{datapack}}
 #' @examples
@@ -81,8 +87,7 @@
 setClass("DataObject", slots = c(
     sysmeta                 = "SystemMetadata",
     data                    = "raw",
-    filename                = "character"
-    )
+    filename                = "character",
     dataURL                 = "character",
     updated                 = "hash")
 )
