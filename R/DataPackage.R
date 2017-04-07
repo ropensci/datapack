@@ -1051,34 +1051,106 @@ setMethod("describeWorkflow", signature("DataPackage"), function(x, sources=list
 setMethod("show", "DataPackage",
     #function(object)print(rbind(x = object@x, y=object@y))
     function(object) {
+      
         ids <- getIdentifiers(object)
-              
+      
+        # currentWidth starts as width of combined initial widths, with 80 as 
+        # the start (80 - 6 spaces for padding)
+        nfields <- 8
+        nspaces <- nfields - 1
+        maxWidth <- getOption("width") - nspaces
+        currentWidth <- 73
+        
+        fileNameWidth <- 10
+        formatIdWidth <- 8
+        mediaTypeWidth <- 10
+        sizeWidth <- 8
+        rightsHolderWidth <- 12
         identifierWidth <- 10
-        formatIdWidth <- 15
-        submitterWidth <- 15
-        rightsHolderWidth <- 15
-        mediaTypeWidth <- 15
-        fileNameWidth <- 20
-        sizeWidth <- 10
-        fmt <- paste("%-", sprintf("%2d", identifierWidth), "s ",
-            "%-", sprintf("%2d", formatIdWidth), "s ",
-            "%-", sprintf("%2d", submitterWidth), "s ",
-            "%-", sprintf("%2d", rightsHolderWidth), "s ",
-            "%-", sprintf("%2d", mediaTypeWidth), "s ",
+        updatedWidth <- 5
+        
+        fileNameMinWidth     <- fileNameWidth
+        formatIdMinWidth     <- formatIdWidth
+        mediaTypeMinWidth    <- mediaTypeWidth
+        sizeMinWidth         <- sizeWidth
+        rightsHolderMinWidth <- rightsHolderWidth
+        identifierMinWidth   <- identifierWidth
+        updatedMinWidth      <- updatedWidth
+        
+        fileNameMaxWidth     <- max(unlist((lapply(ids, function(id) { nchar(as.character(object@objects[[id]]@sysmeta@fileName)) }))))
+        formatIdMaxWidth     <- max(unlist((lapply(ids, function(id) { nchar(as.character(object@objects[[id]]@sysmeta@formatId)) }))))
+        mediaTypeMaxWidth    <- max(unlist((lapply(ids, function(id) { nchar(as.character(object@objects[[id]]@sysmeta@mediaType)) }))))
+        sizeMaxWidth         <- max(unlist((lapply(ids, function(id) { nchar(as.character(object@objects[[id]]@sysmeta@size)) }))))
+        rightsHolderMaxWidth <- max(unlist((lapply(ids, function(id) { nchar(as.character(object@objects[[id]]@sysmeta@rightsHolder)) }))))
+        identifierMaxWidth   <- max(unlist((lapply(ids, function(id) { nchar(as.character(object@objects[[id]]@sysmeta@identifier)) }))))
+        updatedMaxWidth      <- 5
+              
+        done <- FALSE
+        # Continue until no fields can be increased in width.
+        while(!done) {
+          updated <- list()
+          # fieldWidth, totlaWidth, done <- setColumnWidth(current, max, increment, totalWidth)
+          values <- setColumnWidth(fileNameWidth, min=fileNameMinWidth, max=fileNameMaxWidth, increment=5, current=currentWidth, displayWidth=maxWidth)
+          fileNameWidth <- values[[1]]
+          currentWidth <- values[[2]]
+          updated[[length(updated)+1]] <- values[[3]]
+          
+          values <- setColumnWidth(formatIdWidth, min=formatIdMinWidth, max=formatIdMaxWidth, increment=1, current=currentWidth, displayWidth=maxWidth)
+          formatIdWidth <- values[[1]]
+          currentWidth <- values[[2]]
+          updated[[length(updated)+1]] <- values[[3]]
+          
+          values <- setColumnWidth(mediaTypeWidth, min=mediaTypeMinWidth, max=mediaTypeMaxWidth, increment=1, current=currentWidth, displayWidth=maxWidth)
+          mediaTypeWidth <- values[[1]]
+          currentWidth <- values[[2]]
+          updated[[length(updated)+1]] <- values[[3]]
+          
+          values <- setColumnWidth(sizeWidth, min=sizeMinWidth, max=sizeMaxWidth, increment=1, current=currentWidth, displayWidth=maxWidth)
+          sizeWidth <- values[[1]]
+          currentWidth <- values[[2]]
+          updated[[length(updated)+1]] <- values[[3]]
+          
+          values <- setColumnWidth(rightsHolderWidth, min=rightsHolderMinWidth, max=rightsHolderMaxWidth, increment=5, current=currentWidth, displayWidth=maxWidth)
+          rightsHolderWidth <- values[[1]]
+          currentWidth <- values[[2]]
+          updated[[length(updated)+1]] <- values[[3]]
+          
+          values <- setColumnWidth(identifierWidth, min=identifierMinWidth, max=identifierMaxWidth, increment=10, current=currentWidth, displayWidth=maxWidth)
+          identifierWidth <- values[[1]] 
+          currentWidth <- values[[2]]
+          updated[[length(updated)+1]] <- values[[3]]
+          
+          values <- setColumnWidth(updatedWidth, min=updatedMaxWidth, max=updatedMaxWidth, increment=0, current=currentWidth, displayWidth=maxWidth)
+          updatedWidth <- values[[1]] 
+          currentWidth <- values[[2]]
+          updated[[length(updated)+1]] <- values[[3]]
+        
+          # Only test at the end of the line, as some fields have smaller increments that may have been allowed, but
+          # larger injcremented fields would have stopped the loop.
+          updated <- as.logical(updated)
+          if(!any(updated)) break
+        }
+        fmt <- paste(
             "%-", sprintf("%2d", fileNameWidth), "s ",
+            "%-", sprintf("%2d", formatIdWidth), "s ",
+            "%-", sprintf("%2d", mediaTypeWidth), "s ",
             "%-", sprintf("%2d", sizeWidth), "s ",
+            "%-", sprintf("%2d", rightsHolderWidth), "s ",
+            "%-", sprintf("%2d", identifierWidth), "s ",
+            "%-", sprintf("%2d", updatedWidth), "s ",
             "\n", sep="")
         if(length(ids) > 0) {
             cat(sprintf("Members:\n\n"))
-            cat(sprintf(fmt, "identifier", "format", "submitter", "rightsHolder", "mediaType", "filename", "size"))
+            cat(sprintf(fmt, "filename", "format", "mediaType", "size", "rightsHolder", "identifier", "modified"))
             lapply(ids, function(id) { cat(sprintf(fmt, 
-                                                   condenseStr(object@objects[[id]]@sysmeta@identifier, identifierWidth),
-                                                   condenseStr(object@objects[[id]]@sysmeta@formatId, formatIdWidth),
-                                                   condenseStr(object@objects[[id]]@sysmeta@submitter, submitterWidth),
-                                                   condenseStr(object@objects[[id]]@sysmeta@rightsHolder, rightsHolderWidth),
-                                                   condenseStr(object@objects[[id]]@sysmeta@mediaType, mediaTypeWidth),
                                                    condenseStr(object@objects[[id]]@sysmeta@fileName, fileNameWidth),
-                                                   condenseStr(object@objects[[id]]@sysmeta@size, sizeWidth)))
+                                                   condenseStr(object@objects[[id]]@sysmeta@formatId, formatIdWidth),
+                                                   condenseStr(object@objects[[id]]@sysmeta@mediaType, mediaTypeWidth),
+                                                   condenseStr(as.character(object@objects[[id]]@sysmeta@size), sizeWidth),
+                                                   condenseStr(object@objects[[id]]@sysmeta@rightsHolder, rightsHolderWidth),
+                                                   condenseStr(object@objects[[id]]@sysmeta@identifier, identifierWidth),
+                                                   condenseStr(as.character(object@objects[[id]]@updated[['sysmeta']] || 
+                                                             object@objects[[id]]@updated[['data']]), updatedWidth)))
             }
             )
         } else {
@@ -1090,10 +1162,44 @@ setMethod("show", "DataPackage",
           cat(sprintf("\nRelationships:\n\n"))
           show(relationships)
         } else {
-          cat(sprintf("\nThis package doesn not contain any provenance relationships."))  
+          cat(sprintf("\nThis package does not contain any provenance relationships."))  
         }
     }
 )
+
+setColumnWidth <- function(fieldWidth, min, max, increment, currentTotal, displayWidth) {
+  
+  # Try to increate the field width by the increment amount. If this is too great,
+  # decrease the amount by 1 and try again. Continue until the field can be incremented
+  # the increment width can't be decreased.
+  for(inc in increment:1) {
+    # Couldn't determine max field with because no data in any fields
+    if(is.na(max)) {
+      return(list(fieldWidth, currentTotal, FALSE))
+    } else if (max < min) {
+      # The max value for a field is less that the required min, so return the required min
+      return(list(min, currentTotal, FALSE))
+    } else if(fieldWidth >= max) {
+      # Current field can't be incremented past it's max
+      # return fieldWidth, current line width, was this width updated?
+      return(list(max, currentTotal, FALSE))
+    } else if ((inc + currentTotal) > displayWidth) {
+      # Skip if inc will increase total width pass display max
+      # Can we increment less?
+      next
+    } else if((fieldWidth + inc) > max) {
+      # Skip if inc will increase field width pass it's max
+      next
+    } else {
+      # Increment field
+      fieldWidth <- fieldWidth + inc
+      currentTotal <- currentTotal + inc
+      # Return new field width, new current line total, and whether the width was modified (may still need to be updated)
+      return(list(fieldWidth, currentTotal, TRUE))
+    }
+  }
+  return(list(fieldWidth, currentTotal, FALSE))
+}
 
 # Return a shortened version of a string to the specified length. The
 # beginning and end of the string is returned, with ellipses inbetween
