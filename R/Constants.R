@@ -46,3 +46,20 @@ knownNamespaces <- rbind(knownNamespaces, data.frame(namespace="http://www.opena
 knownNamespaces <- rbind(knownNamespaces, data.frame(namespace="http://purl.org/spar/cito/", prefix="cito", row.names = NULL, stringsAsFactors = FALSE))
 knownNamespaces <- rbind(knownNamespaces, data.frame(namespace="http://www.w3.org/ns/prov#", prefix="prov", row.names = NULL, stringsAsFactors = FALSE))
 
+# Open Archives Initiative Object Reuse and Exchange (OAI-ORE) terms
+OREresourceMap <- "http://www.openarchives.org/ore/terms/ResourceMap"
+OREdescribes <- "http://www.openarchives.org/ore/terms/describes"
+OREisDescribedBy <- "http://www.openarchives.org/ore/terms/isDescribedBy"
+aggregatedBy <- "http://www.openarchives.org/ore/terms/isAggregatedBy"
+aggregates <- "http://www.openarchives.org/ore/terms/aggregates"
+aggregationType <- "http://www.openarchives.org/ore/terms/Aggregation"
+
+# Other terms used by DataONE packaging
+xsdString <- "^^xsd:string"
+xsdStringURI <- "http://www.w3.org/2001/XMLSchema#string"
+xsdDateTimeURI <- "http://www.w3.org/2001/XMLSchema#dateTime"
+DCidentifier <- "http://purl.org/dc/terms/identifier"
+DCmodified <- "http://purl.org/dc/terms/modified"
+DCtitle      <- "http://purl.org/dc/elements/1.1/title"
+RDFtype <- "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+
