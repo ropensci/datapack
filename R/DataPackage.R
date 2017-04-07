@@ -569,7 +569,59 @@ setGeneric("removeMember", function(x, ...) {
 setMethod("removeMember", signature("DataPackage"), function(x, identifier) {
     if (containsId(x, identifier)) {
         x@objects[[identifier]] <- NULL
+#' Update the Specified DataPackage Member with a new DataObject
+#' @description Given the identifier of a member of the data package, delete the DataObject
+#' representation of the member.
+#' @param x a Datapackage object
+#' @param ... (Not yet used)
+#' @seealso \code{\link{DataPackage-class}}
+#' @export 
+setGeneric("replaceMember", function(x, ...) {
+  standardGeneric("replaceMember")
+})
+
+#' @rdname replaceMember
+#' @param identifier an identifier for a DataObject
+#' @examples
+#' dp <- new("DataPackage")
+#' data <- charToRaw("1,2,3\n4,5,6")
+#' do <- new("DataObject", id="myNewId", dataobj=data, format="text/csv", user="jsmith")
+#' dp <- addData(dp, do)
+#' removeMember(dp, "myNewId")
+#' @export
+setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement) {
+  
+    identifiers <- as.character(NA)
+    if(class(do) == "DataObject") {
+        identifiers <- getIdentifier(do)
+    } else if (class(do) == "character") {
+        identifiers <- do
+    } else {
+        stop(sprintf("Unknown type \"%s\"for parameter '\"do\""), class(do))
     }
+    
+    if(class(replacement) == "DataObject") {
+        
+    } else if (is.raw(replacement)) {
+        
+    } else if (class(replacement) == "character") {
+        # If 'replacement' is a character string, then it is
+        # assumed to be a filename that replaces the DataObjects existing filename
+    }
+    
+    # The replacement can be one of several data types. Check the type of the object
+    # supplied and take the appropriate action.
+  if(do@sysmeta@identifier != identifier) {
+    msg <- sprintf("The DataObject identifier %s doesn't match the 'identifier' argument", identifier)
+    stop(msg)
+  }
+  
+  x <- removeMember(x, identifier)
+  do@updated[['sysmeta']] <- TRUE
+  do@updated[['data']] <- TRUE
+  x <- addData(x, do)
+  
+  invisible(x)
 })
 
 #' Return the Package Member by Identifier
