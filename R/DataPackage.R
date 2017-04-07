@@ -483,6 +483,8 @@ setMethod("getRelationships", signature("DataPackage"), function(x, condense=F, 
       relationships <- data.frame()
   }
     
+  # The user has requested that a 'condensed' version of the package relationships be created.
+  # This version is intened for display purposes and is not suitable for creating a resource map.
     if(nrow(relationships) > 0 && condense) {
         consoleWidth <- getOption("width")
         if(is.na(consoleWidth)) consoleWidth <- 80
@@ -494,7 +496,6 @@ setMethod("getRelationships", signature("DataPackage"), function(x, condense=F, 
         # width that this.
         maxColumnWidth <- as.integer((consoleWidth-paddingWidth)/nColumns)
         condensedRels <- apply(relationships, c(1,2), function(term) {
-            #cat(sprintf("item: %s\n", item))
             if(is.na(term)) return(term)
             for(ins in 1:nrow(knownNamespaces)) {
                 ns <- knownNamespaces[ins, 'namespace']
@@ -508,8 +509,11 @@ setMethod("getRelationships", signature("DataPackage"), function(x, condense=F, 
             # and use the source filename if it exists.
             if(is.element(term, getIdentifiers(x))) {
                 fn <- x@objects[[term]]@filename
+                fnSysmeta <- x@objects[[term]]@sysmeta@fileName
                 if(!is.na(fn)) {
                    term <- basename(fn)
+                } else if (!is.na(fnSysmeta)) {
+                   term <- fnSysmeta
                 }
             }
             return(condenseStr(term, maxColumnWidth))
