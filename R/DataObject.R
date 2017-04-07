@@ -371,6 +371,7 @@ setMethod("show", "DataObject",
               fmt2 <- paste("%-", sprintf("%2d", colWidth), "s ",
                            "%-", sprintf("%2d", colWidth), "s ",
                            "\n", sep="")
+              
               cat(sprintf("Access\n"))
               cat(sprintf(fmt, "  identifer", object@sysmeta@identifier))
               cat(sprintf(fmt, "  submitter", object@sysmeta@submitter))
@@ -392,22 +393,14 @@ setMethod("show", "DataObject",
               cat(sprintf(fmt, "  mediaType", object@sysmeta@mediaType))
               cat(sprintf(fmt, "  mediaTypeProperty", object@sysmeta@mediaTypeProperty))
               cat(sprintf(fmt, "  size", object@sysmeta@size))
-              cat(sprintf(fmt, "  checksum", object@sysmeta@checksum))
-              cat(sprintf(fmt, "  checksumAlgorithm", object@sysmeta@checksumAlgorithm))
               cat(sprintf("System\n"))
               cat(sprintf(fmt, "  seriesId", object@sysmeta@seriesId))
               cat(sprintf(fmt, "  serialVersion", object@sysmeta@serialVersion))
-              cat(sprintf(fmt, "  replicationAllowed", object@sysmeta@replicationAllowed))
-              cat(sprintf(fmt, "  numberReplicas", object@sysmeta@numberReplicas))
-              cat(sprintf(fmt, "  preferredNodes", object@sysmeta@preferredNodes))
-              cat(sprintf(fmt, "  blockedNodes", object@sysmeta@blockedNodes))
               cat(sprintf(fmt, "  obsoletes", object@sysmeta@obsoletes))
               cat(sprintf(fmt, "  obsoletedBy", object@sysmeta@obsoletedBy))
               cat(sprintf(fmt, "  archived", object@sysmeta@archived))
               cat(sprintf(fmt, "  dateUploaded", object@sysmeta@dateUploaded))
               cat(sprintf(fmt, "  dateSysMetadataModified", object@sysmeta@dateSysMetadataModified))
-              cat(sprintf(fmt, "  originMemberNode", object@sysmeta@originMemberNode))
-              cat(sprintf(fmt, "  authoritativeMemberNode", object@sysmeta@authoritativeMemberNode))
               cat(sprintf("Data\n"))
               if(!is.na(object@filename)) {
                 cat(sprintf(fmt, "  filename", object@filename))
