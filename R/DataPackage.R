@@ -538,6 +538,46 @@ setMethod("getMember", signature("DataPackage"), function(x, identifier) {
     }
 })
 
+#' Return identifiers for objects that match search criteria
+#' @description Given the identifier of a member of the data package, return the DataObject
+#' @param x A DataPackage instance
+#' @param ... (Not yet used)
+#' @seealso \code{\link{DataPackage-class}}
+#' @export
+setGeneric("selectMember", function(x, ...) {
+    standardGeneric("selectMember")
+})
+
+#' @rdname selectMember
+#' @param identifier A DataObject identifier
+#' @return A DataObject if the member is found, or NULL if not
+#' @export
+#' @examples
+#' dp 
+#' 
+#' <- new("DataPackage")
+#' data <- charToRaw("1,2,3\n4,5,6")
+#' do <- new("DataObject", id="myNewId", dataobj=data, format="text/csv", user="jsmith")
+#' dp <- addData(dp, do)
+#' do2 <- getMember(dp, "myNewId")
+setMethod("selectMember", signature("DataPackage"), function(x, name, value) {
+    # First look at the top level slot names for a match with 'field'
+    matchingIds <- list()
+    if(length(keys(x@objects)) > 0) {
+        for(iKey in keys(x@objects)) {
+            slotStr <- sprintf("x@objects[[\'%s\']]@%s", iKey, as.character(name))
+            testValue <- eval(parse(text=slotStr))
+            if(identical(testValue, value)) matchingIds[[length(matchingIds)+1]] <- iKey
+        }
+    } else {
+        stop("The specified package has no members")
+    }
+    if(length(matchingIds) > 0) {
+        return(unlist(matchingIds))
+    } else {
+        return(matchingIds)
+    }
+})
 #' Create an OAI-ORE resource map from the package
 #' @description The Datapackage is serialized as a OAI-ORE resource map to the specified file.
 #' @param x A DataPackage object
