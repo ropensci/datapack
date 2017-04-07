@@ -1034,14 +1034,16 @@ setMethod("describeWorkflow", signature("DataPackage"), function(x, sources=list
         }
     }
     
-    # Record the 'prov:wasDerivedFrom' relationships, directly linking the output files to the input files.
-    # This section can be run even if a 'program' argument is not defined.
-    if(length(outIds) > 0 && length(inIds) > 0) {
-        for (iOut in 1:length(outIds)) {
-            outputId <- outIds[[iOut]]
-            for (iIn in 1:length(inIds)) {
-                inputId <- inIds[[iIn]]
-                x <- insertRelationship(x, subjectID=outputId, objectIDs=inputId, predicate=provWasDerivedFrom)
+    if(insertDerivations) {
+        # Record the 'prov:wasDerivedFrom' relationships, directly linking the output files to the input files.
+        # This section can be run even if a 'program' argument is not defined.
+        if(length(outIds) > 0 && length(inIds) > 0) {
+            for (iOut in 1:length(outIds)) {
+                outputId <- outIds[[iOut]]
+                for (iIn in 1:length(inIds)) {
+                    inputId <- inIds[[iIn]]
+                    x <- insertRelationship(x, subjectID=outputId, objectIDs=inputId, predicate=provWasDerivedFrom)
+                }
             }
         }
     }
