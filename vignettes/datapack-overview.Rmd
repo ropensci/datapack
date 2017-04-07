@@ -221,7 +221,7 @@ dp <- addData(dp, do = sciObj2, mo = metadataObj)
 getRelationships(dp, condense=TRUE)
 ```
 
-In that example, the `sciObj2` DataObject is added to the package usoing the `addData` call, 
+In that example, the `sciObj2` DataObject is added to the package using the `addData` call, 
 and the metadata object `metadataObj` is passed in to the function as well.  This
 tells the DataPackage that `metadataId cito:documents sciId2`. The `cito:documents` relationship is defined by the [Citation Typing Ontology](http://vocab.ox.ac.uk/index) (CITO)).
 
@@ -303,7 +303,7 @@ of the DataPackage can determine how to extract and process the contents.
 A DataPackage can produce a standard description of its members and relationships 
 which conforms to the Open Archives Initiative [Object Reuse and Exchange](https://www.openarchives.org/ore/) (OAI-ORE) specification, 
 which is a widely used standard to describe aggregations of web accessible 
-resources. This OAI-ORE description is refered to as a *resource map*.
+resources. This OAI-ORE description is referred to as a *resource map*.
 
 The `serializePackage` method will create Resource Description Framework 
 serialization of a resource map, written to a file in this case, that conforms 
