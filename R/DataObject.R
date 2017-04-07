@@ -84,6 +84,7 @@ setClass("DataObject", slots = c(
     filename                = "character"
     )
     dataURL                 = "character",
+    updated                 = "hash")
 )
 
 ##########################
