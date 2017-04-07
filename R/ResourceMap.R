@@ -352,21 +352,189 @@ setMethod("freeResourceMap", signature("ResourceMap"), function(x) {
   freeWorld(x@world)
 })
 
-# #' Parse an RDF/XML resource map from a file
-# #' @description parseRDF_XML reads a file containing an RDF model in RDF/XML format and initializes
-# #' a ResourceMap based on this content
-# #' @details This method resets the slot ResourceMap@world so any previously stored triples are discarded, allowing
-# #' for a clean model object in which to parse the new RDF content into. It is assumed that the content is a 
-# #' valid ORE resource map and no validation checks specific to the OAI-ORE content model are not performed.
-# #' @param x ResourceMap
-# #' @param file a file containing a resource map in RDF/XML that will be parsed into the ResourceMap object
-# #' @return x the ResourceMap containing the parsed RDF/XML content
-# #' @export
-# setGeneric("parseRDF_XML", function(x, file) { standardGeneric("parseRDF")} )
-# 
-# setMethod("parseRDF_XML", "ResourceMap", function(x, file) {
-#  parser <- new("Parser", x@world)
-#  parseFileIntoModel(parser, x@world, file, model)
-#  
-#  return(x)
-# })
+#' Parse an RDF/XML resource map from a file
+#' @description parseRDF reads a file containing an RDF model in RDF/XML format and initializes
+#' a ResourceMap based on this content
+#' @details This method resets the slot ResourceMap@world so any previously stored triples are discarded, allowing
+#' for a clean model object in which to parse the new RDF content into. It is assumed that the content is a
+#' valid ORE resource map and no validation checks specific to the OAI-ORE content model are performed.
+#' @param x ResourceMap
+#' @param rdf A file or character value containing a resource map that will be parsed into the ResourceMap object
+#' @param asText A logical value. If TRUE, then the 'rdf' parameter is a character vector, if FALSE then it is the name of a file to read.
+#' @param name The name of the RDF xml parser, the default is "rdfxml". 
+#' @param mimeType A character value containing the RDF format type. The default is "application/rdf+xml". 
+#' @return x the ResourceMap containing the parsed RDF/XML content
+#' @export
+setGeneric("parseRDF", function(x, rdf, ...) { standardGeneric("parseRDF")} )
+
+setMethod("parseRDF", "ResourceMap", function(x, rdf, asText=FALSE, name="rdfxml", mimeType="application/rdf+xml") {
+  
+ if(asText) {
+     file <- tempfile()
+     writeLines(rdf, file)
+ } else {
+   file <- rdf
+ }
+ parser <- new("Parser", x@world, name, mimeType)
+ parseFileIntoModel(parser, x@world, file, x@model)
+
+ freeParser(parser)
+ return(x)
+})
+
+#' Parse an RDF/XML resource map from a file
+#' @description parseRDF reads a file containing an RDF model in RDF/XML format and initializes
+#' a ResourceMap based on this content
+#' @details This method resets the slot ResourceMap@world so any previously stored triples are discarded, allowing
+#' for a clean model object in which to parse the new RDF content into. It is assumed that the content is a
+#' valid ORE resource map and no validation checks specific to the OAI-ORE content model are performed.
+#' @param x ResourceMap
+#' @param file a file containing a resource map in RDF/XML that will be parsed into the ResourceMap object
+#' @return x the ResourceMap containing the parsed RDF/XML content
+#' @export
+setGeneric("getTriples", function(x, ...) { standardGeneric("getTriples")} )
+
+setMethod("getTriples", "ResourceMap", function(x, filter=TRUE, identifiers=list(), ...) {
+  
+    relations <- data.frame(row.names=NULL, stringsAsFactors=F)
+    
+    parser <- new("Parser", x@world)
+    # Query the RDF model with a SPARQL query that should return all triples
+    queryString <- 'SELECT ?s ?p ?o WHERE { ?s ?p ?o . }'
+    query <- new("Query", x@world, queryString, base_uri=NULL, query_language="sparql", query_uri=NULL)
+    queryResult <- executeQuery(query, x@model)
+    
+    # Retrieve query results and check the actual result count against the expected count
+    result <- getNextResult(queryResult)
+    i <- 0
+    while(!is.null(result)) {
+        result <- getNextResult(queryResult)
+        if(is.null(result)) next
+        subject <- result$s
+        predicate <- result$p
+        object <- result$o
+        objectType <- as.character(NA)
+        subjectType <- as.character(NA)
+        dataTypeURI <- as.character(NA)
+        # Remove leading '<' and trailing '>" that were added from the SPARQL result
+        if(grepl("^<", subject, perl=TRUE))   subject   <- gsub("^<", "", subject, perl=TRUE)
+        if(grepl("^<", predicate, perl=TRUE)) predicate <- gsub("^<", "", predicate, perl=TRUE)
+        if(grepl("^<", object, perl=TRUE))    object    <- gsub("^<", "", object, perl=TRUE)
+        if(grepl(">$", subject, perl=TRUE))   subject   <- gsub(">$", "", subject, perl=TRUE)
+        if(grepl(">$", predicate, perl=TRUE)) predicate <- gsub(">$", "", predicate, perl=TRUE)
+        if(grepl(">$", object, perl=TRUE))    object    <- gsub(">$", "", object, perl=TRUE)
+        
+        if(grepl("^^", object, fixed=TRUE)) {
+            strResult <- strsplit(object, '^^', fixed=TRUE)
+            object <- strResult[[1]][[1]]
+            object <- gsub('"', "", object)
+            dataTypeURI <- strResult[[1]][[2]]
+            #cat(sprintf("object: %s\n objectType: %s\n", object, objectType))
+        }
+        #cat(sprintf("subject: %s\n predicate: %s\n object: %s\n", subject, predicate, object))
+        
+        # Filter DataONE packaging statements that may have been inserted during 'createFromTriples'
+        # Filtering this way is much easier than filtering in SPARQL!
+        # This method of filtering assumes that the namespaces have been expanded, which appears
+        # to happen during hthe redland parsing. This is advantageous, as then we don't need
+        # to determine what namespaces existing in the resource map, and any namespace prefix
+        # to uri mapping that was in effect. Also, the filtering can use the expanded names.
+        skip <- FALSE
+        if(filter) { 
+            if((predicate == DCtitle) && (object == "DataONE Aggregation")) {
+                next
+            } else if((predicate == rdfType) && (object == OREresourceMap)) {
+                next
+            } else if(predicate == DCidentifier) {
+                # Filter the dcterms:identifier statement for package ids
+                id <- checkIdMatch(subject, pattern='%s$', identifiers)
+                if(!is.na(id))  next
+            } else if(predicate == citoIsDocumentedBy || predicate == citoDocuments) {
+                # If cito:documents or cito:isDocumentedBy relationship is present, then 'demote' the identifiers if they are
+                # package members, which they should be. Demoting identifiers simply means that they are made
+                # local, so any DataONE resolve url is stripped off, leaving just the identifier. The relationship
+                # will be re-written at the bottom of the loop, with the 'demoted' identifiers.
+                found <- FALSE
+                id <- checkIdMatch(subject, pattern='%s$', identifiers)
+                if(!is.na(id)) {
+                    subject <- id
+                    found <- TRUE
+                }
+                
+                id <- checkIdMatch(object, pattern='%s$', identifiers)
+                if(!is.na(id)) {
+                    object <- id
+                    found <- TRUE
+                }
+            } else if(predicate == OREdescribes) {
+                next
+            } else if(predicate == OREisDescribedBy) {
+                next
+            } else if(predicate == aggregatedBy) {
+                next
+            } else if(predicate == aggregates) {
+                next
+            } else if(object == aggregationType) {
+                next
+            } else if(grepl(DCtitle, predicate, fixed=TRUE) && grepl("DataONE Aggregation", object, fixe=TRUE)) {
+                # Remove the identification of the agent that created this package as this
+                # will be re-declared if the package is uploaded again by the R client.
+                next
+            } else if(grepl(foafName, predicate, fixed=TRUE) && grepl("DataONE Java Client Library", object, fixed=TRUE)) {
+                next
+            }
+        }
+        
+        if(nrow(relations) == 0) {
+            relations <- data.frame(subject=subject, predicate=predicate, object=object, 
+                                    subjectType=subjectType, objectType=objectType,
+                                    dataTypeURI=dataTypeURI, row.names = NULL, stringsAsFactors = FALSE)
+        } else {
+            relations <- rbind(relations, data.frame(subject=subject, predicate=predicate, object=object, 
+                                                     subjectType=subjectType, objectType=objectType,
+                                                     dataTypeURI=dataTypeURI, row.names = NULL, stringsAsFactors = FALSE))
+        }
+    }
+    
+    freeQuery(query)
+    rm(query)
+    freeQueryResults(queryResult)
+    rm(queryResult)
+    
+    return(base::unique(relations))
+  
+})
+
+# Check an input string for a package identifier, using the provided match pattern.
+# Check both the provided identifier and a URL encoded version of the identifier, 
+# and if there is a match, return the unencoded identifier. It is assumed
+# that the identifier list contains unencoded identifiers.
+checkIdMatch <- function(checkStr, pattern, identifiers) {
+    if(length(identifiers) > 0) {
+        checkStr <- trimws(checkStr, which="both")
+        checkStrDecoded <- URLdecode(checkStr)
+        for(nId in 1:length(identifiers)) {
+            thisId <- trimws(identifiers[[nId]], which="both")
+            thisIdDecoded <- URLdecode(thisId)
+            thisIdEncoded <- URLencode(thisId, reserved=TRUE, repeated=TRUE)
+            if(grepl(sprintf(pattern, thisId), checkStr, perl=TRUE)) {
+                return(thisId)
+            }
+            
+            # Found the URL encoded pid, but use the decoded version 
+            if(grepl(sprintf(pattern, thisIdEncoded), checkStr, perl=TRUE)) {
+                return(thisId)
+            }
+            
+            # It's possible that the string we are checking was only partially encoded,
+            # or had a different notion of what characters to encode. Fully decode the
+            # string according to the R encoding, and then check agains the fully decoded
+            # identifier.
+            foo <- sprintf(pattern, thisIdDecoded)
+            if(grepl(sprintf(pattern, thisIdDecoded), checkStrDecoded, perl=TRUE)) {
+                return(thisId)
+            }
+        }
+    }
+    return(as.character(NA))
+}
