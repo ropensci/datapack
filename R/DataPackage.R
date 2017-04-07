@@ -110,6 +110,7 @@ setMethod("initialize", "DataPackage", function(.Object, packageId) {
         .Object@sysmeta@identifier <- packageId
     }
     .Object@relations = hash()
+    .Object@relations[['updated']] <- FALSE
     .Object@objects = hash()
     .Object@externalIds = list()
     .Object@resmapId <- as.character(NA)
@@ -420,6 +421,13 @@ setMethod("insertRelationship", signature("DataPackage"),
     # return the datapackage object to the caller (since S4 methods don't pass args by reference)
     x@relations[["relations"]] <- relations
   }
+  
+  # Remove duplicate relationships
+  relations <- x@relations[["relations"]]
+  x@relations[["relations"]] <- unique(relations)
+  
+  # Set the relationships (resource map) to updated status.
+  x@relations[["updated"]] <- TRUE
   return(x)
 })
 
