@@ -133,18 +133,8 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
   }
   
   #xsdString <- "^^http://www.w3.org/2001/XMLSchema#string"
-  xsdString <- "^^xsd:string"
-  xsdStringURI <- "http://www.w3.org/2001/XMLSchema#string"
-  xsdDateTimeURI <- "http://www.w3.org/2001/XMLSchema#dateTime"
-  DCidentifier <- "http://purl.org/dc/terms/identifier"
-  DCmodified <- "http://purl.org/dc/terms/modified"
-  DCtitle      <- "http://purl.org/dc/elements/1.1/title"
-  RDFtype <- "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
-  OREresourceMap <- "http://www.openarchives.org/ore/terms/ResourceMap"
-  OREdescribes <- "http://www.openarchives.org/ore/terms/describes"
-  aggregatedBy <- "http://www.openarchives.org/ore/terms/isAggregatedBy"
-  aggregates <- "http://www.openarchives.org/ore/terms/aggregates"
-  aggregationType <- "http://www.openarchives.org/ore/terms/Aggregation"
+
+
   # The 'resolve' URI may be blank if this is a resource map for a local datapackage. In this
   # case, the resolve URI will be updated with a proper URI when this datapackage is uploaed
   # to a repository.
