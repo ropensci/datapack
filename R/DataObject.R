@@ -83,6 +83,7 @@ setClass("DataObject", slots = c(
     data                    = "raw",
     filename                = "character"
     )
+    dataURL                 = "character",
 )
 
 ##########################
