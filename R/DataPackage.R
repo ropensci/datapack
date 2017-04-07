@@ -566,9 +566,52 @@ setGeneric("removeMember", function(x, ...) {
 #' dp <- addData(dp, do)
 #' removeMember(dp, "myNewId")
 #' @export
-setMethod("removeMember", signature("DataPackage"), function(x, identifier) {
-    if (containsId(x, identifier)) {
-        x@objects[[identifier]] <- NULL
+setMethod("removeMember", signature("DataPackage"), function(x, do, keepRelationships=FALSE) {
+    
+    identifiers <- as.character(NA)
+    if(class(do) == "DataObject") {
+        identifiers <- getIdentifier(do)
+    } else if (class(do) == "character") {
+        identifiers <- do
+    } else {
+        stop(sprintf("Unknown type \"%s\"for parameter '\"do\""), class(do))
+    }
+    for (iMember in identifiers) { 
+        if (containsId(x, iMember)) {
+            x@objects[[iMember]] <- NULL
+        }
+        
+        # The DataObject is being removed, and the relationships that it appears in
+        # will also be removed.
+        if(!keepRelationships) {
+            # Get the current package relationships
+            if (has.key("relations", x@relations)) {
+                relations <- x@relations[["relations"]]
+            } else {
+                invisible(x)
+            }
+            
+            newRels <- data.frame()
+            # Remove all occurances of this identifier from the provenance relationships
+            if(nrow(relations) > 0) {
+                for(irel in 1:nrow(relations)) {
+                    sub <- relations[irel, 'subject']        
+                    obj <- relations[irel, 'object']        
+                    # TODO: Use a regex to match the pid in the subjectd or the object, as this
+                    # pid may have a DataONE resolve URI prefi.
+                    if(sub != iMember && obj != iMember) {
+                        newRels <- rbind(newRels, relations[irel,])
+                    }
+                }
+            }
+            x@relations[["relations"]] <- newRels
+        }
+    }
+    
+    x@relations[["updated"]] <- TRUE
+    invisible(x)
+})
+
 #' Update the Specified DataPackage Member with a new DataObject
 #' @description Given the identifier of a member of the data package, delete the DataObject
 #' representation of the member.
