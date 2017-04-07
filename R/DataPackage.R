@@ -50,6 +50,7 @@
 #' @slot objects A hash containing identifiers for objects in the DataPackage
 #' @slot sysmeta A SystemMetadata class instance describing the package
 #' @slot externalIds A list containing identifiers for objects associated with the DataPackage
+#' @slot resmapId A character string specifying the identifier for the package resource map
 #' @section Methods:
 #' \itemize{
 #'  \item{\code{\link[=DataPackage-initialize]{initialize}}}{: Initialize a DataPackage object}
@@ -72,7 +73,8 @@ setClass("DataPackage", slots = c(
     relations               = "hash",
     objects                 = "hash",          # key=identifier, value=DataObject
     sysmeta                 = "SystemMetadata", # system metadata about the package
-    externalIds             = "list"
+    externalIds             = "list",
+    resmapId                = "character" # resource map identifier(s)
     )
 )
 
@@ -110,6 +112,7 @@ setMethod("initialize", "DataPackage", function(.Object, packageId) {
     .Object@relations = hash()
     .Object@objects = hash()
     .Object@externalIds = list()
+    .Object@resmapId <- as.character(NA)
    return(.Object)
 })
 
