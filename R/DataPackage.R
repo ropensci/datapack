@@ -50,7 +50,8 @@
 #' @slot objects A hash containing identifiers for objects in the DataPackage
 #' @slot sysmeta A SystemMetadata class instance describing the package
 #' @slot externalIds A list containing identifiers for objects associated with the DataPackage
-#' @slot resmapId A character string specifying the identifier for the package resource map
+#' @slot resmapId A character string specifying the identifier for the package resource map. 
+#'               This is assigned after a package is uploaded or downloaded from a repository.
 #' @section Methods:
 #' \itemize{
 #'  \item{\code{\link[=DataPackage-initialize]{initialize}}}{: Initialize a DataPackage object}
@@ -530,7 +531,8 @@ setMethod("getRelationships", signature("DataPackage"), function(x, condense=F, 
             }
             return(condenseStr(term, maxColumnWidth))
         })
-        return(as.data.frame(condensedRels[,1:3]))
+        rels <- as.data.frame(condensedRels[,1:3])
+        return(rels[with(rels, order(subject)),])
     }
     
  return(relationships)
@@ -614,7 +616,7 @@ setMethod("removeMember", signature("DataPackage"), function(x, do, keepRelation
                     sub <- relations[irel, 'subject']        
                     obj <- relations[irel, 'object']        
                     # TODO: Use a regex to match the pid in the subjectd or the object, as this
-                    # pid may have a DataONE resolve URI prefi.
+                    # pid may have a DataONE resolve URI prefix.
                     if(sub != iMember && obj != iMember) {
                         newRels <- rbind(newRels, relations[irel,])
                     }
@@ -886,6 +888,61 @@ setMethod("getValue", signature("DataPackage"), function(x, name, identifiers=as
         stop("The specified package has no members")
     }
     values
+})
+
+#' @rdname setPublicAccess
+#' @aliases setPublicAccess
+#' @examples
+#' data <- charToRaw("1,2,3\n4,5,6\n")
+#' do <- new("DataObject", "id1", dataobj=data, "text/csv", 
+#'   "uid=jones,DC=example,DC=com", "urn:node:KNB")
+#' do <- setPublicAccess(do)
+setMethod("setPublicAccess", signature("DataPackage"), function(x, identifiers=list()) {
+    matchingIds <- list()
+    if(length(keys(x@objects)) > 0) {
+        for(iKey in keys(x@objects)) {
+            if(! iKey %in% identifiers) next
+            setPublicAccess(x@objects[[ikey]])
+        }
+    } else {
+        stop("The specified package has no members")
+    }
+    return(x)
+})
+
+#' @rdname addAccessRule
+#' @return the DataObject with the updated access policy
+#' @examples 
+#' data <- charToRaw("1,2,3\n4,5,6\n")
+#' obj <- new("DataObject", id="1234", data=data, format="text/csv")
+#' obj <- addAccessRule(obj, "uid=smith,ou=Account,dc=example,dc=com", "write")
+setMethod("addAccessRule", signature("DataPackage"), function(x, y, identifiers=list(), ...) {
+    matchingIds <- list()
+    if(length(keys(x@objects)) > 0) {
+        for(iKey in keys(x@objects)) {
+            if(! iKey %in% identifiers) next
+            addAccessRule(x@objects[[ikey]], x, y, ...)
+        }
+    }
+    return(x)
+})
+
+#' @rdname clearAccessPolicy
+#' @return The SystemMetadata object with the cleared access policy.
+#' @examples 
+#' sysmeta <- new("SystemMetadata")
+#' sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
+#' sysmeta <- clearAccessPolicy(sysmeta)
+#' @export
+setMethod("clearAccessPolicy", signature("DataPackage"), function(x, ...) {
+    matchingIds <- list()
+    if(length(keys(x@objects)) > 0) {
+        for(iKey in keys(x@objects)) {
+            if(! iKey %in% identifiers) next
+            clearAccessRule(x@objects[[ikey]]@sysmeta, ...)
+        }
+    }
+    return(x)
 })
 
 #' Create an OAI-ORE resource map from the package
@@ -1411,7 +1468,7 @@ setMethod("show", "DataPackage",
         nfields <- 8
         nspaces <- nfields - 1
         maxWidth <- getOption("width") - nspaces
-        currentWidth <- 73
+        currentWidth <- 71
         
         fileNameWidth <- 10
         formatIdWidth <- 8
@@ -1419,8 +1476,10 @@ setMethod("show", "DataPackage",
         sizeWidth <- 8
         rightsHolderWidth <- 12
         identifierWidth <- 10
-        updatedWidth <- 5
+        updatedWidth <- 8
+        localWidth <- 5
         
+        # Set the minimum field width for each field
         fileNameMinWidth     <- fileNameWidth
         formatIdMinWidth     <- formatIdWidth
         mediaTypeMinWidth    <- mediaTypeWidth
@@ -1428,17 +1487,22 @@ setMethod("show", "DataPackage",
         rightsHolderMinWidth <- rightsHolderWidth
         identifierMinWidth   <- identifierWidth
         updatedMinWidth      <- updatedWidth
+        localMinWidth        <- localWidth
         
+        # Set the max field width for each field based on all values in a column
         fileNameMaxWidth     <- max(unlist((lapply(ids, function(id) { nchar(as.character(object@objects[[id]]@sysmeta@fileName)) }))))
         formatIdMaxWidth     <- max(unlist((lapply(ids, function(id) { nchar(as.character(object@objects[[id]]@sysmeta@formatId)) }))))
         mediaTypeMaxWidth    <- max(unlist((lapply(ids, function(id) { nchar(as.character(object@objects[[id]]@sysmeta@mediaType)) }))))
         sizeMaxWidth         <- max(unlist((lapply(ids, function(id) { nchar(as.character(object@objects[[id]]@sysmeta@size)) }))))
         rightsHolderMaxWidth <- max(unlist((lapply(ids, function(id) { nchar(as.character(object@objects[[id]]@sysmeta@rightsHolder)) }))))
         identifierMaxWidth   <- max(unlist((lapply(ids, function(id) { nchar(as.character(object@objects[[id]]@sysmeta@identifier)) }))))
-        updatedMaxWidth      <- 5
+        updatedMaxWidth      <- 8
+        localMaxWidth        <- 5
               
         done <- FALSE
         # Continue until no fields can be increased in width.
+        # Now that the width of each field and hence total width is known, iteratively adjust each field until
+        # the max line width is reached.
         while(!done) {
           updated <- list()
           # fieldWidth, totlaWidth, done <- setColumnWidth(current, max, increment, totalWidth)
@@ -1472,8 +1536,13 @@ setMethod("show", "DataPackage",
           currentWidth <- values[[2]]
           updated[[length(updated)+1]] <- values[[3]]
           
-          values <- setColumnWidth(updatedWidth, min=updatedMaxWidth, max=updatedMaxWidth, increment=0, current=currentWidth, displayWidth=maxWidth)
+          values <- setColumnWidth(updatedWidth, min=updatedMinWidth, max=updatedMaxWidth, increment=1, current=currentWidth, displayWidth=maxWidth)
           updatedWidth <- values[[1]] 
+          currentWidth <- values[[2]]
+          updated[[length(updated)+1]] <- values[[3]]
+          
+          values <- setColumnWidth(localWidth, min=localMinWidth, max=localMaxWidth, increment=1, current=currentWidth, displayWidth=maxWidth)
+          localWidth <- values[[1]] 
           currentWidth <- values[[2]]
           updated[[length(updated)+1]] <- values[[3]]
         
@@ -1490,28 +1559,38 @@ setMethod("show", "DataPackage",
             "%-", sprintf("%2d", rightsHolderWidth), "s ",
             "%-", sprintf("%2d", identifierWidth), "s ",
             "%-", sprintf("%2d", updatedWidth), "s ",
+            "%-", sprintf("%2d", localWidth), "s ",
             "\n", sep="")
         if(length(ids) > 0) {
             cat(sprintf("Members:\n\n"))
-            cat(sprintf(fmt, "filename", "format", "mediaType", "size", "rightsHolder", "identifier", "modified"))
-            lapply(ids, function(id) { cat(sprintf(fmt, 
-                                                   condenseStr(object@objects[[id]]@sysmeta@fileName, fileNameWidth),
-                                                   condenseStr(object@objects[[id]]@sysmeta@formatId, formatIdWidth),
-                                                   condenseStr(object@objects[[id]]@sysmeta@mediaType, mediaTypeWidth),
-                                                   condenseStr(as.character(object@objects[[id]]@sysmeta@size), sizeWidth),
-                                                   condenseStr(object@objects[[id]]@sysmeta@rightsHolder, rightsHolderWidth),
-                                                   condenseStr(object@objects[[id]]@sysmeta@identifier, identifierWidth),
-                                                   condenseStr(as.character(object@objects[[id]]@updated[['sysmeta']] || 
-                                                             object@objects[[id]]@updated[['data']]), updatedWidth)))
-            }
-            )
+            cat(sprintf(fmt, "filename", "format", "mediaType", "size", "rightsHolder", "identifier", "modified", "local"))
+            lapply(ids, function(id) { 
+                # The objects data has a size from sysmeta, but no data locally, so it must have been
+                # lazy loaded from a repository. The sysmeta@size could be non-zero but no local data only
+                # if it was incorrectly set manually or the object was lazyloaded.
+                hasLocalData <- !is.na(object@objects[[id]]@filename) || (length(object@objects[[id]]@data) > 0)
+                hasLocalDataStr <- if (isTRUE(hasLocalData)) 'y' else 'n'
+                cat(sprintf(fmt, 
+                   condenseStr(object@objects[[id]]@sysmeta@fileName, fileNameWidth),
+                   condenseStr(object@objects[[id]]@sysmeta@formatId, formatIdWidth),
+                   condenseStr(object@objects[[id]]@sysmeta@mediaType, mediaTypeWidth),
+                   condenseStr(as.character(object@objects[[id]]@sysmeta@size), sizeWidth),
+                   condenseStr(object@objects[[id]]@sysmeta@rightsHolder, rightsHolderWidth),
+                   condenseStr(object@objects[[id]]@sysmeta@identifier, identifierWidth),
+                   condenseStr(as.character(object@objects[[id]]@updated[['sysmeta']] || object@objects[[id]]@updated[['data']]), updatedWidth), 
+                   condenseStr(hasLocalDataStr, localWidth)))
+            })
         } else {
             cat(sprintf("This package does not contain any DataObjects:\n"))
         }
 
         relationships <- getRelationships(object, condense=TRUE)
         if(nrow(relationships) > 0) {
-          cat(sprintf("\nRelationships:\n\n"))
+            if(object@relations[['updated']]) {
+                cat(sprintf("\nRelationships (updated):\n\n"))
+            } else {
+                cat(sprintf("\nRelationships:\n\n"))
+            }
           show(relationships)
         } else {
           cat(sprintf("\nThis package does not contain any provenance relationships."))  
@@ -1524,6 +1603,8 @@ setColumnWidth <- function(fieldWidth, min, max, increment, currentTotal, displa
   # Try to increate the field width by the increment amount. If this is too great,
   # decrease the amount by 1 and try again. Continue until the field can be incremented
   # the increment width can't be decreased.
+  # Can't have 0 as increment, this could cause an endless loop
+  if(increment == 0) increment <- 1
   for(inc in increment:1) {
     # Couldn't determine max field with because no data in any fields
     if(is.na(max)) {
@@ -1546,7 +1627,7 @@ setColumnWidth <- function(fieldWidth, min, max, increment, currentTotal, displa
       # Increment field
       fieldWidth <- fieldWidth + inc
       currentTotal <- currentTotal + inc
-      # Return new field width, new current line total, and whether the width was modified (may still need to be updated)
+      # Return new field width, new current line total, and whether the width was modified (does it still need to be updated with another pass?)
       return(list(fieldWidth, currentTotal, TRUE))
     }
   }
