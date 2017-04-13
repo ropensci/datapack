@@ -437,7 +437,7 @@ setMethod("getTriples", "ResourceMap", function(x, filter=TRUE, identifiers=list
                 next
             } else if(predicate == DCidentifier) {
                 # Filter the dcterms:identifier statement for package ids
-                id <- checkIdMatch(subject, pattern='%s$', identifiers)
+                id <- checkIdMatch(object, pattern='%s$', identifiers)
                 if(!is.na(id))  next
             } else if(predicate == citoIsDocumentedBy || predicate == citoDocuments) {
                 # If cito:documents or cito:isDocumentedBy relationship is present, then 'demote' the identifiers if they are
@@ -473,6 +473,11 @@ setMethod("getTriples", "ResourceMap", function(x, filter=TRUE, identifiers=list
             } else if(grepl(foafName, predicate, fixed=TRUE) && grepl("DataONE Java Client Library", object, fixed=TRUE)) {
                 next
             }
+            # Modify all other entries such that any package member identifier is 'demoted' to a local identifier.
+            id <- checkIdMatch(subject, pattern='%s$', identifiers)
+            if(!is.na(id)) subject <- id
+            id <- checkIdMatch(object, pattern='%s$', identifiers)
+            if(!is.na(id)) object <- id
         }
         
         if(nrow(relations) == 0) {
@@ -511,7 +516,7 @@ checkIdMatch <- function(checkStr, pattern, identifiers) {
                 return(thisId)
             }
             
-            # Found the URL encoded pid, but use the decoded version 
+            # Found the URL encoded pid, but return the decoded version 
             if(grepl(sprintf(pattern, thisIdEncoded), checkStr, perl=TRUE)) {
                 return(thisId)
             }
