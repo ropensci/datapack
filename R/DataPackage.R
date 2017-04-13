@@ -628,9 +628,9 @@ setMethod("removeMember", signature("DataPackage"), function(x, do, keepRelation
     invisible(x)
 })
 
-#' Update the Specified DataPackage Member with a new DataObject
-#' @description Given the identifier of a member of the data package, delete the DataObject
-#' representation of the member.
+#' Replace the raw data or file associated with a DataObject
+#' @description A DataObject is a wrapper for data that can be either a raw data object or
+#' a file on local disk. Thie \code{replaceMember} method can be used to replace the 
 #' @param x a Datapackage object
 #' @param ... (Not yet used)
 #' @seealso \code{\link{DataPackage-class}}
@@ -640,47 +640,95 @@ setGeneric("replaceMember", function(x, ...) {
 })
 
 #' @rdname replaceMember
-#' @param identifier an identifier for a DataObject
+#' #' raw data or file that is wrapped by a DataObject.
+#' @details The data that is replacing the existing DataObject data may be of a different
+#' format or type than the existing data. Because the data type and format may change, the
+#' system metadata that describes the data can be updated as well. The \code{replaceMember}
+#' method will update the SystemMetadata \code{size}, \code{checksum} values, but will not
+#' update \code{formatId}, \code{mediaType}, \code{mediaTypeProperty}, \code{suggestedFilename},
+#' so these should be specified in the call to \code{replaceMember} if necessary. See \link{SystemMetadata}
+#' for a description of these fields.
+#' @param x A DataPackage instance
+#' @param do A DataObject instance
+#' @param replacement A raw object or filename 
+#' @param format 
+#' @param mediaType
+#' @param mediaTypeProperty
+#' @param suggestedFilename
 #' @examples
+#' # Create a DataObject and add it to the DataPackage
 #' dp <- new("DataPackage")
-#' data <- charToRaw("1,2,3\n4,5,6")
-#' do <- new("DataObject", id="myNewId", dataobj=data, format="text/csv", user="jsmith")
-#' dp <- addData(dp, do)
-#' removeMember(dp, "myNewId")
+#' doIn <- new("DataObject", format="text/csv", 
+#'             filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"),
+#'             suggestedFilename="binary.csv")
+#' dp <- addMember(dp, doIn)
+#' 
+#' # Use the zipped version of the file instead by updating the DataObject
+#' dp <- replaceMember(dp, doIn, replacement=system.file("./extdata/pkg-example/binary.csv.zip", package="datapack"),
+#'                     format="application/octet-stream", suggestedFilename="binary.csv.zip")
 #' @export
-setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement) {
-  
-    identifiers <- as.character(NA)
-    if(class(do) == "DataObject") {
-        identifiers <- getIdentifier(do)
+setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement, format=as.character(NA), mediaType=as.character(NA), 
+                                                              mediaTypeProperty=as.character(NA),
+                                                              suggestedFilename=as.character(NA), ...) {
+    
+    newObj <- NULL
+    # The DataObject to change argument can be either a DataObject or identifier. Determine which one
+    # and put the object out of the package so that we can modify it and replace it.
+    if (class(do) == "DataObject") {
+        identifier <- getIdentifier(do)
+        if(! identifier %in% getIdentifiers(x)) {
+            stop(sprintf("DataObject for pid \"%s\" was not found in the DataPackage", identifier))
+        }
+        newObj <- getMember(x, identifier)
     } else if (class(do) == "character") {
-        identifiers <- do
+        identifier <- do
+        if(! identifier %in% getIdentifiers(x)) {
+            stop(sprintf("DataObject for pid \"%s\" was not found in the DataPackage", identifier))
+        }
+        newObj <- getMember(x, identifier)
     } else {
         stop(sprintf("Unknown type \"%s\"for parameter '\"do\""), class(do))
     }
     
-    if(class(replacement) == "DataObject") {
-        
-    } else if (is.raw(replacement)) {
-        
+    # If replacement is a DataObject, then replace the existing DataObject 'do' with the
+    # DataObject 'replacement'
+    if (is.raw(replacement)) {
+        newObj@bytes <- replacement
+        newObj@filename <- as.character(NA)
+        newObj@sysmeta@size <- length(newObj@bytes)
+        newObj@sysmeta@checksum <- digest(newObj@bytes, algo="sha1", serialize=FALSE, file=FALSE)
     } else if (class(replacement) == "character") {
         # If 'replacement' is a character string, then it is
         # assumed to be a filename that replaces the DataObjects existing filename
+        if(!file.exists(replacement)) {
+            stop(sprintf("File %s not found.", replacement))
+        }
+        fileinfo <- file.info(replacement)
+        newObj@filename <- replacement
+        newObj@sysmeta@size <- fileinfo$size
+        newObj@sysmeta@checksum <- digest(replacement, algo="sha1", serialize=FALSE, file=TRUE)
     }
     
-    # The replacement can be one of several data types. Check the type of the object
-    # supplied and take the appropriate action.
-  if(do@sysmeta@identifier != identifier) {
-    msg <- sprintf("The DataObject identifier %s doesn't match the 'identifier' argument", identifier)
-    stop(msg)
-  }
-  
-  x <- removeMember(x, identifier)
-  do@updated[['sysmeta']] <- TRUE
-  do@updated[['data']] <- TRUE
-  x <- addData(x, do)
-  
-  invisible(x)
+    # Update these selected sysmeta fields if they were specified in the call.
+    if(!is.na(format)) {
+        newObj@sysmeta@formatId <- format
+    }
+    if(!is.na(mediaType)) {
+        newObj@sysmeta@mediaType <- mediaType
+    }
+    if(!is.na(mediaTypeProperty)) {
+        newObj@sysmeta@mediaTypeProperty <- mediaTypeProperty
+    }
+    if(!is.na(suggestedFilename)) {
+        newObj@sysmeta@fileName<- base::basename(suggestedFilename)
+    }
+    
+    removeMember(x, do, keepRelationships=TRUE)
+    newObj@updated[['data']] <- TRUE
+    newObj@updated[['sysmeta']] <- TRUE
+    x <- addMember(x, newObj)
+    
+    invisible(x)
 })
 
 #' Return the Package Member by Identifier
