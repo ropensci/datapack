@@ -355,6 +355,19 @@ setMethod("addAccessRule", signature("DataObject"), function(x, y, ...) {
   return(x)
 })
 
+#' @rdname clearAccessPolicy
+#' @return The SystemMetadata object with the cleared access policy.
+#' @examples 
+#' sysmeta <- new("SystemMetadata")
+#' sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
+#' sysmeta <- clearAccessPolicy(sysmeta)
+#' @export
+setMethod("clearAccessPolicy", signature("DataObject"), function(x, ...) {
+    x@sysmeta@accessPolicy <- data.frame()
+    
+    return(x)
+})
+
 #' Test whether the provided subject can read an object.
 #' 
 #' Using the AccessPolicy, tests whether the subject has read permission
