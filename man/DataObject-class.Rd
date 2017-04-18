@@ -33,6 +33,10 @@ contents of the data or file as a raw value (but this will read all of the data 
 \item{\code{data}}{A value of type \code{"raw"}, containing the data represented in this object}
 
 \item{\code{filename}}{A character value that contains the fully-qualified path to the object data on disk}
+
+\item{\code{dataURL}}{A character vector for the URL used to load data into this DataObject}
+
+\item{\code{updated}}{A hash containing logical values which indicate if system metadata or the data object have been updated since object creation.}
 }}
 
 \section{Methods}{
@@ -45,6 +49,9 @@ contents of the data or file as a raw value (but this will read all of the data 
   \item{\code{\link{setPublicAccess}}}{: Add a Rule to the AccessPolicy to make the object publicly readable.}
   \item{\code{\link{addAccessRule}}}{: Add a Rule to the AccessPolicy}
   \item{\code{\link{canRead}}}{: Test whether the provided subject can read an object.}
+  \item{\code{\link{updateFile}}}{: Update the file that contains data for this DataObject.}
+  \item{\code{\link{updateData}}}{: Update the data that this DataObject contains.}
+  
 }
 }
 

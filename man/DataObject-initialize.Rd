@@ -10,7 +10,8 @@
   dataobj = NA, format = as.character(NA), user = as.character(NA),
   mnNodeId = as.character(NA), filename = as.character(NA),
   seriesId = as.character(NA), mediaType = as.character(NA),
-  suggestedFilename = as.character(NA), mediaTypeProperty = list())
+  suggestedFilename = as.character(NA), mediaTypeProperty = list(),
+  dataURL = as.character(NA))
 }
 \arguments{
 \item{.Object}{the DataObject instance to be initialized}

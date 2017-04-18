@@ -8,7 +8,7 @@
 \usage{
 removeMember(x, ...)
 
-\S4method{removeMember}{DataPackage}(x, identifier)
+\S4method{removeMember}{DataPackage}(x, do, keepRelationships = FALSE)
 }
 \arguments{
 \item{x}{a Datapackage object}
@@ -20,6 +20,10 @@ removeMember(x, ...)
 \description{
 Given the identifier of a member of the data package, delete the DataObject
 representation of the member.
+}
+\details{
+The \code{removeMember} method removes the specified DataObject from the DataPackage. In 
+addition, any package relationships that included the DataObject are removed.
 }
 \examples{
 dp <- new("DataPackage")
