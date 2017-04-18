@@ -132,7 +132,7 @@ setMethod("initialize", "DataPackage", function(.Object, packageId) {
 #' dp <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6")
 #' do1 <- new("DataObject", id="id1", data, format="text/csv", user="smith", mnNodeId="urn:node:KNB")
-#' dp <- addData(dp, do1)
+#' dp <- addMember(dp, do1)
 #' bytes <- getData(dp, "id1")
 #' @export
 setMethod("getData", signature("DataPackage"), function(x, id) {
@@ -159,7 +159,7 @@ setGeneric("getSize", function(x, ...) { standardGeneric("getSize")} )
 #' dp <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6")
 #' do <- new("DataObject", dataobj=data, format="text/csv", user="jsmith")
-#' dp <- addData(dp, do)
+#' dp <- addMember(dp, do)
 #' getSize(dp)
 #' @export
 setMethod("getSize", "DataPackage", function(x) {
@@ -184,7 +184,7 @@ setGeneric("getIdentifiers", function(x, ...) { standardGeneric("getIdentifiers"
 #' dp <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6")
 #' do <- new("DataObject", dataobj=data, format="text/csv", user="jsmith")
-#' dp <- addData(dp, do)
+#' dp <- addMember(dp, do)
 #' getIdentifiers(dp)
 #' @export
 setMethod("getIdentifiers", "DataPackage", function(x) {
@@ -254,7 +254,7 @@ setGeneric("addMember", function(x, ...) {
 #' @rdname addMember
 #' @details The DataObject \code{"do"} is added to the DataPackage. If the optional \code{"mo"} parameter is specified, then it is 
 #' assumed that the DataObject \code{"mo"} is a metadata
-#' object that describes the science object \code{"do"} that is being added. The \code{addData} function will add a relationship
+#' object that describes the science object \code{"do"} that is being added. The \code{addMember} function will add a relationship
 #' to the DataPackage resource map that indicates that the metadata object describes the science object using the 
 #' Citation Typing Ontology (CITO).
 #' Note: this method updates the passed-in DataPackage object.
@@ -271,7 +271,7 @@ setGeneric("addMember", function(x, ...) {
 #'   mnNodeId="urn:node:KNB")
 #' # Associate the metadata object with the science object. The 'mo' object will be added 
 #' # to the package  automatically, since it hasn't been added yet.
-#' dpkg <- addData(dpkg, do, md)
+#' dpkg <- addMember(dpkg, do, md)
 #' @export
 setMethod("addMember", signature("DataPackage"), function(x, do, mo=as.character(NA)) {
     
@@ -561,7 +561,7 @@ setGeneric("containsId", function(x, ...) {
 #' data <- charToRaw("1,2,3\n4,5,6")
 #' id <- "myNewId"
 #' do <- new("DataObject", id=id, dataobj=data, format="text/csv", user="jsmith")
-#' dp <- addData(dp, do)
+#' dp <- addMember(dp, do)
 #' isInPackage <- containsId(dp, identifier="myNewId")
 #' @export
 setMethod("containsId", signature("DataPackage"), function(x, identifier) {
@@ -583,11 +583,13 @@ setGeneric("removeMember", function(x, ...) {
 
 #' @rdname removeMember
 #' @param identifier an identifier for a DataObject
+#' @details The \code{removeMember} method removes the specified DataObject from the DataPackage. In 
+#' addition, any package relationships that included the DataObject are removed.
 #' @examples
 #' dp <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6")
 #' do <- new("DataObject", id="myNewId", dataobj=data, format="text/csv", user="jsmith")
-#' dp <- addData(dp, do)
+#' dp <- addMember(dp, do)
 #' removeMember(dp, "myNewId")
 #' @export
 setMethod("removeMember", signature("DataPackage"), function(x, do, keepRelationships=FALSE) {
@@ -758,7 +760,7 @@ setGeneric("getMember", function(x, ...) {
 #' dp <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6")
 #' do <- new("DataObject", id="myNewId", dataobj=data, format="text/csv", user="jsmith")
-#' dp <- addData(dp, do)
+#' dp <- addMember(dp, do)
 #' do2 <- getMember(dp, "myNewId")
 setMethod("getMember", signature("DataPackage"), function(x, identifier) {
     if (containsId(x, identifier)) {
@@ -788,7 +790,7 @@ setGeneric("selectMember", function(x, ...) {
 #' <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6")
 #' do <- new("DataObject", id="myNewId", dataobj=data, format="text/csv", user="jsmith")
-#' dp <- addData(dp, do)
+#' dp <- addMember(dp, do)
 #' do2 <- getMember(dp, "myNewId")
 setMethod("selectMember", signature("DataPackage"), function(x, name, value) {
     # First look at the top level slot names for a match with 'field'
@@ -992,10 +994,10 @@ setGeneric("serializePackage", function(x, ...) {
 #' dp <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6")
 #' do <- new("DataObject", id="do1", dataobj=data, format="text/csv", user="jsmith")
-#' dp <- addData(dp, do)
+#' dp <- addMember(dp, do)
 #' data2 <- charToRaw("7,8,9\n10,11,12")
 #' do2 <- new("DataObject", id="do2", dataobj=data2, format="text/csv", user="jsmith")
-#' dp <- addData(dp, do2)
+#' dp <- addMember(dp, do2)
 #' dp <- describeWorkflow(dp, sources=do, derivations=do2)
 #' \dontrun{
 #' td <- tempdir()
@@ -1073,11 +1075,11 @@ setGeneric("serializeToBagIt", function(x, ...) {
 #' dp <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6")
 #' do <- new("DataObject", id="do1", dataobj=data, format="text/csv", user="jsmith")
-#' dp <- addData(dp, do)
+#' dp <- addMember(dp, do)
 #' # Create a second data object
 #' data2 <- charToRaw("7,8,9\n4,10,11")
 #' do2 <- new("DataObject", id="do2", dataobj=data2, format="text/csv", user="jsmith")
-#' dp <- addData(dp, do2)
+#' dp <- addMember(dp, do2)
 #' # Create a relationship between the two data objects
 #' dp <- describeWorkflow(dp, sources="do2", derivations="do2")
 #' # Write out the data package to a BagIt file
@@ -1279,17 +1281,17 @@ setGeneric("describeWorkflow", function(x, ...) {
 #' # Add the script to the DataPackage
 #' progFile <- system.file("./extdata/pkg-example/logit-regression-example.R", package="datapack")
 #' progObj <- new("DataObject", format="application/R", filename=progFile)
-#' dp <- addData(dp, progObj)
+#' dp <- addMember(dp, progObj)
 #' 
 #' # Add a script input to the DataPackage
 #' inFile <- system.file("./extdata/pkg-example/binary.csv", package="datapack") 
 #' inObj <- new("DataObject", format="text/csv", filename=inFile)
-#' dp <- addData(dp, inObj)
+#' dp <- addMember(dp, inObj)
 #' 
 #' # Add a script output to the DataPackage
 #' outFile <- system.file("./extdata/pkg-example/gre-predicted.png", package="datapack")
 #' outObj <- new("DataObject", format="image/png", file=outFile)
-#' dp <- addData(dp, outObj)
+#' dp <- addMember(dp, outObj)
 #' 
 #' # Add the provenenace relationshps, linking the input and output to the script execution
 #' # Note: 'sources' and 'derivations' can also be lists of "DataObjects" or "DataObject' identifiers

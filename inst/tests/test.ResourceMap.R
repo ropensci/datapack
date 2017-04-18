@@ -32,9 +32,9 @@ test_that("ResourceMap creation from DataPackage triples", {
   md1 <- new("DataObject", id=mdId, data, format="eml://ecoinformatics.org/eml-2.1.1", user, node)
   doIn <- new("DataObject", id=doInId, data, format, user, node)
   doOut <- new("DataObject", id=doOutId, data, format, user, node)
-  dp <- addData(dp, md1)
-  dp <- addData(dp, doIn)
-  dp <- addData(dp, doOut)
+  dp <- addMember(dp, md1)
+  dp <- addMember(dp, doIn)
+  dp <- addMember(dp, doOut)
   
   # Insert metadata document <-> relationships
   dp <- insertRelationship(dp, subjectID=mdId, objectIDs=c(doOutId))
