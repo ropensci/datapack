@@ -639,21 +639,19 @@ setGeneric("replaceMember", function(x, ...) {
 })
 
 #' @rdname replaceMember
-#' #' raw data or file that is wrapped by a DataObject.
 #' @details The data that is replacing the existing DataObject data may be of a different
 #' format or type than the existing data. Because the data type and format may change, the
 #' system metadata that describes the data can be updated as well. The \code{replaceMember}
 #' method will update the SystemMetadata \code{size}, \code{checksum} values, but will not
 #' update \code{formatId}, \code{mediaType}, \code{mediaTypeProperty}, \code{suggestedFilename},
-#' so these should be specified in the call to \code{replaceMember} if necessary. See \link{SystemMetadata}
-#' for a description of these fields.
+#' so these should be specified in the call to \code{replaceMember} if necessary. 
 #' @param x A DataPackage instance
 #' @param do A DataObject instance
-#' @param replacement A raw object or filename 
-#' @param format 
-#' @param mediaType
-#' @param mediaTypeProperty
-#' @param suggestedFilename
+#' @param replacement A raw object or filename that will replace the current value in the DataObject \code{do}.
+#' @param format A value of type \code{"character"}, the DataONE object format for the object.
+#' @param mediaType A value of type \code{"character"}, the IANA Media Type (aka MIME-Type) of the object, e.g. "text/csv".
+#' @param mediaTypeProperty A value of type \code{"list"} of \code{"character"}, IANA Media Type properties for the \code{"mediaType"} argument.
+#' @param suggestedFilename A value of type \code{"character"}, a suggested file name for the object.
 #' @examples
 #' # Create a DataObject and add it to the DataPackage
 #' dp <- new("DataPackage")
@@ -799,8 +797,8 @@ setMethod("selectMember", signature("DataPackage"), function(x, name, value) {
         return(matchingIds)
     }
 })
-#' Return identifiers for objects that match search criteria
-#' @description Given the identifier of a member of the data package, return the DataObject
+#' Set values for selected DataPackage members.
+#' @description Given a name, a value and set of package member identifiers, set the value selected slot values.
 #' @param x A DataPackage instance
 #' @param ... (Not yet used)
 #' @seealso \code{\link{DataPackage-class}}
@@ -810,15 +808,32 @@ setGeneric("setValue", function(x, ...) {
 })
 
 #' @rdname setValue
-#' @param identifier A DataObject identifier
-#' @return A DataObject if the member is found, or NULL if not
+#' @details If the parameter \code{identifiers} is provided, then DataPackage members that
+#' have identifiers specified in the list will be updated. If this parameter is not provided
+#' then no members will be updated. To update all members in a package, specify the
+#' value of \code{identifiers=getIdentifiers(pkg)} where \code{pkg} is the variable name
+#' of the DataPackage to update. Note that this method can be used to update the
+#' \code{data} or \code{filenane} slots, but it is instead recommended to us the
+#' \code{replaceMember} method to achieve this, as this method assists in properly
+#' setting the related SystemMetadata values.
+#' @param name A DataObject slot name.
+#' @param value A new value to assign to the slot for selected DataPackage members.
+#' @param identifiers A list of identifiers of DataPackage members to update.
+#' @return A DataPackage with possibly updated DataObjects.
 #' @export
 #' @examples
 #' dp <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6")
-#' do <- new("DataObject", id="myNewId", dataobj=data, format="text/csv", user="jsmith")
-#' dp <- addData(dp, do)
-#' do2 <- getMember(dp, "myNewId")
+#' # This is setting the format type incorrectly as an example
+#' do <- new("DataObject", id="myNewId", dataobj=data, format="image/jpeg", user="jsmith")
+#' dp <- addMember(dp, do)
+#' data <- charToRaw("7,8.9\n4,10,11")
+#' # This is setting the format type incorrectly
+#' do <- new("DataObject", id="myNewId2", dataobj=data, format="image/jpg", user="jsmith")
+#' dp <- addMember(dp, do)
+#' # Change format types to correct value
+#' # Careful! Specifying 'identifiers=getIdentifiers(dp) will update all package members!
+#' dp <- setValue(dp, name="sysmeta@formatId", value="text/csv", identifiers=getIdentifiers(dp))
 setMethod("setValue", signature("DataPackage"), function(x, name, value, identifiers=as.character(NA)) {
   # First look at the top level slot names for a match with 'field'
   matchingIds <- list()
@@ -848,10 +863,11 @@ setMethod("setValue", signature("DataPackage"), function(x, name, value, identif
   } else {
     stop("The specified package has no members")
   }
+  return(x)
 })
 
-#' Return identifiers for objects that match search criteria
-#' @description Given the identifier of a member of the data package, return the DataObject
+#' Get values for selected DataPackage members.
+#' @description Given a name and set of package member identifiers, return selected slot values.
 #' @param x A DataPackage instance
 #' @param ... (Not yet used)
 #' @seealso \code{\link{DataPackage-class}}
@@ -860,16 +876,23 @@ setGeneric("getValue", function(x, ...) {
     standardGeneric("getValue")
 })
 
-#' @rdname setValue
-#' @param identifier A DataObject identifier
-#' @return A DataObject if the member is found, or NULL if not
+#' @rdname getValue
+#' @details If the parameter \code{identifiers} is provided, then only the DataPackage
+#' members that have identifiers in the provided list will have there values fetched.
+#' If this parameter is not provided, then the values for #' all DataPackage members are returned.
+#' @param name A name of a DataObject slot.
+#' @param identifiers A list of DataPackage member identifiers
+#' @return A list of values for matching slot names and included identifiers.
 #' @export
 #' @examples
 #' dp <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6")
 #' do <- new("DataObject", id="myNewId", dataobj=data, format="text/csv", user="jsmith")
-#' dp <- addData(dp, do)
-#' do2 <- getMember(dp, "myNewId")
+#' dp <- addMember(dp, do)
+#' data <- charToRaw("7,8.9\n4,10,11")
+#' do <- new("DataObject", id="myNewId2", dataobj=data, format="text/csv", user="jsmith")
+#' dp <- addMember(dp, do)
+#' formats <- getValue(dp, name="sysmeta@formatId")
 setMethod("getValue", signature("DataPackage"), function(x, name, identifiers=as.character(NA)) {
     values <- list()
     if(is.na(identifiers)) identifiers <- getIdentifiers(x)
