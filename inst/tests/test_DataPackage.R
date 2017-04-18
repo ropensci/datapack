@@ -206,7 +206,8 @@ test_that("InsertRelationship methods work", {
   # Insert derivation relationships
   source <- "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1"
   derived <- "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.45.1"
-  dp <- suppressWarnings(recordDerivation(dp, sourceID=source, derivedIDs=derived))
+  # Keep recordDerivations in unit tests until v 1.3.0, when it may be marked as defunct
+  dp <- suppressWarnings(recordDerivations(dp, sourceID=source, derivedIDs=derived))
   relations <- getRelationships(dp, quiet=quietOn)
   
   # Test if the data frame with retrieved relationships was constructed correctly
@@ -525,12 +526,28 @@ test_that("Adding provenance relationships to a DataPackage via describeWorkflow
     err <- try(dp <- describeWorkflow(dp, program=doProg), silent=TRUE)
     expect_match(class(err), "try-error")
     
+    
+    relations <- getRelationships(dp, quiet=quietOn)
+    expect_match(relations[relations$subject == getIdentifier(doIn),'object'], 'Data')
+    execId <- relations[relations$object == datapack:::provONEexecution,'subject']
+    expect_match(relations[relations$predicate == datapack:::provUsed,'object'], getIdentifier(doIn))
+    expect_match(relations[relations$predicate == datapack:::provUsed,'subject'], execId)
+    expect_match(relations[relations$predicate == datapack:::provHadPlan,'object'], progId) 
+    
+    # Test removing a DataObject from the package - make sure that all the package relationships that had
+    # the DataObject as a subject or object have been removed. This includes any relationship, i.e. cito:*
+    # and prov:*.
+    dp <- removeMember(dp, doIn)
+    rels <- relations[relations$predicate == datapack:::provUsed,'object']
+    
+    
     # Test prov:wasDerivedFrom with pids that are not package members
     rm(dp)
     dp <- new("DataPackage")
     # Insert derivation relationships
     source <- "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1"
     derived <- "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.45.1"
+    # Keep recordDerivations in unit tests until v 1.3.0, when it may be marked as defunct
     dp <- suppressWarnings(recordDerivation(dp, sourceID=source, derivedIDs=derived))
     relations <- getRelationships(dp, quiet=quietOn)
     
@@ -539,4 +556,77 @@ test_that("Adding provenance relationships to a DataPackage via describeWorkflow
     expect_that(nrow(relations[relations$object == datapack:::provONEdata,]), equals(2))
     expect_equal(relations[relations$predicate == datapack:::provWasDerivedFrom, 'subject'], derived)
     expect_equal(relations[relations$predicate == datapack:::provWasDerivedFrom, 'object'], source)
+})
+
+test_that("removeMember works", {
+    library(datapack)
+    #
+    # Now do the same test without the outputs so that 'prov:generqtedBy' are not inserted, but other
+    # relationships are.
+    dp <- new("DataPackage")
+    inputs <- list()
+    doProg <- new("DataObject", format="application/R", 
+                  filename=system.file("./extdata/pkg-example/logit-regression-example.R", package="datapack"),
+                  suggestedFilename="logit-regression-example R script")
+    dp <- addMember(dp, doProg)
+    progId <- getIdentifier(doProg)
+    
+    doIn <- new("DataObject", format="text/csv", 
+                filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"),
+                suggestedFilename="binary.csv")
+    dp <- addMember(dp, doIn)
+    inputs[[length(inputs)+1]] <- doIn
+    dp <- describeWorkflow(dp, sources=inputs, program=doProg)
+    relations <- getRelationships(dp, quiet=quietOn)
+    expect_match(relations[relations$subject == getIdentifier(doIn),'object'], 'Data')
+    execId <- relations[relations$object == datapack:::provONEexecution,'subject']
+    expect_match(relations[relations$predicate == datapack:::provUsed,'object'], getIdentifier(doIn))
+    expect_match(relations[relations$predicate == datapack:::provUsed,'subject'], execId)
+    expect_match(relations[relations$predicate == datapack:::provHadPlan,'object'], progId) 
+    
+    # Test removing a DataObject from the package - make sure that all the package relationships that had
+    # the DataObject as a subject or object have been removed. This includes any relationship, i.e. cito:*
+    # and prov:*.
+    dp <- removeMember(dp, doIn)
+    relations <- getRelationships(dp, quiet=quietOn)
+    rels <- relations[relations$subject == getIdentifier(doIn), ]
+    expect_equal(nrow(rels), 0)
+    rels <- relations[relations$object == getIdentifier(doIn), ]
+    expect_equal(nrow(rels), 0)
+})
+
+test_that("replaceMember works", {
+    library(datapack)
+    #
+    # Now do the same test without the outputs so that 'prov:generqtedBy' are not inserted, but other
+    # relationships are.
+    dp <- new("DataPackage")
+    inputs <- list()
+    doProg <- new("DataObject", format="application/R", 
+                  filename=system.file("./extdata/pkg-example/logit-regression-example.R", package="datapack"),
+                  suggestedFilename="logit-regression-example.R")
+    dp <- addMember(dp, doProg)
+    progId <- getIdentifier(doProg)
+    
+    doIn <- new("DataObject", format="text/csv", 
+                filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"),
+                suggestedFilename="binary.csv")
+    dp <- addMember(dp, doIn)
+    inputs[[length(inputs)+1]] <- doIn
+    dp <- describeWorkflow(dp, sources=inputs, program=doProg)
+    relations <- getRelationships(dp, quiet=quietOn)
+    expect_match(relations[relations$subject == getIdentifier(doIn),'object'], 'Data')
+    execId <- relations[relations$object == datapack:::provONEexecution,'subject']
+    expect_match(relations[relations$predicate == datapack:::provUsed,'object'], getIdentifier(doIn))
+    expect_match(relations[relations$predicate == datapack:::provUsed,'subject'], execId)
+    expect_match(relations[relations$predicate == datapack:::provHadPlan,'object'], progId) 
+    
+    # Test removing a DataObject from the package - make sure that all the package relationships that had
+    # the DataObject as a subject or object have been removed. This includes any relationship, i.e. cito:*
+    # and prov:*.
+    # Test replaceMember by substituting the zipped version of the file. 
+    dp <- replaceMember(dp, doIn, replacement=system.file("./extdata/pkg-example/binary.csv.zip", package="datapack"),
+                        format="application/octet-stream", suggestedFilename="binary.csv.zip")
+    formatId <- getValue(dp, name="sysmeta@formatId", identifiers=getIdentifier(doIn))
+    expect_match(formatId[[1]], "application/octet-stream")
 })
