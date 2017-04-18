@@ -327,17 +327,6 @@ setGeneric("insertRelationship", function(x, ...) {
   standardGeneric("insertRelationship")
 })
 
-## @rdname insertRelationship
-## @export
-#setMethod("insertRelationship",  signature("DataPackage", "character", "character", "missing"), function(x, subjectID, objectIDs) {
-#  
-#  insertRelationship(x, subjectID, objectIDs, "http://purl.org/spar/cito/documents")
-#  
-#  for (obj in objectIDs) {
-#    insertRelationship(x, obj, subjectID, "http://purl.org/spar/cito/isDocumentedBy")
-#  }
-#})
-
 #' @rdname insertRelationship
 #' @param subjectType the type to assign the subject, values can be 'uri', 'blank'
 #' @param objectTypes the types to assign the objects (cal be single value or list), each value can be 'uri', 'blank', or 'literal'
