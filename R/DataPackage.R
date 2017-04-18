@@ -55,19 +55,25 @@
 #' @section Methods:
 #' \itemize{
 #'  \item{\code{\link[=DataPackage-initialize]{initialize}}}{: Initialize a DataPackage object}
+#'  \item{\code{\link{addAccessRule}}}{: Add access rules to specified DataObjects in a DataPackage.}
+#'  \item{\code{\link{addMember}}}{: Add a DataObject to a DataPackage}
+#'  \item{\code{\link{clearAccessPolicy}}}{: Clear access policies for specified DataObjects in a DataPackage.}
+#'  \item{\code{\link{containsId}}}{: Returns true if the specified object is a member of the data package}
+#'  \item{\code{\link{describeWorkflow}}}{: Add data derivation information to a DataPackage}
 #'  \item{\code{\link{getData}}}{: Get the data content of a specified data object}
 #'  \item{\code{\link{getSize}}}{: Get the Count of Objects in the DataPackage}
 #'  \item{\code{\link{getIdentifiers}}}{: Get the Identifiers of DataPackage members}
-#'  \item{\code{\link{addData}}}{: Add a DataObject to the DataPackage}
-#'  \item{\code{\link{insertRelationship}}}{: Insert relationships between objects in a DataPackage}
-#'  \item{\code{\link{getRelationships}}}{: Retrieve relationships of data package objects}
-#'  \item{\code{\link{containsId}}}{: Returns true if the specified object is a member of the data package}
-#'  \item{\code{\link{replaceMember}}}{: Replace the Specified DataPackage Member with a new DataObject}
-#'  \item{\code{\link{removeMember}}}{: Remove the Specified Member from the DataPackage}
 #'  \item{\code{\link{getMember}}}{: Return the DataPackage Member by Identifier}
-#'  \item{\code{\link{serializePackage}}}{: Create an OAI-ORE resource map from the data package}
+#'  \item{\code{\link{getRelationships}}}{: Retrieve relationships of data package objects}
+#'  \item{\code{\link{getValue}}}{: Get values for selected DataPackage members}
+#'  \item{\code{\link{insertRelationship}}}{: Insert relationships between objects in a DataPackage}
+#'  \item{\code{\link{removeMember}}}{: Remove the specified DataObject from a DataPackage}
+#'  \item{\code{\link{replaceMember}}}{: Replace the specified DataPackage Member with a new DataObject}
+#'  \item{\code{\link{serializePackage}}}{: Create an OAI-ORE resource map from the DataPackage}
 #'  \item{\code{\link{serializeToBagIt}}}{: Serialize A DataPackage into a BagIt Archive File}
-#'  \item{\code{\link{describeWorkflow}}}{: Add data derivation information to a DataPackage}
+#'  \item{\code{\link{setPublicAccess}}}{: Set the access policy to readable by anyone for the specified DataObject.}
+#'  \item{\code{\link{setValue}}}{: Set values for selected DataPackage members}
+#'  \item{\code{\link{show}}}{: Print DataPackage information in a formated view.}
 #' }
 #' @seealso \code{\link{datapack}}
 #' @export
