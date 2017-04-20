@@ -356,14 +356,16 @@ setMethod("addAccessRule", signature("DataObject"), function(x, y, ...) {
 })
 
 #' @rdname clearAccessPolicy
-#' @return The SystemMetadata object with the cleared access policy.
+#' @return The DataObject with the cleared access policy.
 #' @examples 
-#' sysmeta <- new("SystemMetadata")
-#' sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
-#' sysmeta <- clearAccessPolicy(sysmeta)
+#' do <- new("DataObject", file=)
+#'     identifier <- "id1"
+#' do <- new("DataObject", format="text/csv", filename=system.file("extdata/sample-data.csv", package="datapack"))
+#' do <- addAccessRule(do, "uid=smith,ou=Account,dc=example,dc=com", "write")
+#' do <- clearAccessPolicy(do)
 #' @export
 setMethod("clearAccessPolicy", signature("DataObject"), function(x, ...) {
-    x@sysmeta@accessPolicy <- data.frame()
+    x@sysmeta <- clearAccessPolicy(x@sysmeta)
     
     return(x)
 })
