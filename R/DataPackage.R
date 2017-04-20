@@ -1669,35 +1669,32 @@ setMethod("show", "DataPackage",
             "%-", sprintf("%2d", updatedWidth), "s ",
             "%-", sprintf("%2d", localWidth), "s ",
             "\n", sep="")
-        if(length(ids) > 0) {
-            cat(sprintf("Members:\n\n"))
-            cat(sprintf(fmt, "filename", "format", "mediaType", "size", "rightsHolder", "identifier", "modified", "local"))
-            lapply(ids, function(id) { 
-                # The objects data has a size from sysmeta, but no data locally, so it must have been
-                # lazy loaded from a repository. The sysmeta@size could be non-zero but no local data only
-                # if it was incorrectly set manually or the object was lazyloaded.
-                hasLocalData <- !is.na(object@objects[[id]]@filename) || (length(object@objects[[id]]@data) > 0)
-                hasLocalDataStr <- if (isTRUE(hasLocalData)) 'y' else 'n'
-                cat(sprintf(fmt, 
-                   condenseStr(object@objects[[id]]@sysmeta@fileName, fileNameWidth),
-                   condenseStr(object@objects[[id]]@sysmeta@formatId, formatIdWidth),
-                   condenseStr(object@objects[[id]]@sysmeta@mediaType, mediaTypeWidth),
-                   condenseStr(as.character(object@objects[[id]]@sysmeta@size), sizeWidth),
-                   condenseStr(object@objects[[id]]@sysmeta@rightsHolder, rightsHolderWidth),
-                   condenseStr(object@objects[[id]]@sysmeta@identifier, identifierWidth),
-                   condenseStr(as.character(object@objects[[id]]@updated[['sysmeta']] || object@objects[[id]]@updated[['data']]), updatedWidth), 
-                   condenseStr(hasLocalDataStr, localWidth)))
-            })
-        } else {
-            cat(sprintf("This package does not contain any DataObjects:\n"))
-        }
+        cat(sprintf("Members:\n\n"))
+        cat(sprintf(fmt, "filename", "format", "mediaType", "size", "rightsHolder", "identifier", "modified", "local"))
+        lapply(ids, function(id) { 
+            # The objects data has a size from sysmeta, but no data locally, so it must have been
+            # lazy loaded from a repository. The sysmeta@size could be non-zero but no local data only
+            # if it was incorrectly set manually or the object was lazyloaded.
+            hasLocalData <- !is.na(object@objects[[id]]@filename) || (length(object@objects[[id]]@data) > 0)
+            hasLocalDataStr <- if (isTRUE(hasLocalData)) 'y' else 'n'
+            cat(sprintf(fmt, 
+                        condenseStr(object@objects[[id]]@sysmeta@fileName, fileNameWidth),
+                        condenseStr(object@objects[[id]]@sysmeta@formatId, formatIdWidth),
+                        condenseStr(object@objects[[id]]@sysmeta@mediaType, mediaTypeWidth),
+                        condenseStr(as.character(object@objects[[id]]@sysmeta@size), sizeWidth),
+                        condenseStr(object@objects[[id]]@sysmeta@rightsHolder, rightsHolderWidth),
+                        condenseStr(object@objects[[id]]@sysmeta@identifier, identifierWidth),
+                        condenseStr(as.character(object@objects[[id]]@updated[['sysmeta']] || object@objects[[id]]@updated[['data']]), updatedWidth), 
+                        condenseStr(hasLocalDataStr, localWidth)))
+        })
 
+        cat(sprintf("\nPackage identifier: %s\n\n", object@resmapId))
         relationships <- getRelationships(object, condense=TRUE)
         if(nrow(relationships) > 0) {
             if(object@relations[['updated']]) {
                 cat(sprintf("\nRelationships (updated):\n\n"))
             } else {
-                cat(sprintf("\nRelationships:\n\n"))
+                cat(sprintf("\nRelationships:\n"))
             }
           show(relationships)
         } else {
