@@ -583,44 +583,44 @@ setGeneric("removeMember", function(x, ...) {
 #' @export
 setMethod("removeMember", signature("DataPackage"), function(x, do, keepRelationships=FALSE) {
     
-    identifiers <- as.character(NA)
+    identifier <- as.character(NA)
     if(class(do) == "DataObject") {
-        identifiers <- getIdentifier(do)
+        identifier <- getIdentifier(do)
     } else if (class(do) == "character") {
-        identifiers <- do
+        identifier <- do
     } else {
         stop(sprintf("Unknown type \"%s\"for parameter '\"do\""), class(do))
     }
-    for (iMember in identifiers) { 
-        if (containsId(x, iMember)) {
-            x@objects[[iMember]] <- NULL
+    
+    # To delete a hash() entry, set it to NULL
+    x@objects[[identifier]] <- NULL
+    
+    # The DataObject is being removed, and the relationships that it appears in
+    # will also be removed.
+    if(!keepRelationships) {
+        # Get the current package relationships
+        if (has.key("relations", x@relations)) {
+            relations <- x@relations[["relations"]]
+        } else {
+            invisible(x)
         }
         
-        # The DataObject is being removed, and the relationships that it appears in
-        # will also be removed.
-        if(!keepRelationships) {
-            # Get the current package relationships
-            if (has.key("relations", x@relations)) {
-                relations <- x@relations[["relations"]]
-            } else {
-                invisible(x)
+        newRels <- data.frame()
+        # Remove all occurances of this identifier from the provenance relationships
+        # when it appears in either the subject or object of a relationship
+        if(nrow(relations) > 0) {
+            for(irel in 1:nrow(relations)) {
+                subject <- relations[irel, 'subject']        
+                object <- relations[irel, 'object']        
+                testSubject <- checkIdMatch(subject, pattern='.*%s$', identifier)
+                if(!is.na(testSubject)) next
+                testObject <- checkIdMatch(object, pattern='.*%s$', identifier)
+                if(!is.na(testObject)) next
+                # Didn't find the identifier, keep this relationship 
+                newRels <- rbind(newRels, relations[irel,])
             }
-            
-            newRels <- data.frame()
-            # Remove all occurances of this identifier from the provenance relationships
-            if(nrow(relations) > 0) {
-                for(irel in 1:nrow(relations)) {
-                    sub <- relations[irel, 'subject']        
-                    obj <- relations[irel, 'object']        
-                    # TODO: Use a regex to match the pid in the subjectd or the object, as this
-                    # pid may have a DataONE resolve URI prefix.
-                    if(sub != iMember && obj != iMember) {
-                        newRels <- rbind(newRels, relations[irel,])
-                    }
-                }
-            }
-            x@relations[["relations"]] <- newRels
         }
+        x@relations[["relations"]] <- newRels
     }
     
     x@relations[["updated"]] <- TRUE
