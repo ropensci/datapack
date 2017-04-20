@@ -771,7 +771,7 @@ setMethod("getMember", signature("DataPackage"), function(x, identifier) {
 })
 
 #' Return identifiers for objects that match search criteria
-#' @description Given the identifier of a member of the data package, return the DataObject
+#' @description Return DataObjects or DataObject identifiers that match search terms.
 #' @param x A DataPackage instance
 #' @param ... (Not yet used)
 #' @seealso \code{\link{DataPackage-class}}
@@ -781,33 +781,62 @@ setGeneric("selectMember", function(x, ...) {
 })
 
 #' @rdname selectMember
-#' @param identifier A DataObject identifier
-#' @return A DataObject if the member is found, or NULL if not
+#' @details The \code{"selectMember"} method inspects the DataObject slot \code{"name"} for a match with \code{"value"}
+#' for each DataObject in a DataPackage. 
+#' @param name The name of the DataObject slot to inspect, for example "sysmeta@formatId".
+#' @param value A character or logical value to match.
+#' @param as A character value to specify the return type, either "DataObject" or "character" (the default)
+#' @return A list of matching DataObjects or DataObject identifiers. The default is to return a list of 
+#' DataObject identifiers.
 #' @export
 #' @examples
-#' dp 
+#' #' library(datapack)
+#' dp <- new("DataPackage")
+#' # Add the script to the DataPackage
+#' progFile <- system.file("./extdata/pkg-example/logit-regression-example.R", package="datapack")
+#' # An 'id' parameter is not specified, so one will be generated automatically.
+#' progObj <- new("DataObject", format="application/R", filename=progFile)
+#' dp <- addMember(dp, progObj)
 #' 
-#' <- new("DataPackage")
-#' data <- charToRaw("1,2,3\n4,5,6")
-#' do <- new("DataObject", id="myNewId", dataobj=data, format="text/csv", user="jsmith")
-#' dp <- addMember(dp, do)
-#' do2 <- getMember(dp, "myNewId")
-setMethod("selectMember", signature("DataPackage"), function(x, name, value) {
+#' # Add a script input to the DataPackage
+#' inFile <- system.file("./extdata/pkg-example/binary.csv", package="datapack") 
+#' inObj <- new("DataObject", format="text/csv", filename=inFile)
+#' dp <- addMember(dp, inObj)
+#' 
+#' # Add a script output to the DataPackage
+#' outFile <- system.file("./extdata/pkg-example/gre-predicted.png", package="datapack")
+#' outObj <- new("DataObject", format="image/png", file=outFile)
+#' dp <- addMember(dp, outObj)
+#' 
+#' # Now determine the package member identifier for the R script
+#' progIds  <- selectMember(dp, name="sysmeta@formatId", value="application/R", as="character")
+#' inputId <- selectMember(dp, name="sysmeta@fileName", value="binary.csv")
+setMethod("selectMember", signature("DataPackage"), function(x, name, value, as="character") {
     # First look at the top level slot names for a match with 'field'
-    matchingIds <- list()
+    valid <- c("character", "DataPackage")
+    if(!as %in% c("character", "DataPackage")) {
+        stop(sprintf("The value for parameter \"as\" must be one of %s", paste0(valid, collapse=", ")))
+    }
+    matches <- list()
     if(length(keys(x@objects)) > 0) {
         for(iKey in keys(x@objects)) {
             slotStr <- sprintf("x@objects[[\'%s\']]@%s", iKey, as.character(name))
             testValue <- eval(parse(text=slotStr))
-            if(identical(testValue, value)) matchingIds[[length(matchingIds)+1]] <- iKey
+            if(identical(testValue, value)) {
+                if(as == "character") {
+                    matches[[length(matches)+1]] <- iKey
+                } else {
+                    matches[[length(matches)+1]] <- getMember(x, iKey)
+                }
+            }
         }
     } else {
         stop("The specified package has no members")
     }
-    if(length(matchingIds) > 0) {
-        return(unlist(matchingIds))
+    if(length(matches) > 0) {
+        return(unlist(matches))
     } else {
-        return(matchingIds)
+        return(matches)
     }
 })
 #' Set values for selected DataPackage members.
