@@ -664,11 +664,12 @@ setGeneric("replaceMember", function(x, ...) {
 #' dp <- replaceMember(dp, doIn, replacement=system.file("./extdata/pkg-example/binary.csv.zip", package="datapack"),
 #'                     format="application/octet-stream", suggestedFilename="binary.csv.zip")
 #' @export
-setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement, format=as.character(NA), mediaType=as.character(NA), 
+setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement, newid=as.character(NA), format=as.character(NA), mediaType=as.character(NA), 
                                                               mediaTypeProperty=as.character(NA),
                                                               suggestedFilename=as.character(NA), ...) {
     
     newObj <- NULL
+    if(is.na(newid)) newid <- sprintf("urn:uuid:%s", UUIDgenerate())
     # The DataObject to change argument can be either a DataObject or identifier. Determine which one
     # and put the object out of the package so that we can modify it and replace it.
     if (class(do) == "DataObject") {
@@ -682,13 +683,18 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
         if(! identifier %in% getIdentifiers(x)) {
             stop(sprintf("DataObject for pid \"%s\" was not found in the DataPackage", identifier))
         }
-        newObj <- getMember(x, identifier)
+        newObj <- getMember(x, id)
     } else {
         stop(sprintf("Unknown type \"%s\"for parameter '\"do\""), class(do))
     }
     
     # If replacement is a DataObject, then replace the existing DataObject 'do' with the
     # DataObject 'replacement'
+    newObj@sysmeta@identifier <- newid
+    # Only replace the previousId once, as the user may call 'replaceMember' multiple times for an object.
+    # If we are modifying an object downloaded from a repository, we need the id from the downloaded object,
+    # which would be the first id placed in @previousId.
+    if(is.na(newObj@previousId)) newObj@previousId <- id
     if (is.raw(replacement)) {
         newObj@bytes <- replacement
         newObj@filename <- as.character(NA)
@@ -725,6 +731,8 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
     newObj@updated[['sysmeta']] <- TRUE
     x <- addMember(x, newObj)
     
+    # Now update the package relationships, substituting the old id for the new
+    x <- updateRelationships(x, id, newid)
     invisible(x)
 })
 
