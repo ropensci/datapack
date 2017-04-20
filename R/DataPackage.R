@@ -648,6 +648,7 @@ setGeneric("replaceMember", function(x, ...) {
 #' @param x A DataPackage instance
 #' @param do A DataObject instance
 #' @param replacement A raw object or filename that will replace the current value in the DataObject \code{do}.
+#' @param newid A value of type \code{"character"} that will become the identifier for the updated DataObject.
 #' @param format A value of type \code{"character"}, the DataONE object format for the object.
 #' @param mediaType A value of type \code{"character"}, the IANA Media Type (aka MIME-Type) of the object, e.g. "text/csv".
 #' @param mediaTypeProperty A value of type \code{"list"} of \code{"character"}, IANA Media Type properties for the \code{"mediaType"} argument.
@@ -673,15 +674,15 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
     # The DataObject to change argument can be either a DataObject or identifier. Determine which one
     # and put the object out of the package so that we can modify it and replace it.
     if (class(do) == "DataObject") {
-        identifier <- getIdentifier(do)
-        if(! identifier %in% getIdentifiers(x)) {
-            stop(sprintf("DataObject for pid \"%s\" was not found in the DataPackage", identifier))
+        id <- getIdentifier(do)
+        if(! id  %in% getIdentifiers(x)) {
+            stop(sprintf("DataObject for pid \"%s\" was not found in the DataPackage", id))
         }
-        newObj <- getMember(x, identifier)
+        newObj <- getMember(x, id)
     } else if (class(do) == "character") {
-        identifier <- do
-        if(! identifier %in% getIdentifiers(x)) {
-            stop(sprintf("DataObject for pid \"%s\" was not found in the DataPackage", identifier))
+        id <- do
+        if(! id %in% getIdentifiers(x)) {
+            stop(sprintf("DataObject for pid \"%s\" was not found in the DataPackage", id))
         }
         newObj <- getMember(x, id)
     } else {
@@ -700,6 +701,7 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
         newObj@filename <- as.character(NA)
         newObj@sysmeta@size <- length(newObj@bytes)
         newObj@sysmeta@checksum <- digest(newObj@bytes, algo="sha1", serialize=FALSE, file=FALSE)
+        newObj@sysmeta@checksumAlgorithm <- "SHA-1"
     } else if (class(replacement) == "character") {
         # If 'replacement' is a character string, then it is
         # assumed to be a filename that replaces the DataObjects existing filename
@@ -711,6 +713,7 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
         newObj@data <- raw()
         newObj@sysmeta@size <- fileinfo$size
         newObj@sysmeta@checksum <- digest(replacement, algo="sha1", serialize=FALSE, file=TRUE)
+        newObj@sysmeta@checksumAlgorithm <- "SHA-1"
     }
     
     # Update these selected sysmeta fields if they were specified in the call.
@@ -734,6 +737,7 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
     
     # Now update the package relationships, substituting the old id for the new
     x <- updateRelationships(x, id, newid)
+    
     invisible(x)
 })
 
