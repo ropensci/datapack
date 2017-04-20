@@ -1519,11 +1519,57 @@ setMethod("describeWorkflow", signature("DataPackage"), function(x, sources=list
     return(x)
 })
 
+#' Update package relationships by replacing an old identifier with a new one.
+#' @description When package members are updated, they receive a new identifier. It is therefor
+#' necessary to update the package relationships to update occurances of the old identifier
+#' with the new one when the old identifier appears in the "subject" or "object" of a 
+#' relationship.
+#' @param x A DataPackage object
+#' @param ... (Not yet used)
+#' @seealso \code{\link{DataPackage-class}}
+setGeneric("updateRelationships", function(x, ...) {
+    standardGeneric("updateRelationships")
+})
+
+#' @rdname updateRelationships
+#' @param id A character value containing the identifier to be replaced.
+#' @param newid A character value containing the identifier that will replace the old identifier.
+setMethod("updateRelationships", signature("DataPackage"), function(x, id, newid, ...) {
+    
+   relations <- getRelationships(x) 
+   newRelations <- data.frame()
+   x@relations = hash()
+   
+   if(nrow(relations) > 0) {
+     for (irow in 1:nrow(relations)) {
+         subject <- relations[irow, 'subject']
+         predicate <- relations[irow, 'predicate']
+         object <- relations[irow, 'object']
+         objectType <- relations[irow, 'objectType']
+         subjectType <- relations[irow, 'subjectType']
+         dataTypeURI <- relations[irow, 'dataTypeURI']
+         
+         testSubject <- checkIdMatch(subject, pattern='.*%s$', id)
+         if(!is.na(testSubject)) subject <- newid
+         testObject <- checkIdMatch(object, pattern='.*%s$', id)
+         if(!is.na(testObject)) object <- newid
+         x <- insertRelationship(x, subjectID=subject, objectIDs=object, predicate=predicate, 
+                                 subjectType=subjectType, objectTypes=objectType, dataTypeURIs=dataTypeURI)
+     }
+   }
+   
+   return(x)
+})
+
 setMethod("show", "DataPackage",
     #function(object)print(rbind(x = object@x, y=object@y))
     function(object) {
       
         ids <- getIdentifiers(object)
+        if(length(ids) == 0) {
+            cat(sprintf("This package does not contain any DataObjects.\n"))
+            return()
+        }
       
         # currentWidth starts as width of combined initial widths, with 80 as 
         # the start (80 - 6 spaces for padding)
