@@ -708,6 +708,7 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
         }
         fileinfo <- file.info(replacement)
         newObj@filename <- replacement
+        newObj@data <- raw()
         newObj@sysmeta@size <- fileinfo$size
         newObj@sysmeta@checksum <- digest(replacement, algo="sha1", serialize=FALSE, file=TRUE)
     }
