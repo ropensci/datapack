@@ -518,10 +518,12 @@ setMethod("getRelationships", signature("DataPackage"), function(x, condense=F, 
             if(is.element(term, getIdentifiers(x))) {
                 fn <- x@objects[[term]]@filename
                 fnSysmeta <- x@objects[[term]]@sysmeta@fileName
-                if(!is.na(fn)) {
-                   term <- basename(fn)
-                } else if (!is.na(fnSysmeta)) {
+                if(!is.na(fnSysmeta)) {
                    term <- fnSysmeta
+                } else if (!is.na(fn)) {
+                   term <- basename(fn)
+                } else {
+                    term <- as.character(NA)
                 }
             }
             return(condenseStr(term, maxColumnWidth))
@@ -1677,14 +1679,23 @@ setMethod("show", "DataPackage",
             # if it was incorrectly set manually or the object was lazyloaded.
             hasLocalData <- !is.na(object@objects[[id]]@filename) || (length(object@objects[[id]]@data) > 0)
             hasLocalDataStr <- if (isTRUE(hasLocalData)) 'y' else 'n'
+            fn <- object@objects[[id]]@filename
+            fnSysmeta <- object@objects[[id]]@sysmeta@fileName
+            if(!is.na(fnSysmeta)) {
+              filename <- fnSysmeta
+            } else if (!is.na(fn)) {
+              filename <- basename(fn)
+            } else {
+              filename <- as.character(NA)
+            }
             cat(sprintf(fmt, 
-                        condenseStr(object@objects[[id]]@sysmeta@fileName, fileNameWidth),
+                        condenseStr(filename, fileNameWidth),
                         condenseStr(object@objects[[id]]@sysmeta@formatId, formatIdWidth),
                         condenseStr(object@objects[[id]]@sysmeta@mediaType, mediaTypeWidth),
                         condenseStr(as.character(object@objects[[id]]@sysmeta@size), sizeWidth),
                         condenseStr(object@objects[[id]]@sysmeta@rightsHolder, rightsHolderWidth),
                         condenseStr(object@objects[[id]]@sysmeta@identifier, identifierWidth),
-                        condenseStr(as.character(object@objects[[id]]@updated[['sysmeta']] || object@objects[[id]]@updated[['data']]), updatedWidth), 
+                        condenseStr(if (object@objects[[id]]@updated[['sysmeta']] || object@objects[[id]]@updated[['data']])  'y' else 'n', updatedWidth), 
                         condenseStr(hasLocalDataStr, localWidth)))
         })
 
