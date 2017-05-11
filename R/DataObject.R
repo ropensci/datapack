@@ -40,8 +40,9 @@
 #' @slot sysmeta A value of type \code{"SystemMetadata"}, containing the metadata about the object
 #' @slot data A value of type \code{"raw"}, containing the data represented in this object
 #' @slot filename A character value that contains the fully-qualified path to the object data on disk
-#' @slot dataURL A character vector for the URL used to load data into this DataObject
-#' @slot updated A hash containing logical values which indicate if system metadata or the data object have been updated.
+#' @slot dataURL A character value for the URL used to load data into this DataObject
+#' @slot updated A hash containing logical values which indicate if system metadata or the data object have been updated since object creation.
+#' @slot oldId A character string containing the previous identifier used, before a \code{"replaceMember"} call.
 #' @rdname DataObject-class
 #' @keywords classes
 #' @import methods
@@ -89,7 +90,8 @@ setClass("DataObject", slots = c(
     data                    = "raw",
     filename                = "character",
     dataURL                 = "character",
-    updated                 = "hash")
+    updated                 = "hash",
+    oldId                   = "character")
 )
 
 ##########################
@@ -190,10 +192,10 @@ setMethod("initialize", "DataObject", function(.Object, id=as.character(NA), dat
         .Object@filename <- filename
     }
     
-    
     # Test if this DataObject is brand new, or possibly created from an existing object, i.e.
     # downloaded from a data repository
     .Object@updated <- hash( keys=c("sysmeta", "data"), values=c(FALSE, FALSE))
+    .Object@oldId <- as.character(NA)
     return(.Object)
 })
 
