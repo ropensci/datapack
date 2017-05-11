@@ -342,10 +342,10 @@ setGeneric("insertRelationship", function(x, ...) {
 #' dp <- insertRelationship(dp, subjectID=as.character(NA), objectIDs="thing6", 
 #'     predicate="http://www.myns.org/wasThing")
 #' # Create a relationshp with the subject as a blank node with a user assigned blank node id
-#' dp <- insertRelationship(dp, subjectID="_:BL1234", objectIDs="thing7", 
+#' dp <- insertRelationship(dp, subjectID="urn:uuid:bc9e160e-ca21-47d5-871b-4a4820fe4451", objectIDs="thing7", 
 #'     predicate="http://www.myns.org/hadThing")
 #' # Create multiple relationships with the same subject, predicate, but different objects
-#' dp <- insertRelationship(dp, subjectID="_:bl2", objectIDs=c("thing4", "thing5"), 
+#' dp <- insertRelationship(dp, subjectID="urn:uuid:95055dc1-b2a0-4a00-bdc2-05c16d048ca2", objectIDs=c("thing4", "thing5"), 
 #'     predicate="http://www.myns.org/hadThing")
 #' # Create multiple relationships with subject and object types specified
 #' dp <- insertRelationship(dp, subjectID="orcid.org/0000-0002-2192-403X", 
@@ -379,7 +379,7 @@ setMethod("insertRelationship", signature("DataPackage"),
     # blank nodes, i.e. a blank node identifier is automatically assigned. Assign a uuid now vs having redland
     # RDF package assign a node, so that we don't have to remember that this node is special.
     if (is.na(subjectID)) {
-      subjectID <- sprintf("_:%s", UUIDgenerate())
+      subjectID <- sprintf("urn:uuid:%s", UUIDgenerate())
       subjectType <- "blank"
     }
     
@@ -390,7 +390,7 @@ setMethod("insertRelationship", signature("DataPackage"),
       i <- i + 1
       # Generate a blank node identifier if id is not specified
       if (is.na(obj)) {
-        obj <- sprintf("_:%s", UUIDgenerate())
+        obj <- sprintf("urn:uuid:%s", UUIDgenerate())
         objectTypes[i] <- "blank"
       }
       
@@ -1467,7 +1467,7 @@ setMethod("describeWorkflow", signature("DataPackage"), function(x, sources=list
         # render the used and gen files with the R script, via the qualified association and hadPlan, OK!
         executionId <- sprintf("urn:uuid:%s", UUIDgenerate())
         # Qualified association to link the execution and each of the program (plan)
-        associationId <- sprintf("_:%s", UUIDgenerate())
+        associationId <- sprintf("urn:uuid:%s", UUIDgenerate())
         
         planId <- scriptId
         # Qualified association
