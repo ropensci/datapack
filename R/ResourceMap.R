@@ -396,10 +396,11 @@ setMethod("getTriples", "ResourceMap", function(x, filter=TRUE, identifiers=list
     
     # Retrieve query results and check the actual result count against the expected count
     result <- getNextResult(queryResult)
-    i <- 0
+    first <- TRUE
     while(!is.null(result)) {
-        result <- getNextResult(queryResult)
-        if(is.null(result)) next
+        # Can't get next result at the end of the loop because 'next' is used.
+        if(first) first <- FALSE else result <- getNextResult(queryResult)
+        if(is.null(result)) break
         subject <- result$s
         predicate <- result$p
         object <- result$o
@@ -429,7 +430,6 @@ setMethod("getTriples", "ResourceMap", function(x, filter=TRUE, identifiers=list
         # to happen during hthe redland parsing. This is advantageous, as then we don't need
         # to determine what namespaces existing in the resource map, and any namespace prefix
         # to uri mapping that was in effect. Also, the filtering can use the expanded names.
-        skip <- FALSE
         if(filter) { 
             if((predicate == DCtitle) && (object == "DataONE Aggregation")) {
                 next
