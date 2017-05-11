@@ -654,6 +654,7 @@ setGeneric("replaceMember", function(x, ...) {
 #' @param mediaType A value of type \code{"character"}, the IANA Media Type (aka MIME-Type) of the object, e.g. "text/csv".
 #' @param mediaTypeProperty A value of type \code{"list"} of \code{"character"}, IANA Media Type properties for the \code{"mediaType"} argument.
 #' @param suggestedFilename A value of type \code{"character"}, a suggested file name for the object.
+#' @param newId A value of type \code{"character"} which will replace the identifier for this DataObject.
 #' @examples
 #' # Create a DataObject and add it to the DataPackage
 #' dp <- new("DataPackage")
@@ -668,35 +669,34 @@ setGeneric("replaceMember", function(x, ...) {
 #' @export
 setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement, formatId=as.character(NA), mediaType=as.character(NA), 
                                                               mediaTypeProperty=as.character(NA),
-                                                              suggestedFilename=as.character(NA), ...) {
+                                                              suggestedFilename=as.character(NA), 
+                                                              newId=as.character(NA), ...) {
     
-    newObj <- NULL
-    if(is.na(newid)) newid <- sprintf("urn:uuid:%s", UUIDgenerate())
     # The DataObject to change argument can be either a DataObject or identifier. Determine which one
     # and put the object out of the package so that we can modify it and replace it.
+    id <- as.character(NA)
     if (class(do) == "DataObject") {
         id <- getIdentifier(do)
         if(! id  %in% getIdentifiers(x)) {
             stop(sprintf("DataObject for pid \"%s\" was not found in the DataPackage", id))
         }
-        newObj <- getMember(x, id)
     } else if (class(do) == "character") {
         id <- do
         if(! id %in% getIdentifiers(x)) {
             stop(sprintf("DataObject for pid \"%s\" was not found in the DataPackage", id))
         }
-        newObj <- getMember(x, id)
     } else {
         stop(sprintf("Unknown type \"%s\"for parameter '\"do\""), class(do))
     }
+    newObj <- getMember(x, id)
+    newObj@oldId <- id
+    if(is.na(newId)) {
+        newId=sprintf("urn:uuid:%s", UUIDgenerate())
+    }
+    newObj@sysmeta@identifier <- newId
     
     # If replacement is a DataObject, then replace the existing DataObject 'do' with the
     # DataObject 'replacement'
-    newObj@sysmeta@identifier <- newid
-    # Only replace the previousId once, as the user may call 'replaceMember' multiple times for an object.
-    # If we are modifying an object downloaded from a repository, we need the id from the downloaded object,
-    # which would be the first id placed in @previousId.
-    if(is.na(newObj@previousId)) newObj@previousId <- id
     if (is.raw(replacement)) {
         newObj@bytes <- replacement
         newObj@filename <- as.character(NA)
@@ -736,8 +736,8 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
     newObj@updated[['sysmeta']] <- TRUE
     x <- addMember(x, newObj)
     
-    # Now update the package relationships, substituting the old id for the new
-    x <- updateRelationships(x, id, newid)
+    # Update the identifier in the package relationships, replacing the old with the new.
+    x <- updateRelationships(x, id=newObj@oldId, newId=newId)
     
     invisible(x)
 })
@@ -1534,8 +1534,8 @@ setGeneric("updateRelationships", function(x, ...) {
 
 #' @rdname updateRelationships
 #' @param id A character value containing the identifier to be replaced.
-#' @param newid A character value containing the identifier that will replace the old identifier.
-setMethod("updateRelationships", signature("DataPackage"), function(x, id, newid, ...) {
+#' @param newId A character value containing the identifier that will replace the old identifier.
+setMethod("updateRelationships", signature("DataPackage"), function(x, id, newId, ...) {
     
    relations <- getRelationships(x) 
    newRelations <- data.frame()
@@ -1551,9 +1551,9 @@ setMethod("updateRelationships", signature("DataPackage"), function(x, id, newid
          dataTypeURI <- relations[irow, 'dataTypeURI']
          
          testSubject <- checkIdMatch(subject, pattern='.*%s$', id)
-         if(!is.na(testSubject)) subject <- newid
+         if(!is.na(testSubject)) subject <- newId
          testObject <- checkIdMatch(object, pattern='.*%s$', id)
-         if(!is.na(testObject)) object <- newid
+         if(!is.na(testObject)) object <- newId
          x <- insertRelationship(x, subjectID=subject, objectIDs=object, predicate=predicate, 
                                  subjectType=subjectType, objectTypes=objectType, dataTypeURIs=dataTypeURI)
      }
