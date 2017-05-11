@@ -646,7 +646,10 @@ setGeneric("replaceMember", function(x, ...) {
 #' system metadata that describes the data can be updated as well. The \code{replaceMember}
 #' method will update the SystemMetadata \code{size}, \code{checksum} values, but will not
 #' update \code{formatId}, \code{mediaType}, \code{mediaTypeProperty}, \code{suggestedFilename},
-#' so these should be specified in the call to \code{replaceMember} if necessary. 
+#' so these should be specified in the call to \code{replaceMember} if necessary. A new identifier
+#' will be assigned to this object, since the object has changed and uploading and replacing the
+#' object on a repository will require a new object. The old identifier is retained so that it
+#' can be used in an update operation on the repository.
 #' @param x A DataPackage instance
 #' @param do A DataObject instance
 #' @param replacement A raw object or filename that will replace the current value in the DataObject \code{do}.
@@ -883,18 +886,14 @@ setMethod("setValue", signature("DataPackage"), function(x, name, value, identif
   if(length(keys(x@objects)) > 0) {
     for(iKey in keys(x@objects)) {
       if(! iKey %in% identifiers) next
-      cat(sprintf("Updating %s\n", iKey))
       tmpObj <- x@objects[[iKey]]
       if (class(value) == "character") {
           if(is.na(value)) {
-              cat(sprintf("setting char NA value: %s\n", value))
               setStr <- sprintf("x@objects[[\'%s\']]@%s <- as.character(%s)", iKey, as.character(name), value)
           } else {
-              cat(sprintf("setting char value: %s\n", value))
               setStr <- sprintf("x@objects[[\'%s\']]@%s <- \"%s\"", iKey, as.character(name), value)
           }
       } else {
-          cat(sprintf("setting non char value: %s\n", value))
           setStr <- sprintf("x@objects[[\'%s\']]@%s <- %s", iKey, as.character(name), value)
       }
       eval(parse(text=setStr))
@@ -1585,6 +1584,7 @@ setMethod("show", "DataPackage",
         sizeWidth <- 8
         rightsHolderWidth <- 12
         identifierWidth <- 10
+        # This column width is set for the title width and not the contents, as the title is always longer
         updatedWidth <- 8
         localWidth <- 5
         
