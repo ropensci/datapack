@@ -650,8 +650,7 @@ setGeneric("replaceMember", function(x, ...) {
 #' @param x A DataPackage instance
 #' @param do A DataObject instance
 #' @param replacement A raw object or filename that will replace the current value in the DataObject \code{do}.
-#' @param newid A value of type \code{"character"} that will become the identifier for the updated DataObject.
-#' @param format A value of type \code{"character"}, the DataONE object format for the object.
+#' @param formatId A value of type \code{"character"}, the DataONE object format for the object.
 #' @param mediaType A value of type \code{"character"}, the IANA Media Type (aka MIME-Type) of the object, e.g. "text/csv".
 #' @param mediaTypeProperty A value of type \code{"list"} of \code{"character"}, IANA Media Type properties for the \code{"mediaType"} argument.
 #' @param suggestedFilename A value of type \code{"character"}, a suggested file name for the object.
@@ -667,7 +666,7 @@ setGeneric("replaceMember", function(x, ...) {
 #' dp <- replaceMember(dp, doIn, replacement=system.file("./extdata/pkg-example/binary.csv.zip", package="datapack"),
 #'                     format="application/octet-stream", suggestedFilename="binary.csv.zip")
 #' @export
-setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement, newid=as.character(NA), format=as.character(NA), mediaType=as.character(NA), 
+setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement, formatId=as.character(NA), mediaType=as.character(NA), 
                                                               mediaTypeProperty=as.character(NA),
                                                               suggestedFilename=as.character(NA), ...) {
     
@@ -719,8 +718,8 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
     }
     
     # Update these selected sysmeta fields if they were specified in the call.
-    if(!is.na(format)) {
-        newObj@sysmeta@formatId <- format
+    if(!is.na(formatId)) {
+        newObj@sysmeta@formatId <- formatId
     }
     if(!is.na(mediaType)) {
         newObj@sysmeta@mediaType <- mediaType
