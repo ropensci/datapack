@@ -1001,18 +1001,31 @@ setMethod("addAccessRule", signature("DataPackage"), function(x, y, permission=a
 })
 
 #' @rdname clearAccessPolicy
+#' @param identifiers A list of \code{character} values containing package member identifiers that the access rule will be appliced to.
 #' @return The SystemMetadata object with the cleared access policy.
 #' @examples 
-#' sysmeta <- new("SystemMetadata")
-#' sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
-#' sysmeta <- clearAccessPolicy(sysmeta)
+#' dp <- new("DataPackage")
+#' data <- charToRaw("1,2,3\n4,5,6\n")
+#' obj <- new("DataObject", dataobj=data, format="text/csv")
+#' dp <- addMember(dp, obj)
+#' data2 <- charToRaw("7,8,9\n4,10,11\n")
+#' obj2 <- new("DataObject", dataobj=data2, format="text/csv")
+#' dp <- addMember(dp, obj2)
+#' 
+#' # Add the access rule to all package members
+#' dp <- addAccessRule(dp, "uid=smith,ou=Account,dc=example,dc=com", permission="write", identifiers=getIdentifiers(dp))
+#' # Now clear the access policy for just the second object 
+#' dp <- clearAccessPolicy(dp, getIdentifier(obj2))
+#' 
 #' @export
-setMethod("clearAccessPolicy", signature("DataPackage"), function(x, ...) {
-    matchingIds <- list()
+setMethod("clearAccessPolicy", signature("DataPackage"), function(x, identifiers=list(), ...) {
     if(length(keys(x@objects)) > 0) {
         for(iKey in keys(x@objects)) {
             if(! iKey %in% identifiers) next
-            clearAccessRule(x@objects[[ikey]]@sysmeta, ...)
+            obj <- getMember(x, identifier=iKey)
+            obj <- clearAccessPolicy(obj, ...)
+            x <- removeMember(x, iKey, keepRelationships=TRUE)
+            x <- addMember(x, obj)
         }
     }
     return(x)
