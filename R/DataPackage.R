@@ -973,17 +973,28 @@ setMethod("setPublicAccess", signature("DataPackage"), function(x, identifiers=l
 })
 
 #' @rdname addAccessRule
+#' @param identifiers A list of \code{character} values containing package member identifiers that the access rule will be appliced to.
 #' @return the DataObject with the updated access policy
 #' @examples 
+#' dp <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6\n")
-#' obj <- new("DataObject", id="1234", data=data, format="text/csv")
-#' obj <- addAccessRule(obj, "uid=smith,ou=Account,dc=example,dc=com", "write")
-setMethod("addAccessRule", signature("DataPackage"), function(x, y, identifiers=list(), ...) {
-    matchingIds <- list()
+#' obj <- new("DataObject", dataobj=data, format="text/csv")
+#' dp <- addMember(dp, obj)
+#' data2 <- charToRaw("7,8,9\n4,10,11\n")
+#' obj2 <- new("DataObject", dataobj=data2, format="text/csv")
+#' dp <- addMember(dp, obj2)
+#' 
+#' dp <- addAccessRule(dp, "uid=smith,ou=Account,dc=example,dc=com", "write", getIdentifiers(dp))
+setMethod("addAccessRule", signature("DataPackage"), function(x, y, permission=as.character(NA), 
+                                                              identifiers=list(), ...) {
+    
     if(length(keys(x@objects)) > 0) {
         for(iKey in keys(x@objects)) {
             if(! iKey %in% identifiers) next
-            addAccessRule(x@objects[[ikey]], x, y, ...)
+            obj <- getMember(x, identifier=iKey)
+            obj <- addAccessRule(obj, y, permission=permission, ...)
+            x <- removeMember(x, iKey, keepRelationships=TRUE)
+            x <- addMember(x, obj)
         }
     }
     return(x)
