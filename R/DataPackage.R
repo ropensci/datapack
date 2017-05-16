@@ -852,7 +852,11 @@ setMethod("selectMember", signature("DataPackage"), function(x, name, value, as=
         stop("The specified package has no members")
     }
     if(length(matches) > 0) {
-        return(unlist(matches))
+        if(length(matches) == 1) {
+            return(matches[[1]])
+        } else {
+            return(unlist(matches))
+        }
     } else {
         return(matches)
     }
@@ -956,6 +960,7 @@ setMethod("getValue", signature("DataPackage"), function(x, name, identifiers=as
     if(length(keys(x@objects)) > 0) {
         for(iKey in keys(x@objects)) {
             if(! iKey %in% identifiers) next
+            value <- as.character(NA)
             slotStr <- sprintf("value <- x@objects[[\'%s\']]@%s", iKey, as.character(name))
             eval(parse(text=slotStr))
             #values[[length(values)+1]] <- value
