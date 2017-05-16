@@ -88,4 +88,8 @@ test_that("DataObject accessPolicy methods", {
     canRead <- canRead(do, "uid=anybody,DC=somedomain,DC=org")
     expect_that(canRead, is_true())
     
+    # Test that an access policy can be cleared, i.e. all access rules removed.
+    do <- clearAccessPolicy(do)
+    expect_true(nrow(do@sysmeta@accessPolicy) == 0)
+    
 })
