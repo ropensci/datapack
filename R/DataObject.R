@@ -236,17 +236,23 @@ setMethod("getData", signature("DataObject"), function(x) {
     # of size.
     # TODO: this request may fail if the data isn't publicly readable, as this isn't
     # request doesn't use the dataone authorized request, i.e. dataone::getObject
-    response <- httr::GET(x@dataURL)
-    if (response$status != "200") {
-      errorMsg <- http_status(response)$message
-      stop(sprintf("getData() error: %s\n", errormsg))
+    if(requireNamespace("httr", quietly=TRUE)) {
+      #if(!is.element("package:httr", search())) env <- attachNamespace("httr")
+      response <- httr::GET(x@dataURL)
+      if (response$status != "200") {
+        errorMsg <- httr::http_status(response)$message
+        stop(sprintf("getData() error: %s\n", errorMsg))
+      }
+      # Can't set a slot in the DataObject to hold the data, as we
+      # are returning data and not the modified DataObject
+      data <- httr::content(response, as = "raw")
+      return(data)
+    } else {
+        msg <- sprintf("Unable to get package member data from remote location: %s", x@dataURL)
+        msg <- sprintf("%s\nInstalling package \"httr\" is required for this operation", msg)
+        stop(msg)
     }
-    # Can't set a slot in the DataObject to hold the data, as we
-    # are returning data and not the modified DataObject
-    data <- content(response, as = "raw")
-    return(data)
   }
-  
 })
 
 #' Get the Identifier of the DataObject
