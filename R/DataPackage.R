@@ -603,6 +603,7 @@ setMethod("removeMember", signature("DataPackage"), function(x, do, keepRelation
     # To delete a hash() entry, set it to NULL
     x@objects[[identifier]] <- NULL
     
+    relations <- data.frame()
     # The DataObject is being removed, and the relationships that it appears in
     # will also be removed.
     if(!keepRelationships) {
