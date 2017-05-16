@@ -1656,42 +1656,42 @@ setMethod("show", "DataPackage",
         while(!done) {
           updated <- list()
           # fieldWidth, totlaWidth, done <- setColumnWidth(current, max, increment, totalWidth)
-          values <- setColumnWidth(fileNameWidth, min=fileNameMinWidth, max=fileNameMaxWidth, increment=5, current=currentWidth, displayWidth=maxWidth)
+          values <- setColumnWidth(fileNameWidth, min=fileNameMinWidth, max=fileNameMaxWidth, increment=5, currentTotal=currentWidth, displayWidth=maxWidth)
           fileNameWidth <- values[[1]]
           currentWidth <- values[[2]]
           updated[[length(updated)+1]] <- values[[3]]
           
-          values <- setColumnWidth(formatIdWidth, min=formatIdMinWidth, max=formatIdMaxWidth, increment=1, current=currentWidth, displayWidth=maxWidth)
+          values <- setColumnWidth(formatIdWidth, min=formatIdMinWidth, max=formatIdMaxWidth, increment=1, currentTotal=currentWidth, displayWidth=maxWidth)
           formatIdWidth <- values[[1]]
           currentWidth <- values[[2]]
           updated[[length(updated)+1]] <- values[[3]]
           
-          values <- setColumnWidth(mediaTypeWidth, min=mediaTypeMinWidth, max=mediaTypeMaxWidth, increment=1, current=currentWidth, displayWidth=maxWidth)
+          values <- setColumnWidth(mediaTypeWidth, min=mediaTypeMinWidth, max=mediaTypeMaxWidth, increment=1, currentTotal=currentWidth, displayWidth=maxWidth)
           mediaTypeWidth <- values[[1]]
           currentWidth <- values[[2]]
           updated[[length(updated)+1]] <- values[[3]]
           
-          values <- setColumnWidth(sizeWidth, min=sizeMinWidth, max=sizeMaxWidth, increment=1, current=currentWidth, displayWidth=maxWidth)
+          values <- setColumnWidth(sizeWidth, min=sizeMinWidth, max=sizeMaxWidth, increment=1, currentTotal=currentWidth, displayWidth=maxWidth)
           sizeWidth <- values[[1]]
           currentWidth <- values[[2]]
           updated[[length(updated)+1]] <- values[[3]]
           
-          values <- setColumnWidth(rightsHolderWidth, min=rightsHolderMinWidth, max=rightsHolderMaxWidth, increment=5, current=currentWidth, displayWidth=maxWidth)
+          values <- setColumnWidth(rightsHolderWidth, min=rightsHolderMinWidth, max=rightsHolderMaxWidth, increment=5, currentTotal=currentWidth, displayWidth=maxWidth)
           rightsHolderWidth <- values[[1]]
           currentWidth <- values[[2]]
           updated[[length(updated)+1]] <- values[[3]]
           
-          values <- setColumnWidth(identifierWidth, min=identifierMinWidth, max=identifierMaxWidth, increment=10, current=currentWidth, displayWidth=maxWidth)
+          values <- setColumnWidth(identifierWidth, min=identifierMinWidth, max=identifierMaxWidth, increment=10, currentTotal=currentWidth, displayWidth=maxWidth)
           identifierWidth <- values[[1]] 
           currentWidth <- values[[2]]
           updated[[length(updated)+1]] <- values[[3]]
           
-          values <- setColumnWidth(updatedWidth, min=updatedMinWidth, max=updatedMaxWidth, increment=1, current=currentWidth, displayWidth=maxWidth)
+          values <- setColumnWidth(updatedWidth, min=updatedMinWidth, max=updatedMaxWidth, increment=1, currentTotal=currentWidth, displayWidth=maxWidth)
           updatedWidth <- values[[1]] 
           currentWidth <- values[[2]]
           updated[[length(updated)+1]] <- values[[3]]
           
-          values <- setColumnWidth(localWidth, min=localMinWidth, max=localMaxWidth, increment=1, current=currentWidth, displayWidth=maxWidth)
+          values <- setColumnWidth(localWidth, min=localMinWidth, max=localMaxWidth, increment=1, currentTotal=currentWidth, displayWidth=maxWidth)
           localWidth <- values[[1]] 
           currentWidth <- values[[2]]
           updated[[length(updated)+1]] <- values[[3]]
