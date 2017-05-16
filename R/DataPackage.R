@@ -974,6 +974,7 @@ setMethod("getValue", signature("DataPackage"), function(x, name, identifiers=as
 
 #' @rdname setPublicAccess
 #' @aliases setPublicAccess
+#' @param identifiers A list of \code{character} values containing package member identifiers that will be updated.
 #' @examples
 #' data <- charToRaw("1,2,3\n4,5,6\n")
 #' do <- new("DataObject", "id1", dataobj=data, "text/csv", 
