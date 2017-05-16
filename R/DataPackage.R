@@ -974,7 +974,7 @@ setMethod("setPublicAccess", signature("DataPackage"), function(x, identifiers=l
     if(length(keys(x@objects)) > 0) {
         for(iKey in keys(x@objects)) {
             if(! iKey %in% identifiers) next
-            setPublicAccess(x@objects[[ikey]])
+            setPublicAccess(x@objects[[iKey]])
         }
     } else {
         stop("The specified package has no members")
