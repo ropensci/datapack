@@ -44,6 +44,7 @@
 #' @include DataObject.R
 #' @include SystemMetadata.R
 #' @import hash
+#' @import uuid
 #' @rdname DataPackage-class
 #' @aliases DataPackage-class
 #' @slot relations A hash containing provenance relationships of package objects
@@ -701,12 +702,13 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
     } else {
         stop(sprintf("Unknown type \"%s\"for parameter '\"do\""), class(do))
     }
+    
     newObj <- getMember(x, id)
-    newObj@oldId <- id
-    if(is.na(newId)) {
-        newId=sprintf("urn:uuid:%s", UUIDgenerate())
+    # Assign a new identifier only if the user requested it.
+    if(!is.na(newId)) {
+        newObj@oldId <- id
+        newObj@sysmeta@identifier <- newId
     }
-    newObj@sysmeta@identifier <- newId
     
     # If replacement is a DataObject, then replace the existing DataObject 'do' with the
     # DataObject 'replacement'
@@ -749,8 +751,10 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
     newObj@updated[['sysmeta']] <- TRUE
     x <- addMember(x, newObj)
     
-    # Update the identifier in the package relationships, replacing the old with the new.
-    x <- updateRelationships(x, id=newObj@oldId, newId=newId)
+    if(!is.na(newId)) {
+        # Update the identifier in the package relationships, replacing the old with the new.
+        x <- updateRelationships(x, id=newObj@oldId, newId=newId)
+    }
     
     invisible(x)
 })
