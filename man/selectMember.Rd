@@ -8,29 +8,52 @@
 \usage{
 selectMember(x, ...)
 
-\S4method{selectMember}{DataPackage}(x, name, value)
+\S4method{selectMember}{DataPackage}(x, name, value, as = "character")
 }
 \arguments{
 \item{x}{A DataPackage instance}
 
 \item{...}{(Not yet used)}
 
-\item{identifier}{A DataObject identifier}
+\item{name}{The name of the DataObject slot to inspect, for example "sysmeta@formatId".}
+
+\item{value}{A character or logical value to match.}
+
+\item{as}{A character value to specify the return type, either "DataObject" or "character" (the default)}
 }
 \value{
-A DataObject if the member is found, or NULL if not
+A list of matching DataObjects or DataObject identifiers. The default is to return a list of 
+DataObject identifiers.
 }
 \description{
-Given the identifier of a member of the data package, return the DataObject
+Return DataObjects or DataObject identifiers that match search terms.
+}
+\details{
+The \code{"selectMember"} method inspects the DataObject slot \code{"name"} for a match with \code{"value"}
+for each DataObject in a DataPackage.
 }
 \examples{
-dp 
+#' library(datapack)
+dp <- new("DataPackage")
+# Add the script to the DataPackage
+progFile <- system.file("./extdata/pkg-example/logit-regression-example.R", package="datapack")
+# An 'id' parameter is not specified, so one will be generated automatically.
+progObj <- new("DataObject", format="application/R", filename=progFile)
+dp <- addMember(dp, progObj)
 
-<- new("DataPackage")
-data <- charToRaw("1,2,3\\n4,5,6")
-do <- new("DataObject", id="myNewId", dataobj=data, format="text/csv", user="jsmith")
-dp <- addData(dp, do)
-do2 <- getMember(dp, "myNewId")
+# Add a script input to the DataPackage
+inFile <- system.file("./extdata/pkg-example/binary.csv", package="datapack") 
+inObj <- new("DataObject", format="text/csv", filename=inFile)
+dp <- addMember(dp, inObj)
+
+# Add a script output to the DataPackage
+outFile <- system.file("./extdata/pkg-example/gre-predicted.png", package="datapack")
+outObj <- new("DataObject", format="image/png", file=outFile)
+dp <- addMember(dp, outObj)
+
+# Now determine the package member identifier for the R script
+progIds  <- selectMember(dp, name="sysmeta@formatId", value="application/R", as="character")
+inputId <- selectMember(dp, name="sysmeta@fileName", value="binary.csv")
 }
 \seealso{
 \code{\link{DataPackage-class}}

@@ -35,6 +35,8 @@
 \item{suggestedFilename}{A suggested filename to use when this object is serialized. If not specified, defaults to the basename of the filename parameter.}
 
 \item{mediaTypeProperty}{A list, indicates IANA Media Type properties to be associated with the parameter \code{"mediaType"}}
+
+\item{dataURL}{A character string containing a URL to remote data (a repository) that this DataObject represents.}
 }
 \description{
 When initializing a DataObject using passed in data, one can either pass 

@@ -26,9 +26,11 @@ in a DataPackage and the relationships between these objects.
 \section{Methods}{
 
 \itemize{
- \item{\code{\link[=ResourceMap-initialize]{initialize}}}{: Initialize a ResourceMap object}
- \item{\code{\link{createFromTriples}}}{: Get the data content of a specified data object}
- \item{\code{\link{serializeRDF}}}{: Get the Count of Objects in the Package}
+ \item{\code{\link[=ResourceMap-initialize]{initialize}}}{: Initialize a ResourceMap object.}
+ \item{\code{\link{createFromTriples}}}{: Populate a ResourceMap with RDF relationships from data.frame.}
+ \item{\code{\link{getTriples}}}{: Get the RDF relationships stored in the ResourceMap.}
+ \item{\code{\link{parseRDF}}}{: Parse an RDF/XML resource map from a file.}
+ \item{\code{\link{serializeRDF}}}{: Write the ResourceMap relationships to a file.}
 }
 }
 

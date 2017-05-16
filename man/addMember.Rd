@@ -15,6 +15,8 @@ addMember(x, ...)
 
 \item{...}{(Additional parameters)}
 
+\item{do}{The DataObject to add.}
+
 \item{mo}{A DataObject (containing metadata describing \code{"do"} ) to associate with the science object.}
 }
 \value{

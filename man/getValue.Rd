@@ -23,12 +23,12 @@ getValue(x, ...)
 A list of values for matching slot names and included identifiers.
 }
 \description{
-Given a name and set of package member identifiers, return selected slot values.
+Given a slot name and set of package member identifiers, return slot values.
 }
 \details{
 If the parameter \code{identifiers} is provided, then only the DataPackage
 members that have identifiers in the provided list will have there values fetched.
-If this parameter is not provided, then the values for #' all DataPackage members are returned.
+If this parameter is not provided, then the values for all DataPackage members are returned.
 }
 \examples{
 dp <- new("DataPackage")

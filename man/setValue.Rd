@@ -26,7 +26,8 @@ setValue(x, ...)
 A DataPackage with possibly updated DataObjects.
 }
 \description{
-Given a name, a value and set of package member identifiers, set the value selected slot values.
+Given a slot name, a value and set of package member identifiers, set the value 
+for the specified package members.
 }
 \details{
 If the parameter \code{identifiers} is provided, then DataPackage members that
@@ -35,20 +36,20 @@ then no members will be updated. To update all members in a package, specify the
 value of \code{identifiers=getIdentifiers(pkg)} where \code{pkg} is the variable name
 of the DataPackage to update. Note that this method can be used to update the
 \code{data} or \code{filenane} slots, but it is instead recommended to us the
-\code{replaceMember} method to achieve this, as this method assists in properly
-setting the related SystemMetadata values.
+\code{replaceMember} method to achieve this, as the \code{replaceMember} method assists 
+in properly setting the related SystemMetadata values.
 }
 \examples{
 dp <- new("DataPackage")
 data <- charToRaw("1,2,3\\n4,5,6")
-# This is setting the format type incorrectly as an example
-do <- new("DataObject", id="myNewId", dataobj=data, format="image/jpeg", user="jsmith")
+# The next statment sets the format type incorrectly as an example, so we can correct it later
+do <- new("DataObject", id="myNewId", dataobj=data, format="image/jpg", user="jsmith")
 dp <- addMember(dp, do)
 data <- charToRaw("7,8.9\\n4,10,11")
-# This is setting the format type incorrectly
+# This next statement also sets the format type incorrectly
 do <- new("DataObject", id="myNewId2", dataobj=data, format="image/jpg", user="jsmith")
 dp <- addMember(dp, do)
-# Change format types to correct value
+# Change format types to correct value for both package members
 # Careful! Specifying 'identifiers=getIdentifiers(dp) will update all package members!
 dp <- setValue(dp, name="sysmeta@formatId", value="text/csv", identifiers=getIdentifiers(dp))
 }

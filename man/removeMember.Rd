@@ -15,7 +15,9 @@ removeMember(x, ...)
 
 \item{...}{(Not yet used)}
 
-\item{identifier}{an identifier for a DataObject}
+\item{do}{The package member to remove, either as a \code{"DataObject"} or \code{"character"} (for the object identifier)}
+
+\item{keepRelationships}{A \code{logical} value. If TRUE, package relationships for this package member are not removed. Default is FALSE.}
 }
 \description{
 Given the identifier of a member of the data package, delete the DataObject
@@ -29,7 +31,7 @@ addition, any package relationships that included the DataObject are removed.
 dp <- new("DataPackage")
 data <- charToRaw("1,2,3\\n4,5,6")
 do <- new("DataObject", id="myNewId", dataobj=data, format="text/csv", user="jsmith")
-dp <- addData(dp, do)
+dp <- addMember(dp, do)
 removeMember(dp, "myNewId")
 }
 \seealso{
