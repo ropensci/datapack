@@ -153,12 +153,12 @@ test_that("InsertRelationship methods work", {
   expect_that(relations[relations$subject == "orcid.org/0000-0002-2192-403X", 'objectType'], equals("literal"))
   
   # Test that an unspecified objectType (where length(objetIDs) > length(objectTypes)) is set to as.character(NA)
-  dp <- insertRelationship(dp, subjectID="_:bl1", objectIDs=c("thing1", "thing2", "thing3"), predicate="http://www.myns.org/hadThing", subjectType="blank",
+  dp <- insertRelationship(dp, subjectID="urn:uuid:6186b15c-0a4b-4338-a091-1ea68d0fb72d", objectIDs=c("thing1", "thing2", "thing3"), predicate="http://www.myns.org/hadThing", subjectType="blank",
                      objectTypes=c("literal", "literal"))
   relations <- getRelationships(dp, quiet=quietOn)
   expect_that(nrow(relations), equals(nrel<-nrel + 3))
   expect_match(relations[relations$object == "thing1", 'predicate'], "hadThing")
-  expect_match(relations[relations$object == "thing1", 'subject'], "_:bl1")
+  expect_match(relations[relations$object == "thing1", 'subject'], "urn:uuid:6186b15c-0a4b-4338-a091-1ea68d0fb72d")
   expect_that(relations[relations$object == "thing1", 'subjectType'], equals("blank"))
   expect_that(relations[relations$object == "thing1", 'objectType'], equals("literal"))
   expect_that(relations[relations$object == "thing2", 'subjectType'], equals("blank"))
@@ -166,7 +166,7 @@ test_that("InsertRelationship methods work", {
   expect_that(relations[relations$object == "thing3", 'objectType'], equals(as.character(NA)))
   
   # Multiple objectTypes, first one 'NA'
-  dp <- insertRelationship(dp, subjectID="_:bl2", objectIDs=c("thing4", "thing5"), predicate="http://www.myns.org/hadThing", subjectType="blank",
+  dp <- insertRelationship(dp, subjectID="urn:uuid:ea00e863-861b-4253-9ed5-1c0568ee2373", objectIDs=c("thing4", "thing5"), predicate="http://www.myns.org/hadThing", subjectType="blank",
                      objectTypes=c(NA, "literal"))
   relations <- getRelationships(dp, quiet=quietOn)
   expect_that(nrow(relations), equals(nrel<-nrel + 2))
@@ -179,15 +179,15 @@ test_that("InsertRelationship methods work", {
   expect_that(nrow(relations), equals(nrel<-nrel + 1))
   expect_match(relations[relations$object == "thing6", 'predicate'], "wasThing")
   expect_that(relations[relations$object == "thing6", 'subjectType'], equals("blank"))
-  expect_match(relations[relations$object == "thing6", 'subject'], "_:")
+  expect_match(relations[relations$object == "thing6", 'subject'], "urn:uuid:")
   
   # No objectID specified
-  dp <- insertRelationship(dp, subjectID="urn:uuid5678", objectIDs=as.character(NA), predicate="http://www.myns.org/gaveThing")
+  dp <- insertRelationship(dp, subjectID="urn:uuid:5743f16c-e038-4ef2-bcca-0418ff631a34", objectIDs=as.character(NA), predicate="http://www.myns.org/gaveThing")
   relations <- getRelationships(dp, quiet=quietOn)
   expect_that(nrow(relations), equals(nrel <- nrel + 1))
-  expect_match(relations[relations$subject == "urn:uuid5678", 'predicate'], "gaveThing")
-  expect_that(relations[relations$subject == "urn:uuid5678", 'objectType'], equals("blank"))
-  expect_match(relations[relations$subject == "urn:uuid5678", 'object'], "_:")
+  expect_match(relations[relations$subject == "urn:uuid:5743f16c-e038-4ef2-bcca-0418ff631a34", 'predicate'], "gaveThing")
+  expect_that(relations[relations$subject == "urn:uuid:5743f16c-e038-4ef2-bcca-0418ff631a34", 'objectType'], equals("blank"))
+  expect_match(relations[relations$subject == "urn:uuid:5743f16c-e038-4ef2-bcca-0418ff631a34", 'object'], "urn:uuid:")
   
   # Specify dataTypeURIs
   dp <- insertRelationship(dp, subjectID="urn:uuid:abcd", objectIDs="Wed Mar 18 06:26:44 PDT 2015", 
