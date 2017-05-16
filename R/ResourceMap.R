@@ -46,9 +46,11 @@
 #' @import uuid
 #' @section Methods:
 #' \itemize{
-#'  \item{\code{\link[=ResourceMap-initialize]{initialize}}}{: Initialize a ResourceMap object}
-#'  \item{\code{\link{createFromTriples}}}{: Get the data content of a specified data object}
-#'  \item{\code{\link{serializeRDF}}}{: Get the Count of Objects in the Package}
+#'  \item{\code{\link[=ResourceMap-initialize]{initialize}}}{: Initialize a ResourceMap object.}
+#'  \item{\code{\link{createFromTriples}}}{: Populate a ResourceMap with RDF relationships from data.frame.}
+#'  \item{\code{\link{getTriples}}}{: Get the RDF relationships stored in the ResourceMap.}
+#'  \item{\code{\link{parseRDF}}}{: Parse an RDF/XML resource map from a file.}
+#'  \item{\code{\link{serializeRDF}}}{: Write the ResourceMap relationships to a file.}
 #' }
 #' @seealso \code{\link{datapack}}
 #' @export
@@ -92,9 +94,6 @@ setMethod("initialize", "ResourceMap", function(.Object, id = as.character(NA)) 
 #' DataPackage member identifiers in the resulting resource map. If no resolveURI value
 #' is specified, then 'https://cn.dataone.org/cn/v1/resolve' is used.
 #' @param x a ResourceMap
-#' @param relations A data.frame to read relationships from
-#' @param externalIdentifiers A list of indentifiers that are referenced from the package, but are not package members.
-#' @param ... (Additional parameters)
 #' @seealso \code{\link{ResourceMap-class}}
 #' @examples 
 #' library(datapack)
@@ -102,8 +101,8 @@ setMethod("initialize", "ResourceMap", function(.Object, id = as.character(NA)) 
 #' data <- charToRaw("1,2,3\n4,5,6")
 #' do1 <- new("DataObject", id="id1", data, format="text/csv")
 #' do2 <- new("DataObject", id="id2", data, format="text/csv")
-#' dp <- addData(dp, do1)
-#' dp <- addData(dp, do2)
+#' dp <- addMember(dp, do1)
+#' dp <- addMember(dp, do2)
 #' dp <- insertRelationship(dp, subjectID="id1", objectIDs="id2", 
 #'   predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
 #' relations <- getRelationships(dp)
@@ -116,6 +115,10 @@ setGeneric("createFromTriples", function(x, ...) { standardGeneric("createFromTr
 #' @rdname createFromTriples
 #' @param identifiers A list of the identifiers of data objects cotained in the associated data package
 #' @param resolveURI A character string containing a URI to prepend to datapackage identifiers.
+#' @param relations A data.frame to read relationships from
+#' @param externalIdentifiers A list of indentifiers that are referenced from the package, but are not package members.
+#' @param ... (Additional parameters)
+#' @export
 setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, identifiers, 
                                                                   resolveURI=as.character(NA), externalIdentifiers=list(), ...) {
   stopifnot(is.data.frame(relations))
@@ -272,8 +275,8 @@ setGeneric("serializeRDF", function(x, ...) { standardGeneric("serializeRDF")})
 #' data <- charToRaw("1,2,3\n4,5,6")
 #' do1 <- new("DataObject", id="id1", data, format="text/csv")
 #' do2 <- new("DataObject", id="id2", data, format="text/csv")
-#' dp <- addData(dp, do1)
-#' dp <- addData(dp, do2)
+#' dp <- addMember(dp, do1)
+#' dp <- addMember(dp, do2)
 #' dp <- insertRelationship(dp, subjectID="id1", objectIDs="id2", 
 #'   predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
 #' relations <- getRelationships(dp)
@@ -349,15 +352,17 @@ setMethod("freeResourceMap", signature("ResourceMap"), function(x) {
 #' for a clean model object in which to parse the new RDF content into. It is assumed that the content is a
 #' valid ORE resource map and no validation checks specific to the OAI-ORE content model are performed.
 #' @param x ResourceMap
+#' @export
+setGeneric("parseRDF", function(x, rdf, ...) { standardGeneric("parseRDF")} )
+
+#' @rdname parseRDF
 #' @param rdf A file or character value containing a resource map that will be parsed into the ResourceMap object
 #' @param asText A logical value. If TRUE, then the 'rdf' parameter is a character vector, if FALSE then it is the name of a file to read.
 #' @param name The name of the RDF xml parser, the default is "rdfxml". 
 #' @param mimeType A character value containing the RDF format type. The default is "application/rdf+xml". 
-#' @return x the ResourceMap containing the parsed RDF/XML content
-#' @export
-setGeneric("parseRDF", function(x, rdf, ...) { standardGeneric("parseRDF")} )
-
-setMethod("parseRDF", "ResourceMap", function(x, rdf, asText=FALSE, name="rdfxml", mimeType="application/rdf+xml") {
+#' @param ... Additional parameters (not yet used).
+#' @return x the ResourceMap ontaining the parsed RDF/XML content
+setMethod("parseRDF", "ResourceMap", function(x, rdf, asText=FALSE, name="rdfxml", mimeType="application/rdf+xml", ...) {
   
  if(asText) {
      file <- tempfile()
@@ -372,18 +377,24 @@ setMethod("parseRDF", "ResourceMap", function(x, rdf, asText=FALSE, name="rdfxml
  return(x)
 })
 
-#' Parse an RDF/XML resource map from a file
-#' @description parseRDF reads a file containing an RDF model in RDF/XML format and initializes
-#' a ResourceMap based on this content
-#' @details This method resets the slot ResourceMap@world so any previously stored triples are discarded, allowing
-#' for a clean model object in which to parse the new RDF content into. It is assumed that the content is a
-#' valid ORE resource map and no validation checks specific to the OAI-ORE content model are performed.
+#' Get the RDF relationships stored in the ResourceMap.
+#' @description The \code{getTriples} method extracts the RDF relationhips from a ResourceMap.
 #' @param x ResourceMap
-#' @param file a file containing a resource map in RDF/XML that will be parsed into the ResourceMap object
-#' @return x the ResourceMap containing the parsed RDF/XML content
 #' @export
 setGeneric("getTriples", function(x, ...) { standardGeneric("getTriples")} )
 
+#' @rdname getTriples
+#' @details  The \code{filter} argument causes DataONE packaging relationships to be removed. 
+#' A description of these can be viewed at https://purl.dataone.org/architecture/design/DataPackage.html. 
+#' The \code{identifiers} parameter can contain a list of DataPackage members for which the 
+#' identifiers will be 'demoted', that is any relationship that has these identifiers as a 
+#' URL as the subject or object will be changed to the 'bare' identifier. The intent of these two parameter is to
+#' transform the DataPackage to a 'local' state, so that it can be more easily updated locally.
+#' @param filter A \code{logical} value. If TRUE, then DataONE packaging relationships are omitted.
+#' @param identifiers A list of \code{character} values of the identifiers of DataPackage members.
+#' @param ... Additional parameters (not yet implemented).
+#' @return x A data.frame containing the relationships from the ResourceMap
+#' @export
 setMethod("getTriples", "ResourceMap", function(x, filter=TRUE, identifiers=list(), ...) {
   
     relations <- data.frame(row.names=NULL, stringsAsFactors=F)
@@ -441,7 +452,7 @@ setMethod("getTriples", "ResourceMap", function(x, filter=TRUE, identifiers=list
                 if(!is.na(id))  next
             } else if(predicate == citoIsDocumentedBy || predicate == citoDocuments) {
                 # If cito:documents or cito:isDocumentedBy relationship is present, then 'demote' the identifiers if they are
-                # package members, which they should be. Demoting identifiers simply means that they are made
+                # package members, which they should be. Demoting sdentifiers simply means that they are made
                 # local, so any DataONE resolve url is stripped off, leaving just the identifier. The relationship
                 # will be re-written at the bottom of the loop, with the 'demoted' identifiers.
                 found <- FALSE
@@ -466,7 +477,7 @@ setMethod("getTriples", "ResourceMap", function(x, filter=TRUE, identifiers=list
                 next
             } else if(object == aggregationType) {
                 next
-            } else if(grepl(DCtitle, predicate, fixed=TRUE) && grepl("DataONE Aggregation", object, fixe=TRUE)) {
+            } else if(grepl(DCtitle, predicate, fixed=TRUE) && grepl("DataONE Aggregation", object, fixed=TRUE)) {
                 # Remove the identification of the agent that created this package as this
                 # will be re-declared if the package is uploaded again by the R client.
                 next
@@ -525,7 +536,6 @@ checkIdMatch <- function(checkStr, pattern, identifiers) {
             # or had a different notion of what characters to encode. Fully decode the
             # string according to the R encoding, and then check agains the fully decoded
             # identifier.
-            foo <- sprintf(pattern, thisIdDecoded)
             if(grepl(sprintf(pattern, thisIdDecoded), checkStrDecoded, perl=TRUE)) {
                 return(thisId)
             }

@@ -54,26 +54,28 @@
 #'               This is assigned after a package is uploaded or downloaded from a repository.
 #' @section Methods:
 #' \itemize{
-#'  \item{\code{\link[=DataPackage-initialize]{initialize}}}{: Initialize a DataPackage object}
+#'  \item{\code{\link[=DataPackage-initialize]{initialize}}}{: Initialize a DataPackage object.}
 #'  \item{\code{\link{addAccessRule}}}{: Add access rules to specified DataObjects in a DataPackage.}
-#'  \item{\code{\link{addMember}}}{: Add a DataObject to a DataPackage}
+#'  \item{\code{\link{addMember}}}{: Add a DataObject to a DataPackage.}
 #'  \item{\code{\link{clearAccessPolicy}}}{: Clear access policies for specified DataObjects in a DataPackage.}
-#'  \item{\code{\link{containsId}}}{: Returns true if the specified object is a member of the data package}
-#'  \item{\code{\link{describeWorkflow}}}{: Add data derivation information to a DataPackage}
-#'  \item{\code{\link{getData}}}{: Get the data content of a specified data object}
-#'  \item{\code{\link{getSize}}}{: Get the Count of Objects in the DataPackage}
-#'  \item{\code{\link{getIdentifiers}}}{: Get the Identifiers of DataPackage members}
-#'  \item{\code{\link{getMember}}}{: Return the DataPackage Member by Identifier}
-#'  \item{\code{\link{getRelationships}}}{: Retrieve relationships of data package objects}
-#'  \item{\code{\link{getValue}}}{: Get values for selected DataPackage members}
-#'  \item{\code{\link{insertRelationship}}}{: Insert relationships between objects in a DataPackage}
-#'  \item{\code{\link{removeMember}}}{: Remove the specified DataObject from a DataPackage}
-#'  \item{\code{\link{replaceMember}}}{: Replace the specified DataPackage Member with a new DataObject}
-#'  \item{\code{\link{serializePackage}}}{: Create an OAI-ORE resource map from the DataPackage}
-#'  \item{\code{\link{serializeToBagIt}}}{: Serialize A DataPackage into a BagIt Archive File}
+#'  \item{\code{\link{containsId}}}{: Returns true if the specified object is a member of the data package.}
+#'  \item{\code{\link{describeWorkflow}}}{: Add data derivation information to a DataPackage.}
+#'  \item{\code{\link{getData}}}{: Get the data content of a specified data object.}
+#'  \item{\code{\link{getSize}}}{: Get the Count of Objects in the DataPackage.}
+#'  \item{\code{\link{getIdentifiers}}}{: Get the Identifiers of DataPackage members.}
+#'  \item{\code{\link{getMember}}}{: Return the DataPackage Member by Identifier.}
+#'  \item{\code{\link{getRelationships}}}{: Retrieve relationships of data package objects.}
+#'  \item{\code{\link{getValue}}}{: Get values for selected DataPackage members.}
+#'  \item{\code{\link{insertRelationship}}}{: Insert relationships between objects in a DataPackage.}
+#'  \item{\code{\link{removeMember}}}{: Remove the specified DataObject from a DataPackage.}
+#'  \item{\code{\link{replaceMember}}}{: Replace the raw data or file associated with a DataObject.}
+#'  \item{\code{\link{selectMember}}}{: Select package members based on slot values.}
+#'  \item{\code{\link{serializePackage}}}{: Create an OAI-ORE resource map from the DataPackage.}
+#'  \item{\code{\link{serializeToBagIt}}}{: Serialize A DataPackage into a BagIt Archive File.}
 #'  \item{\code{\link{setPublicAccess}}}{: Set the access policy to readable by anyone for the specified DataObject.}
 #'  \item{\code{\link{setValue}}}{: Set values for selected DataPackage members}
 #'  \item{\code{\link{show}}}{: Print DataPackage information in a formated view.}
+#'  \item{\code{\link{updateRelationships}}}{: Update package relationships by replacing an old identifier with a new one.}
 #' }
 #' @seealso \code{\link{datapack}}
 #' @export
@@ -223,7 +225,8 @@ setGeneric("addData", function(x, do, ...) {
 #'   mnNodeId="urn:node:KNB")
 #' # Associate the metadata object with the science object. The 'mo' object will be added 
 #' # to the package  automatically, since it hasn't been added yet.
-#' dpkg <- addData(dpkg, do, md)
+#' # This method is now deprecated, so suppress warnings if desired. 
+#' suppressWarnings(dpkg <- addData(dpkg, do, md))
 #' @export
 setMethod("addData", signature("DataPackage", "DataObject"), function(x, do, mo=as.character(NA)) {
   x@objects[[do@sysmeta@identifier]] <- do
@@ -259,6 +262,7 @@ setGeneric("addMember", function(x, ...) {
 #' Citation Typing Ontology (CITO).
 #' Note: this method updates the passed-in DataPackage object.
 #' \code{documents} and \code{isDocumentedBy} relationship.
+#' @param do The DataObject to add.
 #' @param mo A DataObject (containing metadata describing \code{"do"} ) to associate with the science object.
 #' @return the updated DataPackage object
 #' @examples
@@ -338,15 +342,16 @@ setGeneric("insertRelationship", function(x, ...) {
 #' dp <- insertRelationship(dp, "/Users/smith/scripts/genFields.R",
 #'     "http://www.w3.org/ns/prov#used",
 #'     "https://knb.ecoinformatics.org/knb/d1/mn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1")
-#' # Create a relationshp with the subject as a blank node with an automatically assigned blank node id
+#' # Create a relationshp with the subject as a blank node with an automatically assigned blank 
+#' # node id
 #' dp <- insertRelationship(dp, subjectID=as.character(NA), objectIDs="thing6", 
 #'     predicate="http://www.myns.org/wasThing")
 #' # Create a relationshp with the subject as a blank node with a user assigned blank node id
-#' dp <- insertRelationship(dp, subjectID="urn:uuid:bc9e160e-ca21-47d5-871b-4a4820fe4451", objectIDs="thing7", 
-#'     predicate="http://www.myns.org/hadThing")
+#' dp <- insertRelationship(dp, subjectID="urn:uuid:bc9e160e-ca21-47d5-871b-4a4820fe4451", 
+#'       objectIDs="thing7", predicate="http://www.myns.org/hadThing")
 #' # Create multiple relationships with the same subject, predicate, but different objects
-#' dp <- insertRelationship(dp, subjectID="urn:uuid:95055dc1-b2a0-4a00-bdc2-05c16d048ca2", objectIDs=c("thing4", "thing5"), 
-#'     predicate="http://www.myns.org/hadThing")
+#' dp <- insertRelationship(dp, subjectID="urn:uuid:95055dc1-b2a0-4a00-bdc2-05c16d048ca2", 
+#'       objectIDs=c("thing4", "thing5"), predicate="http://www.myns.org/hadThing")
 #' # Create multiple relationships with subject and object types specified
 #' dp <- insertRelationship(dp, subjectID="orcid.org/0000-0002-2192-403X", 
 #'     objectIDs="http://www.example.com/home", predicate="http://www.example.com/hadHome",
@@ -573,7 +578,8 @@ setGeneric("removeMember", function(x, ...) {
 })
 
 #' @rdname removeMember
-#' @param identifier an identifier for a DataObject
+#' @param do The package member to remove, either as a \code{"DataObject"} or \code{"character"} (for the object identifier)
+#' @param keepRelationships A \code{logical} value. If TRUE, package relationships for this package member are not removed. Default is FALSE.
 #' @details The \code{removeMember} method removes the specified DataObject from the DataPackage. In 
 #' addition, any package relationships that included the DataObject are removed.
 #' @examples
@@ -631,12 +637,15 @@ setMethod("removeMember", signature("DataPackage"), function(x, do, keepRelation
 
 #' Replace the raw data or file associated with a DataObject
 #' @description A DataObject is a wrapper for data that can be either a raw data object or
-#' a file on local disk. Thie \code{replaceMember} method can be used to replace the 
-#' @param x a Datapackage object
+#' a file on local disk. The \code{replaceMember} method can be used to replace a
+#' DataObject that is a member of a DataPackage, substituting a new file or 
+#' raw data object for the specified DataObject.
+#' @param x a Datapackage instance
+#' @param do A DataObject instance
 #' @param ... (Not yet used)
 #' @seealso \code{\link{DataPackage-class}}
 #' @export 
-setGeneric("replaceMember", function(x, ...) {
+setGeneric("replaceMember", function(x, do, ...) {
   standardGeneric("replaceMember")
 })
 
@@ -646,12 +655,10 @@ setGeneric("replaceMember", function(x, ...) {
 #' system metadata that describes the data can be updated as well. The \code{replaceMember}
 #' method will update the SystemMetadata \code{size}, \code{checksum} values, but will not
 #' update \code{formatId}, \code{mediaType}, \code{mediaTypeProperty}, \code{suggestedFilename},
-#' so these should be specified in the call to \code{replaceMember} if necessary. A new identifier
-#' will be assigned to this object, since the object has changed and uploading and replacing the
-#' object on a repository will require a new object. The old identifier is retained so that it
-#' can be used in an update operation on the repository.
-#' @param x A DataPackage instance
-#' @param do A DataObject instance
+#' so these should be specified in the call to \code{replaceMember} if necessary. 
+#' If the \code{newId} argument is used, the specified new identifier will be assigned to the 
+#' object, and the previous identifier will be stored in the \code{oldId} slot, for possible
+#' use when updating an object to a repository.
 #' @param replacement A raw object or filename that will replace the current value in the DataObject \code{do}.
 #' @param formatId A value of type \code{"character"}, the DataONE object format for the object.
 #' @param mediaType A value of type \code{"character"}, the IANA Media Type (aka MIME-Type) of the object, e.g. "text/csv".
@@ -667,8 +674,10 @@ setGeneric("replaceMember", function(x, ...) {
 #' dp <- addMember(dp, doIn)
 #' 
 #' # Use the zipped version of the file instead by updating the DataObject
-#' dp <- replaceMember(dp, doIn, replacement=system.file("./extdata/pkg-example/binary.csv.zip", package="datapack"),
-#'                     format="application/octet-stream", suggestedFilename="binary.csv.zip")
+#' dp <- replaceMember(dp, doIn, 
+#'           replacement=system.file("./extdata/pkg-example/binary.csv.zip", 
+#'           package="datapack"),
+#'                     formatId="application/zip", suggestedFilename="binary.csv.zip")
 #' @export
 setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement, formatId=as.character(NA), mediaType=as.character(NA), 
                                                               mediaTypeProperty=as.character(NA),
@@ -844,7 +853,8 @@ setMethod("selectMember", signature("DataPackage"), function(x, name, value, as=
     }
 })
 #' Set values for selected DataPackage members.
-#' @description Given a name, a value and set of package member identifiers, set the value selected slot values.
+#' @description Given a slot name, a value and set of package member identifiers, set the value 
+#' for the specified package members.
 #' @param x A DataPackage instance
 #' @param ... (Not yet used)
 #' @seealso \code{\link{DataPackage-class}}
@@ -860,8 +870,8 @@ setGeneric("setValue", function(x, ...) {
 #' value of \code{identifiers=getIdentifiers(pkg)} where \code{pkg} is the variable name
 #' of the DataPackage to update. Note that this method can be used to update the
 #' \code{data} or \code{filenane} slots, but it is instead recommended to us the
-#' \code{replaceMember} method to achieve this, as this method assists in properly
-#' setting the related SystemMetadata values.
+#' \code{replaceMember} method to achieve this, as the \code{replaceMember} method assists 
+#' in properly setting the related SystemMetadata values.
 #' @param name A DataObject slot name.
 #' @param value A new value to assign to the slot for selected DataPackage members.
 #' @param identifiers A list of identifiers of DataPackage members to update.
@@ -870,14 +880,14 @@ setGeneric("setValue", function(x, ...) {
 #' @examples
 #' dp <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6")
-#' # This is setting the format type incorrectly as an example
-#' do <- new("DataObject", id="myNewId", dataobj=data, format="image/jpeg", user="jsmith")
+#' # The next statment sets the format type incorrectly as an example, so we can correct it later
+#' do <- new("DataObject", id="myNewId", dataobj=data, format="image/jpg", user="jsmith")
 #' dp <- addMember(dp, do)
 #' data <- charToRaw("7,8.9\n4,10,11")
-#' # This is setting the format type incorrectly
+#' # This next statement also sets the format type incorrectly
 #' do <- new("DataObject", id="myNewId2", dataobj=data, format="image/jpg", user="jsmith")
 #' dp <- addMember(dp, do)
-#' # Change format types to correct value
+#' # Change format types to correct value for both package members
 #' # Careful! Specifying 'identifiers=getIdentifiers(dp) will update all package members!
 #' dp <- setValue(dp, name="sysmeta@formatId", value="text/csv", identifiers=getIdentifiers(dp))
 setMethod("setValue", signature("DataPackage"), function(x, name, value, identifiers=as.character(NA)) {
@@ -909,7 +919,7 @@ setMethod("setValue", signature("DataPackage"), function(x, name, value, identif
 })
 
 #' Get values for selected DataPackage members.
-#' @description Given a name and set of package member identifiers, return selected slot values.
+#' @description Given a slot name and set of package member identifiers, return slot values.
 #' @param x A DataPackage instance
 #' @param ... (Not yet used)
 #' @seealso \code{\link{DataPackage-class}}
@@ -921,7 +931,7 @@ setGeneric("getValue", function(x, ...) {
 #' @rdname getValue
 #' @details If the parameter \code{identifiers} is provided, then only the DataPackage
 #' members that have identifiers in the provided list will have there values fetched.
-#' If this parameter is not provided, then the values for #' all DataPackage members are returned.
+#' If this parameter is not provided, then the values for all DataPackage members are returned.
 #' @param name A name of a DataObject slot.
 #' @param identifiers A list of DataPackage member identifiers
 #' @return A list of values for matching slot names and included identifiers.
@@ -973,6 +983,7 @@ setMethod("setPublicAccess", signature("DataPackage"), function(x, identifiers=l
 })
 
 #' @rdname addAccessRule
+#' @param permission A \code{character} value containing the permission to add, e.g. "write"
 #' @param identifiers A list of \code{character} values containing package member identifiers that the access rule will be appliced to.
 #' @return the DataObject with the updated access policy
 #' @examples 
@@ -983,7 +994,7 @@ setMethod("setPublicAccess", signature("DataPackage"), function(x, identifiers=l
 #' data2 <- charToRaw("7,8,9\n4,10,11\n")
 #' obj2 <- new("DataObject", dataobj=data2, format="text/csv")
 #' dp <- addMember(dp, obj2)
-#' 
+#' # Add access rule to all package members
 #' dp <- addAccessRule(dp, "uid=smith,ou=Account,dc=example,dc=com", "write", getIdentifiers(dp))
 setMethod("addAccessRule", signature("DataPackage"), function(x, y, permission=as.character(NA), 
                                                               identifiers=list(), ...) {
@@ -1013,7 +1024,8 @@ setMethod("addAccessRule", signature("DataPackage"), function(x, y, permission=a
 #' dp <- addMember(dp, obj2)
 #' 
 #' # Add the access rule to all package members
-#' dp <- addAccessRule(dp, "uid=smith,ou=Account,dc=example,dc=com", permission="write", identifiers=getIdentifiers(dp))
+#' dp <- addAccessRule(dp, "uid=smith,ou=Account,dc=example,dc=com", 
+#'     permission="write", identifiers=getIdentifiers(dp))
 #' # Now clear the access policy for just the second object 
 #' dp <- clearAccessPolicy(dp, getIdentifier(obj2))
 #' 
@@ -1349,6 +1361,9 @@ setGeneric("describeWorkflow", function(x, ...) {
 #' be specified. 
 #' @param derivations A list of DataObjects for files that were generated by the program. Alternatively, a list 
 #' of DataObject identifiers can be specified as a list of character strings.
+#' @param insertDerivations A \code{logical} value. If TRUE then the provenance relationship 
+#'     \code{prov:wasDerivedFrom} will be used to connect every source and derivation. The default value 
+#'     is TRUE.
 #' @seealso The R 'recordr' package for run-time recording of provenance relationships.
 #' @import uuid
 #' @import utils
@@ -1551,6 +1566,7 @@ setMethod("describeWorkflow", signature("DataPackage"), function(x, sources=list
 #' @param x A DataPackage object
 #' @param ... (Not yet used)
 #' @seealso \code{\link{DataPackage-class}}
+#' @export
 setGeneric("updateRelationships", function(x, ...) {
     standardGeneric("updateRelationships")
 })
@@ -1558,6 +1574,7 @@ setGeneric("updateRelationships", function(x, ...) {
 #' @rdname updateRelationships
 #' @param id A character value containing the identifier to be replaced.
 #' @param newId A character value containing the identifier that will replace the old identifier.
+#' @export
 setMethod("updateRelationships", signature("DataPackage"), function(x, id, newId, ...) {
     
    relations <- getRelationships(x) 

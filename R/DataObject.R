@@ -53,15 +53,13 @@
 #' @section Methods:
 #' \itemize{
 #'   \item{\code{\link[=DataObject-initialize]{initialize}}}{: Initialize a DataObject}
-#'   \item{\code{\link{getData}}}{: Get the data content of a specified data object}
-#'   \item{\code{\link{getIdentifier}}}{: Get the Identifier of the DataObject}
-#'   \item{\code{\link{getFormatId}}}{: Get the FormatId of the DataObject}
-#'   \item{\code{\link{setPublicAccess}}}{: Add a Rule to the AccessPolicy to make the object publicly readable.}
 #'   \item{\code{\link{addAccessRule}}}{: Add a Rule to the AccessPolicy}
 #'   \item{\code{\link{canRead}}}{: Test whether the provided subject can read an object.}
-#'   \item{\code{\link{updateFile}}}{: Update the file that contains data for this DataObject.}
-#'   \item{\code{\link{updateData}}}{: Update the data that this DataObject contains.}
-#'   
+#'   \item{\code{\link{getData}}}{: Get the data content of a specified data object}
+#'   \item{\code{\link{getFormatId}}}{: Get the FormatId of the DataObject}
+#'   \item{\code{\link{getIdentifier}}}{: Get the Identifier of the DataObject}
+#'   \item{\code{\link{setPublicAccess}}}{: Add a Rule to the AccessPolicy to make the object publicly readable.}
+#'   \item{\code{\link{canRead}}}{: Test whether the provided subject can read an object.}
 #' }
 #' @seealso \code{\link{datapack}}
 #' @examples
@@ -120,6 +118,7 @@ setClass("DataObject", slots = c(
 #' @param mediaType The When specified, indicates the IANA Media Type (aka MIME-Type) of the object. The value should include the media type and subtype (e.g. text/csv).
 #' @param suggestedFilename A suggested filename to use when this object is serialized. If not specified, defaults to the basename of the filename parameter.
 #' @param mediaTypeProperty A list, indicates IANA Media Type properties to be associated with the parameter \code{"mediaType"}
+#' @param dataURL A character string containing a URL to remote data (a repository) that this DataObject represents.
 #' @import digest
 #' @examples
 #' data <- charToRaw("1,2,3\n4,5,6\n")
@@ -330,7 +329,7 @@ setMethod("setPublicAccess", signature("DataObject"), function(x) {
 #' @return the DataObject with the updated access policy
 #' @examples 
 #' data <- charToRaw("1,2,3\n4,5,6\n")
-#' obj <- new("DataObject", id="1234", data=data, format="text/csv")
+#' obj <- new("DataObject", id="1234", dataobj=data, format="text/csv")
 #' obj <- addAccessRule(obj, "uid=smith,ou=Account,dc=example,dc=com", "write")
 setMethod("addAccessRule", signature("DataObject"), function(x, y, ...) {
   if(class(y) == "data.frame") {
@@ -360,13 +359,13 @@ setMethod("addAccessRule", signature("DataObject"), function(x, y, ...) {
 #' @rdname clearAccessPolicy
 #' @return The DataObject with the cleared access policy.
 #' @examples 
-#' do <- new("DataObject", file=)
-#'     identifier <- "id1"
-#' do <- new("DataObject", format="text/csv", filename=system.file("extdata/sample-data.csv", package="datapack"))
+#' do <- new("DataObject", format="text/csv", filename=system.file("extdata/sample-data.csv", 
+#'           package="datapack"))
 #' do <- addAccessRule(do, "uid=smith,ou=Account,dc=example,dc=com", "write")
 #' do <- clearAccessPolicy(do)
 #' @export
 setMethod("clearAccessPolicy", signature("DataObject"), function(x, ...) {
+        
     x@sysmeta <- clearAccessPolicy(x@sysmeta)
     
     return(x)
@@ -398,7 +397,7 @@ setGeneric("canRead", function(x, ...) {
 #' @export
 #' @examples 
 #' data <- charToRaw("1,2,3\n4,5,6\n")
-#' obj <- new("DataObject", id="1234", data=data, format="text/csv")
+#' obj <- new("DataObject", id="1234", dataobj=data, format="text/csv")
 #' obj <- addAccessRule(obj, "smith", "read")
 #' access <- canRead(obj, "smith")
 setMethod("canRead", signature("DataObject"), function(x, subject) {
