@@ -207,7 +207,7 @@ test_that("InsertRelationship methods work", {
   source <- "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1"
   derived <- "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.45.1"
   # Keep recordDerivations in unit tests until v 1.3.0, when it may be marked as defunct
-  dp <- suppressWarnings(recordDerivations(dp, sourceID=source, derivedIDs=derived))
+  suppressWarnings(dp <- recordDerivation(dp, sourceID=source, derivedIDs=derived))
   relations <- getRelationships(dp, quiet=quietOn)
   
   # Test if the data frame with retrieved relationships was constructed correctly
@@ -547,7 +547,7 @@ test_that("Adding provenance relationships to a DataPackage via describeWorkflow
     # Insert derivation relationships
     source <- "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1"
     derived <- "https://cn.dataone.org/cn/v1/object/doi:1234/_030MXTI009R00_20030812.45.1"
-    # Keep recordDerivations in unit tests until v 1.3.0, when it may be marked as defunct
+    # Keep recordDerivation in unit tests until v 1.3.0, when it may be marked as defunct
     dp <- suppressWarnings(recordDerivation(dp, sourceID=source, derivedIDs=derived))
     relations <- getRelationships(dp, quiet=quietOn)
     
