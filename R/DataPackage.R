@@ -236,7 +236,7 @@ setMethod("addData", signature("DataPackage", "DataObject"), function(x, do, mo=
     # CHeck that the metadata object has already been added to the DataPackage. If it has not
     # been added, then add it now.
     if (!containsId(x, getIdentifier(mo))) {
-      moId <- addData(x, mo)
+      moId <- addMember(x, mo)
     }
     # Now add the CITO "documents" and "isDocumentedBy" relationships
     insertRelationship(x, getIdentifier(mo), getIdentifier(do))
