@@ -759,6 +759,70 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
     invisible(x)
 })
 
+#' Update selected elements of the XML content of a DataOBject in a DataPackage (aka package member).
+#' @param x a DataPackage instance
+#' @param do A DataObject instance
+#' @param ... (Not yet used)
+#' @seealso \code{\link{DataPackage-class}}
+#' @export 
+setGeneric("updateMetadata", function(x, do, ...) {
+    standardGeneric("updateMetadata")
+})
+
+#' @rdname updateMetadatsddsd
+#' @description A DataObject that contains an XML document can be edited by specifying a path
+#' to the elements to edit (an xpaath expression) and a value to replace the text node. 
+#' @details This method requires some knowledge of the structure of the metadata document as well
+#' as facility with the XPpath language.  
+#' @param xpath A \code{character} value specifying the location in the XML to update.
+#' @param replacement A \code{character} value that will replace the elements found with the \code{xpath}.
+#' @param newId A value of type \code{"character"} which will replace the identifier for this DataObject.
+#' @examples
+#' # Create a DataObject and add it to the DataPackage
+#' dp <- new("DataPackage")
+#' sampleMeta <- system.file("./extdata/sample-eml.xml", package="datapack")
+#' metaObj <- new("DataObject", format="eml://ecoinformatics.org/eml-2.1.1", file=sampleMeta, suggestedFilename="sample-eml.xml")
+#' dp <- addMember(dp, metaObj)
+#' 
+#' # In the metadata object, insert the newly assigned data 
+#' xp <- sprintf("//dataTable/physical/distribution[../objectName/text()=\"%s\"]/online/url", "sample-data.csv") 
+#' newURL <- sprintf("https://cn.dataone.org/cn/v2/resolve/%s", "1234")
+#' metaObj <- updateMetadata(dp, metaObj, xpath=xp, replacement=newURL)
+#' @export
+setMethod("updateMetadata", signature("DataPackage"), function(x, do, xpath, replacement, 
+                                                              newId=as.character(NA), ...) {
+    
+    # The DataObject to change argument can be either a DataObject or identifier. Determine which one
+    # and put the object out of the package so that we can modify it and replace it.
+    id <- as.character(NA)
+    if (class(do) == "DataObject") {
+        id <- getIdentifier(do)
+        metaObj <- do
+        if(! id  %in% getIdentifiers(x)) {
+            stop(sprintf("DataObject for id \"%s\" was not found in the DataPackage", id))
+        }
+    } else if (class(do) == "character") {
+        id <- do
+        metaObj <- getMember(x, id)
+        if(! id %in% getIdentifiers(x)) {
+            stop(sprintf("DataObject for id \"%s\" was not found in the DataPackage", id))
+        }
+    } else {
+        stop(sprintf("Unknown type \"%s\"for parameter '\"do\""), class(do))
+    }
+    
+    if(class(replacement) != "character") {
+        stop(sprintf("Invalid type \"%s\" for argument \"replacement\", it must be \"character\"",
+                     class(replacement)))
+    }
+    
+    # Create a new DataObject with the modified XML
+    newMetaObj <- updateXML(metaObj, xpath=xpath, replacement=replacement)
+    x <- replaceMember(x, metaObj, replacement=newMetaObj, newId=newId, ...)
+    
+    invisible(x)
+})
+
 #' Return the Package Member by Identifier
 #' @description Given the identifier of a member of the data package, return the DataObject
 #' representation of the member.

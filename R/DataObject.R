@@ -59,7 +59,7 @@
 #'   \item{\code{\link{getFormatId}}}{: Get the FormatId of the DataObject}
 #'   \item{\code{\link{getIdentifier}}}{: Get the Identifier of the DataObject}
 #'   \item{\code{\link{setPublicAccess}}}{: Add a Rule to the AccessPolicy to make the object publicly readable.}
-#'   \item{\code{\link{canRead}}}{: Test whether the provided subject can read an object.}
+#'   \item{\code{\link{updateXML}}}{: Update selected elements of the xml content of a DataObject}
 #' }
 #' @seealso \code{\link{datapack}}
 #' @examples
@@ -410,6 +410,99 @@ setMethod("canRead", signature("DataObject"), function(x, subject) {
 
     canRead <- hasAccessRule(x@sysmeta, "public", "read") | hasAccessRule(x@sysmeta, subject, "read")
 	return(canRead)
+})
+
+#' Update selected elements of the XML content of a DataObject
+#' @description The data content of the DataObject is updated by using the \code{xpath} 
+#' argument to locate the elements to update with the character value specified in the 
+#' \code{replacement} argument.
+#' @param x A DataObject instance
+#' @param ... (Not yet used.)
+#' @return The modified DataObject
+#' @rdname updateXML
+#' @import XML
+#' @export
+#' @examples \dontrun{
+#' library(datapack)
+#' dataObj <- new("DataObject", format="text/csv", file=sampleData)
+#' sampleEML <- system.file("extdata/sample-eml.xml", package="dataone")
+#' dataObj <- updateMetadata(dataObj, xpath="", replacement=)
+#' }
+#' @seealso \code{\link[=D1Client-class]{D1Client}}{ class description.}
+setGeneric("updateXML", function(x, ...) {
+    standardGeneric("updateXML")
+})
+
+#' @rdname updateXML
+#' @param xpath A \code{character} value specifying the location in the XML to update.
+#' @param replacement A \code{character} value that will replace the elements found with the \code{xpath}.
+#' @param ... Additional parameters (not yet used)
+#' @export
+#' @examples 
+#' library(datapack)
+#' # Create the metadata object with a sample EML file
+#' sampleMeta <- system.file("./extdata/sample-eml.xml", package="datapack")
+#' metaObj <- new("DataObject", format="eml://ecoinformatics.org/eml-2.1.1", file=sampleMeta, suggestedFilename="sample-eml.xml")
+#'
+#' # In the metadata object, replace "sample-data.csv" with 'sample-data.csv.zip'
+#' xp <- sprintf("//dataTable/physical/objectName[text()=\"%s\"]", "sample-data.csv")
+#' metaObj <- updateXML(metaObj, xpath=xp, replacement="sample-data.csv.zip")
+setMethod("updateXML", signature("DataObject"), function(x, xpath=as.character(NA), replacement=as.character(NA), ...) {
+    
+    filename <- as.character(NA)
+    filepath <- as.character(NA)
+    metadataDoc <- as.character(NA)
+    nodeSet <- list()
+    
+    # Get the xml content and update it if the xpath is found
+    # Check that the parsing didn't generate an error
+    result = tryCatch ({
+        metadataDoc = xmlInternalTreeParse(rawToChar(getData(x)))
+        nodeSet = xpathApply(metadataDoc,xpath)
+    }, warning = function(warningCond) {
+        cat(sprintf("Warning: %s\n", warningCond$message))
+    }, error = function(errorCond) {
+        cat(sprintf("Error: %s\n", errorCond$message))
+    }, finally = {
+        if(length(nodeSet) == 0) {
+            stop(sprintf("No elements found in XML of DataObject with id: %s using xpath: %s", 
+                         getIdentifier(x), xpath))
+        }
+    })
+    
+    # Substitute the new value(s) into the document
+    sapply(nodeSet,function(node){
+        xmlValue(node) = replacement
+    })
+    
+    newfile <- tempfile(pattern="metadata", fileext=".xml")
+    saveXML(metadataDoc, file=newfile)
+    # xml2 version of updating XML
+    #metadataDoc <- read_xml(getData(x), encoding = "", as_html = FALSE, options = "NOBLANKS")
+    #node <- xml_find_first(metadataDoc,  xpath=xpath, ns = xml_ns(metadataDoc))
+    #xml_text(node) <- replacement
+    #write_xml(metadataDoc, filepath)
+    
+    # See how the data was stored in the previous version of the DataObject and
+    # update that.
+    if (length(x@data) > 0) {
+        metadata <- readLines(newfile)
+        x@data <- charToRaw(metadata)
+        x@filename <- as.character(NA)
+        x@sysmeta@size <- length(x@data)
+        x@sysmeta@checksum <- digest(x@data, algo="sha1", serialize=FALSE, file=FALSE)
+        x@sysmeta@checksumAlgorithm <- "SHA-1"
+    } else {
+        # Read the file from disk and return the contents as raw
+        x@data <- raw()
+        x@filename <- newfile
+        fileinfo <- file.info(newfile)
+        x@sysmeta@size <- fileinfo$size
+        x@sysmeta@checksum <- digest(newfile, algo="sha1", serialize=FALSE, file=TRUE)
+        x@sysmeta@checksumAlgorithm <- "SHA-1"
+    }
+    
+    return(x)
 })
 
 setMethod("show", "DataObject",
