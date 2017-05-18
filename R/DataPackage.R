@@ -570,7 +570,7 @@ setMethod("containsId", signature("DataPackage"), function(x, identifier) {
 #' Remove the Specified Member from the Package
 #' @description Given the identifier of a member of the data package, delete the DataObject
 #' representation of the member.
-#' @param x a Datapackage object
+#' @param x a DataPackage object
 #' @param ... (Not yet used)
 #' @seealso \code{\link{DataPackage-class}}
 #' @export 
@@ -642,7 +642,7 @@ setMethod("removeMember", signature("DataPackage"), function(x, do, keepRelation
 #' a file on local disk. The \code{replaceMember} method can be used to replace a
 #' DataObject that is a member of a DataPackage, substituting a new file or 
 #' raw data object for the specified DataObject.
-#' @param x a Datapackage instance
+#' @param x a DataPackage instance
 #' @param do A DataObject instance
 #' @param ... (Not yet used)
 #' @seealso \code{\link{DataPackage-class}}
@@ -692,18 +692,22 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
     if (class(do) == "DataObject") {
         id <- getIdentifier(do)
         if(! id  %in% getIdentifiers(x)) {
-            stop(sprintf("DataObject for pid \"%s\" was not found in the DataPackage", id))
+            stop(sprintf("DataObject for id \"%s\" was not found in the DataPackage", id))
         }
     } else if (class(do) == "character") {
         id <- do
         if(! id %in% getIdentifiers(x)) {
-            stop(sprintf("DataObject for pid \"%s\" was not found in the DataPackage", id))
+            stop(sprintf("DataObject for id \"%s\" was not found in the DataPackage", id))
         }
     } else {
         stop(sprintf("Unknown type \"%s\"for parameter '\"do\""), class(do))
     }
     
-    newObj <- getMember(x, id)
+    if(class(replacement) == "DataObject") {
+        newObj <- replacement
+    } else {
+        newObj <- getMember(x, id)
+    }
     # Assign a new identifier only if the user requested it.
     if(!is.na(newId)) {
         newObj@oldId <- id
@@ -864,7 +868,8 @@ setGeneric("selectMember", function(x, ...) {
 
 #' @rdname selectMember
 #' @details The \code{"selectMember"} method inspects the DataObject slot \code{"name"} for a match with \code{"value"}
-#' for each DataObject in a DataPackage. 
+#' for each DataObject in a DataPackage. Matching DataObjects are returned as a list containing either package member
+#' identifiers (character) or the DataObjects themselves, depending on the value of the \code{as} parameter.
 #' @param name The name of the DataObject slot to inspect, for example "sysmeta@formatId".
 #' @param value A character or logical value to match.
 #' @param as A character value to specify the return type, either "DataObject" or "character" (the default)
@@ -1119,7 +1124,7 @@ setMethod("clearAccessPolicy", signature("DataPackage"), function(x, identifiers
 })
 
 #' Create an OAI-ORE resource map from the package
-#' @description The Datapackage is serialized as a OAI-ORE resource map to the specified file.
+#' @description The DataPackage is serialized as a OAI-ORE resource map to the specified file.
 #' @param x A DataPackage object
 #' @param ... Additional arguments
 #' @seealso \code{\link{DataPackage-class}}
@@ -1595,7 +1600,6 @@ setMethod("describeWorkflow", signature("DataPackage"), function(x, sources=list
         x <- insertRelationship(x, subjectID=associationId, objectIDs=provAssociation, predicate=rdfType, subjectType="blank", objectTypes="uri")
         # prov rdf type declaration for program
         x <- insertRelationship(x, subjectID=planId, objectIDs=provONEprogram, predicate=rdfType, objectType="uri") 
-        # The dataone::uploadDataPackage() method will create a dcterms:indentifier for every object that is in the DataPackage. 
         x <- insertRelationship(x, subjectID=executionId, objectIDs=executionId, predicate=DCidentifier, objectTypes="literal", dataTypeURIs=xsdStringURI)
         
         # Process files used by the script
