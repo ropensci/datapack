@@ -93,3 +93,32 @@ test_that("DataObject accessPolicy methods", {
     expect_true(nrow(do@sysmeta@accessPolicy) == 0)
     
 })
+test_that("DataObject updateXML method", {
+    library(datapack)
+    library(XML)
+    
+    # Use a realistic value to update the XML of the metadata object
+    resolveURL <- "https://cn.dataone.org/cn/v2/resolve"
+    
+    # Create the metadata object with a sample EML file
+    sampleMeta <- system.file("./extdata/sample-eml.xml", package="datapack")
+    metaObj <- new("DataObject", format="eml://ecoinformatics.org/eml-2.1.1", file=sampleMeta, suggestedFilename="sample-eml.xml")
+    
+    # Create a sample data object
+    sampleData <- system.file("./extdata/sample-data.csv", package="datapack") 
+    dataObj <- new("DataObject", format="text/csv", file=sampleData, suggestedFilename="sample-data.csv")
+    
+    # In the metadata object, insert the newly assigned data 
+    xp <- sprintf("//dataTable/physical/distribution[../objectName/text()=\"%s\"]/online/url", "sample-data.csv") 
+    newURL <- sprintf("%s/%s", resolveURL, getIdentifier(dataObj))
+    metaObj <- updateXML(metaObj, xpath=xp, replacement=newURL)
+    
+    # Now retrieve the new value from the metadata using an independent method (not using datapack) and see
+    # if the metadata was actually updated.
+    metadataDoc <- xmlInternalTreeParse(rawToChar(getData(metaObj)))
+    nodeSet = xpathApply(metadataDoc,xp)
+    URL <- xmlValue(nodeSet[[1]])
+    
+    expect_match(newURL, URL)
+})
+
