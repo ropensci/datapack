@@ -30,7 +30,8 @@ Return DataObjects or DataObject identifiers that match search terms.
 }
 \details{
 The \code{"selectMember"} method inspects the DataObject slot \code{"name"} for a match with \code{"value"}
-for each DataObject in a DataPackage.
+for each DataObject in a DataPackage. Matching DataObjects are returned as a list containing either package member
+identifiers (character) or the DataObjects themselves, depending on the value of the \code{as} parameter.
 }
 \examples{
 #' library(datapack)

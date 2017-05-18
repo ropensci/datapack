@@ -11,7 +11,7 @@ removeMember(x, ...)
 \S4method{removeMember}{DataPackage}(x, do, keepRelationships = FALSE)
 }
 \arguments{
-\item{x}{a Datapackage object}
+\item{x}{a DataPackage object}
 
 \item{...}{(Not yet used)}
 

@@ -35,7 +35,7 @@ to the DataPackage when it was created.}
 \item{resolveURI}{A character string containing a URI to prepend to datapackage identifiers}
 }
 \description{
-The Datapackage is serialized as a OAI-ORE resource map to the specified file.
+The DataPackage is serialized as a OAI-ORE resource map to the specified file.
 }
 \details{
 The resource map that is created is serialized by default as RDF/XML. Other serialization formats

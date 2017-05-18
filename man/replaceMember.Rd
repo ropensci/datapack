@@ -14,7 +14,7 @@ replaceMember(x, do, ...)
   suggestedFilename = as.character(NA), newId = as.character(NA), ...)
 }
 \arguments{
-\item{x}{a Datapackage instance}
+\item{x}{a DataPackage instance}
 
 \item{do}{A DataObject instance}
 
