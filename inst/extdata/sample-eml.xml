@@ -73,6 +73,11 @@
             </simpleDelimited>
           </textFormat>
         </dataFormat>
+        <distribution id="14303434251521">
+          <online>
+            <url function="download"></url>
+          </online>
+        </distribution>
       </physical>
       <attributeList>
         <attribute id="1" scope="document">
