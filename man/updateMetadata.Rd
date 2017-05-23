@@ -24,10 +24,27 @@ updateMetadata(x, do, ...)
 
 \item{newId}{A value of type \code{"character"} which will replace the identifier for this DataObject.}
 }
+\description{
+Update selected elements of the XML content of a DataOBject in a DataPackage (aka package member).
+
+A DataObject that contains an XML document can be edited by specifying a path
+to the elements to edit (an xpaath expression) and a value to replace the text node.
+}
+\details{
+This method requires some knowledge of the structure of the metadata document as well
+as facility with the XPpath language.
+}
 \examples{
 # Create a DataObject and add it to the DataPackage
 dp <- new("DataPackage")
+sampleMeta <- system.file("./extdata/sample-eml.xml", package="datapack")
+metaObj <- new("DataObject", format="eml://ecoinformatics.org/eml-2.1.1", file=sampleMeta, suggestedFilename="sample-eml.xml")
+dp <- addMember(dp, metaObj)
 
+# In the metadata object, insert the newly assigned data 
+xp <- sprintf("//dataTable/physical/distribution[../objectName/text()=\\"\%s\\"]/online/url", "sample-data.csv") 
+newURL <- sprintf("https://cn.dataone.org/cn/v2/resolve/\%s", "1234")
+metaObj <- updateMetadata(dp, metaObj, xpath=xp, replacement=newURL)
 }
 \seealso{
 \code{\link{DataPackage-class}}

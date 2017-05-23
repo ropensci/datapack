@@ -17,7 +17,8 @@ addMember(x, ...)
 
 \item{do}{The DataObject to add.}
 
-\item{mo}{A DataObject (containing metadata describing \code{"do"} ) to associate with the science object.}
+\item{mo}{A DataObject (containing metadata describing \code{"do"} ) to associate with the science object. If this DataObject 
+has already been added to the package, the argument can be a \code{"character"} containing the DataObject identifier.}
 }
 \value{
 the updated DataPackage object

@@ -264,7 +264,8 @@ setGeneric("addMember", function(x, ...) {
 #' Note: this method updates the passed-in DataPackage object.
 #' \code{documents} and \code{isDocumentedBy} relationship.
 #' @param do The DataObject to add.
-#' @param mo A DataObject (containing metadata describing \code{"do"} ) to associate with the science object.
+#' @param mo A DataObject (containing metadata describing \code{"do"} ) to associate with the science object. If this DataObject 
+#' has already been added to the package, the argument can be a \code{"character"} containing the DataObject identifier.
 #' @return the updated DataPackage object
 #' @examples
 #' dpkg <- new("DataPackage")
@@ -638,10 +639,10 @@ setMethod("removeMember", signature("DataPackage"), function(x, do, keepRelation
 })
 
 #' Replace the raw data or file associated with a DataObject
-#' @description A DataObject is a wrapper for data that can be either a raw data object or
-#' a file on local disk. The \code{replaceMember} method can be used to replace a
-#' DataObject that is a member of a DataPackage, substituting a new file or 
-#' raw data object for the specified DataObject.
+#' @description A DataObject is a container for data that can be either an R raw object or
+#' a file on local disk. The \code{replaceMember} method can be used to update the
+#' date that a DataObject contains, for a DataObject that is a member of a DataPackage, 
+#' substituting a new file or raw object in the specified DataObject.
 #' @param x a DataPackage instance
 #' @param do A DataObject instance
 #' @param ... (Not yet used)
@@ -655,13 +656,13 @@ setGeneric("replaceMember", function(x, do, ...) {
 #' @details The data that is replacing the existing DataObject data may be of a different
 #' format or type than the existing data. Because the data type and format may change, the
 #' system metadata that describes the data can be updated as well. The \code{replaceMember}
-#' method will update the SystemMetadata \code{size}, \code{checksum} values, but will not
-#' update \code{formatId}, \code{mediaType}, \code{mediaTypeProperty}, \code{suggestedFilename},
-#' so these should be specified in the call to \code{replaceMember} if necessary. 
+#' method will update the SystemMetadata \code{size}, \code{checksum} values automatically, 
+#' but does not update the \code{formatId}, \code{mediaType}, \code{mediaTypeProperty}, \code{suggestedFilename}
+#' unless requesed, so these should be specified in the call to \code{replaceMember} if necessary. 
 #' If the \code{newId} argument is used, the specified new identifier will be assigned to the 
 #' object, and the previous identifier will be stored in the \code{oldId} slot, for possible
-#' use when updating an object to a repository.
-#' @param replacement A raw object or filename that will replace the current value in the DataObject \code{do}.
+#' use when updating the DataObject to a repository.
+#' @param replacement A \code{raw} object or \code{character} (for filename) that will replace the current value in the DataObject \code{do}.
 #' @param formatId A value of type \code{"character"}, the DataONE object format for the object.
 #' @param mediaType A value of type \code{"character"}, the IANA Media Type (aka MIME-Type) of the object, e.g. "text/csv".
 #' @param mediaTypeProperty A value of type \code{"list"} of \code{"character"}, IANA Media Type properties for the \code{"mediaType"} argument.
@@ -777,11 +778,15 @@ setGeneric("updateMetadata", function(x, do, ...) {
     standardGeneric("updateMetadata")
 })
 
-#' @rdname updateMetadatsddsd
+#' @rdname updateMetadata
 #' @description A DataObject that contains an XML document can be edited by specifying a path
 #' to the elements to edit (an xpaath expression) and a value to replace the text node. 
 #' @details This method requires some knowledge of the structure of the metadata document as well
-#' as facility with the XPpath language.  
+#' as facility with the XPpath language. If the \code{newId} argument is used, the specified new 
+#' identifier will be assigned to the object, and the previous identifier will be stored in the \code{oldId} slot, 
+#' for possible use when updating the DataObject to a repository. If \code{newId} is not used, a new
+#' identifier will be generated for the DataObject only the first time that updateMetadata is called for
+#' a particular object in a DataPackage.
 #' @param xpath A \code{character} value specifying the location in the XML to update.
 #' @param replacement A \code{character} value that will replace the elements found with the \code{xpath}.
 #' @param newId A value of type \code{"character"} which will replace the identifier for this DataObject.
@@ -789,13 +794,14 @@ setGeneric("updateMetadata", function(x, do, ...) {
 #' # Create a DataObject and add it to the DataPackage
 #' dp <- new("DataPackage")
 #' sampleMeta <- system.file("./extdata/sample-eml.xml", package="datapack")
-#' metaObj <- new("DataObject", format="eml://ecoinformatics.org/eml-2.1.1", file=sampleMeta, suggestedFilename="sample-eml.xml")
+#' id <- "1234"
+#' metaObj <- new("DataObject", id="1234", format="eml://ecoinformatics.org/eml-2.1.1", file=sampleMeta, suggestedFilename="sample-eml.xml")
 #' dp <- addMember(dp, metaObj)
 #' 
 #' # In the metadata object, insert the newly assigned data 
 #' xp <- sprintf("//dataTable/physical/distribution[../objectName/text()=\"%s\"]/online/url", "sample-data.csv") 
 #' newURL <- sprintf("https://cn.dataone.org/cn/v2/resolve/%s", "1234")
-#' metaObj <- updateMetadata(dp, metaObj, xpath=xp, replacement=newURL)
+#' dp <- updateMetadata(dp, id, xpath=xp, replacement=newURL)
 #' @export
 setMethod("updateMetadata", signature("DataPackage"), function(x, do, xpath, replacement, 
                                                               newId=as.character(NA), ...) {
