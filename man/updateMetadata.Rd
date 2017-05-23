@@ -32,19 +32,26 @@ to the elements to edit (an xpaath expression) and a value to replace the text n
 }
 \details{
 This method requires some knowledge of the structure of the metadata document as well
-as facility with the XPpath language.
+as facility with the XPpath language. If the \code{newId} argument is used, the specified new 
+identifier will be assigned to the object, and the previous identifier will be stored in the \code{oldId} slot, 
+for possible use when updating the DataObject to a repository. If \code{newId} is not used, a new
+identifier will be generated for the DataObject only the first time that updateMetadata is called for
+a particular object in a DataPackage.
 }
 \examples{
 # Create a DataObject and add it to the DataPackage
 dp <- new("DataPackage")
 sampleMeta <- system.file("./extdata/sample-eml.xml", package="datapack")
-metaObj <- new("DataObject", format="eml://ecoinformatics.org/eml-2.1.1", file=sampleMeta, suggestedFilename="sample-eml.xml")
+id <- "1234"
+metaObj <- new("DataObject", id="1234", format="eml://ecoinformatics.org/eml-2.1.1", 
+                file=sampleMeta, suggestedFilename="sample-eml.xml")
 dp <- addMember(dp, metaObj)
 
 # In the metadata object, insert the newly assigned data 
-xp <- sprintf("//dataTable/physical/distribution[../objectName/text()=\\"\%s\\"]/online/url", "sample-data.csv") 
+xp <- sprintf("//dataTable/physical/distribution[../objectName/text()=\\"\%s\\"]/online/url", 
+              "sample-data.csv") 
 newURL <- sprintf("https://cn.dataone.org/cn/v2/resolve/\%s", "1234")
-metaObj <- updateMetadata(dp, metaObj, xpath=xp, replacement=newURL)
+dp <- updateMetadata(dp, id, xpath=xp, replacement=newURL)
 }
 \seealso{
 \code{\link{DataPackage-class}}

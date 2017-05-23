@@ -417,7 +417,7 @@ setMethod("canRead", signature("DataObject"), function(x, subject) {
 #' argument to locate the elements to update with the character value specified in the 
 #' \code{replacement} argument.
 #' @param x A DataObject instance
-#' @param ... (Not yet used.)
+#' @param ... Additional parameters (not yet used)
 #' @return The modified DataObject
 #' @rdname updateXML
 #' @import XML
@@ -428,7 +428,7 @@ setMethod("canRead", signature("DataObject"), function(x, subject) {
 #' sampleEML <- system.file("extdata/sample-eml.xml", package="dataone")
 #' dataObj <- updateMetadata(dataObj, xpath="", replacement=)
 #' }
-#' @seealso \code{\link[=D1Client-class]{D1Client}}{ class description.}
+#' @seealso \code{\link{DataObject-class}}
 setGeneric("updateXML", function(x, ...) {
     standardGeneric("updateXML")
 })
@@ -436,14 +436,13 @@ setGeneric("updateXML", function(x, ...) {
 #' @rdname updateXML
 #' @param xpath A \code{character} value specifying the location in the XML to update.
 #' @param replacement A \code{character} value that will replace the elements found with the \code{xpath}.
-#' @param ... Additional parameters (not yet used)
 #' @export
 #' @examples 
 #' library(datapack)
 #' # Create the metadata object with a sample EML file
 #' sampleMeta <- system.file("./extdata/sample-eml.xml", package="datapack")
-#' metaObj <- new("DataObject", format="eml://ecoinformatics.org/eml-2.1.1", file=sampleMeta, suggestedFilename="sample-eml.xml")
-#'
+#' metaObj <- new("DataObject", format="eml://ecoinformatics.org/eml-2.1.1", file=sampleMeta, 
+#'              suggestedFilename="sample-eml.xml")
 #' # In the metadata object, replace "sample-data.csv" with 'sample-data.csv.zip'
 #' xp <- sprintf("//dataTable/physical/objectName[text()=\"%s\"]", "sample-data.csv")
 #' metaObj <- updateXML(metaObj, xpath=xp, replacement="sample-data.csv.zip")

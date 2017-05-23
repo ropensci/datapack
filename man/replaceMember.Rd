@@ -20,7 +20,7 @@ replaceMember(x, do, ...)
 
 \item{...}{(Not yet used)}
 
-\item{replacement}{A raw object or filename that will replace the current value in the DataObject \code{do}.}
+\item{replacement}{A \code{raw} object or \code{character} (for filename) that will replace the current value in the DataObject \code{do}.}
 
 \item{formatId}{A value of type \code{"character"}, the DataONE object format for the object.}
 
@@ -33,21 +33,21 @@ replaceMember(x, do, ...)
 \item{newId}{A value of type \code{"character"} which will replace the identifier for this DataObject.}
 }
 \description{
-A DataObject is a wrapper for data that can be either a raw data object or
-a file on local disk. The \code{replaceMember} method can be used to replace a
-DataObject that is a member of a DataPackage, substituting a new file or 
-raw data object for the specified DataObject.
+A DataObject is a container for data that can be either an R raw object or
+a file on local disk. The \code{replaceMember} method can be used to update the
+date that a DataObject contains, for a DataObject that is a member of a DataPackage, 
+substituting a new file or raw object in the specified DataObject.
 }
 \details{
 The data that is replacing the existing DataObject data may be of a different
 format or type than the existing data. Because the data type and format may change, the
 system metadata that describes the data can be updated as well. The \code{replaceMember}
-method will update the SystemMetadata \code{size}, \code{checksum} values, but will not
-update \code{formatId}, \code{mediaType}, \code{mediaTypeProperty}, \code{suggestedFilename},
-so these should be specified in the call to \code{replaceMember} if necessary. 
+method will update the SystemMetadata \code{size}, \code{checksum} values automatically, 
+but does not update the \code{formatId}, \code{mediaType}, \code{mediaTypeProperty}, \code{suggestedFilename}
+unless requesed, so these should be specified in the call to \code{replaceMember} if necessary. 
 If the \code{newId} argument is used, the specified new identifier will be assigned to the 
 object, and the previous identifier will be stored in the \code{oldId} slot, for possible
-use when updating an object to a repository.
+use when updating the DataObject to a repository.
 }
 \examples{
 # Create a DataObject and add it to the DataPackage

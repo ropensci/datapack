@@ -14,13 +14,11 @@ updateXML(x, ...)
 \arguments{
 \item{x}{A DataObject instance}
 
-\item{...}{(Not yet used.)}
+\item{...}{Additional parameters (not yet used)}
 
 \item{xpath}{A \code{character} value specifying the location in the XML to update.}
 
 \item{replacement}{A \code{character} value that will replace the elements found with the \code{xpath}.}
-
-\item{...}{Additional parameters (not yet used)}
 }
 \value{
 The modified DataObject
@@ -40,12 +38,12 @@ dataObj <- updateMetadata(dataObj, xpath="", replacement=)
 library(datapack)
 # Create the metadata object with a sample EML file
 sampleMeta <- system.file("./extdata/sample-eml.xml", package="datapack")
-metaObj <- new("DataObject", format="eml://ecoinformatics.org/eml-2.1.1", file=sampleMeta, suggestedFilename="sample-eml.xml")
-
+metaObj <- new("DataObject", format="eml://ecoinformatics.org/eml-2.1.1", file=sampleMeta, 
+             suggestedFilename="sample-eml.xml")
 # In the metadata object, replace "sample-data.csv" with 'sample-data.csv.zip'
 xp <- sprintf("//dataTable/physical/objectName[text()=\\"\%s\\"]", "sample-data.csv")
 metaObj <- updateXML(metaObj, xpath=xp, replacement="sample-data.csv.zip")
 }
 \seealso{
-\code{\link[=D1Client-class]{D1Client}}{ class description.}
+\code{\link{DataObject-class}}
 }
