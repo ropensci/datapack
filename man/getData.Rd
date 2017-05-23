@@ -36,7 +36,7 @@ bytes <- getData(do)
 dp <- new("DataPackage")
 data <- charToRaw("1,2,3\\n4,5,6")
 do1 <- new("DataObject", id="id1", data, format="text/csv", user="smith", mnNodeId="urn:node:KNB")
-dp <- addData(dp, do1)
+dp <- addMember(dp, do1)
 bytes <- getData(dp, "id1")
 }
 \seealso{

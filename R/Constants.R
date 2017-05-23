@@ -9,6 +9,8 @@
 xsdStringURI             <- "http://www.w3.org/2001/XMLSchema#string"
 DCidentifier             <- "http://purl.org/dc/terms/identifier"
 RDF_NS                   <- "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+FOAF_NS                  <- "http://xmlns.com/foaf/0.1/"
+foafName                 <- sprintf("%s%s", FOAF_NS, "name")
 rdfType                  <- sprintf("%s%s", RDF_NS, "type")
 provNS                   <- "http://www.w3.org/ns/prov#"
 provQualifiedAssociation <- sprintf("%s%s", provNS, "qualifiedAssociation")
@@ -27,6 +29,9 @@ provONEuser              <- sprintf("%s%s", provONE_NS, "User")
 xsdString                <- sprintf("http://www.w3.org/2001/XMLSchema#string")
 D1_CN_URL                <- "https://cn.dataone.org/cn/v2"
 D1_CN_Resolve_URL        <- sprintf("%s/%s", D1_CN_URL, "resolve")
+cito_NS                  <- "http://purl.org/spar/cito/"
+citoDocuments            <-  sprintf("%s%s", cito_NS, "documents")
+citoIsDocumentedBy       <-  sprintf("%s%s", cito_NS, "isDocumentedBy")
 
 knownNamespaces <- data.frame(namespace=character(), prefix=character(), stringsAsFactors=FALSE)
 knownNamespaces <- rbind(knownNamespaces, data.frame(namespace=RDF_NS, prefix="rdf", row.names = NULL, stringsAsFactors = FALSE))
@@ -40,4 +45,21 @@ knownNamespaces <- rbind(knownNamespaces, data.frame(namespace="http://xmlns.com
 knownNamespaces <- rbind(knownNamespaces, data.frame(namespace="http://www.openarchives.org/ore/terms/", prefix="ore", row.names = NULL, stringsAsFactors = FALSE))
 knownNamespaces <- rbind(knownNamespaces, data.frame(namespace="http://purl.org/spar/cito/", prefix="cito", row.names = NULL, stringsAsFactors = FALSE))
 knownNamespaces <- rbind(knownNamespaces, data.frame(namespace="http://www.w3.org/ns/prov#", prefix="prov", row.names = NULL, stringsAsFactors = FALSE))
+
+# Open Archives Initiative Object Reuse and Exchange (OAI-ORE) terms
+OREresourceMap <- "http://www.openarchives.org/ore/terms/ResourceMap"
+OREdescribes <- "http://www.openarchives.org/ore/terms/describes"
+OREisDescribedBy <- "http://www.openarchives.org/ore/terms/isDescribedBy"
+aggregatedBy <- "http://www.openarchives.org/ore/terms/isAggregatedBy"
+aggregates <- "http://www.openarchives.org/ore/terms/aggregates"
+aggregationType <- "http://www.openarchives.org/ore/terms/Aggregation"
+
+# Other terms used by DataONE packaging
+xsdString <- "^^xsd:string"
+xsdStringURI <- "http://www.w3.org/2001/XMLSchema#string"
+xsdDateTimeURI <- "http://www.w3.org/2001/XMLSchema#dateTime"
+DCidentifier <- "http://purl.org/dc/terms/identifier"
+DCmodified <- "http://purl.org/dc/terms/modified"
+DCtitle      <- "http://purl.org/dc/elements/1.1/title"
+RDFtype <- "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
 

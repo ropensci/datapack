@@ -35,7 +35,7 @@ name formatted according to RFC 2253.
 }
 \examples{
 data <- charToRaw("1,2,3\\n4,5,6\\n")
-obj <- new("DataObject", id="1234", data=data, format="text/csv")
+obj <- new("DataObject", id="1234", dataobj=data, format="text/csv")
 obj <- addAccessRule(obj, "smith", "read")
 access <- canRead(obj, "smith")
 }

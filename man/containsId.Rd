@@ -28,7 +28,7 @@ dp <- new("DataPackage")
 data <- charToRaw("1,2,3\\n4,5,6")
 id <- "myNewId"
 do <- new("DataObject", id=id, dataobj=data, format="text/csv", user="jsmith")
-dp <- addData(dp, do)
+dp <- addMember(dp, do)
 isInPackage <- containsId(dp, identifier="myNewId")
 }
 \seealso{

@@ -40,21 +40,26 @@
 #' @slot sysmeta A value of type \code{"SystemMetadata"}, containing the metadata about the object
 #' @slot data A value of type \code{"raw"}, containing the data represented in this object
 #' @slot filename A character value that contains the fully-qualified path to the object data on disk
+#' @slot dataURL A character value for the URL used to load data into this DataObject
+#' @slot updated A hash containing logical values which indicate if system metadata or the data object have been updated since object creation.
+#' @slot oldId A character string containing the previous identifier used, before a \code{"replaceMember"} call.
 #' @rdname DataObject-class
 #' @keywords classes
 #' @import methods
+#' @import hash
 #' @include dmsg.R
 #' @include SystemMetadata.R
 #' @aliases DataObject-class
 #' @section Methods:
 #' \itemize{
 #'   \item{\code{\link[=DataObject-initialize]{initialize}}}{: Initialize a DataObject}
-#'   \item{\code{\link{getData}}}{: Get the data content of a specified data object}
-#'   \item{\code{\link{getIdentifier}}}{: Get the Identifier of the DataObject}
-#'   \item{\code{\link{getFormatId}}}{: Get the FormatId of the DataObject}
-#'   \item{\code{\link{setPublicAccess}}}{: Add a Rule to the AccessPolicy to make the object publicly readable.}
 #'   \item{\code{\link{addAccessRule}}}{: Add a Rule to the AccessPolicy}
 #'   \item{\code{\link{canRead}}}{: Test whether the provided subject can read an object.}
+#'   \item{\code{\link{getData}}}{: Get the data content of a specified data object}
+#'   \item{\code{\link{getFormatId}}}{: Get the FormatId of the DataObject}
+#'   \item{\code{\link{getIdentifier}}}{: Get the Identifier of the DataObject}
+#'   \item{\code{\link{setPublicAccess}}}{: Add a Rule to the AccessPolicy to make the object publicly readable.}
+#'   \item{\code{\link{updateXML}}}{: Update selected elements of the xml content of a DataObject}
 #' }
 #' @seealso \code{\link{datapack}}
 #' @examples
@@ -81,8 +86,10 @@
 setClass("DataObject", slots = c(
     sysmeta                 = "SystemMetadata",
     data                    = "raw",
-    filename                = "character"
-    )
+    filename                = "character",
+    dataURL                 = "character",
+    updated                 = "hash",
+    oldId                   = "character")
 )
 
 ##########################
@@ -111,6 +118,7 @@ setClass("DataObject", slots = c(
 #' @param mediaType The When specified, indicates the IANA Media Type (aka MIME-Type) of the object. The value should include the media type and subtype (e.g. text/csv).
 #' @param suggestedFilename A suggested filename to use when this object is serialized. If not specified, defaults to the basename of the filename parameter.
 #' @param mediaTypeProperty A list, indicates IANA Media Type properties to be associated with the parameter \code{"mediaType"}
+#' @param dataURL A character string containing a URL to remote data (a repository) that this DataObject represents.
 #' @import digest
 #' @examples
 #' data <- charToRaw("1,2,3\n4,5,6\n")
@@ -119,17 +127,22 @@ setClass("DataObject", slots = c(
 #' @seealso \code{\link{DataObject-class}}
 setMethod("initialize", "DataObject", function(.Object, id=as.character(NA), dataobj=NA, format=as.character(NA), user=as.character(NA), 
                                                mnNodeId=as.character(NA), filename=as.character(NA), seriesId=as.character(NA),
-                                               mediaType=as.character(NA), suggestedFilename=as.character(NA), mediaTypeProperty=list()) {
+                                               mediaType=as.character(NA), suggestedFilename=as.character(NA), mediaTypeProperty=list(),
+                                               dataURL=as.character(NA)) {
   
     # If no value has been passed in for 'id', then create a UUID for it.
     if (class(id) != "SystemMetadata" && is.na(id)) {
       id <- paste0("urn:uuid:", UUIDgenerate())
     }
-      
+  
     # Validate: either dataobj or filename must be provided
-    if (is.na(dataobj[[1]]) && is.na(filename)) {
-        stop("Either the dataobj parameter containing raw data or the file parameter with a file reference to the data must be provided.")
+    # If this data object is being lazy loaded from the MN, then it is legal for it to
+    # be initialized without a dataobj or filename.
+    if (is.na(dataobj[[1]]) && is.na(filename) && is.na(dataURL)) {
+        stop("Either the dataobj parameter containing raw data or the file parameter with a file reference to the data\n or the 'dataURL' parameter must be provided.")
     }
+  
+    .Object@dataURL <- dataURL
     
     # Validate: dataobj must be raw if provided
     if (!is.na(dataobj[[1]])) {
@@ -178,6 +191,10 @@ setMethod("initialize", "DataObject", function(.Object, id=as.character(NA), dat
         .Object@filename <- filename
     }
     
+    # Test if this DataObject is brand new, or possibly created from an existing object, i.e.
+    # downloaded from a data repository
+    .Object@updated <- hash( keys=c("sysmeta", "data"), values=c(FALSE, FALSE))
+    .Object@oldId <- as.character(NA)
     return(.Object)
 })
 
@@ -201,17 +218,41 @@ setGeneric("getData", function(x, ...) {
 #'   "uid=jones,DC=example,DC=com", "urn:node:KNB")
 #' bytes <- getData(do)
 setMethod("getData", signature("DataObject"), function(x) {
-    if (is.na(x@filename)) {
-        return(x@data)
+  if (length(x@data) > 0) {
+    return(x@data)
+  } else if(!is.na(x@filename)) {
+    # Read the file from disk and return the contents as raw
+    stopifnot(!is.na(x@filename))
+    fileinfo <- file.info(x@filename)
+    con <- file(x@filename, "rb")
+    temp <- readBin(con, raw(), x@sysmeta@size)
+    close(con)
+    return(temp)
+  } else if (!is.na(x@dataURL)) {
+    # This DataObject was created by downloading an object from
+    # a repository, but the size of the object to downlaod was too
+    # large, so downloading the data was deferred. Now the user is
+    # trying to get the data, so we have to download the data, regardless
+    # of size.
+    # TODO: this request may fail if the data isn't publicly readable, as this isn't
+    # request doesn't use the dataone authorized request, i.e. dataone::getObject
+    if(requireNamespace("httr", quietly=TRUE)) {
+      #if(!is.element("package:httr", search())) env <- attachNamespace("httr")
+      response <- httr::GET(x@dataURL)
+      if (response$status != "200") {
+        errorMsg <- httr::http_status(response)$message
+        stop(sprintf("getData() error: %s\n", errorMsg))
+      }
+      # Can't set a slot in the DataObject to hold the data, as we
+      # are returning data and not the modified DataObject
+      data <- httr::content(response, as = "raw")
+      return(data)
     } else {
-        # TODO: read the file from disk and return the contents
-        stopifnot(!is.na(x@filename))
-        fileinfo <- file.info(x@filename)
-        con <- file(x@filename, "rb")
-        temp <- readBin(con, raw(), x@sysmeta@size)
-        close(con)
-        return(temp)
+        msg <- sprintf("Unable to get package member data from remote location: %s", x@dataURL)
+        msg <- sprintf("%s\nInstalling package \"httr\" is required for this operation", msg)
+        stop(msg)
     }
+  }
 })
 
 #' Get the Identifier of the DataObject
@@ -294,7 +335,7 @@ setMethod("setPublicAccess", signature("DataObject"), function(x) {
 #' @return the DataObject with the updated access policy
 #' @examples 
 #' data <- charToRaw("1,2,3\n4,5,6\n")
-#' obj <- new("DataObject", id="1234", data=data, format="text/csv")
+#' obj <- new("DataObject", id="1234", dataobj=data, format="text/csv")
 #' obj <- addAccessRule(obj, "uid=smith,ou=Account,dc=example,dc=com", "write")
 setMethod("addAccessRule", signature("DataObject"), function(x, y, ...) {
   if(class(y) == "data.frame") {
@@ -319,6 +360,21 @@ setMethod("addAccessRule", signature("DataObject"), function(x, y, ...) {
     warning("Invalid datatype for parameter \"y\": %s", class(y))
   }
   return(x)
+})
+
+#' @rdname clearAccessPolicy
+#' @return The DataObject with the cleared access policy.
+#' @examples 
+#' do <- new("DataObject", format="text/csv", filename=system.file("extdata/sample-data.csv", 
+#'           package="datapack"))
+#' do <- addAccessRule(do, "uid=smith,ou=Account,dc=example,dc=com", "write")
+#' do <- clearAccessPolicy(do)
+#' @export
+setMethod("clearAccessPolicy", signature("DataObject"), function(x, ...) {
+        
+    x@sysmeta <- clearAccessPolicy(x@sysmeta)
+    
+    return(x)
 })
 
 #' Test whether the provided subject can read an object.
@@ -347,13 +403,105 @@ setGeneric("canRead", function(x, ...) {
 #' @export
 #' @examples 
 #' data <- charToRaw("1,2,3\n4,5,6\n")
-#' obj <- new("DataObject", id="1234", data=data, format="text/csv")
+#' obj <- new("DataObject", id="1234", dataobj=data, format="text/csv")
 #' obj <- addAccessRule(obj, "smith", "read")
 #' access <- canRead(obj, "smith")
 setMethod("canRead", signature("DataObject"), function(x, subject) {
 
     canRead <- hasAccessRule(x@sysmeta, "public", "read") | hasAccessRule(x@sysmeta, subject, "read")
 	return(canRead)
+})
+
+#' Update selected elements of the XML content of a DataObject
+#' @description The data content of the DataObject is updated by using the \code{xpath} 
+#' argument to locate the elements to update with the character value specified in the 
+#' \code{replacement} argument.
+#' @param x A DataObject instance
+#' @param ... Additional parameters (not yet used)
+#' @return The modified DataObject
+#' @rdname updateXML
+#' @import XML
+#' @export
+#' @examples \dontrun{
+#' library(datapack)
+#' dataObj <- new("DataObject", format="text/csv", file=sampleData)
+#' sampleEML <- system.file("extdata/sample-eml.xml", package="dataone")
+#' dataObj <- updateMetadata(dataObj, xpath="", replacement=)
+#' }
+#' @seealso \code{\link{DataObject-class}}
+setGeneric("updateXML", function(x, ...) {
+    standardGeneric("updateXML")
+})
+
+#' @rdname updateXML
+#' @param xpath A \code{character} value specifying the location in the XML to update.
+#' @param replacement A \code{character} value that will replace the elements found with the \code{xpath}.
+#' @export
+#' @examples 
+#' library(datapack)
+#' # Create the metadata object with a sample EML file
+#' sampleMeta <- system.file("./extdata/sample-eml.xml", package="datapack")
+#' metaObj <- new("DataObject", format="eml://ecoinformatics.org/eml-2.1.1", file=sampleMeta, 
+#'              suggestedFilename="sample-eml.xml")
+#' # In the metadata object, replace "sample-data.csv" with 'sample-data.csv.zip'
+#' xp <- sprintf("//dataTable/physical/objectName[text()=\"%s\"]", "sample-data.csv")
+#' metaObj <- updateXML(metaObj, xpath=xp, replacement="sample-data.csv.zip")
+setMethod("updateXML", signature("DataObject"), function(x, xpath=as.character(NA), replacement=as.character(NA), ...) {
+    
+    filename <- as.character(NA)
+    filepath <- as.character(NA)
+    metadataDoc <- as.character(NA)
+    nodeSet <- list()
+    
+    # Get the xml content and update it if the xpath is found
+    # Check that the parsing didn't generate an error
+    result = tryCatch ({
+        metadataDoc = xmlInternalTreeParse(rawToChar(getData(x)))
+        nodeSet = xpathApply(metadataDoc,xpath)
+    }, warning = function(warningCond) {
+        cat(sprintf("Warning: %s\n", warningCond$message))
+    }, error = function(errorCond) {
+        cat(sprintf("Error: %s\n", errorCond$message))
+    }, finally = {
+        if(length(nodeSet) == 0) {
+            stop(sprintf("No elements found in XML of DataObject with id: %s using xpath: %s", 
+                         getIdentifier(x), xpath))
+        }
+    })
+    
+    # Substitute the new value(s) into the document
+    sapply(nodeSet,function(node){
+        xmlValue(node) = replacement
+    })
+    
+    newfile <- tempfile(pattern="metadata", fileext=".xml")
+    saveXML(metadataDoc, file=newfile)
+    # xml2 version of updating XML
+    #metadataDoc <- read_xml(getData(x), encoding = "", as_html = FALSE, options = "NOBLANKS")
+    #node <- xml_find_first(metadataDoc,  xpath=xpath, ns = xml_ns(metadataDoc))
+    #xml_text(node) <- replacement
+    #write_xml(metadataDoc, filepath)
+    
+    # See how the data was stored in the previous version of the DataObject and
+    # update that.
+    if (length(x@data) > 0) {
+        metadata <- readChar(newfile, file.info(newfile)$size)
+        x@data <- charToRaw(metadata)
+        x@filename <- as.character(NA)
+        x@sysmeta@size <- length(x@data)
+        x@sysmeta@checksum <- digest(x@data, algo="sha1", serialize=FALSE, file=FALSE)
+        x@sysmeta@checksumAlgorithm <- "SHA-1"
+    } else {
+        # Read the file from disk and return the contents as raw
+        x@data <- raw()
+        x@filename <- newfile
+        fileinfo <- file.info(newfile)
+        x@sysmeta@size <- fileinfo$size
+        x@sysmeta@checksum <- digest(newfile, algo="sha1", serialize=FALSE, file=TRUE)
+        x@sysmeta@checksumAlgorithm <- "SHA-1"
+    }
+    
+    return(x)
 })
 
 setMethod("show", "DataObject",
@@ -371,6 +519,7 @@ setMethod("show", "DataObject",
               fmt2 <- paste("%-", sprintf("%2d", colWidth), "s ",
                            "%-", sprintf("%2d", colWidth), "s ",
                            "\n", sep="")
+              
               cat(sprintf("Access\n"))
               cat(sprintf(fmt, "  identifer", object@sysmeta@identifier))
               cat(sprintf(fmt, "  submitter", object@sysmeta@submitter))
@@ -392,22 +541,14 @@ setMethod("show", "DataObject",
               cat(sprintf(fmt, "  mediaType", object@sysmeta@mediaType))
               cat(sprintf(fmt, "  mediaTypeProperty", object@sysmeta@mediaTypeProperty))
               cat(sprintf(fmt, "  size", object@sysmeta@size))
-              cat(sprintf(fmt, "  checksum", object@sysmeta@checksum))
-              cat(sprintf(fmt, "  checksumAlgorithm", object@sysmeta@checksumAlgorithm))
               cat(sprintf("System\n"))
               cat(sprintf(fmt, "  seriesId", object@sysmeta@seriesId))
               cat(sprintf(fmt, "  serialVersion", object@sysmeta@serialVersion))
-              cat(sprintf(fmt, "  replicationAllowed", object@sysmeta@replicationAllowed))
-              cat(sprintf(fmt, "  numberReplicas", object@sysmeta@numberReplicas))
-              cat(sprintf(fmt, "  preferredNodes", object@sysmeta@preferredNodes))
-              cat(sprintf(fmt, "  blockedNodes", object@sysmeta@blockedNodes))
               cat(sprintf(fmt, "  obsoletes", object@sysmeta@obsoletes))
               cat(sprintf(fmt, "  obsoletedBy", object@sysmeta@obsoletedBy))
               cat(sprintf(fmt, "  archived", object@sysmeta@archived))
               cat(sprintf(fmt, "  dateUploaded", object@sysmeta@dateUploaded))
               cat(sprintf(fmt, "  dateSysMetadataModified", object@sysmeta@dateSysMetadataModified))
-              cat(sprintf(fmt, "  originMemberNode", object@sysmeta@originMemberNode))
-              cat(sprintf(fmt, "  authoritativeMemberNode", object@sysmeta@authoritativeMemberNode))
               cat(sprintf("Data\n"))
               if(!is.na(object@filename)) {
                 cat(sprintf(fmt, "  filename", object@filename))

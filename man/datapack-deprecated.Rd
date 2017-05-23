@@ -11,6 +11,7 @@ marked as Defunct and removed in a future version.
 
 \itemize{
  \item{\code{\link{recordDerivation}}}{: Record derivation relationships between objects in a DataPackage.}
+ \item{\code{\link{addData}}}{: Add a DataObject to the DataPackage.}
 }
 }
 

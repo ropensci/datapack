@@ -1,6 +1,6 @@
 Package: datapack
 Title: A Flexible Container to Transport and Manipulate Data and Associated Resources 
-Version: 1.2.0
+Version: 1.2.0.9000
 Authors@R: c( person("Matthew B.", "Jones", role = c("aut", "cre"), email = "jones@nceas.ucsb.edu"),
   person("Peter", "Slaughter", role = "aut", email = "slaughter@nceas.ucsb.edu"),
   person("Regents of the University of California", role = c("cph")))
@@ -25,7 +25,8 @@ Imports:
     uuid
 Suggests:
     testthat,
-    knitr
+    knitr,
+    httr
 License: Apache License (== 2.0)
 BugReports: https://github.com/ropensci/datapack/issues
 LazyData: true
