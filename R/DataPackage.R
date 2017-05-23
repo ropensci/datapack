@@ -292,6 +292,21 @@ setMethod("addMember", signature("DataPackage"), function(x, do, mo=as.character
         doList <- do
     }
     
+    if(!missing(mo)) {
+        if(class(mo) == "character") {
+            if (!containsId(x, mo)) {
+                msg <- sprintf("%s\nPlease specify argument \"mo\" as a \"DataObject\" or first add it to the package using \"addMember\"", 
+                               mo)
+                msg <- sprintf("%s\nThe metadata object with identifier %s has not been added to the package yet", mo)
+                stop(msg)
+            }
+            # Convert 'mo' to a DataObject
+            mo <- getMember(x, mo)
+        } else if (!class(mo) == "DataObject") {
+            stop(sprintf("Invalid type \"%s\" for argument \"mo\"\n", mo))
+        }
+    }
+    
     for (iObj in doList) {
         x@objects[[getIdentifier(iObj)]] <- iObj
         # If a metadata object identifier is specified on the command line, then add the relationship to this package
@@ -300,7 +315,7 @@ setMethod("addMember", signature("DataPackage"), function(x, do, mo=as.character
             # CHeck that the metadata object has already been added to the DataPackage. If it has not
             # been added, then add it now.
             if (!containsId(x, getIdentifier(mo))) {
-                moId <- addMember(x, mo)
+                x <- addMember(x, mo)
             }
             # Now add the CITO "documents" and "isDocumentedBy" relationships
             insertRelationship(x, getIdentifier(mo), getIdentifier(iObj))
@@ -700,10 +715,13 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
         if(! id %in% getIdentifiers(x)) {
             stop(sprintf("DataObject for id \"%s\" was not found in the DataPackage", id))
         }
+        do <- getMember(x, id)
     } else {
         stop(sprintf("Unknown type \"%s\"for parameter '\"do\""), class(do))
     }
     
+    # If replacement param is a DataObject, then use it as is, otherwise, use a copy of the
+    # old DataObject, and revise it.
     if(class(replacement) == "DataObject") {
         newObj <- replacement
     } else {
