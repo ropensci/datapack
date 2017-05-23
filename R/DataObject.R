@@ -486,7 +486,7 @@ setMethod("updateXML", signature("DataObject"), function(x, xpath=as.character(N
     # See how the data was stored in the previous version of the DataObject and
     # update that.
     if (length(x@data) > 0) {
-        metadata <- readLines(newfile)
+        metadata <- readChar(newfile, file.info(newfile)$size)
         x@data <- charToRaw(metadata)
         x@filename <- as.character(NA)
         x@sysmeta@size <- length(x@data)
