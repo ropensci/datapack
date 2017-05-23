@@ -790,7 +790,7 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
     
     if(!is.na(newId)) {
         # Update the identifier in the package relationships, replacing the old with the new.
-        x <- updateRelationships(x, id=newObj@oldId, newId=newId)
+        x <- updateRelationships(x, id=id, newId=newId)
     }
     
     invisible(x)
