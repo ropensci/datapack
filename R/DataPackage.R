@@ -765,9 +765,7 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
         newObj@sysmeta@size <- fileinfo$size
         newObj@sysmeta@checksum <- digest(replacement, algo="sha1", serialize=FALSE, file=TRUE)
         newObj@sysmeta@checksumAlgorithm <- "SHA-1"
-    } else if (class(replacement) == "DataObject") {
-        
-    } else {
+    } else if (class(replacement) != "DataObject") {
         stop(sprintf("Unknown replacement type: %s\n", class(replacement)))
     }
     
