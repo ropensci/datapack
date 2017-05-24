@@ -938,8 +938,8 @@ setGeneric("selectMember", function(x, ...) {
 #' inputId <- selectMember(dp, name="sysmeta@fileName", value="binary.csv")
 setMethod("selectMember", signature("DataPackage"), function(x, name, value, as="character") {
     # First look at the top level slot names for a match with 'field'
-    valid <- c("character", "DataPackage")
-    if(!as %in% c("character", "DataPackage")) {
+    valid <- c("character", "DataObject")
+    if(!as %in% valid) {
         stop(sprintf("The value for parameter \"as\" must be one of %s", paste0(valid, collapse=", ")))
     }
     matches <- list()
