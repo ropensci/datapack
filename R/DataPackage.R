@@ -544,9 +544,7 @@ setMethod("getRelationships", signature("DataPackage"), function(x, condense=F, 
                    term <- fnSysmeta
                 } else if (!is.na(fn)) {
                    term <- basename(fn)
-                } else {
-                    term <- as.character(NA)
-                }
+                } 
             }
             return(condenseStr(term, maxColumnWidth))
         })
