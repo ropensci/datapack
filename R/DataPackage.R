@@ -1738,13 +1738,12 @@ setMethod("show", "DataPackage",
         nfields <- 8
         nspaces <- nfields - 1
         maxWidth <- getOption("width") - nspaces
-        currentWidth <- 71
+        currentWidth <- 59
         
         fileNameWidth <- 10
         formatIdWidth <- 8
         mediaTypeWidth <- 10
         sizeWidth <- 8
-        rightsHolderWidth <- 12
         identifierWidth <- 10
         # This column width is set for the title width and not the contents, as the title is always longer
         updatedWidth <- 8
@@ -1755,7 +1754,6 @@ setMethod("show", "DataPackage",
         formatIdMinWidth     <- formatIdWidth
         mediaTypeMinWidth    <- mediaTypeWidth
         sizeMinWidth         <- sizeWidth
-        rightsHolderMinWidth <- rightsHolderWidth
         identifierMinWidth   <- identifierWidth
         updatedMinWidth      <- updatedWidth
         localMinWidth        <- localWidth
@@ -1765,7 +1763,6 @@ setMethod("show", "DataPackage",
         formatIdMaxWidth     <- max(unlist((lapply(ids, function(id) { nchar(as.character(object@objects[[id]]@sysmeta@formatId)) }))))
         mediaTypeMaxWidth    <- max(unlist((lapply(ids, function(id) { nchar(as.character(object@objects[[id]]@sysmeta@mediaType)) }))))
         sizeMaxWidth         <- max(unlist((lapply(ids, function(id) { nchar(as.character(object@objects[[id]]@sysmeta@size)) }))))
-        rightsHolderMaxWidth <- max(unlist((lapply(ids, function(id) { nchar(as.character(object@objects[[id]]@sysmeta@rightsHolder)) }))))
         identifierMaxWidth   <- max(unlist((lapply(ids, function(id) { nchar(as.character(object@objects[[id]]@sysmeta@identifier)) }))))
         updatedMaxWidth      <- 8
         localMaxWidth        <- 5
@@ -1797,11 +1794,6 @@ setMethod("show", "DataPackage",
           currentWidth <- values[[2]]
           updated[[length(updated)+1]] <- values[[3]]
           
-          values <- setColumnWidth(rightsHolderWidth, min=rightsHolderMinWidth, max=rightsHolderMaxWidth, increment=5, currentTotal=currentWidth, displayWidth=maxWidth)
-          rightsHolderWidth <- values[[1]]
-          currentWidth <- values[[2]]
-          updated[[length(updated)+1]] <- values[[3]]
-          
           values <- setColumnWidth(identifierWidth, min=identifierMinWidth, max=identifierMaxWidth, increment=10, currentTotal=currentWidth, displayWidth=maxWidth)
           identifierWidth <- values[[1]] 
           currentWidth <- values[[2]]
@@ -1827,13 +1819,12 @@ setMethod("show", "DataPackage",
             "%-", sprintf("%2d", formatIdWidth), "s ",
             "%-", sprintf("%2d", mediaTypeWidth), "s ",
             "%-", sprintf("%2d", sizeWidth), "s ",
-            "%-", sprintf("%2d", rightsHolderWidth), "s ",
             "%-", sprintf("%2d", identifierWidth), "s ",
             "%-", sprintf("%2d", updatedWidth), "s ",
             "%-", sprintf("%2d", localWidth), "s ",
             "\n", sep="")
         cat(sprintf("Members:\n\n"))
-        cat(sprintf(fmt, "filename", "format", "mediaType", "size", "rightsHolder", "identifier", "modified", "local"))
+        cat(sprintf(fmt, "filename", "format", "mediaType", "size", "identifier", "modified", "local"))
         lapply(ids, function(id) { 
             # The objects data has a size from sysmeta, but no data locally, so it must have been
             # lazy loaded from a repository. The sysmeta@size could be non-zero but no local data only
@@ -1854,13 +1845,14 @@ setMethod("show", "DataPackage",
                         condenseStr(object@objects[[id]]@sysmeta@formatId, formatIdWidth),
                         condenseStr(object@objects[[id]]@sysmeta@mediaType, mediaTypeWidth),
                         condenseStr(as.character(object@objects[[id]]@sysmeta@size), sizeWidth),
-                        condenseStr(object@objects[[id]]@sysmeta@rightsHolder, rightsHolderWidth),
                         condenseStr(object@objects[[id]]@sysmeta@identifier, identifierWidth),
                         condenseStr(if (object@objects[[id]]@updated[['sysmeta']] || object@objects[[id]]@updated[['data']])  'y' else 'n', updatedWidth), 
                         condenseStr(hasLocalDataStr, localWidth)))
         })
 
-        cat(sprintf("\nPackage identifier: %s\n\n", object@resmapId))
+        cat(sprintf("\nPackage identifier: %s\n", object@resmapId))
+        rightsHolders <- unique(getValue(object, name="sysmeta@rightsHolder"))
+        cat(sprintf("RightsHolder: %s\n\n", paste(rightsHolders, collapse=",")))
         relationships <- getRelationships(object, condense=TRUE)
         if(nrow(relationships) > 0) {
             if(object@relations[['updated']]) {
@@ -1872,6 +1864,7 @@ setMethod("show", "DataPackage",
         } else {
           cat(sprintf("\nThis package does not contain any provenance relationships."))  
         }
+        rightsHolders <- unique(getValue(object, name="sysmeta@rightsHolder"))
     }
 )
 
