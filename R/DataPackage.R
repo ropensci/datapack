@@ -1642,7 +1642,7 @@ setMethod("describeWorkflow", signature("DataPackage"), function(x, sources=list
         x <- insertRelationship(x, subjectID=associationId, objectIDs=provAssociation, predicate=rdfType, subjectType="blank", objectTypes="uri")
         # prov rdf type declaration for program
         x <- insertRelationship(x, subjectID=planId, objectIDs=provONEprogram, predicate=rdfType, objectType="uri") 
-        x <- insertRelationship(x, subjectID=executionId, objectIDs=executionId, predicate=DCidentifier, objectTypes="literal", dataTypeURIs=xsdStringURI)
+        x <- insertRelationship(x, subjectID=executionId, objectIDs=executionId, predicate=DCidentifier, objectTypes="literal", dataTypeURIs=xsdString)
         
         # Process files used by the script
         if(length(inIds) > 0) {
