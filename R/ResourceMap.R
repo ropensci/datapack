@@ -237,7 +237,7 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
     
   # Add the identifier for the ResourceMap
   statement <- new("Statement", x@world, subject=resMapURI, predicate=DCidentifier, object=URLdecode(x@id),
-                   objectType="literal", datatype_uri=xsdStringURI)
+                   objectType="literal", datatype_uri=xsdString)
   
   addStatement(x@model, statement)
   
@@ -444,7 +444,7 @@ setMethod("getTriples", "ResourceMap", function(x, filter=TRUE, identifiers=list
         if(filter) { 
             if((predicate == DCtitle) && (object == "DataONE Aggregation")) {
                 next
-            } else if((predicate == rdfType) && (object == OREresourceMap)) {
+            } else if((predicate == RDFtype) && (object == OREresourceMap)) {
                 next
             } else if(predicate == DCidentifier) {
                 # Filter the dcterms:identifier statement for package ids

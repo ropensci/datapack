@@ -6,12 +6,22 @@
 
 # These constants are for the ProvONE data model that is described
 # at https://purl.dataone.org/provone-v1-dev.
-xsdStringURI             <- "http://www.w3.org/2001/XMLSchema#string"
-DCidentifier             <- "http://purl.org/dc/terms/identifier"
+xsd_NS                   <- "http://www.w3.org/2001/XMLSchema#"
+xsdString                <- sprintf("%s%s", xsd_NS, "string")
+xsdDateTime              <- sprintf("%s%s", xsd_NS, "dateTime")
+dc_NS                    <- "http://purl.org/dc/elements/1.1/"
+dcterms_NS               <- "http://purl.org/dc/terms/"
+DCidentifier             <- sprintf("%s%s", dcterms_NS, "identifier")
+DCagent                  <- sprintf("%s%s", dcterms_NS, "Agent")
+DCcreator                <- sprintf("%s%s", dc_NS, "creator")
+DCmodified               <- sprintf("%s%s", dcterms_NS, "modified")
+DCtitle                  <- sprintf("%s%s", dc_NS, "title")
 RDF_NS                   <- "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 FOAF_NS                  <- "http://xmlns.com/foaf/0.1/"
 foafName                 <- sprintf("%s%s", FOAF_NS, "name")
-rdfType                  <- sprintf("%s%s", RDF_NS, "type")
+RDFtype                  <- sprintf("%s%s", RDF_NS, "type")
+# This is kept for backward compatibility
+rdfType <- RDFtype
 provNS                   <- "http://www.w3.org/ns/prov#"
 provQualifiedAssociation <- sprintf("%s%s", provNS, "qualifiedAssociation")
 provWasDerivedFrom       <- sprintf("%s%s", provNS, "wasDerivedFrom")
@@ -26,7 +36,6 @@ provONEprogram           <- sprintf("%s%s", provONE_NS, "Program")
 provONEexecution         <- sprintf("%s%s", provONE_NS, "Execution")
 provONEdata              <- sprintf("%s%s", provONE_NS, "Data")
 provONEuser              <- sprintf("%s%s", provONE_NS, "User")
-xsdString                <- sprintf("http://www.w3.org/2001/XMLSchema#string")
 D1_CN_URL                <- "https://cn.dataone.org/cn/v2"
 D1_CN_Resolve_URL        <- sprintf("%s/%s", D1_CN_URL, "resolve")
 cito_NS                  <- "http://purl.org/spar/cito/"
@@ -53,13 +62,3 @@ OREisDescribedBy <- "http://www.openarchives.org/ore/terms/isDescribedBy"
 aggregatedBy <- "http://www.openarchives.org/ore/terms/isAggregatedBy"
 aggregates <- "http://www.openarchives.org/ore/terms/aggregates"
 aggregationType <- "http://www.openarchives.org/ore/terms/Aggregation"
-
-# Other terms used by DataONE packaging
-xsdString <- "^^xsd:string"
-xsdStringURI <- "http://www.w3.org/2001/XMLSchema#string"
-xsdDateTimeURI <- "http://www.w3.org/2001/XMLSchema#dateTime"
-DCidentifier <- "http://purl.org/dc/terms/identifier"
-DCmodified <- "http://purl.org/dc/terms/modified"
-DCtitle      <- "http://purl.org/dc/elements/1.1/title"
-RDFtype <- "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
-
