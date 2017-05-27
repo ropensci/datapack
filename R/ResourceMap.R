@@ -451,26 +451,67 @@ setMethod("getTriples", "ResourceMap", function(x, filter=TRUE, identifiers=list
         subject <- result$s
         predicate <- result$p
         object <- result$o
+        what <- result$d
         objectType <- as.character(NA)
         subjectType <- as.character(NA)
         dataTypeURI <- as.character(NA)
-        # Remove leading '<' and trailing '>" that were added from the SPARQL result
-        if(grepl("^<", subject, perl=TRUE))   subject   <- gsub("^<", "", subject, perl=TRUE)
-        if(grepl("^<", predicate, perl=TRUE)) predicate <- gsub("^<", "", predicate, perl=TRUE)
-        if(grepl("^<", object, perl=TRUE))    object    <- gsub("^<", "", object, perl=TRUE)
-        if(grepl(">$", subject, perl=TRUE))   subject   <- gsub(">$", "", subject, perl=TRUE)
-        if(grepl(">$", predicate, perl=TRUE)) predicate <- gsub(">$", "", predicate, perl=TRUE)
-        if(grepl(">$", object, perl=TRUE))    object    <- gsub(">$", "", object, perl=TRUE)
-        
-        if(grepl("^^", object, fixed=TRUE)) {
-            strResult <- strsplit(object, '^^', fixed=TRUE)
-            object <- strResult[[1]][[1]]
-            object <- gsub('"', "", object)
-            dataTypeURI <- strResult[[1]][[2]]
-            #cat(sprintf("object: %s\n objectType: %s\n", object, objectType))
+        #cat(sprintf("s: %s p: %s o: %s\n", subject, predicate, object))
+        # Remove leading '<' and trailing '>" from the result. The result is returned as
+        # RDF NTriples, so annotations to the terms denotes the type. (see https://www.w3.org/TR/n-triples/)
+        if(grepl("^<.*>$", subject, perl=TRUE))   {
+            subject   <- gsub("^<", "", subject, perl=TRUE)
+            subject   <- gsub(">$", "", subject, perl=TRUE)
+            subjectType <- "uri"
+        } else if(grepl("^_:", subject, perl=TRUE)) {
+            # Remove the colon from the blank node identifier, as this will be an illigal XML name
+            # when the relationships are serialized to RDF/XML
+            subject <- gsub("^_:", "_", subject, perl=TRUE)
+            subjectType <- "blank"
+        } else {
+            # Subject type can only be 'uri' or 'blank'. If the subject is not surrounded by
+            # '<', '>' and doesn't start with the N-Triples '_:', then it is some non-standard blank
+            # node name.
+            subjectType <- "blank"
         }
-        #cat(sprintf("subject: %s\n predicate: %s\n object: %s\n", subject, predicate, object))
         
+        # The predicate is always a 'uri'
+        if(grepl("^<.*>$", predicate, perl=TRUE)) {
+            predicate <- gsub("^<", "", predicate, perl=TRUE)
+            predicate <- gsub(">$", "", predicate, perl=TRUE)
+        } else {
+            warning(sprintf("Invalid predicate %s, not valid N-Triples value.", predicate))
+        }
+        
+        # Parse object and determine its type. The object may be appended with language designation
+        # e.g. "@en" or a data type, e.g. "^^<xsd:dateTime>"
+        if(grepl("^<", object, perl=TRUE)) {
+            object <- gsub("^<", "", object, perl=TRUE)
+            object <- gsub(">$", "", object, perl=TRUE)
+            objectType <- "uri"
+        } else if(grepl("^\"", object, perl=TRUE)) {
+            # The object might contain a data type appended to it with the string "^^" separating
+            # the object and the data type
+            if(grepl("^^", object, fixed=TRUE)) {
+                strResult <- strsplit(object, '^^', fixed=TRUE)
+                object <- strResult[[1]][[1]]
+                dataTypeURI <- strResult[[1]][[2]]
+                #cat(sprintf("object: %s\n objectType: %s\n", object, objectType))
+                dataTypeURI <- gsub("^<", "", dataTypeURI, perl=TRUE)
+                dataTypeURI <- gsub(">$", "", dataTypeURI, perl=TRUE)
+            }
+            object <- gsub('^"', "", object, perl=TRUE)
+            object <- gsub('"$', "", object, perl=TRUE)
+            objectType <- "literal"
+        } else if(grepl("^_:", object, perl=TRUE)) {
+            object <- gsub("^_:", "_", object, perl=TRUE)
+            objectType <- "blank"
+        } else {
+            # Object type can be 'uri', 'blank' or 'literal'. If the object is not surrounded by
+            # '<', '>' or '"', and doesn't start with the N-Triples '_:', then it is some non-standard blank
+            # node name.
+            objectType <- "blank"
+        }
+
         # Filter DataONE packaging statements that may have been inserted during 'createFromTriples'
         # Filtering this way is much easier than filtering in SPARQL!
         # This method of filtering assumes that the namespaces have been expanded, which appears
@@ -481,6 +522,12 @@ setMethod("getTriples", "ResourceMap", function(x, filter=TRUE, identifiers=list
             if((predicate == DCtitle) && (object == "DataONE Aggregation")) {
                 next
             } else if((predicate == RDFtype) && (object == OREresourceMap)) {
+                next
+            } else if(object == DCagent) {
+                next
+            } else if(predicate == DCcreator) {
+                next
+            } else if(predicate == DCmodified) {
                 next
             } else if(predicate == DCidentifier) {
                 # Filter the dcterms:identifier statement for package ids
