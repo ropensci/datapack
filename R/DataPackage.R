@@ -950,7 +950,7 @@ setMethod("selectMember", signature("DataPackage"), function(x, name, value, as=
         for(iKey in keys(x@objects)) {
             slotStr <- sprintf("x@objects[[\'%s\']]@%s", iKey, as.character(name))
             testValue <- eval(parse(text=slotStr))
-            if(identical(testValue, value)) {
+            if(identical(testValue, value) || grepl(as.character(value), testValue, perl=TRUE)) {
                 if(as == "character") {
                     matches[[length(matches)+1]] <- iKey
                 } else {

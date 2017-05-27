@@ -17,7 +17,7 @@ selectMember(x, ...)
 
 \item{name}{The name of the DataObject slot to inspect, for example "sysmeta@formatId".}
 
-\item{value}{A character or logical value to match.}
+\item{value}{A character or logical value to match. If specified as a character value, PERL style regular expressions can be used (see ?grepl).}
 
 \item{as}{A character value to specify the return type, either "DataObject" or "character" (the default)}
 }
