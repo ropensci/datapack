@@ -137,9 +137,6 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
     pkgResolveURI <- resolveURI
   }
   
-  #xsdString <- "^^http://www.w3.org/2001/XMLSchema#string"
-
-
   # The 'resolve' URI may be blank if this is a resource map for a local datapackage. In this
   # case, the resolve URI will be updated with a proper URI when this datapackage is uploaed
   # to a repository.
@@ -206,7 +203,7 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
     }
     
     # Add the Dublic Core identifier relation for each object added to the data package
-    statement <- new("Statement", x@world, subject=URIid, predicate=DCidentifier, object=id, objectType="literal", datatype_uri=xsdStringURI)
+    statement <- new("Statement", x@world, subject=URIid, predicate=DCidentifier, object=id, objectType="literal", datatype_uri=xsdString)
     addStatement(x@model, statement)
     
     # Add triples for each object that is aggregated
@@ -225,7 +222,7 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
         URIid <- id
     }
     # Add the Dublic Core identifier relation for each object added to the data package
-    statement <- new("Statement", x@world, subject=URIid, predicate=DCidentifier, object=id, objectType="literal", datatype_uri=xsdStringURI)
+    statement <- new("Statement", x@world, subject=URIid, predicate=DCidentifier, object=id, objectType="literal", datatype_uri=xsdString)
     addStatement(x@model, statement)
   }
 
