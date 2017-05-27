@@ -399,9 +399,12 @@ setMethod("insertRelationship", signature("DataPackage"),
     
     # If the subjectID or objectIDs were not specified then the user is requesting that these be "anonymous"
     # blank nodes, i.e. a blank node identifier is automatically assigned. Assign a uuid now vs having redland
-    # RDF package assign a node, so that we don't have to remember that this node is special.
+    # RDF package assign a node, so that we don't have to query redland for the id that it generated. 
+    # The format of "_<unique identifier>" (no colon included) is used passed W3C RDF 
+    # Validationa (https://www.w3.org/RDF/Validator/). Node ids starting with numeric characters or containing 
+    # colons do not pass validation (note that blank node identifiers such as '_:b1' do not pass validattion).
     if (is.na(subjectID)) {
-      subjectID <- sprintf("urn:uuid:%s", UUIDgenerate())
+      subjectID <- sprintf("_%s", UUIDgenerate())
       subjectType <- "blank"
     }
     
@@ -412,7 +415,7 @@ setMethod("insertRelationship", signature("DataPackage"),
       i <- i + 1
       # Generate a blank node identifier if id is not specified
       if (is.na(obj)) {
-        obj <- sprintf("urn:uuid:%s", UUIDgenerate())
+        obj <- sprintf("_%s", UUIDgenerate())
         objectTypes[i] <- "blank"
       }
       
@@ -1628,7 +1631,7 @@ setMethod("describeWorkflow", signature("DataPackage"), function(x, sources=list
         # render the used and gen files with the R script, via the qualified association and hadPlan, OK!
         executionId <- sprintf("urn:uuid:%s", UUIDgenerate())
         # Qualified association to link the execution and each of the program (plan)
-        associationId <- sprintf("urn:uuid:%s", UUIDgenerate())
+        associationId <- sprintf("_%s", UUIDgenerate())
         
         planId <- scriptId
         # Qualified association
