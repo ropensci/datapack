@@ -909,7 +909,7 @@ setGeneric("selectMember", function(x, ...) {
 #' for each DataObject in a DataPackage. Matching DataObjects are returned as a list containing either package member
 #' identifiers (character) or the DataObjects themselves, depending on the value of the \code{as} parameter.
 #' @param name The name of the DataObject slot to inspect, for example "sysmeta@formatId".
-#' @param value A character or logical value to match.
+#' @param value A character or logical value to match. If specified as a character value, PERL style regular expressions can be used (see ?grepl).
 #' @param as A character value to specify the return type, either "DataObject" or "character" (the default)
 #' @return A list of matching DataObjects or DataObject identifiers. The default is to return a list of 
 #' DataObject identifiers.
