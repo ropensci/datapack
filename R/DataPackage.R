@@ -1197,6 +1197,7 @@ setGeneric("serializePackage", function(x, ...) {
 #' @param namespaces A data frame containing one or more namespaces and their associated prefix
 #' @param syntaxURI URI of the serialization syntax
 #' @param resolveURI A character string containing a URI to prepend to datapackage identifiers
+#' @param creator A \code{character} string containing the creator of the package.
 #' @export
 #' @examples
 #' dp <- new("DataPackage")
@@ -1221,7 +1222,8 @@ setMethod("serializePackage", signature("DataPackage"), function(x, file,
                                                                  syntaxName="rdfxml", 
                                                                  mimeType="application/rdf+xml", 
                                                                  namespaces=data.frame(namespace=character(), prefix=character(), stringsAsFactors=FALSE),
-                                                                 syntaxURI=as.character(NA), resolveURI=as.character(NA)) {
+                                                                 syntaxURI=as.character(NA), resolveURI=as.character(NA),
+                                                                 creator=as.character(NA)) {
   # Get the relationships stored in this datapackage.
   relations <- getRelationships(x)
   
@@ -1240,7 +1242,7 @@ setMethod("serializePackage", signature("DataPackage"), function(x, file,
   # Create a resource map from previously stored triples, for example, from the relationships in a DataPackage
   resMap <- new("ResourceMap", id)
   resMap <- createFromTriples(resMap, relations=relations, identifiers=getIdentifiers(x), resolveURI=resolveURI, 
-                              externalIdentifiers=x@externalIds)  
+                              externalIdentifiers=x@externalIds, creator=creator)  
   status <- serializeRDF(resMap, file, syntaxName, mimeType, namespaces, syntaxURI)
   freeResourceMap(resMap)
   rm(resMap)
@@ -1275,6 +1277,7 @@ setGeneric("serializeToBagIt", function(x, ...) {
 #' the resource map serialization.
 #' @param syntaxURI An optional string specifying the URI for the resource map serialization.
 #' @param resolveURI A character string containing a URI to prepend to datapackage identifiersa for the resource map.
+#' @param creator A \code{character} string containing the creator of the package.
 #' @seealso For more information and examples regarding the parameters specifying the creation of the resource map,
 #' see \link{serializePackage}.
 #' @return The file name that contains the BagIt zip archive.
@@ -1300,7 +1303,8 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=as.cha
                                                                  namespaces=data.frame(),
                                                                  mimeType=as.character(NA),
                                                                  syntaxURI=as.character(NA),
-                                                                 resolveURI=as.character(NA), ...) {
+                                                                 resolveURI=as.character(NA), 
+                                                                 creator=as.character(NA), ...) {
   cwd <- getwd()
   on.exit(expr = setwd(cwd))
   pidMap <- as.character()
@@ -1330,7 +1334,7 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=as.cha
   }
   tmpFile <- tempfile()
   serializePackage(x, file=tmpFile, id=mapId, syntaxName=syntaxName, namespaces=namespaces,
-                   mimeType=mimeType, resolveURI=resolveURI)
+                   mimeType=mimeType, resolveURI=resolveURI, creator=creator)
   # Add resource map to the pid map
   #relFile <- sprintf("data/%s.rdf", resMapId)
   # Windows doesn't allow colons in filenames, so substitute for "_"

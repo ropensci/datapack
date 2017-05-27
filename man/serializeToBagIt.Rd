@@ -11,7 +11,7 @@ serializeToBagIt(x, ...)
 \S4method{serializeToBagIt}{DataPackage}(x, mapId = as.character(NA),
   syntaxName = as.character(NA), namespaces = data.frame(),
   mimeType = as.character(NA), syntaxURI = as.character(NA),
-  resolveURI = as.character(NA), ...)
+  resolveURI = as.character(NA), creator = as.character(NA), ...)
 }
 \arguments{
 \item{x}{A DataPackage object}
@@ -31,6 +31,8 @@ the resource map serialization.}
 \item{syntaxURI}{An optional string specifying the URI for the resource map serialization.}
 
 \item{resolveURI}{A character string containing a URI to prepend to datapackage identifiersa for the resource map.}
+
+\item{creator}{A \code{character} string containing the creator of the package.}
 }
 \value{
 The file name that contains the BagIt zip archive.

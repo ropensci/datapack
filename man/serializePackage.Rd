@@ -12,7 +12,7 @@ serializePackage(x, ...)
   syntaxName = "rdfxml", mimeType = "application/rdf+xml",
   namespaces = data.frame(namespace = character(), prefix = character(),
   stringsAsFactors = FALSE), syntaxURI = as.character(NA),
-  resolveURI = as.character(NA))
+  resolveURI = as.character(NA), creator = as.character(NA))
 }
 \arguments{
 \item{x}{A DataPackage object}
@@ -33,6 +33,8 @@ to the DataPackage when it was created.}
 \item{syntaxURI}{URI of the serialization syntax}
 
 \item{resolveURI}{A character string containing a URI to prepend to datapackage identifiers}
+
+\item{creator}{A \code{character} string containing the creator of the package.}
 }
 \description{
 The DataPackage is serialized as a OAI-ORE resource map to the specified file.

@@ -117,10 +117,12 @@ setGeneric("createFromTriples", function(x, ...) { standardGeneric("createFromTr
 #' @param resolveURI A character string containing a URI to prepend to datapackage identifiers.
 #' @param relations A data.frame to read relationships from
 #' @param externalIdentifiers A list of indentifiers that are referenced from the package, but are not package members.
+#' @param creator A \code{character} string containing the creator of the package.
 #' @param ... (Additional parameters)
 #' @export
 setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, identifiers, 
-                                                                  resolveURI=as.character(NA), externalIdentifiers=list(), ...) {
+                                                                  resolveURI=as.character(NA), externalIdentifiers=list(), 
+                                                                  creator=as.character(NA), ...) {
   stopifnot(is.data.frame(relations))
   stopifnot(all(is.character(identifiers)))
   
@@ -249,6 +251,31 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
   addStatement(x@model, statement)
   
   statement <- new("Statement", x@world, subject=resMapURI, predicate=OREdescribes, object=aggregationId)
+  addStatement(x@model, statement)
+  
+  # Add a resource map creator (an Agent)
+  # For example: 
+  # _:r1495819159r74422r1 http://www.w3.org/1999/02/22-rdf-syntax-ns#type http://purl.org/dc/terms/Agent
+  # _:r1495819159r74422r1 http://xmlns.com/foaf/0.1/name> "DataONE Java Client Library"^^<http://www.w3.org/2001/XMLSchema#string>
+  # https://cn.dataone.org/cn/v1/resolve/resourceMap_karakoenig.46.6 http://purl.org/dc/elements/1.1/creator _:r1495819159r74422r1
+  
+  if(!is.na(creator)) {
+      creatorBlankNodeId <- sprintf("_%s", UUIDgenerate())
+      statement <- new("Statement", x@world, subject=creatorBlankNodeId, predicate=RDFtype, object=DCagent,
+                       subjectType="blank")
+      addStatement(x@model, statement)
+      statement <- new("Statement", x@world, subject=creatorBlankNodeId, predicate=foafName, object=creator,
+                       subjectType="blank", objectType="literal", datatype_uri=xsdString)
+      addStatement(x@model, statement)
+      statement <- new("Statement", x@world, subject=URLdecode(resMapURI), predicate=DCcreator, object=creatorBlankNodeId,
+                       objectType="blank")
+      addStatement(x@model, statement)
+  }
+  
+  # Add modification time, required by ORE Resource Map specification
+  now <- format(Sys.time(), format="%FT%H:%M:%SZ", tz="UTC")
+  statement <- new("Statement", x@world, subject=resMapURI, predicate=DCmodified, object=now, 
+                   objectType="literal", datatype_uri=xsdDateTime)
   addStatement(x@model, statement)
 
   return(x)
@@ -398,6 +425,15 @@ setGeneric("getTriples", function(x, ...) { standardGeneric("getTriples")} )
 setMethod("getTriples", "ResourceMap", function(x, filter=TRUE, identifiers=list(), ...) {
   
     relations <- data.frame(row.names=NULL, stringsAsFactors=F)
+    
+    # Get the aggregation URI for use in qualifying certain relationships that we wan to skip.
+    #s: <https://cn-stage-2.test.dataone.org/cn/v2/resolve/urn%3Auuid%3A63ac03cb-6fea-4013-8fc7-25d2ff5cc8cb#aggregation> 
+    # p: <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> i
+    # o: <http://www.openarchives.org/ore/terms/Aggregation> 
+   
+    # s: <https://cn-stage-2.test.dataone.org/cn/v2/resolve/urn%3Auuid%3A63ac03cb-6fea-4013-8fc7-25d2ff5cc8cb> 
+    # p: <http://purl.org/dc/terms/identifier> 
+    # o: "urn:uuid:63ac03cb-6fea-4013-8fc7-25d2ff5cc8cb"^^<http://www.w3.org/2001/XMLSchema#string>
     
     parser <- new("Parser", x@world)
     # Query the RDF model with a SPARQL query that should return all triples
