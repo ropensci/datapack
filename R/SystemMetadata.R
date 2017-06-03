@@ -364,7 +364,9 @@ setMethod("serializeSystemMetadata", signature("SystemMetadata"), function(x, ve
                   namespace=d1Namespace,
                   namespaceDefinitions = d1NamespaceDef)
 
-  root <- addChildren(root, xmlNode("serialVersion", x@serialVersion))
+  if(!is.na(x@serialVersion)) {
+      root <- addChildren(root, xmlNode("serialVersion", x@serialVersion))
+  }
   root <- addChildren(root, xmlNode("identifier", x@identifier))
   root <- addChildren(root, xmlNode("formatId", x@formatId))
   root <- addChildren(root, xmlNode("size", format(as.numeric(x@size), scientific=FALSE)))
@@ -403,11 +405,13 @@ setMethod("serializeSystemMetadata", signature("SystemMetadata"), function(x, ve
   if (!is.na(x@obsoletedBy)) {
     root <- addChildren(root, xmlNode("obsoletedBy", x@obsoletedBy))
   }
-  root <- addChildren(root, xmlNode("archived", tolower(as.character(x@archived))))
+  if(!is.na(x@archived)) {
+    root <- addChildren(root, xmlNode("archived", tolower(as.character(x@archived))))
+  }
   # Serialize this optional field if it is defined
   if(!is.na(x@dateUploaded)) root <- addChildren(root, xmlNode("dateUploaded", x@dateUploaded))
-  root <- addChildren(root, xmlNode("dateSysMetadataModified", x@dateSysMetadataModified))
-  root <- addChildren(root, xmlNode("originMemberNode", x@originMemberNode))
+  if(!is.na(x@dateSysMetadataModified)) root <- addChildren(root, xmlNode("dateSysMetadataModified", x@dateSysMetadataModified))
+  if(!is.na(x@originMemberNode)) root <- addChildren(root, xmlNode("originMemberNode", x@originMemberNode))
   if(!is.na(x@authoritativeMemberNode)) {
     root <- addChildren(root, xmlNode("authoritativeMemberNode", x@authoritativeMemberNode))
   }
