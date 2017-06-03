@@ -424,11 +424,11 @@ setMethod("getTriples", "ResourceMap", function(x, filter=TRUE, identifiers=list
     relations <- data.frame(row.names=NULL, stringsAsFactors=F)
     
     # Get the aggregation URI for use in qualifying certain relationships that we wan to skip.
-    #s: <https://cn-stage-2.test.dataone.org/cn/v2/resolve/urn%3Auuid%3A63ac03cb-6fea-4013-8fc7-25d2ff5cc8cb#aggregation> 
+    # s: <https://cn-stage-2.test.dataone.org/cn/v2/resolve/urn:uuid:63ac03cb-6fea-4013-8fc7-25d2ff5cc8cb#aggregation> 
     # p: <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> i
     # o: <http://www.openarchives.org/ore/terms/Aggregation> 
    
-    # s: <https://cn-stage-2.test.dataone.org/cn/v2/resolve/urn%3Auuid%3A63ac03cb-6fea-4013-8fc7-25d2ff5cc8cb> 
+    # s: <https://cn-stage-2.test.dataone.org/cn/v2/resolve/urn:uuid:63ac03cb-6fea-4013-8fc7-25d2ff5cc8cb> 
     # p: <http://purl.org/dc/terms/identifier> 
     # o: "urn:uuid:63ac03cb-6fea-4013-8fc7-25d2ff5cc8cb"^^<http://www.w3.org/2001/XMLSchema#string>
     
