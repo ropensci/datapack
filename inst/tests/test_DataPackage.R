@@ -120,7 +120,7 @@ test_that("InsertRelationship methods work", {
   user <- "smith"
   data <- charToRaw("1,2,3\n4,5,6")
   format <- "text/csv"
-  do1 <- new("DataObject", id=doId1, data, format, user, node)
+  do1 <- new("DataObject", id=doId1, data, format)
   do2 <- new("DataObject", id=doId2, data, format, user, node)
   dp <- addMember(dp, do1)
   dp <- addMember(dp, do2)
@@ -179,7 +179,6 @@ test_that("InsertRelationship methods work", {
   expect_that(nrow(relations), equals(nrel<-nrel + 1))
   expect_match(relations[relations$object == "thing6", 'predicate'], "wasThing")
   expect_that(relations[relations$object == "thing6", 'subjectType'], equals("blank"))
-  expect_match(relations[relations$object == "thing6", 'subject'], "urn:uuid:")
   
   # No objectID specified
   dp <- insertRelationship(dp, subjectID="urn:uuid:5743f16c-e038-4ef2-bcca-0418ff631a34", objectIDs=as.character(NA), predicate="http://www.myns.org/gaveThing")
@@ -187,7 +186,6 @@ test_that("InsertRelationship methods work", {
   expect_that(nrow(relations), equals(nrel <- nrel + 1))
   expect_match(relations[relations$subject == "urn:uuid:5743f16c-e038-4ef2-bcca-0418ff631a34", 'predicate'], "gaveThing")
   expect_that(relations[relations$subject == "urn:uuid:5743f16c-e038-4ef2-bcca-0418ff631a34", 'objectType'], equals("blank"))
-  expect_match(relations[relations$subject == "urn:uuid:5743f16c-e038-4ef2-bcca-0418ff631a34", 'object'], "urn:uuid:")
   
   # Specify dataTypeURIs
   dp <- insertRelationship(dp, subjectID="urn:uuid:abcd", objectIDs="Wed Mar 18 06:26:44 PDT 2015", 
@@ -654,4 +652,63 @@ test_that("updateMetadata works", {
     URL <- xmlValue(nodeSet[[1]])
     
     expect_match(newURL, URL) 
+})
+
+test_that("DataPackage accessPolicy methods", {
+    library(datapack)
+    library(digest)
+   
+    dp <- new("DataPackage")
+    data <- charToRaw("1,2,3\n4,5,6\n")
+    obj <- new("DataObject", id="id1", dataobj=data, format="text/csv")
+    dp <- addMember(dp, obj)
+    data2 <- charToRaw("7,8,9\n4,10,11\n")
+    obj2 <- new("DataObject", id="id2", dataobj=data2, format="text/csv")
+    dp <- addMember(dp, obj2)
+    # Add access rule to all package members
+    dp <- addAccessRule(dp, "uid=smith,ou=Account,dc=example,dc=com", "write")
+    dp <- addAccessRule(dp, "uid=smith,ou=Account,dc=example,dc=com", "changePermission")
+    
+    expect_true(hasAccessRule(dp, "uid=smith,ou=Account,dc=example,dc=com", "write"))
+    expect_true(hasAccessRule(dp, "uid=smith,ou=Account,dc=example,dc=com", "changePermission"))
+    expect_false(hasAccessRule(dp, "uid=edwards,ou=Account,dc=labx,dc=com", "write"))
+    
+    # Now take 'changePermission' away for user 'uid=smith...'
+    dp <- removeAccessRule(dp, "uid=smith,ou=Account,dc=example,dc=com", "changePermission")
+    expect_false(hasAccessRule(dp, "uid=smith,ou=Account,dc=example,dc=com", "changePermission"))
+    
+    #' 
+    #' # Alternatively, parameter "y" can be a data.frame containing one or more access rules:
+    #' # Add write, changePermission for uid=jones,...
+    dp <- addAccessRule(dp, "uid=jones,ou=Account,dc=example,dc=com", "write")
+    dp <- addAccessRule(dp, "uid=jones,ou=Account,dc=example,dc=com", "changePermission")
+    expect_true(hasAccessRule(dp, "uid=jones,ou=Account,dc=example,dc=com", "write"))
+    expect_true(hasAccessRule(dp, "uid=jones,ou=Account,dc=example,dc=com", "changePermission"))
+    #' # Now take privs for uid=jones,... away
+    accessRules <- data.frame(subject=c("uid=jones,ou=Account,dc=example,dc=com", 
+                                          "uid=jones,ou=Account,dc=example,dc=com"), 
+                                          permission=c("write", "changePermission"))
+    dp <- removeAccessRule(dp, accessRules)
+    expect_false(hasAccessRule(dp, "uid=jones,ou=Account,dc=example,dc=com", "write"))
+    expect_false(hasAccessRule(dp, "uid=jones,ou=Account,dc=example,dc=com", "changePermission"))
+    
+    # Test that setting public access works
+    expect_false(hasAccessRule(dp, "public", "read"))
+    
+    # Test that custom access rules can be added to sysmeta of a DataObject
+    accessRules <- data.frame(subject=c("uid=sanders,ou=Account,dc=example,dc=com", 
+                                        "uid=wiggens,o=unaffiliated,dc=example,dc=org"), 
+                              permission=c("write", "changePermission"), stringsAsFactors=FALSE)
+    dp <- addAccessRule(dp, accessRules)
+    expect_true(hasAccessRule(dp, "uid=sanders,ou=Account,dc=example,dc=com", "write"))
+    expect_true(hasAccessRule(dp, "uid=wiggens,o=unaffiliated,dc=example,dc=org", "changePermission"))
+    
+    # Test that an access policy can be cleared, i.e. all access rules removed.
+    dp <- clearAccessPolicy(dp)
+    expect_false(hasAccessRule(dp, "uid=sanders,ou=Account,dc=example,dc=com", "write"))
+    expect_false(hasAccessRule(dp, "uid=wiggens,o=unaffiliated,dc=example,dc=org", "changePermission"))
+    
+    # Now add public read access to all members
+    dp <- setPublicAccess(dp)
+    expect_true(hasAccessRule(dp, "public", "read"))
 })

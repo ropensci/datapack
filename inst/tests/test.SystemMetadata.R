@@ -172,6 +172,7 @@ test_that("SystemMetadata accessPolicy can be constructed and changed", {
     expect_match(as.character(sysmeta@accessPolicy$subject[[4]]), "baz")    
 })
 
+
 test_that("SystemMetadata accessPolicy can be cleared", {
     sysmeta <- new("SystemMetadata")
     sysmeta <- addAccessRule(sysmeta, "public", "read")
@@ -179,4 +180,34 @@ test_that("SystemMetadata accessPolicy can be cleared", {
     
     sysmeta <- clearAccessPolicy(sysmeta)
     expect_true(nrow(sysmeta@accessPolicy) == 0)
+})
+
+test_that("SystemMetadata accessPolicy accessRules can be removed.", {
+    
+    # Chech using parameter "y" as a character string containing the subject of the access rule:
+    sysmeta <- new("SystemMetadata")
+    sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
+    sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "changePermission")
+    expect_true(hasAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write"))
+    expect_true(hasAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "changePermission"))
+    sysmeta <- removeAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "changePermission")
+    expect_false(hasAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "changePermission"))
+    sysmeta <- removeAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
+    expect_false(hasAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write"))
+    
+    # Check parameter "y" as a data.frame containing one or more access rules:
+    # Add write, changePermission for uid=jones,...
+    sysmeta <- new("SystemMetadata")
+    sysmeta <- addAccessRule(sysmeta, "uid=jones,ou=Account,dc=example,dc=com", "write")
+    sysmeta <- addAccessRule(sysmeta, "uid=jones,ou=Account,dc=example,dc=com", "changePermission")
+    expect_true(hasAccessRule(sysmeta, "uid=jones,ou=Account,dc=example,dc=com", "write"))
+    expect_true(hasAccessRule(sysmeta, "uid=jones,ou=Account,dc=example,dc=com", "changePermission"))
+    
+    # Now take privs for uid=jones,... away
+    accessRules <- data.frame(subject=c("uid=jones,ou=Account,dc=example,dc=com", 
+                                         "uid=jones,ou=Account,dc=example,dc=com"), 
+                                         permission=c("write", "changePermission"))
+    sysmeta <- removeAccessRule(sysmeta, accessRules)
+    expect_false(hasAccessRule(sysmeta, "uid=jones,ou=Account,dc=example,dc=com", "write"))
+    expect_false(hasAccessRule(sysmeta, "uid=jones,ou=Account,dc=example,dc=com", "changePermission"))
 })

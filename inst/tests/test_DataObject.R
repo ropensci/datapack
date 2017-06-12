@@ -78,11 +78,13 @@ test_that("DataObject accessPolicy methods", {
     expect_that(isPublic, is_true())
     
     # Test that custom access rules can be added to sysmeta of a DataObject
-    accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", "uid=wiggens,o=unaffiliated,dc=example,dc=org"), permission=c("write", "changePermission"), stringsAsFactors=FALSE)
+    accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", 
+                                        "uid=wiggens,o=unaffiliated,dc=example,dc=org"), 
+                              permission=c("write", "changePermission"), stringsAsFactors=FALSE)
     do <- addAccessRule(do, accessRules)
-    expect_true(hasAccessRule(do@sysmeta, "smith", "write"))
-    expect_true(hasAccessRule(do@sysmeta, "wiggens", "changePermission"))
-    expect_false(hasAccessRule(do@sysmeta, "smith", "changePermission"))
+    expect_true(hasAccessRule(do@sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write"))
+    expect_true(hasAccessRule(do@sysmeta, "uid=wiggens,o=unaffiliated,dc=example,dc=org", "changePermission"))
+    expect_false(hasAccessRule(do@sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "changePermission"))
     
     # Public access should now be possible
     canRead <- canRead(do, "uid=anybody,DC=somedomain,DC=org")
@@ -91,8 +93,37 @@ test_that("DataObject accessPolicy methods", {
     # Test that an access policy can be cleared, i.e. all access rules removed.
     do <- clearAccessPolicy(do)
     expect_true(nrow(do@sysmeta@accessPolicy) == 0)
+    expect_false(hasAccessRule(do@sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write"))
+    expect_false(hasAccessRule(do@sysmeta, "uid=wiggens,o=unaffiliated,dc=example,dc=org", "changePermission"))
+    expect_false(hasAccessRule(do@sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "changePermission"))
     
+    # Chech using parameter "y" as a character string containing the subject of the access rule:
+    do <- new("DataObject", identifier, data, format, user, node)
+    do <- addAccessRule(do, "uid=smith,ou=Account,dc=example,dc=com", "write")
+    do <- addAccessRule(do, "uid=smith,ou=Account,dc=example,dc=com", "changePermission")
+    expect_true(hasAccessRule(do, "uid=smith,ou=Account,dc=example,dc=com", "write"))
+    expect_true(hasAccessRule(do, "uid=smith,ou=Account,dc=example,dc=com", "changePermission"))
+    do <- removeAccessRule(do, "uid=smith,ou=Account,dc=example,dc=com", "changePermission")
+    expect_false(hasAccessRule(do, "uid=smith,ou=Account,dc=example,dc=com", "changePermission"))
+    do <- removeAccessRule(do, "uid=smith,ou=Account,dc=example,dc=com", "write")
+    expect_false(hasAccessRule(do, "uid=smith,ou=Account,dc=example,dc=com", "write"))
+        
+    # Check parameter "y" as a data.frame containing one or more access rules:
+    # Add write, changePermission for uid=jones,...
+    do <- addAccessRule(do, "uid=jones,ou=Account,dc=example,dc=com", "write")
+    do <- addAccessRule(do, "uid=jones,ou=Account,dc=example,dc=com", "changePermission")
+    expect_true(hasAccessRule(do, "uid=jones,ou=Account,dc=example,dc=com", "write"))
+    expect_true(hasAccessRule(do, "uid=jones,ou=Account,dc=example,dc=com", "changePermission"))
+        
+    # Now take privs for uid=jones,... away
+    accessRules <- data.frame(subject=c("uid=jones,ou=Account,dc=example,dc=com", 
+                                        "uid=jones,ou=Account,dc=example,dc=com"), 
+                                        permission=c("write", "changePermission"))
+    do <- removeAccessRule(do, accessRules)
+    expect_false(hasAccessRule(do, "uid=jones,ou=Account,dc=example,dc=com", "write"))
+    expect_false(hasAccessRule(do, "uid=jones,ou=Account,dc=example,dc=com", "changePermission"))
 })
+
 test_that("DataObject updateXML method", {
     library(datapack)
     library(XML)
