@@ -58,6 +58,7 @@
 #'   \item{\code{\link{getData}}}{: Get the data content of a specified data object}
 #'   \item{\code{\link{getFormatId}}}{: Get the FormatId of the DataObject}
 #'   \item{\code{\link{getIdentifier}}}{: Get the Identifier of the DataObject}
+#'   \item{\code{\link{hasAccessRule}}}{: Determine if an access rules exists for a DataObject.}
 #'   \item{\code{\link{setPublicAccess}}}{: Add a Rule to the AccessPolicy to make the object publicly readable.}
 #'   \item{\code{\link{updateXML}}}{: Update selected elements of the xml content of a DataObject}
 #' }
@@ -120,6 +121,7 @@ setClass("DataObject", slots = c(
 #' @param mediaTypeProperty A list, indicates IANA Media Type properties to be associated with the parameter \code{"mediaType"}
 #' @param dataURL A character string containing a URL to remote data (a repository) that this DataObject represents.
 #' @import digest
+#' @import uuid
 #' @examples
 #' data <- charToRaw("1,2,3\n4,5,6\n")
 #' do <- new("DataObject", "id1", dataobj=data, "text/csv", 
@@ -286,7 +288,7 @@ setMethod("getIdentifier", signature("DataObject"), function(x) {
 #' @export
 setGeneric("getFormatId", function(x, ...) {
 			standardGeneric("getFormatId")
-		})
+})
 
 #' @rdname getFormatId
 #' @aliases getFormatId
@@ -297,6 +299,27 @@ setGeneric("getFormatId", function(x, ...) {
 #' fmtId <- getFormatId(do)
 setMethod("getFormatId", signature("DataObject"), function(x) {
     return(x@sysmeta@formatId)
+})
+
+#
+#' @rdname hasAccessRule
+#' @description If called for a DataObject, then the SystemMetadata for the DataObject is checked.
+#' @examples 
+#' data <- system.file("extdata/sample-data.csv", package="datapack")
+#' do <- new("DataObject", file=system.file("./extdata/sample-data.csv", package="datapack"), 
+#'                                          format="text/csv")
+#' do <- setPublicAccess(do)
+#' isPublic <- hasAccessRule(do, "public", "read")
+#' accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", 
+#'                           "uid=wiggens,o=unaffiliated,dc=example,dc=org"), 
+#'                           permission=c("write", "changePermission"), 
+#'                           stringsAsFactors=FALSE)
+#' do <- addAccessRule(do, accessRules)
+#' SmithHasWrite <- hasAccessRule(do, "uid=smith,ou=Account,dc=example,dc=com", "write")
+#' @return boolean TRUE if the access rule exists already, FALSE otherwise
+setMethod("hasAccessRule", signature("DataObject"), function(x, subject, permission) {
+    found <- hasAccessRule(x@sysmeta, subject, permission)
+    return(found)
 })
 
 #' Add a Rule to the AccessPolicy to make the object publicly readable.
