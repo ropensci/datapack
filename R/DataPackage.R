@@ -1176,6 +1176,7 @@ setMethod("addAccessRule", signature("DataPackage"), function(x, y, ...) {
 #' 
 #' @export
 setMethod("clearAccessPolicy", signature("DataPackage"), function(x, identifiers=list(), ...) {
+    if(length(identifiers)==0) identifiers <- getIdentifiers(x)
     if(length(keys(x@objects)) > 0) {
         for(iKey in keys(x@objects)) {
             if(! iKey %in% identifiers) next
