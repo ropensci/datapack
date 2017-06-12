@@ -32,7 +32,7 @@ argument to locate the elements to update with the character value specified in 
 \dontrun{
 library(datapack)
 dataObj <- new("DataObject", format="text/csv", file=sampleData)
-sampleEML <- system.file("extdata/sample-eml.xml", package="dataone")
+sampleEML <- system.file("extdata/sample-eml.xml", package="datapack")
 dataObj <- updateMetadata(dataObj, xpath="", replacement=)
 }
 library(datapack)

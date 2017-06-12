@@ -477,8 +477,12 @@ setGeneric("addAccessRule", function(x, ...) {
 })
 #' @rdname addAccessRule
 #' @param y The subject of the rule to be added, or a data frame of subject/permission tuples
+#' @details If the \code{y} argument is specified as a character string containing a \code{subject},
+#' then an optional \code{permission} parameter must be specified, that contains a character list
+#' specifying the permissions to add for each \code{subject}.
 #' @return the SystemMetadata object with the updated access policy.
 #' @examples 
+#' # Add an access rule to a SystemMetadata access policy.
 #' # Parameter "y" can be character string containing the subject of the access rule:
 #' sysmeta <- new("SystemMetadata")
 #' sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
@@ -529,7 +533,8 @@ setGeneric("removeAccessRule", function(x, ...) {
     standardGeneric("removeAccessRule")
 })
 #' @rdname removeAccessRule
-#' @param y The subject of the rule to be removed
+#' @param y The subject of the rule to be removed, or a data.frame containing access rules.
+#' @param permission THe permission to remove, if parameter \code{x} is a character string containing a \code{subject}.
 #' @return the SystemMetadata object with the updated access policy.
 #' @examples 
 #' # Parameter "y" can be character string containing the subject of the access rule:
@@ -593,7 +598,8 @@ setGeneric("hasAccessRule", function(x, ...) {
     standardGeneric("hasAccessRule")
 })
 #' @rdname hasAccessRule
-#' @param permission the permission to be applied to subject if x is character
+#' @param subject of the rule to be checked
+#' @param permission the permission to be checked
 #' @examples 
 #' sysmeta <- new("SystemMetadata")
 #' sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")

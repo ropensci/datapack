@@ -50,6 +50,7 @@ contents of the data or file as a raw value (but this will read all of the data 
   \item{\code{\link{getData}}}{: Get the data content of a specified data object}
   \item{\code{\link{getFormatId}}}{: Get the FormatId of the DataObject}
   \item{\code{\link{getIdentifier}}}{: Get the Identifier of the DataObject}
+  \item{\code{\link{hasAccessRule}}}{: Determine if an access rules exists for a DataObject.}
   \item{\code{\link{setPublicAccess}}}{: Add a Rule to the AccessPolicy to make the object publicly readable.}
   \item{\code{\link{updateXML}}}{: Update selected elements of the xml content of a DataObject}
 }
