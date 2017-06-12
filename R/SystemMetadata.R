@@ -604,7 +604,9 @@ setGeneric("hasAccessRule", function(x, ...) {
 #'   permission="write")
 #' @return boolean TRUE if the access rule exists already, FALSE otherwise
 setMethod("hasAccessRule", signature("SystemMetadata"), function(x, subject, permission) {
-    found <- any(grepl(subject, x@accessPolicy$subject) & grepl(permission, x@accessPolicy$permission))
+    # The match for subject and permission must be exact and the entire string must match.
+    found <- any(grepl(paste("^", subject,"$",sep=""), x@accessPolicy$subject) & 
+                     grepl(paste("^", permission, "$",sep=""), x@accessPolicy$permission))
     return(found)
 })
 
