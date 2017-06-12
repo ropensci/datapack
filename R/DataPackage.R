@@ -1188,6 +1188,85 @@ setMethod("clearAccessPolicy", signature("DataPackage"), function(x, identifiers
     return(x)
 })
 
+#
+#' @rdname hasAccessRule
+#' @description If called for a DataPackage, then the SystemMetadata for DataObjects in the DataPackage are checked.
+#' @param identifiers A list of \code{character} values containing package member identifiers for which the access rule will be checked.
+#' @examples 
+#' # First create an example DataPackage
+#' dp <- new("DataPackage")
+#' data <- charToRaw("1,2,3\n4,5,6\n")
+#' obj <- new("DataObject", id="id1", dataobj=data, format="text/csv")
+#' dp <- addMember(dp, obj)
+#' data2 <- charToRaw("7,8,9\n4,10,11\n")
+#' obj2 <- new("DataObject", id="id2", dataobj=data2, format="text/csv")
+#' dp <- addMember(dp, obj2)
+#' # Add access rules to all package members
+#' dp <- addAccessRule(dp, "uid=smith,ou=Account,dc=example,dc=com", "write")
+#' dp <- addAccessRule(dp, "uid=smith,ou=Account,dc=example,dc=com", "changePermission")
+#' hasWrite <- hasAccessRule(dp, "uid=smith,ou=Account,dc=example,dc=com", "write")
+#' hasChange <- hasAccessRule(dp, "uid=smith,ou=Account,dc=example,dc=com", "changePermission")
+#' @return boolean TRUE if the access rule exists in all specified package members already, FALSE otherwise
+setMethod("hasAccessRule", signature("DataPackage"), function(x, subject, permission, identifiers=list(), ...) {
+    found <- FALSE
+    # Have to provide a list of member ids to check
+    if(length(identifiers) == 0) identifiers <- getIdentifiers(x)
+    if(length(getIdentifiers(x)) > 0) {
+        for(id in getIdentifiers(x)) {
+            if(! id %in% identifiers) next
+            do <- getMember(x, id)
+            # If even one specified member doesn't have the perms, then fail.
+            if (!hasAccessRule(do, subject, permission)) return (FALSE)
+        }
+    }
+    return(TRUE)
+})
+
+#' @rdname removeAccessRule
+#' @return the Datapackage with members having updated access policies.
+#' @param identifiers A list of \code{character} values containing package member identifiers that the access rule will be 
+#' appliced to (default is all package members).
+#' @return the DataObject with the updated access policy
+#' @examples 
+#' dp <- new("DataPackage")
+#' data <- charToRaw("1,2,3\n4,5,6\n")
+#' obj <- new("DataObject", id="id1", dataobj=data, format="text/csv")
+#' dp <- addMember(dp, obj)
+#' data2 <- charToRaw("7,8,9\n4,10,11\n")
+#' obj2 <- new("DataObject", id="id2", dataobj=data2, format="text/csv")
+#' dp <- addMember(dp, obj2)
+#' # Add access rule to all package members
+#' dp <- addAccessRule(dp, "uid=smith,ou=Account,dc=example,dc=com", "write")
+#' dp <- addAccessRule(dp, "uid=smith,ou=Account,dc=example,dc=com", "changePermission" )
+#' # Now take 'changePermission' away for user 'uid=smith...', specifying parameter 'y' 
+#' # as a character string containing a 'subject'.
+#' dp <- removeAccessRule(dp, "uid=smith,ou=Account,dc=example,dc=com", "write")
+#' dp <- removeAccessRule(dp, "uid=smith,ou=Account,dc=example,dc=com", "changePermission")
+#' 
+#' # Alternatively, parameter "y" can be a data.frame containing one or more access rules:
+#' # Add write, changePermission for uid=jones,...
+#' dp <- addAccessRule(dp, "uid=jones,ou=Account,dc=example,dc=com", "write")
+#' dp <- addAccessRule(dp, "uid=jones,ou=Account,dc=example,dc=com", "changePermission")
+#' # Now take privs for uid=jones,... away
+#' accessRules <- data.frame(subject=c("uid=jones,ou=Account,dc=example,dc=com", 
+#'                                      "uid=jones,ou=Account,dc=example,dc=com"), 
+#'                                      permission=c("write", "changePermission"))
+#' dp <- removeAccessRule(dp, accessRules)
+setMethod("removeAccessRule", signature("DataPackage"), function(x, y, permission=as.character(NA), 
+                                                              identifiers=list(), ...) {
+    if(length(identifiers) == 0) identifiers <- getIdentifiers(x)
+    if(length(keys(x@objects)) > 0) {
+        for(iKey in keys(x@objects)) {
+            if(! iKey %in% identifiers) next
+            obj <- getMember(x, identifier=iKey)
+            obj <- removeAccessRule(obj, y, permission=permission, ...)
+            x <- removeMember(x, iKey, keepRelationships=TRUE)
+            x <- addMember(x, obj)
+        }
+    }
+    return(x)
+})
+
 #' Create an OAI-ORE resource map from the package
 #' @description The DataPackage is serialized as a OAI-ORE resource map to the specified file.
 #' @param x A DataPackage object
