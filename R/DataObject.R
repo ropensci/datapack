@@ -322,6 +322,35 @@ setMethod("hasAccessRule", signature("DataObject"), function(x, subject, permiss
     return(found)
 })
 
+#' @rdname removeAccessRule
+#' @return the SystemMetadata object with the updated access policy.
+#' @examples 
+#' library(datapack)
+#' do <- new("DataObject", file=system.file("./extdata/sample-data.csv", package="datapack"), 
+#'                         format="text/csv")
+#' do <- setPublicAccess(do)
+#' isPublic <- hasAccessRule(do, "public", "read")
+#' accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", 
+#'                           "uid=wiggens,o=unaffiliated,dc=example,dc=org"), 
+#'                           permission=c("write", "changePermission"), 
+#'                           stringsAsFactors=FALSE)
+#' do <- addAccessRule(do, accessRules)
+#' do <- removeAccessRule(do, "uid=smith,ou=Account,dc=example,dc=com", "changePermission")
+#' # hasAccessRule should return FALSE
+#' hasWrite <- hasAccessRule(do, "smith", "write")
+#' 
+#' # Alternatively, parameter "y" can be a data.frame containing one or more access rules:
+#' sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
+#' accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", 
+#'   "uid=slaughter,o=unaffiliated,dc=example,dc=org"), 
+#'   permission=c("write", "changePermission"))
+#' sysmeta <- removeAccessRule(sysmeta, accessRules)
+#' @export
+setMethod("removeAccessRule", signature("DataObject"), function(x, y, ...) {
+    x@sysmeta <- removeAccessRule(x@sysmeta, y, ...)
+    return(x)
+})
+
 #' Add a Rule to the AccessPolicy to make the object publicly readable.
 #' 
 #' To be called prior to creating the object in DataONE.  When called before 
