@@ -539,16 +539,26 @@ setGeneric("removeAccessRule", function(x, ...) {
 #' sysmeta <- removeAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "changePermission")
 #' 
 #' # Alternatively, parameter "y" can be a data.frame containing one or more access rules:
-#' sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
-#' accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", 
-#'   "uid=slaughter,o=unaffiliated,dc=example,dc=org"), permission=c("write", "changePermission"))
+#' # Add write, changePermission for uid=jones,...
+#' sysmeta <- addAccessRule(sysmeta, "uid=jones,ou=Account,dc=example,dc=com", "write")
+#' sysmeta <- addAccessRule(sysmeta, "uid=jones,ou=Account,dc=example,dc=com", "changePermission")
+#' # Now take privs for uid=jones,... away
+#' accessRules <- data.frame(subject=c("uid=jones,ou=Account,dc=example,dc=com", 
+#'                                      "uid=jones,ou=Account,dc=example,dc=com"), 
+#'                                      permission=c("write", "changePermission"))
 #' sysmeta <- removeAccessRule(sysmeta, accessRules)
 #' @export
 setMethod("removeAccessRule", signature("SystemMetadata"), function(x, y, ...) {
     if(class(y) == "data.frame") {
-        x@accessPolicy <- rbind(x@accessPolicy, y)
-        # Remove duplicate access rules
-        x@accessPolicy <- unique(x@accessPolicy)
+        if(nrow(y) == 0) return(x)
+        for(i in 1:nrow(y)) {
+            # Use some temp vars to make the data.frame subset more legible
+            subject <- as.character(y[i, 'subject'])
+            permission <- as.character(y[i, 'permission'])
+            ap <- x@accessPolicy
+            # Subset, removing the row with the subject and rule
+            x@accessPolicy <- ap[!(ap$subject==subject & ap$permission==permission),]
+        }
     } else if (class(y) == "character") {
         argList <- list(...)
         argListLen <- length(argList)
@@ -563,18 +573,18 @@ setMethod("removeAccessRule", signature("SystemMetadata"), function(x, y, ...) {
         } else {
             permission <- argList$permission
         }
-        accessRecord <- data.frame(subject=y, permission=permission)
-        x <- addAccessRule(x, accessRecord)
+        ap <- x@accessPolicy
+        subject <- y
+        x@accessPolicy <- ap[!(ap$subject==subject & ap$permission==permission),]
     }
     return(x)
 })
 
-#' @title Determine if a particular access rules exists within SystemMetadata.
+#' @title Determine if an access rules exists 
 #' @description Each SystemMetadata document may contain a set of (subject, permission) tuples
 #' that represent the access rules for its associated object. This method determines
 #' whether a particular access rule already exists within the set.
-#' @param x the SystemMetadata instance to which to add the rules
-#' @param subject the subject of the rule to be checked
+#' @param x the object to check for presence of the access rule.
 #' @param ... Additional arguments
 #' @return A logical value: if TRUE the access rule was found, if FALSE it was not found.
 #' @seealso \code{\link{SystemMetadata-class}}
