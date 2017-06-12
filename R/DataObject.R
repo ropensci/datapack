@@ -385,32 +385,14 @@ setMethod("setPublicAccess", signature("DataObject"), function(x) {
 
 #' @rdname addAccessRule
 #' @return the DataObject with the updated access policy
+#' @seealso \code{\link{DataObject-class}}
 #' @examples 
+#' # Add an access rule to a DataObject
 #' data <- charToRaw("1,2,3\n4,5,6\n")
 #' obj <- new("DataObject", id="1234", dataobj=data, format="text/csv")
 #' obj <- addAccessRule(obj, "uid=smith,ou=Account,dc=example,dc=com", "write")
 setMethod("addAccessRule", signature("DataObject"), function(x, y, ...) {
-  if(class(y) == "data.frame") {
-    x@sysmeta <- addAccessRule(x@sysmeta, y)
-  } else if (class(y) == "character") {
-    argList <- list(...)
-    argListLen <- length(argList)
-    # Check for "permission" as named argument, i.e. 'permission="write"'
-    if (!"permission" %in% names(argList)) {
-      if(argListLen < 1) {
-        stop("A \"permission\" argument is missing")
-      } else {
-        # Permission is an unnamed argument, so get it's value from the position in the argument list
-        permission <- argList[[1]]
-      }
-    } else {
-      permission <- argList$permission
-    }
-    accessRecord <- data.frame(subject=y, permission=permission)
-    x <- addAccessRule(x, accessRecord)
-  } else {
-    warning("Invalid datatype for parameter \"y\": %s", class(y))
-  }
+    x@sysmeta <- addAccessRule(x@sysmeta, y, ...)
   return(x)
 })
 
