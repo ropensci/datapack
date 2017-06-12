@@ -459,7 +459,7 @@ setMethod("canRead", signature("DataObject"), function(x, subject) {
 #' @examples \dontrun{
 #' library(datapack)
 #' dataObj <- new("DataObject", format="text/csv", file=sampleData)
-#' sampleEML <- system.file("extdata/sample-eml.xml", package="dataone")
+#' sampleEML <- system.file("extdata/sample-eml.xml", package="datapack")
 #' dataObj <- updateMetadata(dataObj, xpath="", replacement=)
 #' }
 #' @seealso \code{\link{DataObject-class}}
