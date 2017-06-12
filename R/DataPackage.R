@@ -1105,26 +1105,41 @@ setMethod("setPublicAccess", signature("DataPackage"), function(x, identifiers=l
 
 #' @rdname addAccessRule
 #' @param permission A \code{character} value containing the permission to add, e.g. "write"
-#' @param identifiers A list of \code{character} values containing package member identifiers that the access rule will be appliced to.
-#' @return the DataObject with the updated access policy
+#' @param identifiers A list of \code{character} values containing package member identifiers that the access rule will be appliced to (all members is the default).
+#' @return the DataPackage with updated DataObject access policies
+#' @seealso \code{\link{DataPackage-class}}
 #' @examples 
+#' # Add an access rule to members of a DataPackage
+#' # First create a sample DataPackage
 #' dp <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6\n")
-#' obj <- new("DataObject", dataobj=data, format="text/csv")
+#' obj <- new("DataObject", id="id1", dataobj=data, format="text/csv")
 #' dp <- addMember(dp, obj)
 #' data2 <- charToRaw("7,8,9\n4,10,11\n")
-#' obj2 <- new("DataObject", dataobj=data2, format="text/csv")
+#' obj2 <- new("DataObject", id="id2", dataobj=data2, format="text/csv")
 #' dp <- addMember(dp, obj2)
 #' # Add access rule to all package members
 #' dp <- addAccessRule(dp, "uid=smith,ou=Account,dc=example,dc=com", "write", getIdentifiers(dp))
-setMethod("addAccessRule", signature("DataPackage"), function(x, y, permission=as.character(NA), 
-                                                              identifiers=list(), ...) {
+setMethod("addAccessRule", signature("DataPackage"), function(x, y, ...) {
+    argList <- list(...)
+    argListLen <- length(argList)
+    # Check for "identifiers" as named argument, i.e. 'identifiers=c("id1", "id2")'
+    if (!"identifiers" %in% names(argList)) {
+        # User has specified "permission=<blah>, identifiers=<blah>"
+        if(argListLen >= 2) {
+            identifiers <- argList[[2]]
+        } else {
+            identifiers <- list()
+        }
+    } 
+   
+    if(length(identifiers) == 0) identifiers <- getIdentifiers(x) 
     
     if(length(keys(x@objects)) > 0) {
         for(iKey in keys(x@objects)) {
             if(! iKey %in% identifiers) next
             obj <- getMember(x, identifier=iKey)
-            obj <- addAccessRule(obj, y, permission=permission, ...)
+            obj <- addAccessRule(obj, y, ...)
             x <- removeMember(x, iKey, keepRelationships=TRUE)
             x <- addMember(x, obj)
         }
