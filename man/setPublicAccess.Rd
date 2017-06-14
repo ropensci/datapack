@@ -50,4 +50,8 @@ dp <- setPublicAccess(dp)
 }
 \seealso{
 \code{\link{DataObject-class}}
+
+\code{\link{DataObject-class}}
+
+\code{\link{DataPackage-class}}
 }

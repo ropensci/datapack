@@ -304,7 +304,9 @@ setMethod("getFormatId", signature("DataObject"), function(x) {
 #
 #' @rdname hasAccessRule
 #' @description If called for a DataObject, then the SystemMetadata for the DataObject is checked.
+#' @seealso \code{\link{DataObject-class}}
 #' @examples 
+#' # Check access rules for a DataObject
 #' data <- system.file("extdata/sample-data.csv", package="datapack")
 #' do <- new("DataObject", file=system.file("./extdata/sample-data.csv", package="datapack"), 
 #'                                          format="text/csv")
@@ -323,7 +325,8 @@ setMethod("hasAccessRule", signature("DataObject"), function(x, subject, permiss
 })
 
 #' @rdname removeAccessRule
-#' @return the SystemMetadata object with the updated access policy.
+#' @return the DataObject object with the updated access policy.
+#' @seealso \code{\link{DataObject-class}}
 #' @examples 
 #' library(datapack)
 #' do <- new("DataObject", file=system.file("./extdata/sample-data.csv", package="datapack"), 
@@ -370,6 +373,7 @@ setGeneric("setPublicAccess", function(x, ...) {
 
 #' @rdname setPublicAccess
 #' @aliases setPublicAccess
+#' @seealso \code{\link{DataObject-class}}
 #' @examples
 #' data <- charToRaw("1,2,3\n4,5,6\n")
 #' do <- new("DataObject", "id1", dataobj=data, "text/csv", 
@@ -398,7 +402,9 @@ setMethod("addAccessRule", signature("DataObject"), function(x, y, ...) {
 
 #' @rdname clearAccessPolicy
 #' @return The DataObject with the cleared access policy.
+#' @seealso \code{\link{DataObject-class}}
 #' @examples 
+#' # Clear access policy for a DataObject
 #' do <- new("DataObject", format="text/csv", filename=system.file("extdata/sample-data.csv", 
 #'           package="datapack"))
 #' do <- addAccessRule(do, "uid=smith,ou=Account,dc=example,dc=com", "write")

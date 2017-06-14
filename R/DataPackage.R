@@ -706,6 +706,7 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
                                                               suggestedFilename=as.character(NA), 
                                                               newId=as.character(NA), ...) {
     
+    
     # The DataObject to change argument can be either a DataObject or identifier. Determine which one
     # and put the object out of the package so that we can modify it and replace it.
     id <- as.character(NA)
@@ -1092,6 +1093,7 @@ setMethod("getValue", signature("DataPackage"), function(x, name, identifiers=as
 #' @rdname setPublicAccess
 #' @aliases setPublicAccess
 #' @param identifiers A list of \code{character} values containing package member identifiers that will be updated (default is all package members).
+#' @seealso \code{\link{DataPackage-class}}
 #' @examples
 #' # First create a sample package with two DataObjects
 #' dp <- new("DataPackage")
@@ -1120,8 +1122,10 @@ setMethod("setPublicAccess", signature("DataPackage"), function(x, identifiers=l
 })
 
 #' @rdname addAccessRule
-#' @param permission A \code{character} value containing the permission to add, e.g. "write"
-#' @param identifiers A list of \code{character} values containing package member identifiers that the access rule will be appliced to (all members is the default).
+#' @param ... Additional arguments (DataPackage)
+#' \itemize{
+#'   \item{identifiers A list of \code{character} values containing package member identifiers that the access rule will be appliced to (all members is the default)}.
+#' }
 #' @return the DataPackage with updated DataObject access policies
 #' @seealso \code{\link{DataPackage-class}}
 #' @examples 
@@ -1166,7 +1170,9 @@ setMethod("addAccessRule", signature("DataPackage"), function(x, y, ...) {
 #' @rdname clearAccessPolicy
 #' @param identifiers A list of \code{character} values containing package member identifiers that the access rule will be appliced to.
 #' @return The SystemMetadata object with the cleared access policy.
+#' @seealso \code{\link{DataPackage-class}}
 #' @examples 
+#' # Clear access policy for a DataPackage
 #' dp <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6\n")
 #' obj <- new("DataObject", dataobj=data, format="text/csv")
@@ -1200,7 +1206,9 @@ setMethod("clearAccessPolicy", signature("DataPackage"), function(x, identifiers
 #' @rdname hasAccessRule
 #' @description If called for a DataPackage, then the SystemMetadata for DataObjects in the DataPackage are checked.
 #' @param identifiers A list of \code{character} values containing package member identifiers for which the access rule will be checked.
+#' @seealso \code{\link{DataPackage-class}}
 #' @examples 
+#' # Check access rules for member DataObjects of a DataPackage.
 #' # First create an example DataPackage
 #' dp <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6\n")
@@ -1234,6 +1242,7 @@ setMethod("hasAccessRule", signature("DataPackage"), function(x, subject, permis
 #' @return the Datapackage with members having updated access policies.
 #' @param identifiers A list of \code{character} values containing package member identifiers that the access rule will be 
 #' appliced to (default is all package members).
+#' @seealso \code{\link{DataPackage-class}}
 #' @return the DataObject with the updated access policy
 #' @examples 
 #' dp <- new("DataPackage")

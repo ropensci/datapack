@@ -48,6 +48,7 @@ If called for a DataObject, then the SystemMetadata for the DataObject is checke
 If called for a DataPackage, then the SystemMetadata for DataObjects in the DataPackage are checked.
 }
 \examples{
+# Check access rules for a SystemMetadata object.
 sysmeta <- new("SystemMetadata")
 sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
 accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", 
@@ -55,6 +56,7 @@ accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com",
 sysmeta <- addAccessRule(sysmeta, accessRules)
 ruleExists <- hasAccessRule(sysmeta, subject="uid=smith,ou=Account,dc=example,dc=com", 
   permission="write")
+# Check access rules for a DataObject
 data <- system.file("extdata/sample-data.csv", package="datapack")
 do <- new("DataObject", file=system.file("./extdata/sample-data.csv", package="datapack"), 
                                          format="text/csv")
@@ -66,6 +68,7 @@ accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com",
                           stringsAsFactors=FALSE)
 do <- addAccessRule(do, accessRules)
 SmithHasWrite <- hasAccessRule(do, "uid=smith,ou=Account,dc=example,dc=com", "write")
+# Check access rules for member DataObjects of a DataPackage.
 # First create an example DataPackage
 dp <- new("DataPackage")
 data <- charToRaw("1,2,3\\n4,5,6\\n")
@@ -82,4 +85,8 @@ hasChange <- hasAccessRule(dp, "uid=smith,ou=Account,dc=example,dc=com", "change
 }
 \seealso{
 \code{\link{SystemMetadata-class}}
+
+\code{\link{DataObject-class}}
+
+\code{\link{DataPackage-class}}
 }

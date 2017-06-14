@@ -36,7 +36,7 @@ appliced to (default is all package members).}
 \value{
 the SystemMetadata object with the updated access policy.
 
-the SystemMetadata object with the updated access policy.
+the DataObject object with the updated access policy.
 
 the Datapackage with members having updated access policies.
 
@@ -108,4 +108,8 @@ dp <- removeAccessRule(dp, accessRules)
 }
 \seealso{
 \code{\link{SystemMetadata-class}}
+
+\code{\link{DataObject-class}}
+
+\code{\link{DataPackage-class}}
 }

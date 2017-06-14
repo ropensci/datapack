@@ -36,13 +36,16 @@ Clears the accessPolicy from the specified object by overwriting
 all existing access rules set on the object with an empty set.
 }
 \examples{
+# Clear access policy for a SystemMetadata object.
 sysmeta <- new("SystemMetadata")
 sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
 sysmeta <- clearAccessPolicy(sysmeta)
+# Clear access policy for a DataObject
 do <- new("DataObject", format="text/csv", filename=system.file("extdata/sample-data.csv", 
           package="datapack"))
 do <- addAccessRule(do, "uid=smith,ou=Account,dc=example,dc=com", "write")
 do <- clearAccessPolicy(do)
+# Clear access policy for a DataPackage
 dp <- new("DataPackage")
 data <- charToRaw("1,2,3\\n4,5,6\\n")
 obj <- new("DataObject", dataobj=data, format="text/csv")
@@ -60,4 +63,8 @@ dp <- clearAccessPolicy(dp, getIdentifier(obj2))
 }
 \seealso{
 \code{\link{SystemMetadata-class}}
+
+\code{\link{DataObject-class}}
+
+\code{\link{DataPackage-class}}
 }

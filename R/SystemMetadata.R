@@ -601,6 +601,7 @@ setGeneric("hasAccessRule", function(x, ...) {
 #' @param subject of the rule to be checked
 #' @param permission the permission to be checked
 #' @examples 
+#' # Check access rules for a SystemMetadata object.
 #' sysmeta <- new("SystemMetadata")
 #' sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
 #' accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", 
@@ -629,6 +630,7 @@ setGeneric("clearAccessPolicy", function(x, ...) {
 #' @rdname clearAccessPolicy
 #' @return The SystemMetadata object with the cleared access policy.
 #' @examples 
+#' # Clear access policy for a SystemMetadata object.
 #' sysmeta <- new("SystemMetadata")
 #' sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
 #' sysmeta <- clearAccessPolicy(sysmeta)

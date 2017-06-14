@@ -27,9 +27,10 @@ addAccessRule(x, ...)
 
 \item{y}{The subject of the rule to be added, or a data frame of subject/permission tuples}
 
-\item{permission}{A \code{character} value containing the permission to add, e.g. "write"}
-
-\item{identifiers}{A list of \code{character} values containing package member identifiers that the access rule will be appliced to (all members is the default).}
+\item{...}{Additional arguments (DataPackage)
+\itemize{
+  \item{identifiers A list of \code{character} values containing package member identifiers that the access rule will be appliced to (all members is the default)}.
+}}
 }
 \value{
 the SystemMetadata object with the updated access policy.
