@@ -731,19 +731,23 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
     } else {
         newObj <- getMember(x, id)
     }
-    # Assign a new identifier the first time this routine is called, saving the privious id
-    # Only assign a value to 'oldId' once, as this could be the id that was
-    # was assigned to the object when uploaded to an MN, and we need this id
-    # for an update operation (dataone R package will use this).
-    if(is.na(do@oldId)) {
-        newObj@oldId <- id
-        # Only use an auto-generated id the first time this method is called for an object
-        if(is.na(newId)) newId <- sprintf("urn:uuid:%s", UUIDgenerate())
-        newObj@sysmeta@identifier <- newId
+    # Assign a new identifier the first time this routine is called. If this object
+    # was downloaded from a repository, it will have an '@oldId' assigned.
+    # If '@oldId' has been assigned, then a new id must be assinged to the sysmeta, as
+    # this will be required during uploaded/updated to the repo.
+    if(!is.na(do@oldId)) {
+        # If this is the first time the object is modified, make sure that we have a new
+        # id.
+        if(do@oldId == getIdentifier(do)) {
+            if(is.na(newId)) {
+                newId <- sprintf("urn:uuid:%s", UUIDgenerate())
+                newObj@sysmeta@identifier <- newId
+            } else {
+                newObj@sysmeta@identifier <- newId
+            }
+        }
     } else {
-        # If oldId has been saved already (this isn't the first time the routine has been called for this object), 
-        # only assign a new id if the user specified it on the command line, i.e. don't auto-generate, 
-        # as the user may call this routine repeatidly and it's unnecessary to create a new id each time.
+        # If the user specified a new identifier to use ('newId' argument) the assign it now. 
         if(!is.na(newId)) {
             newObj@sysmeta@identifier <- newId
         }
