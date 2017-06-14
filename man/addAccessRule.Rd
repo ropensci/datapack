@@ -26,11 +26,6 @@ addAccessRule(x, ...)
 }}
 
 \item{y}{The subject of the rule to be added, or a data frame of subject/permission tuples}
-
-\item{...}{Additional arguments (DataPackage)
-\itemize{
-  \item{identifiers A list of \code{character} values containing package member identifiers that the access rule will be appliced to (all members is the default)}.
-}}
 }
 \value{
 the SystemMetadata object with the updated access policy.
@@ -46,6 +41,12 @@ Add one or more access rules to the access policy of the specified object.
 If the \code{y} argument is specified as a character string containing a \code{subject},
 then an optional \code{permission} parameter must be specified, that contains a character list
 specifying the permissions to add for each \code{subject}.
+
+Note that when \code{addAccessRule} is called with a `DataPackage` argument, the 
+additional parameter \code{identifiers} can be used:
+\itemize{
+  \item{identifiers A list of \code{character} values containing package member identifiers that the access rule will be appliced to (all members is the default)}.
+}
 }
 \examples{
 # Add an access rule to a SystemMetadata access policy.

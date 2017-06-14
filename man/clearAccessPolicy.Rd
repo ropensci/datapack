@@ -56,7 +56,7 @@ dp <- addMember(dp, obj2)
 
 # Add the access rule to all package members
 dp <- addAccessRule(dp, "uid=smith,ou=Account,dc=example,dc=com", 
-    permission="write", identifiers=getIdentifiers(dp))
+    permission="write")
 # Now clear the access policy for just the second object 
 dp <- clearAccessPolicy(dp, getIdentifier(obj2))
 

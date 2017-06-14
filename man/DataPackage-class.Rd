@@ -69,7 +69,6 @@ This is assigned after a package is uploaded or downloaded from a repository.}
  \item{\code{\link{setValue}}}{: Set values for selected DataPackage members}
  \item{\code{\link{show}}}{: Print DataPackage information in a formated view.}
  \item{\code{\link{updateRelationships}}}{: Update package relationships by replacing an old identifier with a new one.}
- \item{\code{\link{removeRelationships}}}{: Remove package relationships that match search terms.}
 }
 }
 

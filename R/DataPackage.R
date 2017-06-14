@@ -79,7 +79,6 @@
 #'  \item{\code{\link{setValue}}}{: Set values for selected DataPackage members}
 #'  \item{\code{\link{show}}}{: Print DataPackage information in a formated view.}
 #'  \item{\code{\link{updateRelationships}}}{: Update package relationships by replacing an old identifier with a new one.}
-#'  \item{\code{\link{removeRelationships}}}{: Remove package relationships that match search terms.}
 #' }
 #' @seealso \code{\link{datapack}}
 #' @export
@@ -1122,7 +1121,8 @@ setMethod("setPublicAccess", signature("DataPackage"), function(x, identifiers=l
 })
 
 #' @rdname addAccessRule
-#' @param ... Additional arguments (DataPackage)
+#' @details Note that when \code{addAccessRule} is called with a `DataPackage` argument, the 
+#' additional parameter \code{identifiers} can be used:
 #' \itemize{
 #'   \item{identifiers A list of \code{character} values containing package member identifiers that the access rule will be appliced to (all members is the default)}.
 #' }
@@ -1183,7 +1183,7 @@ setMethod("addAccessRule", signature("DataPackage"), function(x, y, ...) {
 #' 
 #' # Add the access rule to all package members
 #' dp <- addAccessRule(dp, "uid=smith,ou=Account,dc=example,dc=com", 
-#'     permission="write", identifiers=getIdentifiers(dp))
+#'     permission="write")
 #' # Now clear the access policy for just the second object 
 #' dp <- clearAccessPolicy(dp, getIdentifier(obj2))
 #' 
