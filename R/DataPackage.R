@@ -1822,7 +1822,6 @@ setGeneric("updateRelationships", function(x, ...) {
 setMethod("updateRelationships", signature("DataPackage"), function(x, id, newId, ...) {
     
    relations <- getRelationships(x) 
-   newRelations <- data.frame()
    x@relations = hash()
    
    if(nrow(relations) > 0) {
