@@ -120,7 +120,7 @@ myObj <- addAccessRule(myObj, accessRules)
 myObj@sysmeta@accessPolicy
 ```
 
-The *dataone* R package can be used to upload or download DataObjecs to a DataONE Member Node.
+The *dataone* R package can be used to upload or download DataObjects to a DataONE Member Node.
 Please see the web page for the [*dataone*](http://github.com/DataONEorg/rdataone) R package and the
 vignettes for more information:
 
