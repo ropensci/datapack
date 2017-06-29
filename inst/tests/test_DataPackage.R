@@ -712,3 +712,49 @@ test_that("DataPackage accessPolicy methods", {
     dp <- setPublicAccess(dp)
     expect_true(hasAccessRule(dp, "public", "read"))
 })
+
+test_that("DataPackage member selection, set, get methods", {
+    library(datapack)
+    library(digest)
+    
+    rm(dp)
+    dp <- new("DataPackage")
+    inputs <- list()
+    outputs <- list()
+    doProg <- new("DataObject", format="application/R", 
+                  filename=system.file("./extdata/pkg-example/logit-regression-example.R", package="datapack"),
+                  suggestedFilename="logit-regression-example R script")
+    dp <- addMember(dp, doProg)
+    progId <- getIdentifier(doProg)
+    doIn <- new("DataObject", format="text/csv", 
+                filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"),
+                suggestedFilename="binary.csv")
+    dp <- addMember(dp, doIn)
+    
+    doIn2 <- new("DataObject", format="text/csv", 
+                filename=system.file("./extdata/sample-data.csv", package="datapack"),
+                suggestedFilename="sample-data.csv")
+    dp <- addMember(dp, doIn2) 
+    
+    doOut <- new("DataObject", format="image/png", 
+                 filename=system.file("./extdata/pkg-example/gre-predicted.png", package="datapack"),
+                 suggestedFilename="gre-predicted.png")
+    dp <- addMember(dp, doOut)
+    
+    pid <- selectMember(dp, name="sysmeta@formatId", value="application/R")
+    expect_equal(pid, progId)
+    
+    pids <- selectMember(dp, name="sysmeta@formatId", value="text/csv")
+    expect_true(getIdentifier(doIn) %in% pids)
+    expect_true(getIdentifier(doIn2) %in% pids)
+    expect_equal(length(pids), 2)
+    
+    dp <- setValue(dp, name="sysmeta@rightsHolder", value="orcid.org/0000-0002-2192-403X", identifiers=getIdentifiers(dp))
+    userIds <- selectMember(dp, name="sysmeta@rightsHolder", value="orcid.org/0000-0002-2192-403X")
+    expect_equal(length(userids), 4)
+    expect_true(all(user))
+    
+    vals <- getValue(dp, name="sysmeta@rightsHolder")
+    expect_true(all(vals == "orcid.org/0000-0002-2192-403X"))
+})
+
