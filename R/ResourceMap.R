@@ -131,14 +131,16 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
   # Hard coded for now, get this from dataone package in future
   D1ResolveURI <- "https://cn.dataone.org/cn/v2/resolve"
   
+  if(is.na(creator)) creator <- "DataONE R Client"
+  
   if(is.na(resolveURI)) {
     pkgResolveURI <- D1ResolveURI
   } else {
     pkgResolveURI <- resolveURI
   }
   
-  # The 'resolve' URI may be blank if this is a resource map for a local datapackage. In this
-  # case, the resolve URI will be updated with a proper URI when this datapackage is uploaed
+  # The 'resolveURI' argument may be specified as blank if this is a resource map for a local datapackage. 
+  # In this case, the resolve URI will be updated with a proper URI when this datapackage is uploaed
   # to a repository.
   if(nchar(pkgResolveURI) == 0) {
     aggregationId <- sprintf("%s#aggregation", x@id)
@@ -256,18 +258,18 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
   # _:r1495819159r74422r1 http://xmlns.com/foaf/0.1/name> "DataONE Java Client Library"^^<http://www.w3.org/2001/XMLSchema#string>
   # https://cn.dataone.org/cn/v1/resolve/resourceMap_karakoenig.46.6 http://purl.org/dc/elements/1.1/creator _:r1495819159r74422r1
   
-  if(!is.na(creator)) {
-      creatorBlankNodeId <- sprintf("_%s", UUIDgenerate())
-      statement <- new("Statement", x@world, subject=creatorBlankNodeId, predicate=RDFtype, object=DCagent,
-                       subjectType="blank")
-      addStatement(x@model, statement)
-      statement <- new("Statement", x@world, subject=creatorBlankNodeId, predicate=foafName, object=creator,
-                       subjectType="blank", objectType="literal", datatype_uri=xsdString)
-      addStatement(x@model, statement)
-      statement <- new("Statement", x@world, subject=URLdecode(resMapURI), predicate=DCcreator, object=creatorBlankNodeId,
-                       objectType="blank")
-      addStatement(x@model, statement)
-  }
+  # Always add a creator
+  
+  creatorBlankNodeId <- sprintf("_%s", UUIDgenerate())
+  statement <- new("Statement", x@world, subject=creatorBlankNodeId, predicate=RDFtype, object=DCagent,
+                   subjectType="blank")
+  addStatement(x@model, statement)
+  statement <- new("Statement", x@world, subject=creatorBlankNodeId, predicate=foafName, object=creator,
+                   subjectType="blank", objectType="literal", datatype_uri=xsdString)
+  addStatement(x@model, statement)
+  statement <- new("Statement", x@world, subject=resMapURI, predicate=DCcreator, object=creatorBlankNodeId,
+                   objectType="blank")
+  addStatement(x@model, statement)
   
   # Add modification time, required by ORE Resource Map specification
   now <- format(Sys.time(), format="%FT%H:%M:%SZ", tz="UTC")
@@ -369,7 +371,7 @@ setMethod("freeResourceMap", signature("ResourceMap"), function(x) {
   freeWorld(x@world)
 })
 
-#' Parse an RDF/XML resource map from a file
+#' Parse an RDF/XML resource map from a file.
 #' @description parseRDF reads a file containing an RDF model in RDF/XML format and initializes
 #' a ResourceMap based on this content
 #' @details This method resets the slot ResourceMap@world so any previously stored triples are discarded, allowing
