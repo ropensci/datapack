@@ -678,8 +678,8 @@ setGeneric("replaceMember", function(x, do, ...) {
 #' but does not update the \code{formatId}, \code{mediaType}, \code{mediaTypeProperty}, \code{suggestedFilename}
 #' unless requesed, so these should be specified in the call to \code{replaceMember} if necessary. 
 #' If the \code{newId} argument is used, the specified new identifier will be assigned to the 
-#' object, and the previous identifier will be stored in the \code{oldId} slot, for possible
-#' use when updating the DataObject to a repository.
+#' object, otherwise one will be generated if necessary. This new identifier will be used
+#' if the DataPackage is uploaded to DataONE.
 #' @param replacement A \code{raw} object or \code{character} (for filename) that will replace the current value in the DataObject \code{do}.
 #' @param formatId A value of type \code{"character"}, the DataONE object format for the object.
 #' @param mediaType A value of type \code{"character"}, the IANA Media Type (aka MIME-Type) of the object, e.g. "text/csv".
@@ -733,20 +733,28 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
     }
     # Assign a new identifier the first time this routine is called. If this object
     # was downloaded from a repository, it will have an '@oldId' assigned.
-    # If '@oldId' has been assigned, then a new id must be assinged to the sysmeta, as
+    # If '@oldId' has been assigned, then a new id must be assigned to the sysmeta, as
     # this will be required during uploaded/updated to the repo.
-    if(!is.na(do@oldId)) {
-        # If this is the first time the object is modified, make sure that we have a new
-        # id.
-        if(do@oldId == getIdentifier(do)) {
+    if(!is.na(newObj@oldId)) {
+        # If this is the first time the object is modified, old and current will be the same,
+        # so assign a new id if they are.
+        if(newObj@oldId == getIdentifier(newObj)) {
             if(is.na(newId)) {
                 newId <- sprintf("urn:uuid:%s", UUIDgenerate())
                 newObj@sysmeta@identifier <- newId
             } else {
                 newObj@sysmeta@identifier <- newId
             }
+        } else {
+            # This isn't the first time this object has been modified, so only assign a new
+            # id if the user requested it.
+            if(!is.na(newId)) {
+                newObj@sysmeta@identifier <- newId
+            }
         }
     } else {
+        # This object must not have been downloaded from a repo, because @oldId is not assigned,
+        # so only need to assign a new id if the user specified it.
         # If the user specified a new identifier to use ('newId' argument) the assign it now. 
         if(!is.na(newId)) {
             newObj@sysmeta@identifier <- newId
