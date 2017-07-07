@@ -717,11 +717,11 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
     } else if (class(do) == "character") {
         id <- do
         if(! id %in% getIdentifiers(x)) {
-            stop(sprintf("DataObject for id \"%s\" was not found in the DataPackage", id))
+            stop(sprintf("DataObject for id \"%s\" was not found in the DataPackage\n", id))
         }
         do <- getMember(x, id)
     } else {
-        stop(sprintf("Unknown type \"%s\"for parameter '\"do\""), class(do))
+        stop(sprintf("Unknown type \"%s\"for parameter '\"do\"\n", class(do)))
     }
     
     # If replacement param is a DataObject, then use it as is, otherwise, use a copy of the
