@@ -647,7 +647,7 @@ setMethod("clearAccessPolicy", signature("SystemMetadata"), function(x, ...) {
 
 defaultUTCDate <- function(date=NULL) {
     if (is.null(date) || is.na(date)) {
-        ct <- format(Sys.time(), format="%FT%H:%M:%SZ", tz="UTC")
+        ct <- format.POSIXct(Sys.time(), format="%FT%H:%M:%SZ", tz="GMT", usetz=FALSE)
         return(ct)
     } else {
         return(date)
