@@ -14,7 +14,7 @@ updateMetadata(x, do, ...)
 \arguments{
 \item{x}{a DataPackage instance}
 
-\item{do}{A DataObject instance}
+\item{do}{A DataObject instance object, or DataObject identifier}
 
 \item{...}{(Not yet used)}
 

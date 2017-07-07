@@ -46,8 +46,8 @@ method will update the SystemMetadata \code{size}, \code{checksum} values automa
 but does not update the \code{formatId}, \code{mediaType}, \code{mediaTypeProperty}, \code{suggestedFilename}
 unless requesed, so these should be specified in the call to \code{replaceMember} if necessary. 
 If the \code{newId} argument is used, the specified new identifier will be assigned to the 
-object, and the previous identifier will be stored in the \code{oldId} slot, for possible
-use when updating the DataObject to a repository.
+object, otherwise one will be generated if necessary. This new identifier will be used
+if the DataPackage is uploaded to DataONE.
 }
 \examples{
 # Create a DataObject and add it to the DataPackage

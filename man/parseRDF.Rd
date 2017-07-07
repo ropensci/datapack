@@ -4,7 +4,7 @@
 \name{parseRDF}
 \alias{parseRDF}
 \alias{parseRDF,ResourceMap-method}
-\title{Parse an RDF/XML resource map from a file}
+\title{Parse an RDF/XML resource map from a file.}
 \usage{
 parseRDF(x, rdf, ...)
 

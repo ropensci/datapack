@@ -8,24 +8,23 @@
 
 ## Changes since last release
 
-* This release added 'describeWorkflow()' method which adds provenance relationships to a DataPackage
-  for a script execution, or just between related data files. (#64)
-  
-* Added 'Show' methods for DataObject and DataPackage classes. (#71, #73)
 
-* Fixed a bug where `replicationAllowed` was not set correctly when parsing if it is
-  false (#61)
-  
-* Also fixed a bug where `numberReplicas` was not set correctly when parsing (#63)
+Update naming convention for resource map identifiers #82 
+Verify the required dc:modified and dc:Agent statements get added to Resource Maps #81 
+Resource maps don't contain 'creator' or 'modified' time #80 
+Serialized package relationships still contain improper blank node names bug #79 
+Add methods to manage access policies #78 
 
-* Fixed bug where the `mediaType` argument to DataObject `initialize()`
-  was not being handled correctly and resulted in an invalid system metadata
-  object to be serialized from the DataObject. (#67)
-  
-* Added argument 'mediaTypeProperty' to DataObject `initialize()` which was
-  needed to fully support 'mediaType'. (#67)
+NEW FUNCTIONS
+- parseRDF - parse an RDF/XML resource map from a file.
+- selectMember Return identifiers for objects that match search criteria
+- setValue Set values for selected DataPackage members.
+- replaceMember Replace the raw data or file associated with a DataObject
+- removeAccessRule - Remove an access rule from the specified object.
+- updateMetadata - Update selected elements of the XML content of a DataOBject in a DataPackage.
 
-* Added new function to reset access policies `clearAccessPolicy()` (#56)
+DEPRECATED FUNCTIONS
+- addData - replaced with addMember
 
 ## R CMD check results
 
