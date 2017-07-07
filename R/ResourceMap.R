@@ -272,7 +272,7 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
   addStatement(x@model, statement)
   
   # Add modification time, required by ORE Resource Map specification
-  now <- format(Sys.time(), format="%FT%H:%M:%SZ", tz="UTC")
+  now <- format.POSIXct(Sys.time(), format="%FT%H:%M:%SZ", tz="GMT", usetz=FALSE)
   statement <- new("Statement", x@world, subject=resMapURI, predicate=DCmodified, object=now, 
                    objectType="literal", datatype_uri=xsdDateTime)
   addStatement(x@model, statement)
