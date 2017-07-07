@@ -814,7 +814,7 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
 
 #' Update selected elements of the XML content of a DataOBject in a DataPackage (aka package member).
 #' @param x a DataPackage instance
-#' @param do A DataObject instance
+#' @param do A DataObject instance object, or DataObject identifier
 #' @param ... (Not yet used)
 #' @seealso \code{\link{DataPackage-class}}
 #' @export 
@@ -874,6 +874,10 @@ setMethod("updateMetadata", signature("DataPackage"), function(x, do, xpath, rep
     if(class(replacement) != "character") {
         stop(sprintf("Invalid type \"%s\" for argument \"replacement\", it must be \"character\"",
                      class(replacement)))
+    }
+    
+    if(! is.element(id, getIdentifiers(x))) {
+        stop(sprintf("Invalid DataObject specified with \"do\", identifier \"%s\" is not a package member of \"x\"", id))
     }
     
     # Create a new DataObject with the modified XML
