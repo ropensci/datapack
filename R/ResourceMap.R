@@ -443,6 +443,9 @@ setMethod("getTriples", "ResourceMap", function(x, filter=TRUE, identifiers=list
     # Retrieve query results and check the actual result count against the expected count
     result <- getNextResult(queryResult)
     first <- TRUE
+    # Remove a creator id if filtering and it is found
+    creatorId <- as.character(NA)
+    creatorFound <- FALSE
     while(!is.null(result)) {
         # Can't get next result at the end of the loop because 'next' is used.
         if(first) first <- FALSE else result <- getNextResult(queryResult)
@@ -523,8 +526,10 @@ setMethod("getTriples", "ResourceMap", function(x, filter=TRUE, identifiers=list
             } else if((predicate == RDFtype) && (object == OREresourceMap)) {
                 next
             } else if(object == DCagent) {
+                creatorId <- subject
                 next
             } else if(predicate == DCcreator) {
+                creatorId <- subject
                 next
             } else if(predicate == DCmodified) {
                 next
@@ -565,6 +570,16 @@ setMethod("getTriples", "ResourceMap", function(x, filter=TRUE, identifiers=list
                 next
             } else if(grepl(foafName, predicate, fixed=TRUE) && grepl("DataONE Java Client Library", object, fixed=TRUE)) {
                 next
+            } else if(!is.na(creatorId) && subject == creatorId) {
+                # Have to check for this triple after all other records have been processed, as
+                # creatorId may have been discovered after this record was encountered.
+                # i.e. these three triples show how the DataONE R client implements the creator (dc:Agent), and the
+                # first of these triples is the tough one to find (have to find 2nd or 3rd first)
+                # <rdf:Description rdf:nodeID="_3665ab04-9351-4aad-9552-961b6c94600e"> <foaf:name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">DataONE R Client</foaf:name> </rdf:Description>    
+                # <rdf:Description rdf:about="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3A743ec6eb-14b2-4529-a568-a4fe8f4f5e7f">  <dc:creator rdf:nodeID="_3665ab04-9351-4aad-9552-961b6c94600e"/> </rdf:Description> 
+                # <rdf:Description rdf:nodeID="_3665ab04-9351-4aad-9552-961b6c94600e"> <rdf:type rdf:resource="http://purl.org/dc/terms/Agent"/>
+                creatorFound <- TRUE
+                next
             }
             # Modify all other entries such that any package member identifier is 'demoted' to a local identifier.
             id <- checkIdMatch(subject, pattern='%s$', identifiers)
@@ -584,6 +599,13 @@ setMethod("getTriples", "ResourceMap", function(x, filter=TRUE, identifiers=list
         }
     }
     
+    # Didn't find the creator triple declaring the foaf name
+    if(!is.na(creatorId) && !creatorFound) {
+        relations <- relations[!(relations$subject == creatorId),]
+    }
+    
+    freeParser(parser)
+    rm(parser)
     freeQuery(query)
     rm(query)
     freeQueryResults(queryResult)
