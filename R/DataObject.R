@@ -107,7 +107,10 @@ setClass("DataObject", slots = c(
 #' \code{'filename'} parameter must be provided, and points at a file containing the bytes of the data.
 #' @details If filesystem storage is used for the data associated with a DataObject, care must be
 #' taken to not modify or remove that file in R or via other facilities while the DataObject exists in the R session.
-#' Changes to the object are not detected and will result in unexpected results.
+#' Changes to the object are not detected and will result in unexpected results. Also, if the \code{'dataobj'} parameter
+#' is used to specify the data source, then \code{'filename'} argument may also be specified, but in this case 
+#' the value \code{'filename'} parameter is used to tell DataONE the filename to create when this file is
+#' downloaded from a repository.
 #' @param .Object the DataObject instance to be initialized
 #' @param id the identifier for the DataObject, unique within its repository. Optionally this can be an existing SystemMetadata object
 #' @param dataobj the bytes of the data for this object in \code{'raw'} format, optional if \code{'filename'} is provided
@@ -117,7 +120,6 @@ setClass("DataObject", slots = c(
 #' @param filename the filename for the fully qualified path to the data on disk, optional if \code{'data'} is provided
 #' @param seriesId A unique string to identifier the latest of multiple revisions of the object.
 #' @param mediaType The When specified, indicates the IANA Media Type (aka MIME-Type) of the object. The value should include the media type and subtype (e.g. text/csv).
-#' @param suggestedFilename A suggested filename to use when this object is serialized. If not specified, defaults to the basename of the filename parameter.
 #' @param mediaTypeProperty A list, indicates IANA Media Type properties to be associated with the parameter \code{"mediaType"}
 #' @param dataURL A character string containing a URL to remote data (a repository) that this DataObject represents.
 #' @import digest
@@ -129,68 +131,87 @@ setClass("DataObject", slots = c(
 #' @seealso \code{\link{DataObject-class}}
 setMethod("initialize", "DataObject", function(.Object, id=as.character(NA), dataobj=NA, format=as.character(NA), user=as.character(NA), 
                                                mnNodeId=as.character(NA), filename=as.character(NA), seriesId=as.character(NA),
-                                               mediaType=as.character(NA), suggestedFilename=as.character(NA), mediaTypeProperty=list(),
-                                               dataURL=as.character(NA)) {
+                                               mediaType=as.character(NA), mediaTypeProperty=list(), dataURL=as.character(NA)) {
   
     # If no value has been passed in for 'id', then create a UUID for it.
     if (class(id) != "SystemMetadata" && is.na(id)) {
-      id <- paste0("urn:uuid:", UUIDgenerate())
-    }
-  
-    # Validate: either dataobj or filename must be provided
-    # If this data object is being lazy loaded from the MN, then it is legal for it to
-    # be initialized without a dataobj or filename.
-    if (is.na(dataobj[[1]]) && is.na(filename) && is.na(dataURL)) {
-        stop("Either the dataobj parameter containing raw data or the file parameter with a file reference to the data\n or the 'dataURL' parameter must be provided.")
-    }
-  
-    .Object@dataURL <- dataURL
-    
-    # Validate: dataobj must be raw if provided
-    if (!is.na(dataobj[[1]])) {
-        stopifnot(is.raw(dataobj[[1]]))    
+        id <- paste0("urn:uuid:", UUIDgenerate())
     }
     
-    # Validate: file must have content if provided
-    if (!is.na(filename)) {
-        fileinfo <- file.info(filename)
-        stopifnot(fileinfo$size > 0)    
-    }
+    # Params specified 
+    # dataUrl filename dataobj comment
+    # ------- -------- ------- -------
+    # Y       N        N       used for lazy loaded DataObjects, 'dataUrl' is the data source
+    # N       Y        Y       'dataobj' is the data source, 'filename' is sysmeta.filename (download filename)
+    # N       Y        N       'filename' is the data source, 'filename' is sysmeta.filename
+    # N       N        Y       Invalid, if 'dataobj' is specified, 'filename' must also be specified.
+    # 
+    hasDataUrl <- !is.na(dataURL)
+    hasDataObj <- !is.na(dataobj[[1]])
+    hasFilename <- !is.na(filename)
     
+    if (!hasDataUrl && !hasDataObj && !hasFilename) {
+        stop("Either the \"dataobj\" parameter containing raw data or the \"filename\" parameter with a file reference to the data\n or the \"xdataURL\" parameter must be provided.")
+    }
     if (typeof(id) == "character") {
+        smfile <- as.character(NA)
+        size <- 0
+        sha1 <- as.character(NA)
         dmsg("@@ DataObject-class:R initialize as character")
-        
-        # Build a SystemMetadata object describing the data
-        if (is.na(dataobj[[1]])) {
-            size <- fileinfo$size
-            sha1 <- digest(filename, algo="sha1", serialize=FALSE, file=TRUE)
+        if(hasDataUrl) {
+            .Object@dataURL <- dataURL
+            .Object@data <- as.raw(NULL)
+            .Object@filename <- as.character(NA)
+            smfile <- basename(dataURL) 
         } else {
-            size <- length(dataobj)
-            sha1 <- digest(dataobj, algo="sha1", serialize=FALSE, file=FALSE)
-        }
-        # If the suggested filename is not set, set it to the basename of the filename if set.
-        if(is.na(suggestedFilename)) {
-          if(!is.na(filename)) {
-            suggestedFilename <- basename(filename)
-          }
+            # Validate: dataobj must be raw if provided. Also, the filename argument must be provided, which will
+            # be used as the sysmeta.fileName value.
+            if (hasDataObj) {
+                if(!is.raw(dataobj[[1]])) stop("The value of the \"dataobj\" parameter must be of type \"raw\"")
+                smfile <- as.character(NA)
+                # If dataobj is specified, then file at 'filename' location doesn't have to exist, as in this case 'filename'
+                # specifies sysmeta.fileName and not the data source.
+                if(!hasFilename) {
+                #    warning("If the \"dataobj\" parameter is specified, the \"filename\" parameter must also be, to specify the download filename")
+                    smfile <- basename(filename)
+                }
+                size <- length(dataobj)
+                sha1 <- digest(dataobj, algo="sha1", serialize=FALSE, file=FALSE)
+                .Object@data <- dataobj
+                .Object@filename <- as.character(NA)
+            } else {
+                if(!file.exists(filename)) stop(sprintf("The \"filename\" argument value \"%s\" must be for file that exists", filename))
+                fileinfo <- file.info(filename)
+                if(!fileinfo$size > 0) stop(sprintf("The \"filename\" argument value \"%s\" must be for a non-empty file.", filename))
+                size <- fileinfo$size
+                sha1 <- digest(filename, algo="sha1", serialize=FALSE, file=TRUE)
+                .Object@data <- as.raw(NULL)
+                .Object@filename <- normalizePath(filename)
+                smfile <- basename(filename)
+            }
         } 
-        
+        # Build a SystemMetadata object describing the data
         # It's OK to set sysmeta v2 fields here, as they will only get serialized to v2 format if requested. The default is
         # to serialze to v1 format which does not include seriesId, mediaType, fileName.
         .Object@sysmeta <- new("SystemMetadata", identifier=id, formatId=format, size=size, submitter=user, rightsHolder=user, 
                                checksum=sha1, originMemberNode=mnNodeId, authoritativeMemberNode=mnNodeId, 
-                               seriesId=seriesId, mediaType=mediaType, fileName=suggestedFilename, 
+                               seriesId=seriesId, mediaType=mediaType, fileName=basename(smfile), 
                                mediaTypeProperty=mediaTypeProperty)
-        if (!is.na(dataobj[[1]])) { 
-            .Object@data <- dataobj
-        }
-        .Object@filename <- filename
     } else if (typeof(id) == "S4" && class(id) == "SystemMetadata") {
         .Object@sysmeta <- id
-        if (!is.na(dataobj[[1]])) { 
+        if(hasDataObj) {
+            if(!is.raw(dataobj[[1]])) stop("The value of the \"dataobj\" parameter must be of type \"raw\"")
             .Object@data <- dataobj
+        } else {
+            .Object@data <- as.raw(NULL)
         }
-        .Object@filename <- filename
+        if(hasFilename && file.exists(filename)) {
+            .Object@filename <- normalizePath(filename)
+        } else {
+            .Object@filename <- as.character(NA)
+        }
+    } else {
+        stop("Invalid value for \"identifier\" argument, it must be a character or SystemMetadata value\n")
     }
     
     # Test if this DataObject is brand new, or possibly created from an existing object, i.e.
@@ -481,8 +502,7 @@ setGeneric("updateXML", function(x, ...) {
 #' library(datapack)
 #' # Create the metadata object with a sample EML file
 #' sampleMeta <- system.file("./extdata/sample-eml.xml", package="datapack")
-#' metaObj <- new("DataObject", format="eml://ecoinformatics.org/eml-2.1.1", file=sampleMeta, 
-#'              suggestedFilename="sample-eml.xml")
+#' metaObj <- new("DataObject", format="eml://ecoinformatics.org/eml-2.1.1", file=sampleMeta)
 #' # In the metadata object, replace "sample-data.csv" with 'sample-data.csv.zip'
 #' xp <- sprintf("//dataTable/physical/objectName[text()=\"%s\"]", "sample-data.csv")
 #' metaObj <- updateXML(metaObj, xpath=xp, replacement="sample-data.csv.zip")
@@ -576,7 +596,6 @@ setMethod("show", "DataObject",
                  cat(sprintf("\t\tNo access policy defined\n")) 
               }
               cat(sprintf("Physical\n"))
-              cat(sprintf(fmt, "  suggested fileName", object@sysmeta@fileName))
               cat(sprintf(fmt, "  formatId", object@sysmeta@formatId))
               cat(sprintf(fmt, "  mediaType", object@sysmeta@mediaType))
               cat(sprintf(fmt, "  mediaTypeProperty", object@sysmeta@mediaTypeProperty))

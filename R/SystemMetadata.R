@@ -46,7 +46,7 @@
 #' @slot authoritativeMemberNode value of type \code{"character"}, the node identifier of the node which currently is authoritative for the object.
 #' @slot seriesId value of type \code{"character"}, a unique Unicode string that identifies an object revision chain. A seriesId will resolve to the latest version of an object.
 #' @slot mediaType value of type \code{"character"}, the IANA Media Type (aka MIME-Type) of the object, e.g. "text/csv".
-#' @slot fileName value of type \code{"character"}, a suggested file name for the object.
+#' @slot fileName value of type \code{"character"}, the name of the file to create when this object is downloaded from DataONE. 
 #' @slot mediaTypeProperty value of type a \code{"list"} of \code{"character"}, IANA Media Type properties for the \code{"mediaType"} argument
 #' @section Methods:
 #' \itemize{
@@ -118,7 +118,7 @@ setClass("SystemMetadata", slots = c(
 #' @param authoritativeMemberNode value of type \code{"character"}, the node identifier of the node which currently is authoritative for the object.
 #' @param seriesId value of type \code{"character"}, a unique Unicode string that identifies an object revision chain. A seriesId will resolve to the latest version of an object.
 #' @param mediaType value of type \code{"character"}, the IANA Media Type (aka MIME-Type) of the object, e.g. "text/csv".
-#' @param fileName value of type \code{"character"}, a suggested file name for the object (if the object containing this sysmeta is serialized).
+#' @param fileName value of type \code{"character"}, the name of the file to create when this object is downloaded from DataONE.
 #' @param mediaTypeProperty value of type a \code{"list"} of \code{"character"}, IANA Media Type properties for the \code{"mediaType"} argument
 #' @return the SystemMetadata instance representing an object
 #' @seealso \url{https://releases.dataone.org/online/api-documentation-v2.0/apis/Types.html}

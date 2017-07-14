@@ -38,8 +38,7 @@ dataObj <- updateMetadata(dataObj, xpath="", replacement=)
 library(datapack)
 # Create the metadata object with a sample EML file
 sampleMeta <- system.file("./extdata/sample-eml.xml", package="datapack")
-metaObj <- new("DataObject", format="eml://ecoinformatics.org/eml-2.1.1", file=sampleMeta, 
-             suggestedFilename="sample-eml.xml")
+metaObj <- new("DataObject", format="eml://ecoinformatics.org/eml-2.1.1", file=sampleMeta)
 # In the metadata object, replace "sample-data.csv" with 'sample-data.csv.zip'
 xp <- sprintf("//dataTable/physical/objectName[text()=\\"\%s\\"]", "sample-data.csv")
 metaObj <- updateXML(metaObj, xpath=xp, replacement="sample-data.csv.zip")

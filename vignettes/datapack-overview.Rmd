@@ -246,18 +246,15 @@ dp <- new("DataPackage")
 
 # This DataObject contains the program script that was executed
 progObj <- new("DataObject", format="application/R", 
-           filename=system.file("extdata/pkg-example/logit-regression-example.R", package="datapack"),
-           suggestedFilename="logit-regression-example.R")
+           filename=system.file("extdata/pkg-example/logit-regression-example.R", package="datapack"))
 dp <- addData(dp, progObj)
 
 doIn <- new("DataObject", format="text/csv", 
-             filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"),
-             suggestedFilename="binary.csv")
+             filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"))
 dp <- addData(dp, doIn)
 
 doOut <- new("DataObject", format="image/png", 
-             filename=system.file("./extdata/pkg-example/gre-predicted.png", package="datapack"),
-             suggestedFilename="gre-predicted.png")
+             filename=system.file("./extdata/pkg-example/gre-predicted.png", package="datapack"))
 dp <- addData(dp, doOut)
 
 # The arguments "sources" and "derivations" can also contain lists of "DataObjects"

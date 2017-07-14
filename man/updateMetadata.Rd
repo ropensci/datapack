@@ -4,7 +4,7 @@
 \name{updateMetadata}
 \alias{updateMetadata}
 \alias{updateMetadata,DataPackage-method}
-\title{Update selected elements of the XML content of a DataOBject in a DataPackage (aka package member).}
+\title{Update selected elements of the XML content of a DataObject in a DataPackage (aka package member).}
 \usage{
 updateMetadata(x, do, ...)
 
@@ -25,7 +25,7 @@ updateMetadata(x, do, ...)
 \item{newId}{A value of type \code{"character"} which will replace the identifier for this DataObject.}
 }
 \description{
-Update selected elements of the XML content of a DataOBject in a DataPackage (aka package member).
+Update selected elements of the XML content of a DataObject in a DataPackage (aka package member).
 
 A DataObject that contains an XML document can be edited by specifying a path
 to the elements to edit (an xpaath expression) and a value to replace the text node.
@@ -44,7 +44,7 @@ dp <- new("DataPackage")
 sampleMeta <- system.file("./extdata/sample-eml.xml", package="datapack")
 id <- "1234"
 metaObj <- new("DataObject", id="1234", format="eml://ecoinformatics.org/eml-2.1.1", 
-                file=sampleMeta, suggestedFilename="sample-eml.xml")
+                file=sampleMeta)
 dp <- addMember(dp, metaObj)
 
 # In the metadata object, insert the newly assigned data 

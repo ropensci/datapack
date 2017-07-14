@@ -10,8 +10,7 @@ replaceMember(x, do, ...)
 
 \S4method{replaceMember}{DataPackage}(x, do, replacement,
   formatId = as.character(NA), mediaType = as.character(NA),
-  mediaTypeProperty = as.character(NA),
-  suggestedFilename = as.character(NA), newId = as.character(NA), ...)
+  mediaTypeProperty = as.character(NA), newId = as.character(NA), ...)
 }
 \arguments{
 \item{x}{a DataPackage instance}
@@ -28,8 +27,6 @@ replaceMember(x, do, ...)
 
 \item{mediaTypeProperty}{A value of type \code{"list"} of \code{"character"}, IANA Media Type properties for the \code{"mediaType"} argument.}
 
-\item{suggestedFilename}{A value of type \code{"character"}, a suggested file name for the object.}
-
 \item{newId}{A value of type \code{"character"} which will replace the identifier for this DataObject.}
 }
 \description{
@@ -43,7 +40,7 @@ The data that is replacing the existing DataObject data may be of a different
 format or type than the existing data. Because the data type and format may change, the
 system metadata that describes the data can be updated as well. The \code{replaceMember}
 method will update the SystemMetadata \code{size}, \code{checksum} values automatically, 
-but does not update the \code{formatId}, \code{mediaType}, \code{mediaTypeProperty}, \code{suggestedFilename}
+but does not update the \code{formatId}, \code{mediaType}, \code{mediaTypeProperty}
 unless requesed, so these should be specified in the call to \code{replaceMember} if necessary. 
 If the \code{newId} argument is used, the specified new identifier will be assigned to the 
 object, otherwise one will be generated if necessary. This new identifier will be used
@@ -53,15 +50,14 @@ if the DataPackage is uploaded to DataONE.
 # Create a DataObject and add it to the DataPackage
 dp <- new("DataPackage")
 doIn <- new("DataObject", format="text/csv", 
-            filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"),
-            suggestedFilename="binary.csv")
+            filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"))
 dp <- addMember(dp, doIn)
 
 # Use the zipped version of the file instead by updating the DataObject
 dp <- replaceMember(dp, doIn, 
           replacement=system.file("./extdata/pkg-example/binary.csv.zip", 
           package="datapack"),
-                    formatId="application/zip", suggestedFilename="binary.csv.zip")
+                    formatId="application/zip")
 }
 \seealso{
 \code{\link{DataPackage-class}}

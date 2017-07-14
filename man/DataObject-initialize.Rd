@@ -10,8 +10,7 @@
   dataobj = NA, format = as.character(NA), user = as.character(NA),
   mnNodeId = as.character(NA), filename = as.character(NA),
   seriesId = as.character(NA), mediaType = as.character(NA),
-  suggestedFilename = as.character(NA), mediaTypeProperty = list(),
-  dataURL = as.character(NA))
+  mediaTypeProperty = list(), dataURL = as.character(NA))
 }
 \arguments{
 \item{.Object}{the DataObject instance to be initialized}
@@ -32,8 +31,6 @@
 
 \item{mediaType}{The When specified, indicates the IANA Media Type (aka MIME-Type) of the object. The value should include the media type and subtype (e.g. text/csv).}
 
-\item{suggestedFilename}{A suggested filename to use when this object is serialized. If not specified, defaults to the basename of the filename parameter.}
-
 \item{mediaTypeProperty}{A list, indicates IANA Media Type properties to be associated with the parameter \code{"mediaType"}}
 
 \item{dataURL}{A character string containing a URL to remote data (a repository) that this DataObject represents.}
@@ -48,7 +45,10 @@ If \code{'data'} is not missing, the \code{'data'} param holds the \code{'raw'} 
 \details{
 If filesystem storage is used for the data associated with a DataObject, care must be
 taken to not modify or remove that file in R or via other facilities while the DataObject exists in the R session.
-Changes to the object are not detected and will result in unexpected results.
+Changes to the object are not detected and will result in unexpected results. Also, if the \code{'dataobj'} parameter
+is used to specify the data source, then \code{'filename'} argument may also be specified, but in this case 
+the value \code{'filename'} parameter is used to tell DataONE the filename to create when this file is
+downloaded from a repository.
 }
 \examples{
 data <- charToRaw("1,2,3\\n4,5,6\\n")

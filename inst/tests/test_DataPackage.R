@@ -381,20 +381,17 @@ test_that("Adding provenance relationships to a DataPackage via describeWorkflow
     outIds <- list()
     # Add the program object to the package
     doProg <- new("DataObject", format="application/R", 
-                  filename=system.file("./extdata/pkg-example/logit-regression-example.R", package="datapack"),
-                  suggestedFilename="logit-regression-example.R")
+                  filename=system.file("./extdata/pkg-example/logit-regression-example.R", package="datapack"))
     progId <- getIdentifier(doProg)
     dp <- addMember(dp, doProg)
     # Add the input object to the package
     doIn <- new("DataObject", format="text/csv", 
-                filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"),
-                suggestedFilename="binary.csv")
+                filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"))
     inIds[[length(inIds)+1]] <- getIdentifier(doIn)
     dp <- addMember(dp, doIn)
     # Add the output object to the package
     doOut <- new("DataObject", format="image/png", 
-                 filename=system.file("./extdata/pkg-example/gre-predicted.png", package="datapack"),
-                 suggestedFilename="gre-predicted.png")
+                 filename=system.file("./extdata/pkg-example/gre-predicted.png", package="datapack"))
     outIds[[length(outIds)+1]] <- getIdentifier(doOut)
     dp <- addMember(dp, doOut)
     # Add the provenenace relationships for the script execution, using ids for 'sources, program, derivation' arguments
@@ -417,18 +414,15 @@ test_that("Adding provenance relationships to a DataPackage via describeWorkflow
     inputs <- list()
     outputs <- list()
     doProg <- new("DataObject", format="application/R", 
-                  filename=system.file("./extdata/pkg-example/logit-regression-example.R", package="datapack"),
-                  suggestedFilename="logit-regression-example R script")
+                  filename=system.file("./extdata/pkg-example/logit-regression-example.R", package="datapack"))
     dp <- addMember(dp, doProg)
     progId <- getIdentifier(doProg)
     doIn <- new("DataObject", format="text/csv", 
-                filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"),
-                suggestedFilename="binary.csv")
+                filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"))
     dp <- addMember(dp, doIn)
     inputs[[length(inputs)+1]] <- doIn
     doOut <- new("DataObject", format="image/png", 
-                 filename=system.file("./extdata/pkg-example/gre-predicted.png", package="datapack"),
-                 suggestedFilename="gre-predicted.png")
+                 filename=system.file("./extdata/pkg-example/gre-predicted.png", package="datapack"))
     dp <- addMember(dp, doOut)
     outputs[[length(outputs)+1]] <- doOut
     dp <- describeWorkflow(dp, sources=inputs, program=doProg, derivations=outputs)
@@ -450,13 +444,11 @@ test_that("Adding provenance relationships to a DataPackage via describeWorkflow
     inputs <- list()
     outputs <- list()
     doIn <- new("DataObject", format="text/csv", 
-                filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"),
-                suggestedFilename="binary.csv")
+                filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"))
     dp <- addMember(dp, doIn)
     inputs[[length(inputs)+1]] <- doIn
     doOut <- new("DataObject", format="image/png", 
-                 filename=system.file("./extdata/pkg-example/gre-predicted.png", package="datapack"),
-                 suggestedFilename="gre-predicted.png")
+                 filename=system.file("./extdata/pkg-example/gre-predicted.png", package="datapack"))
     dp <- addMember(dp, doOut)
     outputs[[length(outputs)+1]] <- doOut
     dp <- describeWorkflow(dp, sources=inputs, derivations=outputs)
@@ -472,13 +464,11 @@ test_that("Adding provenance relationships to a DataPackage via describeWorkflow
     inputs <- list()
     outputs <- list()
     doProg <- new("DataObject", format="application/R", 
-                  filename=system.file("./extdata/pkg-example/logit-regression-example.R", package="datapack"),
-                  suggestedFilename="logit-regression-example R script")
+                  filename=system.file("./extdata/pkg-example/logit-regression-example.R", package="datapack"))
     dp <- addMember(dp, doProg)
     progId <- getIdentifier(doProg)
     doOut <- new("DataObject", format="image/png", 
-                 filename=system.file("./extdata/pkg-example/gre-predicted.png", package="datapack"),
-                 suggestedFilename="gre-predicted.png")
+                 filename=system.file("./extdata/pkg-example/gre-predicted.png", package="datapack"))
     dp <- addMember(dp, doOut)
     outputs[[length(outputs)+1]] <- doOut
     dp <- describeWorkflow(dp, program=doProg, derivations=outputs)
@@ -495,14 +485,12 @@ test_that("Adding provenance relationships to a DataPackage via describeWorkflow
     dp <- new("DataPackage")
     inputs <- list()
     doProg <- new("DataObject", format="application/R", 
-                  filename=system.file("./extdata/pkg-example/logit-regression-example.R", package="datapack"),
-                  suggestedFilename="logit-regression-example R script")
+                  filename=system.file("./extdata/pkg-example/logit-regression-example.R", package="datapack"))
     dp <- addMember(dp, doProg)
     progId <- getIdentifier(doProg)
 
     doIn <- new("DataObject", format="text/csv", 
-                filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"),
-                suggestedFilename="binary.csv")
+                filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"))
     dp <- addMember(dp, doIn)
     inputs[[length(inputs)+1]] <- doIn
     dp <- describeWorkflow(dp, sources=inputs, program=doProg)
@@ -564,14 +552,12 @@ test_that("removeMember works", {
     dp <- new("DataPackage")
     inputs <- list()
     doProg <- new("DataObject", format="application/R", 
-                  filename=system.file("./extdata/pkg-example/logit-regression-example.R", package="datapack"),
-                  suggestedFilename="logit-regression-example R script")
+                  filename=system.file("./extdata/pkg-example/logit-regression-example.R", package="datapack"))
     dp <- addMember(dp, doProg)
     progId <- getIdentifier(doProg)
     
     doIn <- new("DataObject", format="text/csv", 
-                filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"),
-                suggestedFilename="binary.csv")
+                filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"))
     dp <- addMember(dp, doIn)
     inputs[[length(inputs)+1]] <- doIn
     dp <- describeWorkflow(dp, sources=inputs, program=doProg)
@@ -601,14 +587,12 @@ test_that("replaceMember works", {
     dp <- new("DataPackage")
     inputs <- list()
     doProg <- new("DataObject", format="application/R", 
-                  filename=system.file("./extdata/pkg-example/logit-regression-example.R", package="datapack"),
-                  suggestedFilename="logit-regression-example.R")
+                  filename=system.file("./extdata/pkg-example/logit-regression-example.R", package="datapack"))
     dp <- addMember(dp, doProg)
     progId <- getIdentifier(doProg)
     
     doIn <- new("DataObject", format="text/csv", 
-                filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"),
-                suggestedFilename="binary.csv")
+                filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"))
     dp <- addMember(dp, doIn)
     inputs[[length(inputs)+1]] <- doIn
     dp <- describeWorkflow(dp, sources=inputs, program=doProg)
@@ -624,7 +608,7 @@ test_that("replaceMember works", {
     # and prov:*.
     # Test replaceMember by substituting the zipped version of the file. 
     dp <- replaceMember(dp, doIn, replacement=system.file("./extdata/pkg-example/binary.csv.zip", package="datapack"),
-                        format="application/octet-stream", suggestedFilename="binary.csv.zip")
+                        format="application/octet-stream") 
     formatId <- getValue(dp, name="sysmeta@formatId", identifiers=getIdentifier(doIn))
     expect_match(formatId[[1]], "application/octet-stream")
 })
@@ -636,7 +620,7 @@ test_that("updateMetadata works", {
     # Create a DataObject and add it to the DataPackage
     dp <- new("DataPackage")
     sampleMeta <- system.file("./extdata/sample-eml.xml", package="datapack")
-    metaObj <- new("DataObject", format="eml://ecoinformatics.org/eml-2.1.1", file=sampleMeta, suggestedFilename="sample-eml.xml")
+    metaObj <- new("DataObject", format="eml://ecoinformatics.org/eml-2.1.1", file=sampleMeta)
     metaId <- getIdentifier(metaObj)
     dp <- addMember(dp, metaObj)
     
@@ -717,28 +701,23 @@ test_that("DataPackage member selection, set, get methods", {
     library(datapack)
     library(digest)
     
-    rm(dp)
     dp <- new("DataPackage")
     inputs <- list()
     outputs <- list()
     doProg <- new("DataObject", format="application/R", 
-                  filename=system.file("./extdata/pkg-example/logit-regression-example.R", package="datapack"),
-                  suggestedFilename="logit-regression-example R script")
+                  filename=system.file("./extdata/pkg-example/logit-regression-example.R", package="datapack"))
     dp <- addMember(dp, doProg)
     progId <- getIdentifier(doProg)
     doIn <- new("DataObject", format="text/csv", 
-                filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"),
-                suggestedFilename="binary.csv")
+                filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"))
     dp <- addMember(dp, doIn)
     
     doIn2 <- new("DataObject", format="text/csv", 
-                filename=system.file("./extdata/sample-data.csv", package="datapack"),
-                suggestedFilename="sample-data.csv")
+                filename=system.file("./extdata/sample-data.csv", package="datapack"))
     dp <- addMember(dp, doIn2) 
     
     doOut <- new("DataObject", format="image/png", 
-                 filename=system.file("./extdata/pkg-example/gre-predicted.png", package="datapack"),
-                 suggestedFilename="gre-predicted.png")
+                 filename=system.file("./extdata/pkg-example/gre-predicted.png", package="datapack"))
     dp <- addMember(dp, doOut)
     
     pid <- selectMember(dp, name="sysmeta@formatId", value="application/R")
@@ -751,8 +730,7 @@ test_that("DataPackage member selection, set, get methods", {
     
     dp <- setValue(dp, name="sysmeta@rightsHolder", value="orcid.org/0000-0002-2192-403X", identifiers=getIdentifiers(dp))
     userIds <- selectMember(dp, name="sysmeta@rightsHolder", value="orcid.org/0000-0002-2192-403X")
-    expect_equal(length(userids), 4)
-    expect_true(all(user))
+    expect_equal(length(userIds), 4)
     
     vals <- getValue(dp, name="sysmeta@rightsHolder")
     expect_true(all(vals == "orcid.org/0000-0002-2192-403X"))

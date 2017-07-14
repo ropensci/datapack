@@ -675,7 +675,7 @@ setGeneric("replaceMember", function(x, do, ...) {
 #' format or type than the existing data. Because the data type and format may change, the
 #' system metadata that describes the data can be updated as well. The \code{replaceMember}
 #' method will update the SystemMetadata \code{size}, \code{checksum} values automatically, 
-#' but does not update the \code{formatId}, \code{mediaType}, \code{mediaTypeProperty}, \code{suggestedFilename}
+#' but does not update the \code{formatId}, \code{mediaType}, \code{mediaTypeProperty}
 #' unless requesed, so these should be specified in the call to \code{replaceMember} if necessary. 
 #' If the \code{newId} argument is used, the specified new identifier will be assigned to the 
 #' object, otherwise one will be generated if necessary. This new identifier will be used
@@ -684,25 +684,22 @@ setGeneric("replaceMember", function(x, do, ...) {
 #' @param formatId A value of type \code{"character"}, the DataONE object format for the object.
 #' @param mediaType A value of type \code{"character"}, the IANA Media Type (aka MIME-Type) of the object, e.g. "text/csv".
 #' @param mediaTypeProperty A value of type \code{"list"} of \code{"character"}, IANA Media Type properties for the \code{"mediaType"} argument.
-#' @param suggestedFilename A value of type \code{"character"}, a suggested file name for the object.
 #' @param newId A value of type \code{"character"} which will replace the identifier for this DataObject.
 #' @examples
 #' # Create a DataObject and add it to the DataPackage
 #' dp <- new("DataPackage")
 #' doIn <- new("DataObject", format="text/csv", 
-#'             filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"),
-#'             suggestedFilename="binary.csv")
+#'             filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"))
 #' dp <- addMember(dp, doIn)
 #' 
 #' # Use the zipped version of the file instead by updating the DataObject
 #' dp <- replaceMember(dp, doIn, 
 #'           replacement=system.file("./extdata/pkg-example/binary.csv.zip", 
 #'           package="datapack"),
-#'                     formatId="application/zip", suggestedFilename="binary.csv.zip")
+#'                     formatId="application/zip")
 #' @export
 setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement, formatId=as.character(NA), mediaType=as.character(NA), 
                                                               mediaTypeProperty=as.character(NA),
-                                                              suggestedFilename=as.character(NA), 
                                                               newId=as.character(NA), ...) {
     
     
@@ -777,6 +774,7 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
         }
         fileinfo <- file.info(replacement)
         newObj@filename <- replacement
+        newObj@sysmeta@fileName <- basename(replacement)
         newObj@data <- raw()
         newObj@sysmeta@size <- fileinfo$size
         newObj@sysmeta@checksum <- digest(replacement, algo="sha1", serialize=FALSE, file=TRUE)
@@ -795,9 +793,6 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
     if(!is.na(mediaTypeProperty)) {
         newObj@sysmeta@mediaTypeProperty <- mediaTypeProperty
     }
-    if(!is.na(suggestedFilename)) {
-        newObj@sysmeta@fileName<- base::basename(suggestedFilename)
-    }
     
     removeMember(x, do, keepRelationships=TRUE)
     newObj@updated[['data']] <- TRUE
@@ -812,7 +807,7 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
     invisible(x)
 })
 
-#' Update selected elements of the XML content of a DataOBject in a DataPackage (aka package member).
+#' Update selected elements of the XML content of a DataObject in a DataPackage (aka package member).
 #' @param x a DataPackage instance
 #' @param do A DataObject instance object, or DataObject identifier
 #' @param ... (Not yet used)
@@ -840,7 +835,7 @@ setGeneric("updateMetadata", function(x, do, ...) {
 #' sampleMeta <- system.file("./extdata/sample-eml.xml", package="datapack")
 #' id <- "1234"
 #' metaObj <- new("DataObject", id="1234", format="eml://ecoinformatics.org/eml-2.1.1", 
-#'                 file=sampleMeta, suggestedFilename="sample-eml.xml")
+#'                 file=sampleMeta)
 #' dp <- addMember(dp, metaObj)
 #' 
 #' # In the metadata object, insert the newly assigned data 
@@ -1815,7 +1810,7 @@ setMethod("describeWorkflow", signature("DataPackage"), function(x, sources=list
 })
 
 #' Update package relationships by replacing an old identifier with a new one.
-#' @description When package members are updated, they receive a new identifier. It is therefor
+#' @description When package members are updated, they receive a new identifier (replaceMember). It is therefor
 #' necessary to update the package relationships to update occurances of the old identifier
 #' with the new one when the old identifier appears in the "subject" or "object" of a 
 #' relationship.

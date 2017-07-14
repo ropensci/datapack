@@ -14,7 +14,7 @@ test_that("DataObject constructors work", {
     node <- "urn:node:KNB"
     
     # Test the constructor that builds a DataObject object
-    do <- new("DataObject", identifier, data, format=format, user=user, mnNodeId=node)
+    do <- new("DataObject", identifier, data, filename="test.cvs", format=format, user=user, mnNodeId=node)
     expect_that(class(do)[[1]], equals("DataObject"))
     expect_that(do@sysmeta@serialVersion, equals(1))
     expect_that(do@sysmeta@identifier, equals(identifier))
@@ -28,7 +28,7 @@ test_that("DataObject constructors work", {
     expect_that(sm@identifier, equals(identifier))
     
     # Now test the constructor that passes in SystemMetadata and data
-    do <- new("DataObject", sm, data)
+    do <- new("DataObject", sm, data, filename="test.csv")
     expect_that(do@sysmeta@serialVersion, equals(1))
     expect_that(do@sysmeta@identifier, equals(identifier))
     expect_that(do@sysmeta@submitter, equals(user))
@@ -65,7 +65,7 @@ test_that("DataObject accessPolicy methods", {
     format <- "text/csv"
     node <- "urn:node:KNB"
     
-    do <- new("DataObject", identifier, data, format, user, node)
+    do <- new("DataObject", identifier, data, format, user, node, filename="test.csv")
     expect_that(class(do)[[1]], equals("DataObject"))
     
     # Public access should not be present at first
@@ -98,7 +98,7 @@ test_that("DataObject accessPolicy methods", {
     expect_false(hasAccessRule(do@sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "changePermission"))
     
     # Chech using parameter "y" as a character string containing the subject of the access rule:
-    do <- new("DataObject", identifier, data, format, user, node)
+    do <- new("DataObject", identifier, data, format, user, node, filename="test.csv")
     do <- addAccessRule(do, "uid=smith,ou=Account,dc=example,dc=com", "write")
     do <- addAccessRule(do, "uid=smith,ou=Account,dc=example,dc=com", "changePermission")
     expect_true(hasAccessRule(do, "uid=smith,ou=Account,dc=example,dc=com", "write"))
@@ -133,11 +133,11 @@ test_that("DataObject updateXML method", {
     
     # Create the metadata object with a sample EML file
     sampleMeta <- system.file("./extdata/sample-eml.xml", package="datapack")
-    metaObj <- new("DataObject", format="eml://ecoinformatics.org/eml-2.1.1", file=sampleMeta, suggestedFilename="sample-eml.xml")
+    metaObj <- new("DataObject", format="eml://ecoinformatics.org/eml-2.1.1", file=sampleMeta)
     
     # Create a sample data object
     sampleData <- system.file("./extdata/sample-data.csv", package="datapack") 
-    dataObj <- new("DataObject", format="text/csv", file=sampleData, suggestedFilename="sample-data.csv")
+    dataObj <- new("DataObject", format="text/csv", file=sampleData)
     
     # In the metadata object, insert the newly assigned data 
     xp <- sprintf("//dataTable/physical/distribution[../objectName/text()=\"%s\"]/online/url", "sample-data.csv") 
