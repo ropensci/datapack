@@ -68,6 +68,7 @@ This is assigned after a package is uploaded or downloaded from a repository.}
  \item{\code{\link{setPublicAccess}}}{: Set the access policy to readable by anyone for DataObject in a DataPackage.}
  \item{\code{\link{setValue}}}{: Set values for selected DataPackage members}
  \item{\code{\link{show}}}{: Print DataPackage information in a formated view.}
+ \item{\code{\link{updateMetadata}}}{: Update selected elements of the XML content of a DataObject in a DataPackage}
  \item{\code{\link{updateRelationships}}}{: Update package relationships by replacing an old identifier with a new one.}
 }
 }
