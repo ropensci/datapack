@@ -1,8 +1,50 @@
 Version 1.3.0
+-------------
 
 NEW FEATURES
-- addMember
-- parseRDF
+
+* Added support for DataPackage download, edit, upload workflow. (#85)
+
+* Added new method parseRDF() to parses an RDF/XML resource map from a file. (#85)
+
+* Added new method removeMember() which removes a member from a Package. (#85)
+
+* Added new method replaceMember() which replaces the raw data or file associated with a DataObject. (#85)
+
+* Added new method selectMember(0) which selects package members based on slot values. (#85)
+
+* Added new method updateRelationships() which updates package relationships by replacing an old 
+  identifier with a new one. (#85)
+  
+* Added new method updateMetadata() to update XML content of a DataOBject in a DataPackage. (#85)
+
+* Added new method getValue() which gets values for selected DataPackage member slots. (#85)
+
+* Added new method setValue(0) which sets values for selected DataPackage member slots. (#85)
+
+* Added new method removeAccessRule() to SystemMetadata, DataObject, DataPackage classes. (#78)
+
+* Added new method hasAccessRule() to DataObject, DataPackage classes. (#78)
+
+* Added new method clearAccessPolicy() DataObject, DataPackage classes. (#78)
+
+* Added new method addAccessRule() to DataPackage. class (#85)
+
+* Added new method setPublicAccess() to DataPackage. class (#85)
+
+* Access policies can now be modified for DataPackage, DataObject. (#78)
+
+* Resource map identifiers now include metadata object identifier. (#82)
+
+BUGS
+
+* fixed bug where resource maps had invalid XML names for blank node identifiers. (#79)
+
+* fixed bug where resource maps did not include creator or modification time. (#80)
+
+DEPRECATED
+
+- deprecated function addData(), renamed to addMember().
 
 Version 1.2.0
 -------------
