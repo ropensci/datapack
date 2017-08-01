@@ -523,7 +523,7 @@ test_that("Adding provenance relationships to a DataPackage via describeWorkflow
     # Test removing a DataObject from the package - make sure that all the package relationships that had
     # the DataObject as a subject or object have been removed. This includes any relationship, i.e. cito:*
     # and prov:*.
-    dp <- removeMember(dp, doIn)
+    dp <- removeMember(dp, doIn, removeRelationships=TRUE)
     rels <- relations[relations$predicate == datapack:::provUsed,'object']
     
     

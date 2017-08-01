@@ -8,7 +8,7 @@
 \usage{
 removeMember(x, ...)
 
-\S4method{removeMember}{DataPackage}(x, do, keepRelationships = FALSE)
+\S4method{removeMember}{DataPackage}(x, do, removeRelationships = FALSE)
 }
 \arguments{
 \item{x}{a DataPackage object}
@@ -17,7 +17,7 @@ removeMember(x, ...)
 
 \item{do}{The package member to remove, either as a \code{"DataObject"} or \code{"character"} (for the object identifier)}
 
-\item{keepRelationships}{A \code{logical} value. If TRUE, package relationships for this package member are not removed. Default is FALSE.}
+\item{removeRelationships}{A \code{logical} value. If TRUE, package relationships for this package member are removed. Default is FALSE.}
 }
 \description{
 Given the identifier of a member of the data package, delete the DataObject
@@ -32,7 +32,8 @@ dp <- new("DataPackage")
 data <- charToRaw("1,2,3\\n4,5,6")
 do <- new("DataObject", id="myNewId", dataobj=data, format="text/csv", user="jsmith")
 dp <- addMember(dp, do)
-removeMember(dp, "myNewId")
+# Remove the package member and any provenance relationships that reference it.
+removeMember(dp, "myNewId", removeRelationships=TRUE)
 }
 \seealso{
 \code{\link{DataPackage-class}}

@@ -594,13 +594,13 @@ setMethod("containsId", signature("DataPackage"), function(x, identifier) {
 #' @param ... (Not yet used)
 #' @seealso \code{\link{DataPackage-class}}
 #' @export 
-setGeneric("removeMember", function(x, ...) {
+    setGeneric("removeMember", function(x, ...) {
   standardGeneric("removeMember")
 })
 
 #' @rdname removeMember
 #' @param do The package member to remove, either as a \code{"DataObject"} or \code{"character"} (for the object identifier)
-#' @param keepRelationships A \code{logical} value. If TRUE, package relationships for this package member are not removed. Default is FALSE.
+#' @param removeRelationships A \code{logical} value. If TRUE, package relationships for this package member are removed. Default is FALSE.
 #' @details The \code{removeMember} method removes the specified DataObject from the DataPackage. In 
 #' addition, any package relationships that included the DataObject are removed.
 #' @examples
@@ -608,10 +608,13 @@ setGeneric("removeMember", function(x, ...) {
 #' data <- charToRaw("1,2,3\n4,5,6")
 #' do <- new("DataObject", id="myNewId", dataobj=data, format="text/csv", user="jsmith")
 #' dp <- addMember(dp, do)
-#' removeMember(dp, "myNewId")
+#' # Remove the package member and any provenance relationships that reference it.
+#' removeMember(dp, "myNewId", removeRelationships=TRUE)
 #' @export
-setMethod("removeMember", signature("DataPackage"), function(x, do, keepRelationships=FALSE) {
+setMethod("removeMember", signature("DataPackage"), function(x, do, removeRelationships=FALSE) {
     
+    # Note: the dataone 2.0.1 version did not have a removeRelationships parameter, so in order
+    # to maintain the same behaviour as the 2.0.1 release, relationships are not deleted by default.
     identifier <- as.character(NA)
     if(class(do) == "DataObject") {
         identifier <- getIdentifier(do)
@@ -627,7 +630,7 @@ setMethod("removeMember", signature("DataPackage"), function(x, do, keepRelation
     relations <- data.frame()
     # The DataObject is being removed, and the relationships that it appears in
     # will also be removed.
-    if(!keepRelationships) {
+    if(removeRelationships) {
         # Get the current package relationships
         if (has.key("relations", x@relations)) {
             relations <- x@relations[["relations"]]
@@ -795,7 +798,7 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
         newObj@sysmeta@mediaTypeProperty <- mediaTypeProperty
     }
     
-    removeMember(x, do, keepRelationships=TRUE)
+    removeMember(x, do, removeRelationships=TRUE)
     newObj@updated[['data']] <- TRUE
     newObj@updated[['sysmeta']] <- TRUE
     x <- addMember(x, newObj)
@@ -1119,7 +1122,7 @@ setMethod("setPublicAccess", signature("DataPackage"), function(x, identifiers=l
             if(! iKey %in% identifiers) next
             obj <- getMember(x, identifier=iKey)
             obj <-  setPublicAccess(obj)
-            x <- removeMember(x, obj, keepRelationships=TRUE)
+            x <- removeMember(x, obj, removeRelationships=FALSE)
             x <- addMember(x, obj)
         }
     } else {
@@ -1168,7 +1171,7 @@ setMethod("addAccessRule", signature("DataPackage"), function(x, y, ...) {
             if(! iKey %in% identifiers) next
             obj <- getMember(x, identifier=iKey)
             obj <- addAccessRule(obj, y, ...)
-            x <- removeMember(x, iKey, keepRelationships=TRUE)
+            x <- removeMember(x, iKey, removeRelationships=FALSE)
             x <- addMember(x, obj)
         }
     }
@@ -1203,7 +1206,7 @@ setMethod("clearAccessPolicy", signature("DataPackage"), function(x, identifiers
             if(! iKey %in% identifiers) next
             obj <- getMember(x, identifier=iKey)
             obj <- clearAccessPolicy(obj, ...)
-            x <- removeMember(x, iKey, keepRelationships=TRUE)
+            x <- removeMember(x, iKey, removeRelationships=FALSE)
             x <- addMember(x, obj)
         }
     }
@@ -1285,7 +1288,7 @@ setMethod("removeAccessRule", signature("DataPackage"), function(x, y, permissio
             if(! iKey %in% identifiers) next
             obj <- getMember(x, identifier=iKey)
             obj <- removeAccessRule(obj, y, permission=permission, ...)
-            x <- removeMember(x, iKey, keepRelationships=TRUE)
+            x <- removeMember(x, iKey, removeRelationships=FALSE)
             x <- addMember(x, obj)
         }
     }
