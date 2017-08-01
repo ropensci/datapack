@@ -512,7 +512,7 @@ setMethod("getRelationships", signature("DataPackage"), function(x, condense=F, 
   if (has.key("relations", x@relations)) {
       relationships <- x@relations[["relations"]]
       # Reorder output data frame by "subject" column
-      if (nrow(relationships > 0)) {
+      if (nrow(relationships) > 0) {
           relationships <- relationships[order(relationships$subject, relationships$predicate, relationships$object),]
       }
   } else {
