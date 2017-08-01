@@ -990,8 +990,9 @@ setMethod("selectMember", signature("DataPackage"), function(x, name, value, as=
     }
 })
 #' Set values for selected DataPackage members.
-#' @description Given a slot name, a value and set of package member identifiers, set the value 
-#' for the specified package members.
+#' @description The \code{'setValue'} method is used to modify values stored in DataPackage members.
+#' Each member in a DataPackage is a DataObject which is an R S4 object. The available slots are
+#' described at \code{help("DataObject-class")}.
 #' @param x A DataPackage instance
 #' @param ... (Not yet used)
 #' @seealso \code{\link{DataPackage-class}}
@@ -1015,6 +1016,7 @@ setGeneric("setValue", function(x, ...) {
 #' @return A DataPackage with possibly updated DataObjects.
 #' @export
 #' @examples
+#' # First create a package that we can modify. 
 #' dp <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6")
 #' # The next statment sets the format type incorrectly as an example, so we can correct it later

@@ -26,8 +26,9 @@ setValue(x, ...)
 A DataPackage with possibly updated DataObjects.
 }
 \description{
-Given a slot name, a value and set of package member identifiers, set the value 
-for the specified package members.
+The \code{'setValue'} method is used to modify values stored in DataPackage members.
+Each member in a DataPackage is a DataObject which is an R S4 object. The available slots are
+described at \code{help("DataObject-class")}.
 }
 \details{
 If the parameter \code{identifiers} is provided, then DataPackage members that
@@ -40,6 +41,7 @@ of the DataPackage to update. Note that this method can be used to update the
 in properly setting the related SystemMetadata values.
 }
 \examples{
+# First create a package that we can modify. 
 dp <- new("DataPackage")
 data <- charToRaw("1,2,3\\n4,5,6")
 # The next statment sets the format type incorrectly as an example, so we can correct it later
