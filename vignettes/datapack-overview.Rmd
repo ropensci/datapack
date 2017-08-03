@@ -13,8 +13,7 @@ vignette: >
 
 The *datapack* R package provides an abstraction for collating multile data 
 objects of different types and metadata describing those objects into a bundle that can be transported and loaded using a single composite file.  It is primarily meant as
-a container to bundle together files for transport to or from data repositories
-that support the [DataONE Data Package model](https://releases.dataone.org/online/api-documentation-v2.0.1/design/DataPackage.html), including the member repositories in the [DataONE Federation](https://dataone.org).
+a container to bundle together files for transport to or from DataONE data repositories.
 
 The methods in this package provide a convenient way to load data from common repositories 
 such as DataONE into the R environment, and to document, serialize, and save data from R to 
