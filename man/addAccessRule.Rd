@@ -28,11 +28,11 @@ addAccessRule(x, ...)
 \item{y}{The subject of the rule to be added, or a data frame of subject/permission tuples}
 }
 \value{
-the SystemMetadata object with the updated access policy.
+The SystemMetadata object with the updated access policy.
 
-the DataObject with the updated access policy
+The DataObject with the updated access policy
 
-the DataPackage with updated DataObject access policies
+The DataPackage with updated DataObject access policies
 }
 \description{
 Add one or more access rules to the access policy of the specified object.

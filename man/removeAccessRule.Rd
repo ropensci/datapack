@@ -34,18 +34,18 @@ removeAccessRule(x, ...)
 appliced to (default is all package members).}
 }
 \value{
-the SystemMetadata object with the updated access policy.
+The SystemMetadata object with the updated access policy.
 
-the DataObject object with the updated access policy.
+The DataObject object with the updated access policy.
 
-the Datapackage with members having updated access policies.
-
-the DataObject with the updated access policy
+The Datapackage with members having updated access policies.
 }
 \description{
 Remove access rules from the access policy of the specified object.
 }
 \examples{
+#
+# Remove access rules from a SystemMetadata object.
 # Parameter "y" can be character string containing the subject of the access rule:
 sysmeta <- new("SystemMetadata")
 sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
@@ -61,6 +61,8 @@ accessRules <- data.frame(subject=c("uid=jones,ou=Account,dc=example,dc=com",
                                      "uid=jones,ou=Account,dc=example,dc=com"), 
                                      permission=c("write", "changePermission"))
 sysmeta <- removeAccessRule(sysmeta, accessRules)
+#
+# Remove access rules form a DataObject.
 library(datapack)
 do <- new("DataObject", file=system.file("./extdata/sample-data.csv", package="datapack"), 
                         format="text/csv")
@@ -76,11 +78,13 @@ do <- removeAccessRule(do, "uid=smith,ou=Account,dc=example,dc=com", "changePerm
 hasWrite <- hasAccessRule(do, "smith", "write")
 
 # Alternatively, parameter "y" can be a data.frame containing one or more access rules:
-sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
+do <- addAccessRule(do, "uid=smith,ou=Account,dc=example,dc=com", "write")
 accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", 
   "uid=slaughter,o=unaffiliated,dc=example,dc=org"), 
   permission=c("write", "changePermission"))
-sysmeta <- removeAccessRule(sysmeta, accessRules)
+sysmeta <- removeAccessRule(do, accessRules)
+# 
+# Remove access rules from a DataPackage.
 dp <- new("DataPackage")
 data <- charToRaw("1,2,3\\n4,5,6\\n")
 obj <- new("DataObject", id="id1", dataobj=data, format="text/csv")

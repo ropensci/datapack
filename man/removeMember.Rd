@@ -20,8 +20,8 @@ removeMember(x, ...)
 \item{removeRelationships}{A \code{logical} value. If TRUE, package relationships for this package member are removed. Default is FALSE.}
 }
 \description{
-Given the identifier of a member of the data package, delete the DataObject
-representation of the member.
+Given the identifier of a DataObject in a DataPackge, delete the DataObject
+from the DataPackage.
 }
 \details{
 The \code{removeMember} method removes the specified DataObject from the DataPackage. In 

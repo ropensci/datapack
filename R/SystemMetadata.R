@@ -480,7 +480,7 @@ setGeneric("addAccessRule", function(x, ...) {
 #' @details If the \code{y} argument is specified as a character string containing a \code{subject},
 #' then an optional \code{permission} parameter must be specified, that contains a character list
 #' specifying the permissions to add for each \code{subject}.
-#' @return the SystemMetadata object with the updated access policy.
+#' @return The SystemMetadata object with the updated access policy.
 #' @examples 
 #' # Add an access rule to a SystemMetadata access policy.
 #' # Parameter "y" can be character string containing the subject of the access rule:
@@ -535,8 +535,10 @@ setGeneric("removeAccessRule", function(x, ...) {
 #' @rdname removeAccessRule
 #' @param y The subject of the rule to be removed, or a data.frame containing access rules.
 #' @param permission THe permission to remove, if parameter \code{x} is a character string containing a \code{subject}.
-#' @return the SystemMetadata object with the updated access policy.
+#' @return The SystemMetadata object with the updated access policy.
 #' @examples 
+#' #
+#' # Remove access rules from a SystemMetadata object.
 #' # Parameter "y" can be character string containing the subject of the access rule:
 #' sysmeta <- new("SystemMetadata")
 #' sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
@@ -601,6 +603,7 @@ setGeneric("hasAccessRule", function(x, ...) {
 #' @param subject of the rule to be checked
 #' @param permission the permission to be checked
 #' @examples 
+#' #
 #' # Check access rules for a SystemMetadata object.
 #' sysmeta <- new("SystemMetadata")
 #' sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
@@ -609,7 +612,7 @@ setGeneric("hasAccessRule", function(x, ...) {
 #' sysmeta <- addAccessRule(sysmeta, accessRules)
 #' ruleExists <- hasAccessRule(sysmeta, subject="uid=smith,ou=Account,dc=example,dc=com", 
 #'   permission="write")
-#' @return boolean TRUE if the access rule exists already, FALSE otherwise
+#' @return When called for SystemMetadata, boolean TRUE if the access rule exists already, FALSE otherwise
 setMethod("hasAccessRule", signature("SystemMetadata"), function(x, subject, permission) {
     # The match for subject and permission must be exact and the entire string must match.
     found <- any(grepl(paste("^", subject,"$",sep=""), x@accessPolicy$subject) & 

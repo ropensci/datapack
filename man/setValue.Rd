@@ -27,8 +27,8 @@ A DataPackage with possibly updated DataObjects.
 }
 \description{
 The \code{'setValue'} method is used to modify values stored in DataPackage members.
-Each member in a DataPackage is a DataObject which is an R S4 object. The available slots are
-described at \code{help("DataObject-class")}.
+Each member in a DataPackage is a DataObject which is an R S4 object that contains a set of values (slots).
+The available slots are described at \code{help("DataObject-class")}.
 }
 \details{
 If the parameter \code{identifiers} is provided, then DataPackage members that

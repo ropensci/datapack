@@ -23,7 +23,9 @@ setPublicAccess(x, ...)
 \item{identifiers}{A list of \code{character} values containing package member identifiers that will be updated (default is all package members).}
 }
 \value{
-DataObject with modified access rules
+A DataObject with modified access rules.
+
+A DataPackage with modified access rules.
 }
 \description{
 To be called prior to creating the object in DataONE.  When called before 

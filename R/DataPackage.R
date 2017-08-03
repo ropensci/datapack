@@ -588,8 +588,8 @@ setMethod("containsId", signature("DataPackage"), function(x, identifier) {
 })
 
 #' Remove the Specified Member from the Package
-#' @description Given the identifier of a member of the data package, delete the DataObject
-#' representation of the member.
+#' @description Given the identifier of a DataObject in a DataPackge, delete the DataObject
+#' from the DataPackage.
 #' @param x a DataPackage object
 #' @param ... (Not yet used)
 #' @seealso \code{\link{DataPackage-class}}
@@ -665,7 +665,7 @@ setMethod("removeMember", signature("DataPackage"), function(x, do, removeRelati
 #' a file on local disk. The \code{replaceMember} method can be used to update the
 #' date that a DataObject contains, for a DataObject that is a member of a DataPackage, 
 #' substituting a new file or raw object in the specified DataObject.
-#' @param x a DataPackage instance
+#' @param x A DataPackage instance
 #' @param do A DataObject instance
 #' @param ... (Not yet used)
 #' @seealso \code{\link{DataPackage-class}}
@@ -683,7 +683,7 @@ setGeneric("replaceMember", function(x, do, ...) {
 #' unless requesed, so these should be specified in the call to \code{replaceMember} if necessary. 
 #' If the \code{newId} argument is used, the specified new identifier will be assigned to the 
 #' object, otherwise one will be generated if necessary. This new identifier will be used
-#' if the DataPackage is uploaded to DataONE.
+#' if the DataPackage is uploaded to DataONE, and this object is updating an existing object in DataONE.
 #' @param replacement A \code{raw} object or \code{character} (for filename) that will replace the current value in the DataObject \code{do}.
 #' @param formatId A value of type \code{"character"}, the DataONE object format for the object.
 #' @param mediaType A value of type \code{"character"}, the IANA Media Type (aka MIME-Type) of the object, e.g. "text/csv".
@@ -991,8 +991,8 @@ setMethod("selectMember", signature("DataPackage"), function(x, name, value, as=
 })
 #' Set values for selected DataPackage members.
 #' @description The \code{'setValue'} method is used to modify values stored in DataPackage members.
-#' Each member in a DataPackage is a DataObject which is an R S4 object. The available slots are
-#' described at \code{help("DataObject-class")}.
+#' Each member in a DataPackage is a DataObject which is an R S4 object that contains a set of values (slots).
+#' The available slots are described at \code{help("DataObject-class")}.
 #' @param x A DataPackage instance
 #' @param ... (Not yet used)
 #' @seealso \code{\link{DataPackage-class}}
@@ -1105,6 +1105,7 @@ setMethod("getValue", signature("DataPackage"), function(x, name, identifiers=as
 #' @rdname setPublicAccess
 #' @aliases setPublicAccess
 #' @param identifiers A list of \code{character} values containing package member identifiers that will be updated (default is all package members).
+#' @return A DataPackage with modified access rules.
 #' @seealso \code{\link{DataPackage-class}}
 #' @examples
 #' # First create a sample package with two DataObjects
@@ -1139,7 +1140,7 @@ setMethod("setPublicAccess", signature("DataPackage"), function(x, identifiers=l
 #' \itemize{
 #'   \item{identifiers A list of \code{character} values containing package member identifiers that the access rule will be appliced to (all members is the default)}.
 #' }
-#' @return the DataPackage with updated DataObject access policies
+#' @return The DataPackage with updated DataObject access policies
 #' @seealso \code{\link{DataPackage-class}}
 #' @examples 
 #' # Add an access rule to members of a DataPackage
@@ -1221,6 +1222,7 @@ setMethod("clearAccessPolicy", signature("DataPackage"), function(x, identifiers
 #' @param identifiers A list of \code{character} values containing package member identifiers for which the access rule will be checked.
 #' @seealso \code{\link{DataPackage-class}}
 #' @examples 
+#' #
 #' # Check access rules for member DataObjects of a DataPackage.
 #' # First create an example DataPackage
 #' dp <- new("DataPackage")
@@ -1235,7 +1237,7 @@ setMethod("clearAccessPolicy", signature("DataPackage"), function(x, identifiers
 #' dp <- addAccessRule(dp, "uid=smith,ou=Account,dc=example,dc=com", "changePermission")
 #' hasWrite <- hasAccessRule(dp, "uid=smith,ou=Account,dc=example,dc=com", "write")
 #' hasChange <- hasAccessRule(dp, "uid=smith,ou=Account,dc=example,dc=com", "changePermission")
-#' @return boolean TRUE if the access rule exists in all specified package members already, FALSE otherwise
+#' @return When called for a DataPackage, boolean TRUE if the access rule exists in all specified package members already, FALSE otherwise
 setMethod("hasAccessRule", signature("DataPackage"), function(x, subject, permission, identifiers=list(), ...) {
     found <- FALSE
     # Have to provide a list of member ids to check
@@ -1252,12 +1254,13 @@ setMethod("hasAccessRule", signature("DataPackage"), function(x, subject, permis
 })
 
 #' @rdname removeAccessRule
-#' @return the Datapackage with members having updated access policies.
+#' @return The Datapackage with members having updated access policies.
 #' @param identifiers A list of \code{character} values containing package member identifiers that the access rule will be 
 #' appliced to (default is all package members).
 #' @seealso \code{\link{DataPackage-class}}
-#' @return the DataObject with the updated access policy
 #' @examples 
+#' # 
+#' # Remove access rules from a DataPackage.
 #' dp <- new("DataPackage")
 #' data <- charToRaw("1,2,3\n4,5,6\n")
 #' obj <- new("DataObject", id="id1", dataobj=data, format="text/csv")

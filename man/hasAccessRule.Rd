@@ -32,11 +32,11 @@ hasAccessRule(x, ...)
 \value{
 A logical value: if TRUE the access rule was found, if FALSE it was not found.
 
-boolean TRUE if the access rule exists already, FALSE otherwise
+When called for SystemMetadata, boolean TRUE if the access rule exists already, FALSE otherwise
 
-boolean TRUE if the access rule exists already, FALSE otherwise
+When called for a DataObject, boolean TRUE if the access rule exists already, FALSE otherwise
 
-boolean TRUE if the access rule exists in all specified package members already, FALSE otherwise
+When called for a DataPackage, boolean TRUE if the access rule exists in all specified package members already, FALSE otherwise
 }
 \description{
 Each SystemMetadata document may contain a set of (subject, permission) tuples
@@ -48,6 +48,7 @@ If called for a DataObject, then the SystemMetadata for the DataObject is checke
 If called for a DataPackage, then the SystemMetadata for DataObjects in the DataPackage are checked.
 }
 \examples{
+#
 # Check access rules for a SystemMetadata object.
 sysmeta <- new("SystemMetadata")
 sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
@@ -56,6 +57,7 @@ accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com",
 sysmeta <- addAccessRule(sysmeta, accessRules)
 ruleExists <- hasAccessRule(sysmeta, subject="uid=smith,ou=Account,dc=example,dc=com", 
   permission="write")
+#
 # Check access rules for a DataObject
 data <- system.file("extdata/sample-data.csv", package="datapack")
 do <- new("DataObject", file=system.file("./extdata/sample-data.csv", package="datapack"), 
@@ -68,6 +70,7 @@ accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com",
                           stringsAsFactors=FALSE)
 do <- addAccessRule(do, accessRules)
 SmithHasWrite <- hasAccessRule(do, "uid=smith,ou=Account,dc=example,dc=com", "write")
+#
 # Check access rules for member DataObjects of a DataPackage.
 # First create an example DataPackage
 dp <- new("DataPackage")

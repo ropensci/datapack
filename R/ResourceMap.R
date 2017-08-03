@@ -373,10 +373,10 @@ setMethod("freeResourceMap", signature("ResourceMap"), function(x) {
 
 #' Parse an RDF/XML resource map from a file.
 #' @description parseRDF reads a file containing an RDF model in RDF/XML format and initializes
-#' a ResourceMap based on this content
+#' a ResourceMap based on this content.
 #' @details This method resets the slot ResourceMap@world so any previously stored triples are discarded, allowing
 #' for a clean model object in which to parse the new RDF content into. It is assumed that the content is a
-#' valid ORE resource map and no validation checks specific to the OAI-ORE content model are performed.
+#' valid ORE resource map therefor no validation checks specific to the OAI-ORE content model are performed.
 #' @param x ResourceMap
 #' @export
 setGeneric("parseRDF", function(x, rdf, ...) { standardGeneric("parseRDF")} )

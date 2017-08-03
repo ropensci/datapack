@@ -13,7 +13,7 @@ replaceMember(x, do, ...)
   mediaTypeProperty = as.character(NA), newId = as.character(NA), ...)
 }
 \arguments{
-\item{x}{a DataPackage instance}
+\item{x}{A DataPackage instance}
 
 \item{do}{A DataObject instance}
 
@@ -44,7 +44,7 @@ but does not update the \code{formatId}, \code{mediaType}, \code{mediaTypeProper
 unless requesed, so these should be specified in the call to \code{replaceMember} if necessary. 
 If the \code{newId} argument is used, the specified new identifier will be assigned to the 
 object, otherwise one will be generated if necessary. This new identifier will be used
-if the DataPackage is uploaded to DataONE.
+if the DataPackage is uploaded to DataONE, and this object is updating an existing object in DataONE.
 }
 \examples{
 # Create a DataObject and add it to the DataPackage

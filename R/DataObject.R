@@ -327,6 +327,7 @@ setMethod("getFormatId", signature("DataObject"), function(x) {
 #' @description If called for a DataObject, then the SystemMetadata for the DataObject is checked.
 #' @seealso \code{\link{DataObject-class}}
 #' @examples 
+#' #
 #' # Check access rules for a DataObject
 #' data <- system.file("extdata/sample-data.csv", package="datapack")
 #' do <- new("DataObject", file=system.file("./extdata/sample-data.csv", package="datapack"), 
@@ -339,16 +340,18 @@ setMethod("getFormatId", signature("DataObject"), function(x) {
 #'                           stringsAsFactors=FALSE)
 #' do <- addAccessRule(do, accessRules)
 #' SmithHasWrite <- hasAccessRule(do, "uid=smith,ou=Account,dc=example,dc=com", "write")
-#' @return boolean TRUE if the access rule exists already, FALSE otherwise
+#' @return When called for a DataObject, boolean TRUE if the access rule exists already, FALSE otherwise
 setMethod("hasAccessRule", signature("DataObject"), function(x, subject, permission) {
     found <- hasAccessRule(x@sysmeta, subject, permission)
     return(found)
 })
 
 #' @rdname removeAccessRule
-#' @return the DataObject object with the updated access policy.
+#' @return The DataObject object with the updated access policy.
 #' @seealso \code{\link{DataObject-class}}
 #' @examples 
+#' #
+#' # Remove access rules form a DataObject.
 #' library(datapack)
 #' do <- new("DataObject", file=system.file("./extdata/sample-data.csv", package="datapack"), 
 #'                         format="text/csv")
@@ -364,11 +367,11 @@ setMethod("hasAccessRule", signature("DataObject"), function(x, subject, permiss
 #' hasWrite <- hasAccessRule(do, "smith", "write")
 #' 
 #' # Alternatively, parameter "y" can be a data.frame containing one or more access rules:
-#' sysmeta <- addAccessRule(sysmeta, "uid=smith,ou=Account,dc=example,dc=com", "write")
+#' do <- addAccessRule(do, "uid=smith,ou=Account,dc=example,dc=com", "write")
 #' accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", 
 #'   "uid=slaughter,o=unaffiliated,dc=example,dc=org"), 
 #'   permission=c("write", "changePermission"))
-#' sysmeta <- removeAccessRule(sysmeta, accessRules)
+#' sysmeta <- removeAccessRule(do, accessRules)
 #' @export
 setMethod("removeAccessRule", signature("DataObject"), function(x, y, ...) {
     x@sysmeta <- removeAccessRule(x@sysmeta, y, ...)
@@ -384,7 +387,7 @@ setMethod("removeAccessRule", signature("DataObject"), function(x, y, ...) {
 #' the DataObject. 
 #' @param x DataObject
 #' @param ... (not yet used)
-#' @return DataObject with modified access rules
+#' @return A DataObject with modified access rules.
 #' @aliases setPublicAccess
 #' @seealso \code{\link{DataObject-class}}
 #' @export
@@ -409,7 +412,7 @@ setMethod("setPublicAccess", signature("DataObject"), function(x) {
 })
 
 #' @rdname addAccessRule
-#' @return the DataObject with the updated access policy
+#' @return The DataObject with the updated access policy
 #' @seealso \code{\link{DataObject-class}}
 #' @examples 
 #' # Add an access rule to a DataObject
