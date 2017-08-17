@@ -133,6 +133,11 @@ vignette("upload-data", package="dataone")
 
 A DataPackage is a container for a set of DataObjects. DataObject is a class that is a proxy for data of any type, including traditional data like CSV, tabular data, and spatial rasters, but also for non-traditional objects like derived data, figures, and scripts in R and Python. A collection of related DataObjects can be placed in a DataPackage and actions can be performed on it, such as serializing the entire collection of objects into a package file, or uploading all package member objects to a data repository.
 
+Figure 1. is a diagram of a typical DataPackage showing a metadata file that
+describes, or `documents` the data granules that the package contains.
+
+![](package-diagram.png)
+
 This example creates a DataPackage with one DataObject containing metadata and two others containing science data:
 
 ```{r}
@@ -210,6 +215,10 @@ the following typical provenance properties:
   that it used one or more source data objects as inputs
 - `prov:wasGeneratedBy`: for asserting that when a program (such as an R script) was executed
   that it generated one or more derived data objects as outputs
+  
+Figure 2. A DataPackge with provenance relationships.
+
+![](package-diagram-with-prov.png)
 
 ### Linking a metadata file with one or more data files using cito:documents
 
