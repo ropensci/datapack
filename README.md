@@ -1,6 +1,6 @@
 ## datapack: A Flexible Container to Transport and Manipulate Data and Associated Resources
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/datapack)](https://cran.r-project.org/package=datapack)
-[![CRAN_Download_Badge](http://cranlogs.r-pkg.org/badges/datapack)](http://cran.rstudio.com/web/packages/datapack/index.html)
+<!-- [![CRAN_Download_Badge](http://cranlogs.r-pkg.org/badges/datapack)](https://cran.rstudio.com/web/packages/datapack/index.html) -->
 
 - **Author**: Matthew B. Jones and Peter Slaughter ([NCEAS](http://www.nceas.ucsb.edu))
 - [doi:10.5063/F1QV3JGM](http://doi.org/10.5063/F1QV3JGM)
