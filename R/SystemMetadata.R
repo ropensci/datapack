@@ -28,7 +28,7 @@
 #' @slot identifier value of type \code{"character"}, the identifier of the object that this system metadata describes.
 #' @slot replicationAllowed value of type \code{"logical"}, for replication policy allows replicants.
 #' @slot numberReplicas value of type \code{"numeric"}, for number of supported replicas.
-#' @slot preferredNodes value of type \code{"list"}, of prefered member nodes.
+#' @slot preferredNodes value of type \code{"list"}, of preferred member nodes.
 #' @slot blockedNodes value of type \code{"list"}, of blocked member nodes.
 #' @slot formatId value of type \code{"character"}, the DataONE object format for the object.
 #' @slot size value of type \code{"numeric"}, the size of the object in bytes.
@@ -330,7 +330,7 @@ setMethod("parseSystemMetadata", signature("SystemMetadata"), function(x, xml, .
 #' @description The SystemMetadata object is converted to XML and 
 #' written to a file.
 #' @details If the \code{'version'} parameter is specified as *v2* then the SystemMetadata
-#' object is serialized according to the DataONE version 2.0 system metdata format.
+#' object is serialized according to the DataONE version 2.0 system metadata format.
 #' @param x The SystemMetadata instance to be serialized.
 #' @param ... (Not currently used)
 #' @return A character value of the filename that the XML representation of the SystemMetadata object was written to.

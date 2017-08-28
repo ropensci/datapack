@@ -25,7 +25,7 @@ parseRDF(x, rdf, ...)
 \item{mimeType}{A character value containing the RDF format type. The default is "application/rdf+xml".}
 }
 \value{
-x the ResourceMap ontaining the parsed RDF/XML content
+x the ResourceMap containing the parsed RDF/XML content
 }
 \description{
 parseRDF reads a file containing an RDF model in RDF/XML format and initializes

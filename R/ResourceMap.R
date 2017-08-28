@@ -20,7 +20,7 @@
 
 #' ResourceMap provides methods to create, serialize and deserialize an OAI ORE resource map.
 #' @description The Open Archives Initiative Object Reuse and Exchange (OAI-ORE) defines standards for the description
-#' and exchange of aggregrations of web resources, such as a DataPackage. A Resource Map describes the objects
+#' and exchange of aggregations of web resources, such as a DataPackage. A Resource Map describes the objects
 #' in a DataPackage and the relationships between these objects.
 #' @slot relations value of type \code{"data.frame"}, containing RDF triples representing the relationship between package objects
 #' @slot world a Redland RDF World object
@@ -113,10 +113,10 @@ setMethod("initialize", "ResourceMap", function(.Object, id = as.character(NA)) 
 setGeneric("createFromTriples", function(x, ...) { standardGeneric("createFromTriples")})
 
 #' @rdname createFromTriples
-#' @param identifiers A list of the identifiers of data objects cotained in the associated data package
+#' @param identifiers A list of the identifiers of data objects contained in the associated data package
 #' @param resolveURI A character string containing a URI to prepend to datapackage identifiers.
 #' @param relations A data.frame to read relationships from
-#' @param externalIdentifiers A list of indentifiers that are referenced from the package, but are not package members.
+#' @param externalIdentifiers A list of identifiers that are referenced from the package, but are not package members.
 #' @param creator A \code{character} string containing the creator of the package.
 #' @param ... (Additional parameters)
 #' @export
@@ -387,7 +387,7 @@ setGeneric("parseRDF", function(x, rdf, ...) { standardGeneric("parseRDF")} )
 #' @param name The name of the RDF xml parser, the default is "rdfxml". 
 #' @param mimeType A character value containing the RDF format type. The default is "application/rdf+xml". 
 #' @param ... Additional parameters (not yet used).
-#' @return x the ResourceMap ontaining the parsed RDF/XML content
+#' @return x the ResourceMap containing the parsed RDF/XML content
 setMethod("parseRDF", "ResourceMap", function(x, rdf, asText=FALSE, name="rdfxml", mimeType="application/rdf+xml", ...) {
   
  if(asText) {
@@ -404,7 +404,7 @@ setMethod("parseRDF", "ResourceMap", function(x, rdf, asText=FALSE, name="rdfxml
 })
 
 #' Get the RDF relationships stored in the ResourceMap.
-#' @description The \code{getTriples} method extracts the RDF relationhips from a ResourceMap.
+#' @description The \code{getTriples} method extracts the RDF relationships from a ResourceMap.
 #' @param x ResourceMap
 #' @export
 setGeneric("getTriples", function(x, ...) { standardGeneric("getTriples")} )

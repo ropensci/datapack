@@ -22,7 +22,7 @@ clearAccessPolicy(x, ...)
 
 \item{...}{(Additional parameters)}
 
-\item{identifiers}{A list of \code{character} values containing package member identifiers that the access rule will be appliced to.}
+\item{identifiers}{A list of \code{character} values containing package member identifiers that the access rule will be applied to.}
 }
 \value{
 The SystemMetadata object with the cleared access policy.

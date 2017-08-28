@@ -41,7 +41,7 @@ format or type than the existing data. Because the data type and format may chan
 system metadata that describes the data can be updated as well. The \code{replaceMember}
 method will update the SystemMetadata \code{size}, \code{checksum} values automatically, 
 but does not update the \code{formatId}, \code{mediaType}, \code{mediaTypeProperty}
-unless requesed, so these should be specified in the call to \code{replaceMember} if necessary. 
+unless requested, so these should be specified in the call to \code{replaceMember} if necessary. 
 If the \code{newId} argument is used, the specified new identifier will be assigned to the 
 object, otherwise one will be generated if necessary. This new identifier will be used
 if the DataPackage is uploaded to DataONE, and this object is updating an existing object in DataONE.

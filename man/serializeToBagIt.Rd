@@ -30,7 +30,7 @@ the resource map serialization.}
 
 \item{syntaxURI}{An optional string specifying the URI for the resource map serialization.}
 
-\item{resolveURI}{A character string containing a URI to prepend to datapackage identifiersa for the resource map.}
+\item{resolveURI}{A character string containing a URI to prepend to datapackage identifiers for the resource map.}
 
 \item{creator}{A \code{character} string containing the creator of the package.}
 }
@@ -42,7 +42,7 @@ The BagIt packaging format \url{https://tools.ietf.org/html/draft-kunze-bagit-08
 is used to prepare an archive file that contains the contents of a DataPackage.
 }
 \details{
-A BagIt Archive File is created by copying each member of a DataPackge, and preparing
+A BagIt Archive File is created by copying each member of a DataPackage, and preparing
 files that describe the files in the archive, including information about the size of the files
 and a checksum for each file. An OAI-ORE resource map is automatically created and added to the
 archive. These metadata files and the data files are then packaged into

@@ -330,7 +330,7 @@ setMethod("addMember", signature("DataPackage"), function(x, do, mo=as.character
 #' Record relationships of objects in a DataPackage
 #' @description Record a relationship of the form "subject -> predicate -> object", as defined by the Resource Description Framework (RDF), i.e.
 #' an RDF triple. 
-#' @details For use with DataONE, a best practice is to specifiy the subject and predicate as DataONE persistent identifiers 
+#' @details For use with DataONE, a best practice is to specify the subject and predicate as DataONE persistent identifiers 
 #' (https://mule1.dataone.org/ArchitectureDocs-current/design/PIDs.html). If the objects are not known to DataONE, then local identifiers can be
 #' used, and these local identifiers may be promoted to DataONE PIDs when the package is uploaded to a DataONE member node.
 #' The predicate is typically an RDF property (as a IRI) from a schema supported by DataONE, i.e. "http://www.w3.org/ns/prov#wasGeneratedBy"
@@ -458,7 +458,7 @@ setMethod("insertRelationship", signature("DataPackage"),
 
 #' Record derivation relationships between objects in a DataPackage
 #' @description Record a derivation relationship that expresses that a target object has been derived from a source object.
-#' For use with DataONE, a best practice is to specifiy the subject and predicate as DataONE persistent identifiers 
+#' For use with DataONE, a best practice is to specify the subject and predicate as DataONE persistent identifiers 
 #' (https://mule1.dataone.org/ArchitectureDocs-current/design/PIDs.html). If the objects are not known to DataONE, then local identifiers can be
 #' used, and these local identifiers may be promoted to DataONE PIDs when the package is uploaded to a DataONE member node.
 #' @details A derived relationship is created for each value in the list "objectIDs".  For each derivedId, one statement will be
@@ -498,7 +498,7 @@ setGeneric("getRelationships", function(x, ...) {
 })
 
 #' @rdname getRelationships
-#' @param condense A logical value, if TRUE then a more easily viewed version of ralationships are returned.
+#' @param condense A logical value, if TRUE then a more easily viewed version of relationships are returned.
 #' @examples
 #' dp <- new("DataPackage")
 #' insertRelationship(dp, "/Users/smith/scripts/genFields.R",
@@ -639,7 +639,7 @@ setMethod("removeMember", signature("DataPackage"), function(x, do, removeRelati
         }
         
         newRels <- data.frame()
-        # Remove all occurances of this identifier from the provenance relationships
+        # Remove all occurences of this identifier from the provenance relationships
         # when it appears in either the subject or object of a relationship
         if(nrow(relations) > 0) {
             for(irel in 1:nrow(relations)) {
@@ -680,7 +680,7 @@ setGeneric("replaceMember", function(x, do, ...) {
 #' system metadata that describes the data can be updated as well. The \code{replaceMember}
 #' method will update the SystemMetadata \code{size}, \code{checksum} values automatically, 
 #' but does not update the \code{formatId}, \code{mediaType}, \code{mediaTypeProperty}
-#' unless requesed, so these should be specified in the call to \code{replaceMember} if necessary. 
+#' unless requested, so these should be specified in the call to \code{replaceMember} if necessary. 
 #' If the \code{newId} argument is used, the specified new identifier will be assigned to the 
 #' object, otherwise one will be generated if necessary. This new identifier will be used
 #' if the DataPackage is uploaded to DataONE, and this object is updating an existing object in DataONE.
@@ -823,9 +823,9 @@ setGeneric("updateMetadata", function(x, do, ...) {
 
 #' @rdname updateMetadata
 #' @description A DataObject that contains an XML document can be edited by specifying a path
-#' to the elements to edit (an xpaath expression) and a value to replace the text node. 
+#' to the elements to edit (an XPath expression) and a value to replace the text node. 
 #' @details This method requires some knowledge of the structure of the metadata document as well
-#' as facility with the XPpath language. If the \code{newId} argument is used, the specified new 
+#' as facility with the XPath language. If the \code{newId} argument is used, the specified new 
 #' identifier will be assigned to the object, and the previous identifier will be stored in the \code{oldId} slot, 
 #' for possible use when updating the DataObject to a repository. If \code{newId} is not used, a new
 #' identifier will be generated for the DataObject only the first time that updateMetadata is called for
@@ -1182,7 +1182,7 @@ setMethod("addAccessRule", signature("DataPackage"), function(x, y, ...) {
 })
 
 #' @rdname clearAccessPolicy
-#' @param identifiers A list of \code{character} values containing package member identifiers that the access rule will be appliced to.
+#' @param identifiers A list of \code{character} values containing package member identifiers that the access rule will be applied to.
 #' @return The SystemMetadata object with the cleared access policy.
 #' @seealso \code{\link{DataPackage-class}}
 #' @examples 
@@ -1368,7 +1368,7 @@ setMethod("serializePackage", signature("DataPackage"), function(x, file,
   
   # Create a ResourceMap object and serialize it to the specified file  
   #
-  # If a serialization id was not specified, then use the id assinged to the DataPackage when it
+  # If a serialization id was not specified, then use the id assigned to the DataPackage when it
   # was created. If a DataPackage id was not assigned, then create a unique id.
   if(is.na(id)) {
     if(is.na(x@sysmeta@identifier) || is.null(x@sysmeta@identifier)) {
@@ -1391,7 +1391,7 @@ setMethod("serializePackage", signature("DataPackage"), function(x, file,
 #' Serialize A DataPackage into a BagIt Archive File
 #' @description The BagIt packaging format \url{https://tools.ietf.org/html/draft-kunze-bagit-08}
 #' is used to prepare an archive file that contains the contents of a DataPackage.
-#' @details A BagIt Archive File is created by copying each member of a DataPackge, and preparing
+#' @details A BagIt Archive File is created by copying each member of a DataPackage, and preparing
 #' files that describe the files in the archive, including information about the size of the files
 #' and a checksum for each file. An OAI-ORE resource map is automatically created and added to the
 #' archive. These metadata files and the data files are then packaged into
@@ -1415,7 +1415,7 @@ setGeneric("serializeToBagIt", function(x, ...) {
 #' @param namespaces An optional data frame containing one or more namespaces and their associated prefix for 
 #' the resource map serialization.
 #' @param syntaxURI An optional string specifying the URI for the resource map serialization.
-#' @param resolveURI A character string containing a URI to prepend to datapackage identifiersa for the resource map.
+#' @param resolveURI A character string containing a URI to prepend to datapackage identifiers for the resource map.
 #' @param creator A \code{character} string containing the creator of the package.
 #' @seealso For more information and examples regarding the parameters specifying the creation of the resource map,
 #' see \link{serializePackage}.
@@ -1820,7 +1820,7 @@ setMethod("describeWorkflow", signature("DataPackage"), function(x, sources=list
 
 #' Update package relationships by replacing an old identifier with a new one.
 #' @description When package members are updated, they receive a new identifier (replaceMember). It is therefor
-#' necessary to update the package relationships to update occurances of the old identifier
+#' necessary to update the package relationships to update occurences of the old identifier
 #' with the new one when the old identifier appears in the "subject" or "object" of a 
 #' relationship.
 #' @param x A DataPackage object

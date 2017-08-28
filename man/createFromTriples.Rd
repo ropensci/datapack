@@ -19,11 +19,11 @@ createFromTriples(x, ...)
 
 \item{relations}{A data.frame to read relationships from}
 
-\item{identifiers}{A list of the identifiers of data objects cotained in the associated data package}
+\item{identifiers}{A list of the identifiers of data objects contained in the associated data package}
 
 \item{resolveURI}{A character string containing a URI to prepend to datapackage identifiers.}
 
-\item{externalIdentifiers}{A list of indentifiers that are referenced from the package, but are not package members.}
+\item{externalIdentifiers}{A list of identifiers that are referenced from the package, but are not package members.}
 
 \item{creator}{A \code{character} string containing the creator of the package.}
 }

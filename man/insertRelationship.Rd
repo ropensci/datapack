@@ -37,7 +37,7 @@ Record a relationship of the form "subject -> predicate -> object", as defined b
 an RDF triple.
 }
 \details{
-For use with DataONE, a best practice is to specifiy the subject and predicate as DataONE persistent identifiers 
+For use with DataONE, a best practice is to specify the subject and predicate as DataONE persistent identifiers 
 (https://mule1.dataone.org/ArchitectureDocs-current/design/PIDs.html). If the objects are not known to DataONE, then local identifiers can be
 used, and these local identifiers may be promoted to DataONE PIDs when the package is uploaded to a DataONE member node.
 The predicate is typically an RDF property (as a IRI) from a schema supported by DataONE, i.e. "http://www.w3.org/ns/prov#wasGeneratedBy"

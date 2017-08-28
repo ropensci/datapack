@@ -24,7 +24,7 @@ getTriples(x, ...)
 x A data.frame containing the relationships from the ResourceMap
 }
 \description{
-The \code{getTriples} method extracts the RDF relationhips from a ResourceMap.
+The \code{getTriples} method extracts the RDF relationships from a ResourceMap.
 }
 \details{
 The \code{filter} argument causes DataONE packaging relationships to be removed. 

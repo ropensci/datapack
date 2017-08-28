@@ -15,7 +15,7 @@ getRelationships(x, ...)
 
 \item{...}{(Not yet used)}
 
-\item{condense}{A logical value, if TRUE then a more easily viewed version of ralationships are returned.}
+\item{condense}{A logical value, if TRUE then a more easily viewed version of relationships are returned.}
 }
 \description{
 Relationships of objects in a package are defined using the \code{'insertRelationship'} call and retrieved

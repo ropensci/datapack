@@ -21,7 +21,7 @@ updateRelationships(x, ...)
 }
 \description{
 When package members are updated, they receive a new identifier (replaceMember). It is therefor
-necessary to update the package relationships to update occurances of the old identifier
+necessary to update the package relationships to update occurences of the old identifier
 with the new one when the old identifier appears in the "subject" or "object" of a 
 relationship.
 }

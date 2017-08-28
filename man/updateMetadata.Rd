@@ -28,11 +28,11 @@ updateMetadata(x, do, ...)
 Update selected elements of the XML content of a DataObject in a DataPackage (aka package member).
 
 A DataObject that contains an XML document can be edited by specifying a path
-to the elements to edit (an xpaath expression) and a value to replace the text node.
+to the elements to edit (an XPath expression) and a value to replace the text node.
 }
 \details{
 This method requires some knowledge of the structure of the metadata document as well
-as facility with the XPpath language. If the \code{newId} argument is used, the specified new 
+as facility with the XPath language. If the \code{newId} argument is used, the specified new 
 identifier will be assigned to the object, and the previous identifier will be stored in the \code{oldId} slot, 
 for possible use when updating the DataObject to a repository. If \code{newId} is not used, a new
 identifier will be generated for the DataObject only the first time that updateMetadata is called for

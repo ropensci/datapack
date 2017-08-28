@@ -28,7 +28,7 @@ written to a file.
 }
 \details{
 If the \code{'version'} parameter is specified as *v2* then the SystemMetadata
-object is serialized according to the DataONE version 2.0 system metdata format.
+object is serialized according to the DataONE version 2.0 system metadata format.
 }
 \examples{
 library(XML)

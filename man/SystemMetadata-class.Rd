@@ -20,7 +20,7 @@ access policy, replication policy, and related metadata.
 
 \item{\code{numberReplicas}}{value of type \code{"numeric"}, for number of supported replicas.}
 
-\item{\code{preferredNodes}}{value of type \code{"list"}, of prefered member nodes.}
+\item{\code{preferredNodes}}{value of type \code{"list"}, of preferred member nodes.}
 
 \item{\code{blockedNodes}}{value of type \code{"list"}, of blocked member nodes.}
 

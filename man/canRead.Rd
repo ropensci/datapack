@@ -23,7 +23,7 @@ boolean TRUE if the subject has read permission, or FALSE otherwise
 \description{
 Using the AccessPolicy, tests whether the subject has read permission
 for the object.  This method is meant work prior to submission to a repository, 
-and will show the permissions that would be enfirced by the repository on submission.
+and will show the permissions that would be enforced by the repository on submission.
 Currently it only uses the AccessPolicy to determine who can read (and not the rightsHolder field,
 which always can read an object).  If an object has been granted read access by the
 special "public" subject, then all subjects have read access.
