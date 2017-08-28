@@ -571,7 +571,7 @@ test_that("removeMember works", {
     # Test removing a DataObject from the package - make sure that all the package relationships that had
     # the DataObject as a subject or object have been removed. This includes any relationship, i.e. cito:*
     # and prov:*.
-    dp <- removeMember(dp, doIn)
+    dp <- removeMember(dp, doIn, r=T)
     relations <- getRelationships(dp, quiet=quietOn)
     rels <- relations[relations$subject == getIdentifier(doIn), ]
     expect_equal(nrow(rels), 0)
@@ -624,11 +624,16 @@ test_that("updateMetadata works", {
     metaId <- getIdentifier(metaObj)
     dp <- addMember(dp, metaObj)
     
+    doIn <- new("DataObject", format="text/csv", 
+                filename=system.file("./extdata/sample-data.csv", package="datapack"))
+    doInId <- getIdentifier(doIn)
+    dp <- addMember(dp, doIn, metaId)
+    
     # In the metadata object, insert the newly assigned data 
     xp <- sprintf("//dataTable/physical/distribution[../objectName/text()=\"%s\"]/online/url", "sample-data.csv") 
-    newURL <- sprintf("https://cn.dataone.org/cn/v2/resolve/%s", "1234")
+    newURL <- sprintf("https://cn.dataone.org/cn/v2/resolve/%s", "abc1234xyz")
     dp <- updateMetadata(dp, metaObj, xpath=xp, replacement=newURL)
-   
+    
     # Now retrieve the new value from the metadata using an independent method (not using datapack) and see
     # if the metadata was actually updated.
     metadataDoc <- xmlInternalTreeParse(rawToChar(getData(metaObj)))
@@ -636,6 +641,16 @@ test_that("updateMetadata works", {
     URL <- xmlValue(nodeSet[[1]])
     
     expect_match(newURL, URL) 
+    
+    # Check that the package relationships have been updated correctly so that the new identifier
+    # for the metadata object has replaced the old id.
+    relations <- getRelationships(dp, quiet=TRUE)
+    expect_equal(nrow(relations), 2)
+    expect_match(relations[relations$subject == doInId,'object'], metaId)
+    expect_match(relations[relations$subject == doInId,'predicate'], datapack:::citoIsDocumentedBy)
+    expect_match(relations[relations$subject == metaId,'object'], doInId)
+    expect_match(relations[relations$subject == metaId,'predicate'], datapack:::citoDocuments)
+    
 })
 
 test_that("DataPackage accessPolicy methods", {

@@ -798,7 +798,7 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
         newObj@sysmeta@mediaTypeProperty <- mediaTypeProperty
     }
     
-    removeMember(x, do, removeRelationships=TRUE)
+    removeMember(x, do, removeRelationships=FALSE)
     newObj@updated[['data']] <- TRUE
     newObj@updated[['sysmeta']] <- TRUE
     x <- addMember(x, newObj)
