@@ -8,47 +8,11 @@
 
 ## Changes since last release
 
-* Added support for DataPackage download, edit, upload workflow. (#85)
-
-* Updated naming convention for resource map identifiers (#82)
-
-* Add check to verify that dc:modified and dc:Agent statements get added to Resource Maps (#81)
-
-* Fixed bug where serialized package relationships contained improper blank node names bug (#79)
-
-* Added several new methods to manage access policies (#78)
-
-NEW FUNCTIONS
-
-* parseRDF() will parse an RDF/XML resource map from a file (#85)
-
-* selectMember() returns identifiers for objects that match search criteria (#85)
-
-* getValue() gets values for selected DataPackage member slots (#85)
-
-* setValue() sets values for selected DataPackage members (#85)
-
-* replaceMember() replaces the raw data or file associated with a DataObject (#85)
-
-* updateMetadata() updates selected elements of the XML content of a DataOBject in a DataPackage (#85)
-
-* removeMember() removes a member from a Package. (#85)
-
-* updateRelationships() updates package relationships by replacing an old 
-  identifier with a new one. (#85)
-  
-* hasAccessRule() checks if an access policy contains a specified rule (#78)
-
-* clearAccessPolicy() removes all rules from an access policy (#78)
-
-* addAccessRule() adds a rule to an access policy (#78)
-
-* setPublicAccess() adds a public access rule to an access policy class (#78)
-
-* removeAccessRule() removes an access rule from the specified object (#78)
-
-DEPRECATED FUNCTIONS
-- addData - replaced with addMember
+* Fixed a bug in updateMetadata() that would cause package relationships to be lost
+  for the metadata object. This bug fix is quite important as it fixes a problem in 
+  advanced functionality of this package that was causing package content to be lost 
+  that was only being revealed after package upload to a member node. The unit tests 
+  have been updated to ensure that this problem does not occur.
 
 ## R CMD check results
 
