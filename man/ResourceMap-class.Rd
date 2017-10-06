@@ -22,7 +22,6 @@ in a DataPackage and the relationships between these objects.
 
 \item{\code{id}}{a unique identifier for a ResourceMap instance}
 }}
-
 \section{Methods}{
 
 \itemize{
@@ -33,7 +32,6 @@ in a DataPackage and the relationships between these objects.
  \item{\code{\link{serializeRDF}}}{: Write the ResourceMap relationships to a file.}
 }
 }
-
 \examples{
 dp <- new("DataPackage")
 dp <- insertRelationship(dp, "/Users/smith/scripts/genFields.R",
@@ -51,3 +49,4 @@ serializeRDF(resMap, file=tf)
 \code{\link{datapack}}
 }
 \keyword{resourceMap}
+

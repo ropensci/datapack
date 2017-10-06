@@ -2,8 +2,8 @@
 % Please edit documentation in R/DataPackage.R
 \docType{methods}
 \name{initialize,DataPackage-method}
-\alias{initialize,DataPackage-method}
 \alias{DataPackage-initialize}
+\alias{initialize,DataPackage-method}
 \title{Initialize a DataPackage object.}
 \usage{
 \S4method{initialize}{DataPackage}(.Object, packageId)
@@ -25,3 +25,4 @@ pkg <- new("DataPackage", "urn:uuid:4f953288-f593-49a1-adc2-5881f815e946")
 \seealso{
 \code{\link{DataPackage-class}}
 }
+

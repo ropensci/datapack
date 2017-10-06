@@ -4,9 +4,7 @@
 \name{setPublicAccess}
 \alias{setPublicAccess}
 \alias{setPublicAccess,DataObject-method}
-\alias{setPublicAccess}
 \alias{setPublicAccess,DataPackage-method}
-\alias{setPublicAccess}
 \title{Add a Rule to the AccessPolicy to make the object publicly readable.}
 \usage{
 setPublicAccess(x, ...)
@@ -57,3 +55,4 @@ dp <- setPublicAccess(dp)
 
 \code{\link{DataPackage-class}}
 }
+

@@ -40,3 +40,4 @@ sysmetaXML <- serializeSystemMetadata(sysmeta, version="v2")
 \seealso{
 \code{\link{SystemMetadata-class}}
 }
+

@@ -80,3 +80,4 @@ status <- serializePackage(dp, file=paste(td, "resmap.ttl", sep="/"), syntaxName
 \seealso{
 \code{\link{DataPackage-class}}
 }
+

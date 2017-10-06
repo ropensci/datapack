@@ -46,3 +46,4 @@ metaObj <- updateXML(metaObj, xpath=xp, replacement="sample-data.csv.zip")
 \seealso{
 \code{\link{DataObject-class}}
 }
+

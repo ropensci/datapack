@@ -59,3 +59,4 @@ inputId <- selectMember(dp, name="sysmeta@fileName", value="binary.csv")
 \seealso{
 \code{\link{DataPackage-class}}
 }
+

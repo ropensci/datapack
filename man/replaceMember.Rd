@@ -62,3 +62,4 @@ dp <- replaceMember(dp, doIn,
 \seealso{
 \code{\link{DataPackage-class}}
 }
+

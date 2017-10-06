@@ -56,3 +56,4 @@ dp <- updateMetadata(dp, id, xpath=xp, replacement=newURL)
 \seealso{
 \code{\link{DataPackage-class}}
 }
+

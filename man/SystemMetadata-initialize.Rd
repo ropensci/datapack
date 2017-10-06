@@ -2,8 +2,8 @@
 % Please edit documentation in R/SystemMetadata.R
 \docType{methods}
 \name{initialize,SystemMetadata-method}
-\alias{initialize,SystemMetadata-method}
 \alias{SystemMetadata-initialize}
+\alias{initialize,SystemMetadata-method}
 \title{Initialize a DataONE SystemMetadata object with default values or values passed in to the constructor.}
 \usage{
 \S4method{initialize}{SystemMetadata}(.Object, identifier = as.character(NA),
@@ -83,3 +83,4 @@ access policy, replication policy, and related metadata.
 
 \code{\link{SystemMetadata-class}}
 }
+

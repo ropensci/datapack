@@ -58,3 +58,4 @@ dp <- setValue(dp, name="sysmeta@formatId", value="text/csv", identifiers=getIde
 \seealso{
 \code{\link{DataPackage-class}}
 }
+

@@ -71,3 +71,4 @@ bagitFile <- serializeToBagIt(dp, syntaxName="json", mimeType="application/json"
 For more information and examples regarding the parameters specifying the creation of the resource map,
 see \link{serializePackage}.
 }
+
