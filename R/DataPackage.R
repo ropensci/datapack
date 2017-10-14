@@ -499,16 +499,14 @@ setGeneric("getRelationships", function(x, ...) {
 
 #' @rdname getRelationships
 #' @param condense A logical value, if TRUE then a more easily viewed version of relationships are returned.
-#' @param plot A logical value, if TRUE then a graph of relationships is returned.
 #' @examples
 #' dp <- new("DataPackage")
 #' insertRelationship(dp, "/Users/smith/scripts/genFields.R",
 #'     "http://www.w3.org/ns/prov#used",
 #'     "https://knb.ecoinformatics.org/knb/d1/mn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1")
 #' rels <- getRelationships(dp)
-#' @importFrom graphics legend
 #' @export
-setMethod("getRelationships", signature("DataPackage"), function(x, condense=F, plot=F, ...) {
+setMethod("getRelationships", signature("DataPackage"), function(x, condense=F, ...) {
   # Get the relationships stored by insertRelationship
   if (has.key("relations", x@relations)) {
       relationships <- x@relations[["relations"]]
@@ -556,29 +554,51 @@ setMethod("getRelationships", signature("DataPackage"), function(x, condense=F, 
             return(condenseStr(term, maxColumnWidth))
         })
         rels <- as.data.frame(condensedRels[,1:3])
-				if(plot){
-					tmp <- rels[grepl("prov:", rels$predicate),]
-					type <- rels[grepl("rdf:", rels$predicate),]
-					colz <- c('dodgerblue', 'forestgreen', 'firebrick', 
-						'orange', 'purple', 'brown', 'pink', 'yellow')
-					type$object <- as.character(type$object)
-					g <- igraph::graph.edgelist(as.matrix(tmp[,c(1,3)]))
-					g <- igraph::set_edge_attr(g, "label", value = as.character(tmp[,2]))
-					colorLabels <- factor(sapply(type$object, 
-						function(x){unlist(strsplit(x, ':'))[2]}))
-					colorLabels <- colorLabels[match(igraph::V(g)$name, type$subject)]
-					plot(g, vertex.label.color='black', vertex.frame.color='black',
-						edge.color='black', edge.arrow.size=0.5, 
-						vertex.color=colz[as.numeric(colorLabels)])
-					legend(x=-1.5, y=-1.1, sort(unique(colorLabels)), pch=21,
-						col="#777777", pt.bg=colz[1:max(as.numeric(colorLabels))], 
-						pt.cex=2, cex=0.8, bty="n", ncol=1)
-				}
         return(rels[with(rels, order(subject)),])
     }
-    
  return(relationships)
 })
+
+
+
+#' Plot derivation relationships obtained from getRelationships
+#' @description Creates graph of dataPackage object generated from getRelationships
+#' @param x a DataPackage object
+#' @seealso \code{\link{DataPackage-class}}
+#' @export
+setGeneric("plotRelationships", function(x, ...) {
+  standardGeneric("plotRelationships")
+})
+
+
+#' @rdname plotRelationships
+#' @param col vector of colors used for plotting 
+#' @param ... other options passed to the igraph plot function
+#' @importFrom graphics legend plot
+#' @export
+setMethod("plotRelationships", signature(x="DataPackage"), function(x, col=NULL, ...) {
+	rels <- getRelationships(x, condense=TRUE)
+	tmp <- rels[grepl("prov:", rels$predicate),]
+	type <- rels[grepl("rdf:", rels$predicate),]
+	if(is.null(col)){
+		col <- c('dodgerblue', 'forestgreen', 'firebrick', 
+			'orange', 'purple', 'brown', 'pink', 'yellow')
+	}
+	type$object <- as.character(type$object)
+	g <- igraph::graph.edgelist(as.matrix(tmp[,c(1,3)]))
+	g <- igraph::set_edge_attr(g, "label", value = as.character(tmp[,2]))
+		colorLabels <- factor(sapply(type$object, 
+			function(x){unlist(strsplit(x, ':'))[2]}))
+	colorLabels <- colorLabels[match(igraph::V(g)$name, type$subject)]
+	out <- plot(g, vertex.label.color='black', vertex.frame.color='black',
+		edge.color='black', edge.arrow.size=0.5, 
+		vertex.color=col[as.numeric(colorLabels)], ...)
+	out
+	legend(x=-1.5, y=-1.1, sort(unique(colorLabels)), pch=21,
+		col="#777777", pt.bg=col[1:max(as.numeric(colorLabels))], 
+		pt.cex=2, cex=0.8, bty="n", ncol=1)
+})
+
 
 #' Returns true if the specified object is a member of the package
 #' @param x A DataPackage object

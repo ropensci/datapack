@@ -8,7 +8,7 @@
 \usage{
 getRelationships(x, ...)
 
-\S4method{getRelationships}{DataPackage}(x, condense = F, plot = F, ...)
+\S4method{getRelationships}{DataPackage}(x, condense = F, ...)
 }
 \arguments{
 \item{x}{A DataPackage object}
@@ -16,8 +16,6 @@ getRelationships(x, ...)
 \item{...}{(Not yet used)}
 
 \item{condense}{A logical value, if TRUE then a more easily viewed version of relationships are returned.}
-
-\item{plot}{A logical value, if TRUE then a graph of relationships is returned.}
 }
 \description{
 Relationships of objects in a package are defined using the \code{'insertRelationship'} call and retrieved

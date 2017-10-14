@@ -268,9 +268,16 @@ dp <- addData(dp, doOut)
 # The arguments "sources" and "derivations" can also contain lists of "DataObjects"
 dp <- describeWorkflow(dp, sources=doIn, program=progObj, derivations=doOut)
 
-library(igraph)
-rels <- getRelationships(dp, condense=TRUE, plot=TRUE)
+
+rels <- getRelationships(dp, condense=TRUE)
 rels[grepl("prov:", rels$predicate),]
+```
+
+
+
+```{r}
+library(igraph)
+plotRelationships(dp)
 ```
 
 
