@@ -70,7 +70,7 @@ setClass("ResourceMap", slots = c(relations = "data.frame",
 #' @return the ResourceMap object
 #' @seealso \code{\link{ResourceMap-class}}
 #' @export
-setMethod("initialize", "ResourceMap", function(.Object, id = as.character(NA)) {
+setMethod("initialize", "ResourceMap", function(.Object, id = NA_character_) {
   .Object@relations <- data.frame()
   .Object@world   <- new("World")
   .Object@storage <- new("Storage", .Object@world, "hashes", name="", options="hash-type='memory'")
@@ -121,8 +121,8 @@ setGeneric("createFromTriples", function(x, ...) { standardGeneric("createFromTr
 #' @param ... (Additional parameters)
 #' @export
 setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, identifiers, 
-                                                                  resolveURI=as.character(NA), externalIdentifiers=list(), 
-                                                                  creator=as.character(NA), ...) {
+                                                                  resolveURI=NA_character_, externalIdentifiers=list(), 
+                                                                  creator=NA_character_, ...) {
   stopifnot(is.data.frame(relations))
   stopifnot(all(is.character(identifiers)))
   
@@ -156,7 +156,7 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
   
   # Add each triple from the input data.frame into the Redland RDF model.
   if(nrow(relations) > 0) {
-      for(i in 1:nrow(relations)) {
+      for(i in seq_len(nrow(relations))) {
           triple <- relations[i,]
           subjectId <- triple[['subject']]
           objectId <- triple[['object']]
@@ -318,20 +318,32 @@ setMethod("serializeRDF", signature("ResourceMap"), function(x,
                                                              mimeType="application/rdf+xml", 
                                                              namespaces=data.frame(namespace=character(), 
                                                              prefix=character(), stringsAsFactors=FALSE),
-                                                             syntaxURI=as.character(NA)) {
+                                                             syntaxURI=NA_character_) {
   
   # Define default namespaces used by DataONE ORE Resource Maps,
-  defaultNS <- data.frame(namespace=character(), prefix=character(), stringsAsFactors=FALSE)
-  defaultNS <- rbind(defaultNS, data.frame(namespace="http://www.w3.org/1999/02/22-rdf-syntax-ns#", prefix="rdf", row.names = NULL, stringsAsFactors = FALSE))
-  defaultNS <- rbind(defaultNS, data.frame(namespace="http://www.w3.org/2001/XMLSchema#", prefix="xsd", row.names = NULL, stringsAsFactors = FALSE))
-  defaultNS <- rbind(defaultNS, data.frame(namespace="http://www.w3.org/2000/01/rdf-schema#", prefix="rdfs", row.names = NULL, stringsAsFactors = FALSE))
-  defaultNS <- rbind(defaultNS, data.frame(namespace="http://www.w3.org/ns/prov#", prefix="prov", row.names = NULL, stringsAsFactors = FALSE))
-  defaultNS <- rbind(defaultNS, data.frame(namespace="http://purl.dataone.org/provone/2015/01/15/ontology#", prefix="provone", row.names = NULL, stringsAsFactors = FALSE))
-  defaultNS <- rbind(defaultNS, data.frame(namespace="http://purl.org/dc/elements/1.1/", prefix="dc", row.names = NULL, stringsAsFactors = FALSE))
-  defaultNS <- rbind(defaultNS, data.frame(namespace="http://purl.org/dc/terms/", prefix="dcterms", row.names = NULL, stringsAsFactors = FALSE))
-  defaultNS <- rbind(defaultNS, data.frame(namespace="http://xmlns.com/foaf/0.1/", prefix="foaf", row.names = NULL, stringsAsFactors = FALSE))
-  defaultNS <- rbind(defaultNS, data.frame(namespace="http://www.openarchives.org/ore/terms/", prefix="ore", row.names = NULL, stringsAsFactors = FALSE))
-  defaultNS <- rbind(defaultNS, data.frame(namespace="http://purl.org/spar/cito/", prefix="cito", row.names = NULL, stringsAsFactors = FALSE))
+  namespace_vector <- c("http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+                        "http://www.w3.org/2001/XMLSchema#",
+                        "http://www.w3.org/2000/01/rdf-schema#",
+                        "http://www.w3.org/ns/prov#",
+                        "http://purl.dataone.org/provone/2015/01/15/ontology#",
+                        "http://purl.org/dc/elements/1.1/",
+                        "http://purl.org/dc/terms/",
+                        "http://xmlns.com/foaf/0.1/",
+                        "http://www.openarchives.org/ore/terms/",
+                        "http://purl.org/spar/cito/")
+  
+  prefixes <- c("rdf",
+                "xsd",
+                "rdfs",
+                "prov",
+                "provone",
+                "dc",
+                "dcterms",
+                "foaf",
+                "ore",
+                "cito")
+  
+  defaultNS <- data.frame(namespace = namespace_vector, prefix = prefixes, stringsAsFactors=FALSE)
   
   # Merge the default namespaces with the namespaces passed in
   namespaces <- merge(defaultNS, namespaces, all.x=TRUE, all.y=TRUE)
@@ -339,7 +351,7 @@ setMethod("serializeRDF", signature("ResourceMap"), function(x,
 
   # Add default and additional namespaces to the serializer
   if(nrow(namespaces) > 0) {
-      for(i in 1:nrow(namespaces)) {
+      for(i in seq_len(nrow(namespaces))) {
           thisNamespace <- namespaces[i,]
           namespace <- as.character(thisNamespace['namespace'])
           prefix <- as.character(thisNamespace['prefix'])
@@ -444,7 +456,7 @@ setMethod("getTriples", "ResourceMap", function(x, filter=TRUE, identifiers=list
     result <- getNextResult(queryResult)
     first <- TRUE
     # Remove a creator id if filtering and it is found
-    creatorId <- as.character(NA)
+    creatorId <- NA_character_
     creatorFound <- FALSE
     while(!is.null(result)) {
         # Can't get next result at the end of the loop because 'next' is used.
@@ -454,9 +466,9 @@ setMethod("getTriples", "ResourceMap", function(x, filter=TRUE, identifiers=list
         predicate <- result$p
         object <- result$o
         what <- result$d
-        objectType <- as.character(NA)
-        subjectType <- as.character(NA)
-        dataTypeURI <- as.character(NA)
+        objectType <- NA_character_
+        subjectType <- NA_character_
+        dataTypeURI <- NA_character_
         #cat(sprintf("s: %s p: %s o: %s\n", subject, predicate, object))
         # Remove leading '<' and trailing '>" from the result. The result is returned as
         # RDF NTriples, so annotations to the terms denotes the type. (see https://www.w3.org/TR/n-triples/)
@@ -623,7 +635,7 @@ checkIdMatch <- function(checkStr, pattern, identifiers) {
     if(length(identifiers) > 0) {
         checkStr <- trimws(checkStr, which="both")
         checkStrDecoded <- URLdecode(checkStr)
-        for(nId in 1:length(identifiers)) {
+        for(nId in seq_along(identifiers)) {
             thisId <- trimws(identifiers[[nId]], which="both")
             thisIdDecoded <- URLdecode(thisId)
             thisIdEncoded <- URLencode(thisId, reserved=TRUE, repeated=TRUE)
@@ -645,5 +657,5 @@ checkIdMatch <- function(checkStr, pattern, identifiers) {
             }
         }
     }
-    return(as.character(NA))
+    return(NA_character_)
 }

@@ -127,7 +127,7 @@ setMethod("initialize", "DataPackage", function(.Object, packageId) {
     .Object@relations[['updated']] <- FALSE
     .Object@objects = hash()
     .Object@externalIds = list()
-    .Object@resmapId <- as.character(NA)
+    .Object@resmapId <- NA_character_
    return(.Object)
 })
 
@@ -232,7 +232,7 @@ setGeneric("addData", function(x, do, ...) {
 #' # This method is now deprecated, so suppress warnings if desired. 
 #' suppressWarnings(dpkg <- addData(dpkg, do, md))
 #' @export
-setMethod("addData", signature("DataPackage", "DataObject"), function(x, do, mo=as.character(NA)) {
+setMethod("addData", signature("DataPackage", "DataObject"), function(x, do, mo=NA_character_) {
   x@objects[[do@sysmeta@identifier]] <- do
   # If a metadata object identifier is specified on the command line, then add the relationship to this package
   # that associates this science object with the metadata object.
@@ -282,7 +282,7 @@ setGeneric("addMember", function(x, ...) {
 #' # to the package  automatically, since it hasn't been added yet.
 #' dpkg <- addMember(dpkg, do, md)
 #' @export
-setMethod("addMember", signature("DataPackage"), function(x, do, mo=as.character(NA)) {
+setMethod("addMember", signature("DataPackage"), function(x, do, mo=NA_character_) {
     
     # If only one 'do' is specified, make in into a list. If a list is already specified
     # then it can be iterated over.
@@ -364,7 +364,7 @@ setGeneric("insertRelationship", function(x, ...) {
 #'     "https://knb.ecoinformatics.org/knb/d1/mn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1")
 #' # Create a relationshp with the subject as a blank node with an automatically assigned blank 
 #' # node id
-#' dp <- insertRelationship(dp, subjectID=as.character(NA), objectIDs="thing6", 
+#' dp <- insertRelationship(dp, subjectID=NA_character_, objectIDs="thing6", 
 #'     predicate="http://www.myns.org/wasThing")
 #' # Create a relationshp with the subject as a blank node with a user assigned blank node id
 #' dp <- insertRelationship(dp, subjectID="urn:uuid:bc9e160e-ca21-47d5-871b-4a4820fe4451", 
@@ -377,12 +377,12 @@ setGeneric("insertRelationship", function(x, ...) {
 #'     objectIDs="http://www.example.com/home", predicate="http://www.example.com/hadHome",
 #'                    subjectType="uri", objectType="literal")                
 setMethod("insertRelationship", signature("DataPackage"),
-          function(x, subjectID, objectIDs, predicate=as.character(NA), 
-                   subjectType=as.character(NA), objectTypes=as.character(NA), dataTypeURIs=as.character(NA)) {
+          function(x, subjectID, objectIDs, predicate=NA_character_, 
+                   subjectType=NA_character_, objectTypes=NA_character_, dataTypeURIs=NA_character_) {
 
   # Argument has to be character
-  stopifnot(all(is.character(subjectID)))
-  stopifnot(all(is.character(objectIDs)))
+  stopifnot(is.character(subjectID))
+  stopifnot(is.character(objectIDs))
   
   # If a predicate wasn't provided, then insert the default relationship of 
   # subjectID -> documents -> objectID; objectID -> documentedBy -> subjectID
@@ -423,11 +423,11 @@ setMethod("insertRelationship", signature("DataPackage"),
       }
       
       # Check that the subjectType is a valid type for an RDF subject
-      if (!is.element(subjectType[i], c("uri", "blank", as.character(NA)))) {
+      if (!is.element(subjectType[i], c("uri", "blank", NA_character_))) {
         stop(sprintf("Invalid subject type: %s\n", subjectType[i]))
       }
       # Check that the objectType is a valid type for an RDF object
-      if(!is.element(objectTypes[i], c("uri", "literal", "blank", as.character(NA)))) {
+      if(!is.element(objectTypes[i], c("uri", "literal", "blank", NA_character_))) {
         stop(sprintf("Invalid objct type: %s\n", objectTypes[i]))
       }
       newRels <- data.frame(subject=subjectID, predicate=predicate, object=obj, 
@@ -533,12 +533,12 @@ setMethod("getRelationships", signature("DataPackage"), function(x, condense=F, 
         maxColumnWidth <- as.integer((consoleWidth-paddingWidth)/nColumns)
         condensedRels <- apply(relationships, c(1,2), function(term) {
             if(is.na(term)) return(term)
-            for(ins in 1:nrow(knownNamespaces)) {
+            for(ins in seq_len(nrow(knownNamespaces))) {
                 ns <- knownNamespaces[ins, 'namespace']
                 prefix <- knownNamespaces[ins, 'prefix']
                 # use namespace in term
-                if(grepl(ns, term, fixed=T)) {
-                    return(condenseStr(sub(ns, paste(prefix, ':', sep=""), term), maxColumnWidth))
+                if(grepl(ns, term, fixed=TRUE)) {
+                    return(condenseStr(sub(ns, paste0(prefix, ':'), term), maxColumnWidth))
                 }
             }
             # Didn't match any known namespace, check if the item is a package member identifier,
@@ -615,7 +615,7 @@ setMethod("removeMember", signature("DataPackage"), function(x, do, removeRelati
     
     # Note: the dataone 2.0.1 version did not have a removeRelationships parameter, so in order
     # to maintain the same behaviour as the 2.0.1 release, relationships are not deleted by default.
-    identifier <- as.character(NA)
+    identifier <- NA_character_
     if(class(do) == "DataObject") {
         identifier <- getIdentifier(do)
     } else if (class(do) == "character") {
@@ -642,7 +642,7 @@ setMethod("removeMember", signature("DataPackage"), function(x, do, removeRelati
         # Remove all occurences of this identifier from the provenance relationships
         # when it appears in either the subject or object of a relationship
         if(nrow(relations) > 0) {
-            for(irel in 1:nrow(relations)) {
+            for(irel in seq_len(nrow(relations))) {
                 subject <- relations[irel, 'subject']        
                 object <- relations[irel, 'object']        
                 testSubject <- checkIdMatch(subject, pattern='.*%s$', identifier)
@@ -702,14 +702,14 @@ setGeneric("replaceMember", function(x, do, ...) {
 #'           package="datapack"),
 #'                     formatId="application/zip")
 #' @export
-setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement, formatId=as.character(NA), mediaType=as.character(NA), 
-                                                              mediaTypeProperty=as.character(NA),
-                                                              newId=as.character(NA), ...) {
+setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement, formatId=NA_character_, mediaType=NA_character_, 
+                                                              mediaTypeProperty=NA_character_,
+                                                              newId=NA_character_, ...) {
     
     
     # The DataObject to change argument can be either a DataObject or identifier. Determine which one
     # and put the object out of the package so that we can modify it and replace it.
-    id <- as.character(NA)
+    id <- NA_character_
     if (class(do) == "DataObject") {
         id <- getIdentifier(do)
         if(! id  %in% getIdentifiers(x)) {
@@ -766,7 +766,7 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
     # DataObject 'replacement'
     if (is.raw(replacement)) {
         newObj@data <- replacement
-        newObj@filename <- as.character(NA)
+        newObj@filename <- NA_character_
         newObj@sysmeta@size <- length(newObj@bytes)
         newObj@sysmeta@checksum <- digest(newObj@bytes, algo="sha1", serialize=FALSE, file=FALSE)
         newObj@sysmeta@checksumAlgorithm <- "SHA-1"
@@ -849,11 +849,11 @@ setGeneric("updateMetadata", function(x, do, ...) {
 #' dp <- updateMetadata(dp, id, xpath=xp, replacement=newURL)
 #' @export
 setMethod("updateMetadata", signature("DataPackage"), function(x, do, xpath, replacement, 
-                                                              newId=as.character(NA), ...) {
+                                                              newId=NA_character_, ...) {
     
     # The DataObject to change argument can be either a DataObject or identifier. Determine which one
     # and put the object out of the package so that we can modify it and replace it.
-    id <- as.character(NA)
+    id <- NA_character_
     if (class(do) == "DataObject") {
         id <- getIdentifier(do)
         metaObj <- do
@@ -1029,7 +1029,7 @@ setGeneric("setValue", function(x, ...) {
 #' # Change format types to correct value for both package members
 #' # Careful! Specifying 'identifiers=getIdentifiers(dp) will update all package members!
 #' dp <- setValue(dp, name="sysmeta@formatId", value="text/csv", identifiers=getIdentifiers(dp))
-setMethod("setValue", signature("DataPackage"), function(x, name, value, identifiers=as.character(NA)) {
+setMethod("setValue", signature("DataPackage"), function(x, name, value, identifiers=NA_character_) {
   # First look at the top level slot names for a match with 'field'
   matchingIds <- list()
   if(length(keys(x@objects)) > 0) {
@@ -1084,13 +1084,13 @@ setGeneric("getValue", function(x, ...) {
 #' do <- new("DataObject", id="myNewId2", dataobj=data, format="text/csv", user="jsmith")
 #' dp <- addMember(dp, do)
 #' formats <- getValue(dp, name="sysmeta@formatId")
-setMethod("getValue", signature("DataPackage"), function(x, name, identifiers=as.character(NA)) {
+setMethod("getValue", signature("DataPackage"), function(x, name, identifiers=NA_character_) {
     values <- list()
     if(is.na(identifiers)) identifiers <- getIdentifiers(x)
     if(length(keys(x@objects)) > 0) {
         for(iKey in keys(x@objects)) {
             if(! iKey %in% identifiers) next
-            value <- as.character(NA)
+            value <- NA_character_
             slotStr <- sprintf("value <- x@objects[[\'%s\']]@%s", iKey, as.character(name))
             eval(parse(text=slotStr))
             #values[[length(values)+1]] <- value
@@ -1285,7 +1285,7 @@ setMethod("hasAccessRule", signature("DataPackage"), function(x, subject, permis
 #'                                      "uid=jones,ou=Account,dc=example,dc=com"), 
 #'                                      permission=c("write", "changePermission"))
 #' dp <- removeAccessRule(dp, accessRules)
-setMethod("removeAccessRule", signature("DataPackage"), function(x, y, permission=as.character(NA), 
+setMethod("removeAccessRule", signature("DataPackage"), function(x, y, permission=NA_character_, 
                                                               identifiers=list(), ...) {
     if(length(identifiers) == 0) identifiers <- getIdentifiers(x)
     if(length(keys(x@objects)) > 0) {
@@ -1357,12 +1357,12 @@ setGeneric("serializePackage", function(x, ...) {
 #'     mimeType="text/turtle")
 #' }
 setMethod("serializePackage", signature("DataPackage"), function(x, file, 
-                                                                 id = as.character(NA),
+                                                                 id = NA_character_,
                                                                  syntaxName="rdfxml", 
                                                                  mimeType="application/rdf+xml", 
                                                                  namespaces=data.frame(namespace=character(), prefix=character(), stringsAsFactors=FALSE),
-                                                                 syntaxURI=as.character(NA), resolveURI=as.character(NA),
-                                                                 creator=as.character(NA)) {
+                                                                 syntaxURI=NA_character_, resolveURI=NA_character_,
+                                                                 creator=NA_character_) {
   # Get the relationships stored in this datapackage.
   relations <- getRelationships(x)
   
@@ -1437,17 +1437,17 @@ setGeneric("serializeToBagIt", function(x, ...) {
 #' bagitFile <- serializeToBagIt(dp, syntaxName="json", mimeType="application/json")
 #' }
 #' @export
-setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=as.character(NA),
-                                                                 syntaxName=as.character(NA),
+setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=NA_character_,
+                                                                 syntaxName=NA_character_,
                                                                  namespaces=data.frame(),
-                                                                 mimeType=as.character(NA),
-                                                                 syntaxURI=as.character(NA),
-                                                                 resolveURI=as.character(NA), 
-                                                                 creator=as.character(NA), ...) {
+                                                                 mimeType=NA_character_,
+                                                                 syntaxURI=NA_character_,
+                                                                 resolveURI=NA_character_, 
+                                                                 creator=NA_character_, ...) {
   cwd <- getwd()
   on.exit(expr = setwd(cwd))
-  pidMap <- as.character()
-  manifest <- as.character()
+  pidMap <- character()
+  manifest <- character()
   # Create a temp working area where the BagIt directory structure will be created
   tmpDir <- tempdir()
   bagDir <- sprintf("%s/bag", tmpDir)
@@ -1493,7 +1493,7 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=as.cha
    # Populate './data" directory by copying each DataPackage member from a filename
   # if that was specified, or from an in-memober object.
   identifiers <- getIdentifiers(x)
-  for(idNum in 1:length(identifiers)) {
+  for(idNum in seq_along(identifiers)) {
     dataObj <- getMember(x, identifiers[idNum])
     # Was the DataObject created with the 'file' arg, i.e. data not in the DataObject,
     # but at a specified file out on disk?
@@ -1526,7 +1526,7 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=as.cha
   }
   
   #fInfo <- file.info(sprintf("%s", payloadDir))
-  fInfo <- file.info(list.files(payloadDir, full.names=T, recursive=T))
+  fInfo <- file.info(list.files(payloadDir, full.names=TRUE, recursive=TRUE))
   #fInfo <- file.info(list.files(payloadDir), all.files=TRUE, recursive=TRUE)
   bagBytes <- sum(fInfo[['size']])
   # Convert the value returned from file.info (bytes) into a more 
@@ -1563,10 +1563,10 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=as.cha
   writeLines(manifest, sprintf("%s/%s", bagDir, "manifest-md5.txt"))
   
   # Create tagmanifest-md5.txt
-  tagManifest <- as.character()
+  tagManifest <- character()
   #tagFiles <- c("bag-info.txt", "bagit.txt", "pid-mapping.txt", "tagmanifest-md5.txt")
   tagFiles <- c("bag-info.txt", "bagit.txt", "pid-mapping.txt")
-  for (i in 1:length(tagFiles)) {
+  for (i in seq_along(tagFiles)) {
     thisFile <- tagFiles[i]  
     thisMd5 <- digest(sprintf("%s/%s", bagDir, thisFile), algo="md5", file=TRUE)
     tagManifest <- c(tagManifest, sprintf("%s %s", thisMd5, thisFile))
@@ -1653,7 +1653,7 @@ setGeneric("describeWorkflow", function(x, ...) {
 #' # View the results
 #' head(getRelationships(dp))
 setMethod("describeWorkflow", signature("DataPackage"), function(x, sources=list(), 
-                                                                  program=as.character(NA), 
+                                                                  program=NA_character_, 
                                                                   derivations=list(), insertDerivations=TRUE, ...) {
     
     # Check each "source" list member and check if it is the correct type, either
@@ -1681,7 +1681,7 @@ setMethod("describeWorkflow", signature("DataPackage"), function(x, sources=list
     }
     
     if(length(sources) > 0) {
-        for (isrc in 1:length(sources)) {
+        for (isrc in seq_along(sources)) {
             obj <- sources[[isrc]]
             if(class(obj) == "DataObject") {
                 inIds[[length(inIds)+1]] <- getIdentifier(obj)
@@ -1699,7 +1699,7 @@ setMethod("describeWorkflow", signature("DataPackage"), function(x, sources=list
     # a list.
     outIds <- list()
     if(length(derivations) > 0) {
-        for (idst in 1:length(derivations)) {
+        for (idst in seq_along(derivations)) {
             obj <- derivations[[idst]]
             if(class(obj) == "DataObject") {
                 outIds[[length(outIds)+1]] <- getIdentifier(obj)
@@ -1717,7 +1717,7 @@ setMethod("describeWorkflow", signature("DataPackage"), function(x, sources=list
         if(!is.na(program)) {
             scriptId <- program
         } else {
-            scriptId <- as.character(NA)
+            scriptId <- NA_character_
         }
     } else {
         stop(sprintf("Invalid type \'%s\' for program", class(program)))
@@ -1732,7 +1732,7 @@ setMethod("describeWorkflow", signature("DataPackage"), function(x, sources=list
     # Process inputs and outputs separately from the program identifier, as there may not
     # have been a program specified.
     if(length(inIds) > 0) {
-        for (iCnt in 1:length(inIds)) {
+        for (iCnt in seq_along(inIds)) {
             pid <- inIds[[iCnt]]
             # This pid is not a package member, so add it to the list of external pids
             if (!is.element(pid, pkgIds)) {
@@ -1742,7 +1742,7 @@ setMethod("describeWorkflow", signature("DataPackage"), function(x, sources=list
         }
     }
     if(length(outIds) > 0) {
-        for (iCnt in 1:length(outIds)) {
+        for (iCnt in seq_along(outIds)) {
             pid <- outIds[[iCnt]]
             # This pid is not a package member, so add it to the list of external pids
             if (!is.element(pid, pkgIds)) {
@@ -1759,7 +1759,7 @@ setMethod("describeWorkflow", signature("DataPackage"), function(x, sources=list
         # object that is required to establish the relationships "executionPid -> prov:used -> dataPid" and 
         # "dataPid -> wasGeneratedBy -> executionPid". We do not know the Execution id for the scriptId, which
         # is needed to set the other relationships required for indexing.
-        if(grepl("\\s*https?:.*", scriptId, perl=T)) {
+        if(grepl("\\s*https?:.*", scriptId, perl=TRUE)) {
             stop(sprintf("The \"program\" parameter must specify an identifier that is a member of the current package.\nThe identifier %s is not valid", scriptId))
         }
             
@@ -1785,7 +1785,7 @@ setMethod("describeWorkflow", signature("DataPackage"), function(x, sources=list
         
         # Process files used by the script
         if(length(inIds) > 0) {
-            for (iCnt in 1:length(inIds)) {
+            for (iCnt in seq_along(inIds)) {
                 thisPid <- inIds[[iCnt]]
                 # Record prov:used relationship between the input dataset and the execution
                 x <- insertRelationship(x, subjectID=executionId, objectIDs=thisPid, predicate=provUsed)
@@ -1794,7 +1794,7 @@ setMethod("describeWorkflow", signature("DataPackage"), function(x, sources=list
         
         # Process files generated by the script
         if(length(outIds) > 0) {
-            for (iCnt in 1:length(outIds)) {
+            for (iCnt in seq_along(outIds)) {
                 thisPid <- outIds[[iCnt]]
                 # Record prov:wasGeneratedBy relationship between the output dataset and the execution
                 x <- insertRelationship(x, subjectID=thisPid, objectIDs=executionId, predicate=provWasGeneratedBy)
@@ -1806,9 +1806,9 @@ setMethod("describeWorkflow", signature("DataPackage"), function(x, sources=list
         # Record the 'prov:wasDerivedFrom' relationships, directly linking the output files to the input files.
         # This section can be run even if a 'program' argument is not defined.
         if(length(outIds) > 0 && length(inIds) > 0) {
-            for (iOut in 1:length(outIds)) {
+            for (iOut in seq_along(outIds)) {
                 outputId <- outIds[[iOut]]
-                for (iIn in 1:length(inIds)) {
+                for (iIn in seq_along(inIds)) {
                     inputId <- inIds[[iIn]]
                     x <- insertRelationship(x, subjectID=outputId, objectIDs=inputId, predicate=provWasDerivedFrom)
                 }
@@ -1841,7 +1841,7 @@ setMethod("updateRelationships", signature("DataPackage"), function(x, id, newId
    x@relations = hash()
    
    if(nrow(relations) > 0) {
-     for (irow in 1:nrow(relations)) {
+     for (irow in seq_len(nrow(relations))) {
          subject <- relations[irow, 'subject']
          predicate <- relations[irow, 'predicate']
          object <- relations[irow, 'object']
@@ -1976,7 +1976,7 @@ setMethod("show", "DataPackage",
             } else if (!is.na(fn)) {
               filename <- basename(fn)
             } else {
-              filename <- as.character(NA)
+              filename <- NA_character_
             }
             cat(sprintf(fmt, 
                         condenseStr(filename, fileNameWidth),

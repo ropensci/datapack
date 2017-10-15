@@ -129,9 +129,9 @@ setClass("DataObject", slots = c(
 #' do <- new("DataObject", "id1", dataobj=data, "text/csv", 
 #'   "uid=jones,DC=example,DC=com", "urn:node:KNB")
 #' @seealso \code{\link{DataObject-class}}
-setMethod("initialize", "DataObject", function(.Object, id=as.character(NA), dataobj=NA, format=as.character(NA), user=as.character(NA), 
-                                               mnNodeId=as.character(NA), filename=as.character(NA), seriesId=as.character(NA),
-                                               mediaType=as.character(NA), mediaTypeProperty=list(), dataURL=as.character(NA)) {
+setMethod("initialize", "DataObject", function(.Object, id=NA_character_, dataobj=NA, format=NA_character_, user=NA_character_, 
+                                               mnNodeId=NA_character_, filename=NA_character_, seriesId=NA_character_,
+                                               mediaType=NA_character_, mediaTypeProperty=list(), dataURL=NA_character_) {
   
     # If no value has been passed in for 'id', then create a UUID for it.
     if (class(id) != "SystemMetadata" && is.na(id)) {
@@ -154,21 +154,21 @@ setMethod("initialize", "DataObject", function(.Object, id=as.character(NA), dat
         stop("Either the \"dataobj\" parameter containing raw data or the \"filename\" parameter with a file reference to the data\n or the \"xdataURL\" parameter must be provided.")
     }
     if (typeof(id) == "character") {
-        smfile <- as.character(NA)
+        smfile <- NA_character_
         size <- 0
-        sha1 <- as.character(NA)
+        sha1 <- NA_character_
         dmsg("@@ DataObject-class:R initialize as character")
         if(hasDataUrl) {
             .Object@dataURL <- dataURL
             .Object@data <- as.raw(NULL)
-            .Object@filename <- as.character(NA)
+            .Object@filename <- NA_character_
             smfile <- basename(dataURL) 
         } else {
             # Validate: dataobj must be raw if provided. Also, the filename argument must be provided, which will
             # be used as the sysmeta.fileName value.
             if (hasDataObj) {
                 if(!is.raw(dataobj[[1]])) stop("The value of the \"dataobj\" parameter must be of type \"raw\"")
-                smfile <- as.character(NA)
+                smfile <- NA_character_
                 # If dataobj is specified, then file at 'filename' location doesn't have to exist, as in this case 'filename'
                 # specifies sysmeta.fileName and not the data source.
                 if(!hasFilename) {
@@ -178,7 +178,7 @@ setMethod("initialize", "DataObject", function(.Object, id=as.character(NA), dat
                 size <- length(dataobj)
                 sha1 <- digest(dataobj, algo="sha1", serialize=FALSE, file=FALSE)
                 .Object@data <- dataobj
-                .Object@filename <- as.character(NA)
+                .Object@filename <- NA_character_
             } else {
                 if(!file.exists(filename)) stop(sprintf("The \"filename\" argument value \"%s\" must be for file that exists", filename))
                 fileinfo <- file.info(filename)
@@ -208,7 +208,7 @@ setMethod("initialize", "DataObject", function(.Object, id=as.character(NA), dat
         if(hasFilename && file.exists(filename)) {
             .Object@filename <- normalizePath(filename)
         } else {
-            .Object@filename <- as.character(NA)
+            .Object@filename <- NA_character_
         }
     } else {
         stop("Invalid value for \"identifier\" argument, it must be a character or SystemMetadata value\n")
@@ -217,7 +217,7 @@ setMethod("initialize", "DataObject", function(.Object, id=as.character(NA), dat
     # Test if this DataObject is brand new, or possibly created from an existing object, i.e.
     # downloaded from a data repository
     .Object@updated <- hash( keys=c("sysmeta", "data"), values=c(FALSE, FALSE))
-    .Object@oldId <- as.character(NA)
+    .Object@oldId <- NA_character_
     return(.Object)
 })
 
@@ -509,11 +509,11 @@ setGeneric("updateXML", function(x, ...) {
 #' # In the metadata object, replace "sample-data.csv" with 'sample-data.csv.zip'
 #' xp <- sprintf("//dataTable/physical/objectName[text()=\"%s\"]", "sample-data.csv")
 #' metaObj <- updateXML(metaObj, xpath=xp, replacement="sample-data.csv.zip")
-setMethod("updateXML", signature("DataObject"), function(x, xpath=as.character(NA), replacement=as.character(NA), ...) {
+setMethod("updateXML", signature("DataObject"), function(x, xpath=NA_character_, replacement=NA_character_, ...) {
     
-    filename <- as.character(NA)
-    filepath <- as.character(NA)
-    metadataDoc <- as.character(NA)
+    filename <- NA_character_
+    filepath <- NA_character_
+    metadataDoc <- NA_character_
     nodeSet <- list()
     
     # Get the xml content and update it if the xpath is found
@@ -550,7 +550,7 @@ setMethod("updateXML", signature("DataObject"), function(x, xpath=as.character(N
     if (length(x@data) > 0) {
         metadata <- readChar(newfile, file.info(newfile)$size)
         x@data <- charToRaw(metadata)
-        x@filename <- as.character(NA)
+        x@filename <- NA_character_
         x@sysmeta@size <- length(x@data)
         x@sysmeta@checksum <- digest(x@data, algo="sha1", serialize=FALSE, file=FALSE)
         x@sysmeta@checksumAlgorithm <- "SHA-1"
@@ -590,10 +590,10 @@ setMethod("show", "DataObject",
               cat(sprintf("  access policy:\n"))
               if(nrow(object@sysmeta@accessPolicy) > 0) {
                   cat(sprintf(fmt2, "    subject", "permission"))
-                  for(irow in 1:nrow(object@sysmeta@accessPolicy)) {
+                  for(irow in seq_len(nrow(object@sysmeta@accessPolicy))) {
                       subject <- object@sysmeta@accessPolicy[irow, 'subject']
                       permission <- object@sysmeta@accessPolicy[irow, 'permission']
-                      cat(sprintf(fmt2, condenseStr(paste("    ", subject, sep=""), colWidth), permission))
+                      cat(sprintf(fmt2, condenseStr(paste0("    ", subject), colWidth), permission))
                   }
               } else {
                  cat(sprintf("\t\tNo access policy defined\n")) 
