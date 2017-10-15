@@ -382,7 +382,7 @@ setMethod("serializeSystemMetadata", signature("SystemMetadata"), function(x, ve
     for (subject in subjects) {
       accessRule <- xmlNode("allow")
       accessRule <- addChildren(accessRule, xmlNode("subject", subject))
-      for(i in seq_len(x@accessPolicy)) {
+      for(i in seq_len(nrow(x@accessPolicy))) {
         if(as.character(x@accessPolicy[i,'subject']) == subject) {
           accessRule <- addChildren(accessRule, xmlNode("permission", x@accessPolicy[i,'permission']))
         }
