@@ -1477,7 +1477,7 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=NA_cha
   # Add resource map to the pid map
   #relFile <- sprintf("data/%s.rdf", resMapId)
   # Windows doesn't allow colons in filenames, so substitute for "_"
-  relFile <- file.path("data", paste(gsub(":", "_", mapId), ".rdf", sep=""))
+  relFile <- file.path("data", paste0(gsub(":", "_", mapId), ".rdf"))
   #resMapFilepath <- sprintf("%s/%s", bagDir, relFile)
   resMapFilepath <- file.path(bagDir, relFile)
   file.copy(tmpFile, resMapFilepath)
@@ -1952,7 +1952,7 @@ setMethod("show", "DataPackage",
           updated <- as.logical(updated)
           if(!any(updated)) break
         }
-        fmt <- paste(
+        fmt <- paste0(
             "%-", sprintf("%2d", fileNameWidth), "s ",
             "%-", sprintf("%2d", formatIdWidth), "s ",
             "%-", sprintf("%2d", mediaTypeWidth), "s ",
@@ -1960,7 +1960,7 @@ setMethod("show", "DataPackage",
             "%-", sprintf("%2d", identifierWidth), "s ",
             "%-", sprintf("%2d", updatedWidth), "s ",
             "%-", sprintf("%2d", localWidth), "s ",
-            "\n", sep="")
+            "\n")
         cat(sprintf("Members:\n\n"))
         cat(sprintf(fmt, "filename", "format", "mediaType", "size", "identifier", "modified", "local"))
         lapply(ids, function(id) { 

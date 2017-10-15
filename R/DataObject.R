@@ -576,12 +576,12 @@ setMethod("show", "DataObject",
               valueWidth <- 30
               colWidth <- as.integer((consoleWidth - 5)/2)
               
-              fmt <- paste("%-", sprintf("%2d", nameWidth), "s ", ": ",
+              fmt <- paste0("%-", sprintf("%2d", nameWidth), "s ", ": ",
                            "%-", sprintf("%2d", valueWidth), "s ",
-                           "\n", sep="")
-              fmt2 <- paste("%-", sprintf("%2d", colWidth), "s ",
+                           "\n")
+              fmt2 <- paste0("%-", sprintf("%2d", colWidth), "s ",
                            "%-", sprintf("%2d", colWidth), "s ",
-                           "\n", sep="")
+                           "\n")
               
               cat(sprintf("Access\n"))
               cat(sprintf(fmt, "  identifer", object@sysmeta@identifier))
