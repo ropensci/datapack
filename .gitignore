@@ -1,4 +1,7 @@
 .Rproj.user
 .Rhistory
 .RData
+.DS_Store
+inst/.DS_Store
+inst/extdata/.DS_Store
 datapackage.Rproj
