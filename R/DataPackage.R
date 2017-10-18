@@ -1125,6 +1125,7 @@ setMethod("setPublicAccess", signature("DataPackage"), function(x, identifiers=l
             if(! iKey %in% identifiers) next
             obj <- getMember(x, identifier=iKey)
             obj <-  setPublicAccess(obj)
+            obj@updated[['sysmeta']] <- TRUE
             x <- removeMember(x, obj, removeRelationships=FALSE)
             x <- addMember(x, obj)
         }
@@ -1174,6 +1175,7 @@ setMethod("addAccessRule", signature("DataPackage"), function(x, y, ...) {
             if(! iKey %in% identifiers) next
             obj <- getMember(x, identifier=iKey)
             obj <- addAccessRule(obj, y, ...)
+            obj@updated[['sysmeta']] <- TRUE
             x <- removeMember(x, iKey, removeRelationships=FALSE)
             x <- addMember(x, obj)
         }
@@ -1209,6 +1211,7 @@ setMethod("clearAccessPolicy", signature("DataPackage"), function(x, identifiers
             if(! iKey %in% identifiers) next
             obj <- getMember(x, identifier=iKey)
             obj <- clearAccessPolicy(obj, ...)
+            obj@updated[['sysmeta']] <- TRUE
             x <- removeMember(x, iKey, removeRelationships=FALSE)
             x <- addMember(x, obj)
         }
