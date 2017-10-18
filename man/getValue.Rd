@@ -43,3 +43,4 @@ formats <- getValue(dp, name="sysmeta@formatId")
 \seealso{
 \code{\link{DataPackage-class}}
 }
+

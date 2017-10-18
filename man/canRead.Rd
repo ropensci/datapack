@@ -42,3 +42,4 @@ access <- canRead(obj, "smith")
 \seealso{
 \code{\link{DataObject-class}}
 }
+

@@ -48,7 +48,7 @@ specification is handled by the DataPackage class.
  \item{\code{\link{ResourceMap-class}{ResourceMap}}}{: ResourceMap provides methods to create, serialize and deserialize an OAI ORE resource map.}
 }
 }
-
 \author{
 Matthew B. Jones (NCEAS), Peter Slaughter (NCEAS)
 }
+

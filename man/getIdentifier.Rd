@@ -4,7 +4,6 @@
 \name{getIdentifier}
 \alias{getIdentifier}
 \alias{getIdentifier,DataObject-method}
-\alias{getIdentifier}
 \title{Get the Identifier of the DataObject}
 \usage{
 getIdentifier(x, ...)
@@ -31,3 +30,4 @@ id <- getIdentifier(do)
 \seealso{
 \code{\link{DataObject-class}}
 }
+

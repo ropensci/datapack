@@ -32,3 +32,4 @@ rels <- getRelationships(dp)
 \seealso{
 \code{\link{DataPackage-class}}
 }
+

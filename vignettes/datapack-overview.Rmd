@@ -267,13 +267,24 @@ dp <- addData(dp, doOut)
 
 # The arguments "sources" and "derivations" can also contain lists of "DataObjects"
 dp <- describeWorkflow(dp, sources=doIn, program=progObj, derivations=doOut)
+
+
 rels <- getRelationships(dp, condense=TRUE)
 rels[grepl("prov:", rels$predicate),]
 ```
 
+
+
+```{r}
+library(igraph)
+plotRelationships(dp)
+```
+
+
 Note that in this example, the R script had previously been run and generated the image
 file before `describeWorkflow()` was called.  The `sources` and `derivations` arguments 
 for `describeWorkflow()` can be lists of either DataObjects or the identifiers of DataObjects.
+
 
 
 ### Inserting other (arbitrary) relationships

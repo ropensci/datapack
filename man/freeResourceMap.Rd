@@ -20,3 +20,4 @@ object should be deleted immediately following this call.
 \seealso{
 \code{\link{ResourceMap-class}}
 }
+

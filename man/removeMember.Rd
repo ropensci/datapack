@@ -38,3 +38,4 @@ removeMember(dp, "myNewId", removeRelationships=TRUE)
 \seealso{
 \code{\link{DataPackage-class}}
 }
+

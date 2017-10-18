@@ -1,17 +1,18 @@
 Package: datapack
-Title: A Flexible Container to Transport and Manipulate Data and Associated Resources 
+Title: A Flexible Container to Transport and Manipulate Data and Associated
+    Resources
 Version: 1.3.1
 Authors@R: c( person("Matthew B.", "Jones", role = c("aut", "cre"), email = "jones@nceas.ucsb.edu"),
   person("Peter", "Slaughter", role = "aut", email = "slaughter@nceas.ucsb.edu"),
   person("Regents of the University of California", role = c("cph")))
-Description: Provides a flexible container to transport and
-    manipulate complex sets of data. These data may consist of multiple data files and
-    associated meta data and ancillary files. Individual data objects have
-    associated system level meta data, and data files are linked together using
-    the OAI-ORE standard resource map which describes the relationships between the files. 
-    The OAI-ORE standard is described at <https://www.openarchives.org/ore>. Data packages 
-    can be serialized and transported as structured files that have been created following 
-    the BagIt specification. The BagIt specification is described at 
+Description: Provides a flexible container to transport and manipulate complex
+    sets of data. These data may consist of multiple data files and associated
+    meta data and ancillary files. Individual data objects have associated system
+    level meta data, and data files are linked together using the OAI-ORE standard
+    resource map which describes the relationships between the files. The OAI-
+    ORE standard is described at <https://www.openarchives.org/ore>. Data packages
+    can be serialized and transported as structured files that have been created
+    following the BagIt specification. The BagIt specification is described at
     <https://tools.ietf.org/html/draft-kunze-bagit-08>.
 Date: 2017-08-28
 Depends:
@@ -22,7 +23,8 @@ Imports:
     redland,
     XML,
     hash,
-    uuid
+    uuid,
+		igraph
 Suggests:
     testthat,
     knitr,
@@ -40,4 +42,4 @@ Collate:
     'ResourceMap.R'
     'datapack-package.r'
     'zzz.R'
-RoxygenNote: 6.0.1
+RoxygenNote: 5.0.1

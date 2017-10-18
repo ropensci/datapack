@@ -4,7 +4,6 @@
 \name{getData}
 \alias{getData}
 \alias{getData,DataObject-method}
-\alias{getData}
 \alias{getData,DataPackage-method}
 \title{Get the data content of a specified data object}
 \usage{
@@ -42,3 +41,4 @@ bytes <- getData(dp, "id1")
 \seealso{
 \code{\link{DataObject-class}}
 }
+
