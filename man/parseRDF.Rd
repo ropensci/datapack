@@ -36,4 +36,3 @@ This method resets the slot ResourceMap@world so any previously stored triples a
 for a clean model object in which to parse the new RDF content into. It is assumed that the content is a
 valid ORE resource map therefor no validation checks specific to the OAI-ORE content model are performed.
 }
-

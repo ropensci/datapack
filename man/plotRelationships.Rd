@@ -23,4 +23,3 @@ Creates graph of dataPackage object generated from getRelationships
 \seealso{
 \code{\link{DataPackage-class}}
 }
-

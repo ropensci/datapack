@@ -31,4 +31,3 @@ getSize(dp)
 \seealso{
 \code{\link{DataPackage-class}}
 }
-

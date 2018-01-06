@@ -8,8 +8,8 @@
 \usage{
 updateXML(x, ...)
 
-\S4method{updateXML}{DataObject}(x, xpath = as.character(NA),
-  replacement = as.character(NA), ...)
+\S4method{updateXML}{DataObject}(x, xpath = NA_character_,
+  replacement = NA_character_, ...)
 }
 \arguments{
 \item{x}{A DataObject instance}
@@ -46,4 +46,3 @@ metaObj <- updateXML(metaObj, xpath=xp, replacement="sample-data.csv.zip")
 \seealso{
 \code{\link{DataObject-class}}
 }
-

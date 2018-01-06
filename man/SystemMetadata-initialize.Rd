@@ -2,24 +2,22 @@
 % Please edit documentation in R/SystemMetadata.R
 \docType{methods}
 \name{initialize,SystemMetadata-method}
-\alias{SystemMetadata-initialize}
 \alias{initialize,SystemMetadata-method}
+\alias{SystemMetadata-initialize}
 \title{Initialize a DataONE SystemMetadata object with default values or values passed in to the constructor.}
 \usage{
-\S4method{initialize}{SystemMetadata}(.Object, identifier = as.character(NA),
-  formatId = as.character(NA), size = as.numeric(NA),
-  checksum = as.character(NA), checksumAlgorithm = "SHA-1",
-  submitter = as.character(NA), rightsHolder = as.character(NA),
-  accessPolicy = data.frame(subject = character(), permission = character()),
-  replicationAllowed = TRUE, numberReplicas = 3,
-  obsoletes = as.character(NA), obsoletedBy = as.character(NA),
-  archived = FALSE, dateUploaded = as.character(NA),
-  dateSysMetadataModified = as.character(NA),
-  originMemberNode = as.character(NA),
-  authoritativeMemberNode = as.character(NA), preferredNodes = list(),
-  blockedNodes = list(), seriesId = as.character(NA),
-  mediaType = as.character(NA), fileName = as.character(NA),
-  mediaTypeProperty = list())
+\S4method{initialize}{SystemMetadata}(.Object, identifier = NA_character_,
+  formatId = NA_character_, size = NA_real_, checksum = NA_character_,
+  checksumAlgorithm = "SHA-1", submitter = NA_character_,
+  rightsHolder = NA_character_, accessPolicy = data.frame(subject =
+  character(), permission = character()), replicationAllowed = TRUE,
+  numberReplicas = 3, obsoletes = NA_character_,
+  obsoletedBy = NA_character_, archived = FALSE,
+  dateUploaded = NA_character_, dateSysMetadataModified = NA_character_,
+  originMemberNode = NA_character_, authoritativeMemberNode = NA_character_,
+  preferredNodes = list(), blockedNodes = list(),
+  seriesId = NA_character_, mediaType = NA_character_,
+  fileName = NA_character_, mediaTypeProperty = list())
 }
 \arguments{
 \item{.Object}{The object being initialized}
@@ -83,4 +81,3 @@ access policy, replication policy, and related metadata.
 
 \code{\link{SystemMetadata-class}}
 }
-

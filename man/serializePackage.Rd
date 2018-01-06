@@ -8,11 +8,11 @@
 \usage{
 serializePackage(x, ...)
 
-\S4method{serializePackage}{DataPackage}(x, file, id = as.character(NA),
+\S4method{serializePackage}{DataPackage}(x, file, id = NA_character_,
   syntaxName = "rdfxml", mimeType = "application/rdf+xml",
   namespaces = data.frame(namespace = character(), prefix = character(),
-  stringsAsFactors = FALSE), syntaxURI = as.character(NA),
-  resolveURI = as.character(NA), creator = as.character(NA))
+  stringsAsFactors = FALSE), syntaxURI = NA_character_,
+  resolveURI = NA_character_, creator = NA_character_)
 }
 \arguments{
 \item{x}{A DataPackage object}
@@ -80,4 +80,3 @@ status <- serializePackage(dp, file=paste(td, "resmap.ttl", sep="/"), syntaxName
 \seealso{
 \code{\link{DataPackage-class}}
 }
-

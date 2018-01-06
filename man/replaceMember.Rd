@@ -9,8 +9,8 @@
 replaceMember(x, do, ...)
 
 \S4method{replaceMember}{DataPackage}(x, do, replacement,
-  formatId = as.character(NA), mediaType = as.character(NA),
-  mediaTypeProperty = as.character(NA), newId = as.character(NA), ...)
+  formatId = NA_character_, mediaType = NA_character_,
+  mediaTypeProperty = NA_character_, newId = NA_character_, ...)
 }
 \arguments{
 \item{x}{A DataPackage instance}
@@ -62,4 +62,3 @@ dp <- replaceMember(dp, doIn,
 \seealso{
 \code{\link{DataPackage-class}}
 }
-

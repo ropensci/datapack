@@ -9,8 +9,8 @@
 createFromTriples(x, ...)
 
 \S4method{createFromTriples}{ResourceMap}(x, relations, identifiers,
-  resolveURI = as.character(NA), externalIdentifiers = list(),
-  creator = as.character(NA), ...)
+  resolveURI = NA_character_, externalIdentifiers = list(),
+  creator = NA_character_, ...)
 }
 \arguments{
 \item{x}{a ResourceMap}
@@ -58,4 +58,3 @@ resMap <- createFromTriples(resMap, relations, getIdentifiers(dp))
 \seealso{
 \code{\link{ResourceMap-class}}
 }
-

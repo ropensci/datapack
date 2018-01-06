@@ -31,4 +31,3 @@ valid <- validate(sysmeta)
 \seealso{
 \code{\link{SystemMetadata-class}}
 }
-

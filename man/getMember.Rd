@@ -34,4 +34,3 @@ do2 <- getMember(dp, "myNewId")
 \seealso{
 \code{\link{DataPackage-class}}
 }
-

@@ -11,7 +11,7 @@ serializeRDF(x, ...)
 \S4method{serializeRDF}{ResourceMap}(x, file, syntaxName = "rdfxml",
   mimeType = "application/rdf+xml", namespaces = data.frame(namespace =
   character(), prefix = character(), stringsAsFactors = FALSE),
-  syntaxURI = as.character(NA))
+  syntaxURI = NA_character_)
 }
 \arguments{
 \item{x}{a ResourceMap}
@@ -55,4 +55,3 @@ serializeRDF(resmap, tf)
 \seealso{
 \code{\link{ResourceMap-class}}
 }
-

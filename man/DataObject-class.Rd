@@ -40,6 +40,7 @@ contents of the data or file as a raw value (but this will read all of the data 
 
 \item{\code{oldId}}{A character string containing the previous identifier used, before a \code{"replaceMember"} call.}
 }}
+
 \section{Methods}{
 
 \itemize{
@@ -54,6 +55,7 @@ contents of the data or file as a raw value (but this will read all of the data 
   \item{\code{\link{updateXML}}}{: Update selected elements of the xml content of a DataObject}
 }
 }
+
 \examples{
 data <- charToRaw("1,2,3\\n4,5,6\\n")
 do <- new("DataObject", "id1", dataobj=data, "text/csv", 
@@ -79,4 +81,3 @@ do <- new("DataObject", "id1", format="text/csv", user="uid=jones,DC=example,DC=
 \code{\link{datapack}}
 }
 \keyword{classes}
-

@@ -8,10 +8,10 @@
 \usage{
 serializeToBagIt(x, ...)
 
-\S4method{serializeToBagIt}{DataPackage}(x, mapId = as.character(NA),
-  syntaxName = as.character(NA), namespaces = data.frame(),
-  mimeType = as.character(NA), syntaxURI = as.character(NA),
-  resolveURI = as.character(NA), creator = as.character(NA), ...)
+\S4method{serializeToBagIt}{DataPackage}(x, mapId = NA_character_,
+  syntaxName = NA_character_, namespaces = data.frame(),
+  mimeType = NA_character_, syntaxURI = NA_character_,
+  resolveURI = NA_character_, creator = NA_character_, ...)
 }
 \arguments{
 \item{x}{A DataPackage object}
@@ -71,4 +71,3 @@ bagitFile <- serializeToBagIt(dp, syntaxName="json", mimeType="application/json"
 For more information and examples regarding the parameters specifying the creation of the resource map,
 see \link{serializePackage}.
 }
-

@@ -8,8 +8,7 @@
 \usage{
 setValue(x, ...)
 
-\S4method{setValue}{DataPackage}(x, name, value,
-  identifiers = as.character(NA))
+\S4method{setValue}{DataPackage}(x, name, value, identifiers = NA_character_)
 }
 \arguments{
 \item{x}{A DataPackage instance}
@@ -58,4 +57,3 @@ dp <- setValue(dp, name="sysmeta@formatId", value="text/csv", identifiers=getIde
 \seealso{
 \code{\link{DataPackage-class}}
 }
-

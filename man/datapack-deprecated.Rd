@@ -14,5 +14,5 @@ marked as Defunct and removed in a future version.
  \item{\code{\link{addData}}}{: Add a DataObject to the DataPackage.}
 }
 }
-\keyword{internal}
 
+\keyword{internal}

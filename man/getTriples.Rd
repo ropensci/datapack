@@ -34,4 +34,3 @@ identifiers will be 'demoted', that is any relationship that has these identifie
 URL as the subject or object will be changed to the 'bare' identifier. The intent of these two parameter is to
 transform the DataPackage to a 'local' state, so that it can be more easily updated locally.
 }
-

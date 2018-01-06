@@ -9,7 +9,7 @@
 updateMetadata(x, do, ...)
 
 \S4method{updateMetadata}{DataPackage}(x, do, xpath, replacement,
-  newId = as.character(NA), ...)
+  newId = NA_character_, ...)
 }
 \arguments{
 \item{x}{a DataPackage instance}
@@ -56,4 +56,3 @@ dp <- updateMetadata(dp, id, xpath=xp, replacement=newURL)
 \seealso{
 \code{\link{DataPackage-class}}
 }
-

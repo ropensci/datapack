@@ -41,6 +41,7 @@ Packaging model
 \item{\code{resmapId}}{A character string specifying the identifier for the package resource map. 
 This is assigned after a package is uploaded or downloaded from a repository.}
 }}
+
 \section{Methods}{
 
 \itemize{
@@ -71,7 +72,7 @@ This is assigned after a package is uploaded or downloaded from a repository.}
  \item{\code{\link{updateRelationships}}}{: Update package relationships by replacing an old identifier with a new one.}
 }
 }
+
 \seealso{
 \code{\link{datapack}}
 }
-

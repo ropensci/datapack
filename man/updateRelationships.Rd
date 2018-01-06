@@ -28,4 +28,3 @@ relationship.
 \seealso{
 \code{\link{DataPackage-class}}
 }
-
