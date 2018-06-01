@@ -11,15 +11,16 @@ xsdString                <- sprintf("%s%s", xsd_NS, "string")
 xsdDateTime              <- sprintf("%s%s", xsd_NS, "dateTime")
 dc_NS                    <- "http://purl.org/dc/elements/1.1/"
 dcterms_NS               <- "http://purl.org/dc/terms/"
-DCidentifier             <- sprintf("%s%s", dcterms_NS, "identifier")
-DCagent                  <- sprintf("%s%s", dcterms_NS, "Agent")
-DCcreator                <- sprintf("%s%s", dc_NS, "creator")
-DCmodified               <- sprintf("%s%s", dcterms_NS, "modified")
+DCTERMSidentifier        <- sprintf("%s%s", dcterms_NS, "identifier")
+DCTERMSagent             <- sprintf("%s%s", dcterms_NS, "Agent")
+DCTERMScreator           <- sprintf("%s%s", dcterms_NS, "creator")
+DCTERMSmodified          <- sprintf("%s%s", dcterms_NS, "modified")
 DCtitle                  <- sprintf("%s%s", dc_NS, "title")
 RDF_NS                   <- "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 FOAF_NS                  <- "http://xmlns.com/foaf/0.1/"
 foafName                 <- sprintf("%s%s", FOAF_NS, "name")
 RDFtype                  <- sprintf("%s%s", RDF_NS, "type")
+otherCreator             <- sprintf("%s%s", dc_NS, "creator")
 # This is kept for backward compatibility
 rdfType <- RDFtype
 provNS                   <- "http://www.w3.org/ns/prov#"
@@ -69,6 +70,7 @@ prefixes <- c("rdf",
 knownNamespaces <- data.frame(namespace = namespace_vector, prefix = prefixes, stringsAsFactors = FALSE)
 
 # Open Archives Initiative Object Reuse and Exchange (OAI-ORE) terms
+ORE_NS <- "http://www.openarchives.org/ore/terms/"
 OREresourceMap <- "http://www.openarchives.org/ore/terms/ResourceMap"
 OREdescribes <- "http://www.openarchives.org/ore/terms/describes"
 OREisDescribedBy <- "http://www.openarchives.org/ore/terms/isDescribedBy"

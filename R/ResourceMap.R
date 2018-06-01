@@ -205,7 +205,7 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
     }
     
     # Add the Dublic Core identifier relation for each object added to the data package
-    statement <- new("Statement", x@world, subject=URIid, predicate=DCidentifier, object=id, objectType="literal", datatype_uri=xsdString)
+    statement <- new("Statement", x@world, subject=URIid, predicate=DCTERMSidentifier, object=id, objectType="literal", datatype_uri=xsdString)
     addStatement(x@model, statement)
     
     # Add triples for each object that is aggregated
@@ -224,7 +224,7 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
         URIid <- id
     }
     # Add the Dublic Core identifier relation for each object added to the data package
-    statement <- new("Statement", x@world, subject=URIid, predicate=DCidentifier, object=id, objectType="literal", datatype_uri=xsdString)
+    statement <- new("Statement", x@world, subject=URIid, predicate=DCTERMSidentifier, object=id, objectType="literal", datatype_uri=xsdString)
     addStatement(x@model, statement)
   }
 
@@ -234,10 +234,10 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
   
   # Not sure if this is needed by D1 to parse resourceMap
   #currentTime <- format(Sys.time(), "%Y-%m-%dT%H:%M:%S.000%z")
-  #statement <- new("Statement", x@world, subject=resMapURI, predicate=DCmodified, object=currentTime, objectType="literal", datatype_uri=xsdDateTimeURI)
+  #statement <- new("Statement", x@world, subject=resMapURI, predicate=DCTERMSmodified, object=currentTime, objectType="literal", datatype_uri=xsdDateTimeURI)
     
   # Add the identifier for the ResourceMap
-  statement <- new("Statement", x@world, subject=resMapURI, predicate=DCidentifier, object=URLdecode(x@id),
+  statement <- new("Statement", x@world, subject=resMapURI, predicate=DCTERMSidentifier, object=URLdecode(x@id),
                    objectType="literal", datatype_uri=xsdString)
   
   addStatement(x@model, statement)
@@ -252,28 +252,34 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
   statement <- new("Statement", x@world, subject=resMapURI, predicate=OREdescribes, object=aggregationId)
   addStatement(x@model, statement)
   
+  # This triple isn't strictly required by the ORE spec. 
+  #statement <- new("Statement", x@world, subject=aggregationId, predicate=OREisDescribedBy, object=resMapURI)
+  #addStatement(x@model, statement)
+  
   # Add a resource map creator (an Agent)
   # For example: 
   # _:r1495819159r74422r1 http://www.w3.org/1999/02/22-rdf-syntax-ns#type http://purl.org/dc/terms/Agent
   # _:r1495819159r74422r1 http://xmlns.com/foaf/0.1/name> "DataONE Java Client Library"^^<http://www.w3.org/2001/XMLSchema#string>
   # https://cn.dataone.org/cn/v1/resolve/resourceMap_karakoenig.46.6 http://purl.org/dc/elements/1.1/creator _:r1495819159r74422r1
   
-  # Always add a creator
+  # Use the previous creaor id if found, otherwise create a new one.
   
-  creatorBlankNodeId <- sprintf("_%s", UUIDgenerate())
-  statement <- new("Statement", x@world, subject=creatorBlankNodeId, predicate=RDFtype, object=DCagent,
-                   subjectType="blank")
-  addStatement(x@model, statement)
-  statement <- new("Statement", x@world, subject=creatorBlankNodeId, predicate=foafName, object=creator,
-                   subjectType="blank", objectType="literal", datatype_uri=xsdString)
-  addStatement(x@model, statement)
-  statement <- new("Statement", x@world, subject=resMapURI, predicate=DCcreator, object=creatorBlankNodeId,
-                   objectType="blank")
-  addStatement(x@model, statement)
+  if(!creatorFound) {
+    creatorBlankNodeId <- sprintf("_%s", UUIDgenerate())
+    statement <- new("Statement", x@world, subject=creatorBlankNodeId, predicate=RDFtype, object=DCTERMSagent,
+                     subjectType="blank")
+    addStatement(x@model, statement)
+    statement <- new("Statement", x@world, subject=creatorBlankNodeId, predicate=foafName, object=creator,
+                     subjectType="blank", objectType="literal", datatype_uri=xsdString)
+    addStatement(x@model, statement)
+    statement <- new("Statement", x@world, subject=resMapURI, predicate=DCTERMScreator, object=creatorBlankNodeId,
+                     objectType="blank")
+    addStatement(x@model, statement)
+  }
   
   # Add modification time, required by ORE Resource Map specification
   now <- format.POSIXct(Sys.time(), format="%FT%H:%M:%SZ", tz="GMT", usetz=FALSE)
-  statement <- new("Statement", x@world, subject=resMapURI, predicate=DCmodified, object=now, 
+  statement <- new("Statement", x@world, subject=resMapURI, predicate=DCTERMSmodified, object=now, 
                    objectType="literal", datatype_uri=xsdDateTime)
   addStatement(x@model, statement)
 
