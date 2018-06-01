@@ -543,15 +543,15 @@ setMethod("getTriples", "ResourceMap", function(x, filter=TRUE, identifiers=list
                 next
             } else if((predicate == RDFtype) && (object == OREresourceMap)) {
                 next
-            } else if(object == DCagent) {
+            } else if(object == DCTERMSagent) {
                 creatorId <- subject
                 next
-            } else if(predicate == DCcreator) {
+            } else if(predicate == DCTERMScreator) {
                 creatorId <- subject
                 next
-            } else if(predicate == DCmodified) {
+            } else if(predicate == DCTERMSmodified) {
                 next
-            } else if(predicate == DCidentifier) {
+            } else if(predicate == DCTERMSidentifier) {
                 # Filter the dcterms:identifier statement for package ids
                 id <- checkIdMatch(object, pattern='%s$', identifiers)
                 if(!is.na(id))  next
