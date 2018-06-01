@@ -132,6 +132,7 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
   D1ResolveURI <- "https://cn.dataone.org/cn/v2/resolve"
   
   if(is.na(creator)) creator <- "DataONE R Client"
+  creatorFound <- FALSE
   
   if(is.na(resolveURI)) {
     pkgResolveURI <- D1ResolveURI
