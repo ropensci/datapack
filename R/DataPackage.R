@@ -1068,14 +1068,24 @@ setGeneric("setValue", function(x, ...) {
 #' # Change format types to correct value for both package members
 #' # Careful! Specifying 'identifiers=getIdentifiers(dp) will update all package members!
 #' dp <- setValue(dp, name="sysmeta@formatId", value="text/csv", identifiers=getIdentifiers(dp))
-setMethod("setValue", signature("DataPackage"), function(x, name, value, identifiers=NA_character_) {
+setMethod("setValue", signature("DataPackage"), function(x, name, value, identifiers=NA_character_, ...) {
   # First look at the top level slot names for a match with 'field'
   matchingIds <- list()
   if(length(keys(x@objects)) > 0) {
     for(iKey in keys(x@objects)) {
       if(! iKey %in% identifiers) next
       tmpObj <- x@objects[[iKey]]
-      if (class(value) == "character") {
+      # If a list is specified, we have to manualy convert it to a string that can be parsed,
+      # as R strips the 'list' out and we no longer have a list. This technique only works
+      # for a list of characters
+      if (class(value) == "list") {
+          saveQuotes <- getOption("useFancyQuotes")
+          options(useFancyQuotes = FALSE)
+          strList <- paste(dQuote(value), collapse=",")
+          strList <- sprintf("list(%s)", strList)
+          setStr <- sprintf("x@objects[[\'%s\']]@%s <- %s", iKey, as.character(name), strList)
+          options(useFancyQuotes = saveQuotes)
+      } else  if (class(value) == "character") {
           if(is.na(value)) {
               setStr <- sprintf("x@objects[[\'%s\']]@%s <- as.character(%s)", iKey, as.character(name), value)
           } else {
