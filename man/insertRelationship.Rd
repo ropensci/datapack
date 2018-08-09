@@ -51,8 +51,8 @@ Note: This method updates the passed-in DataPackage object.
 dp <- new("DataPackage")
 # Create a relationship
 dp <- insertRelationship(dp, "/Users/smith/scripts/genFields.R",
-    "http://www.w3.org/ns/prov#used",
-    "https://knb.ecoinformatics.org/knb/d1/mn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1")
+    "https://knb.ecoinformatics.org/knb/d1/mn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1",
+    "http://www.w3.org/ns/prov#used")
 # Create a relationshp with the subject as a blank node with an automatically assigned blank 
 # node id
 dp <- insertRelationship(dp, subjectID=NA_character_, objectIDs="thing6", 

@@ -215,6 +215,41 @@ test_that("InsertRelationship methods work", {
   expect_equal(relations[relations$predicate == datapack:::provWasDerivedFrom, 'object'], source)
 })
 
+test_that("removeRelationships method works", {
+    
+    dp <- new("DataPackage")
+    # Create a relationship
+    dp <- insertRelationship(dp, "/Users/smith/scripts/genFields.R",
+                             "https://knb.org/data_20030812.40.1",
+                             "http://www.w3.org/ns/prov#used")
+    # Create a relationshp with the subject as a blank node with an automatically assigned blank 
+    # node id
+    dp <- insertRelationship(dp, subjectID=NA_character_, objectIDs="thing6", 
+                             predicate="http://myns.org/wasThing")
+    # Create a relationshp with the subject as a blank node with a user assigned blank node id
+    dp <- insertRelationship(dp, subjectID="urn:uuid:bc9e160e-ca21-47d5-871b-4a4820fe4451", 
+                             objectIDs="thing7", predicate="http://myns.org/hadThing")
+    # Create multiple relationships with the same subject, predicate, but different objects
+    dp <- insertRelationship(dp, subjectID="https://myns.org/subject1", 
+                             objectIDs=c("thing4", "thing5"), predicate="http://myns.org/hadThing")
+    # Create multiple relationships with subject and object types specified
+    dp <- insertRelationship(dp, subjectID="orcid.org/0000-0002-2192-403X", 
+                             objectIDs="http://www.example.com/home", predicate="http://myns.org/hadHome",
+                             subjectType="uri", objectType="literal")
+    
+    # Now check if deleting various relationships results in the right number of rows
+    expect_that(nrow(getRelationships(dp)), equals(6))
+    dp <- removeRelationships(dp, predicate='http://myns.org/wasThing')
+    expect_that(nrow(getRelationships(dp)), equals(5))
+    dp <- removeRelationships(dp, subjectID='orcid.org/0000-0002-2192-403X')
+    expect_that(nrow(getRelationships(dp)), equals(4))
+    dp <- removeRelationships(dp, subjectID='https://myns.org/subject1', predicate='http://myns.org/hadThing')
+    expect_that(nrow(getRelationships(dp)), equals(2))
+    dp <- removeRelationships(dp)
+    expect_that(nrow(getRelationships(dp)), equals(0))
+    
+})
+
 test_that("Package serialization works", {
   
   library(uuid)

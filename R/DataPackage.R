@@ -360,8 +360,8 @@ setGeneric("insertRelationship", function(x, ...) {
 #' dp <- new("DataPackage")
 #' # Create a relationship
 #' dp <- insertRelationship(dp, "/Users/smith/scripts/genFields.R",
-#'     "http://www.w3.org/ns/prov#used",
-#'     "https://knb.ecoinformatics.org/knb/d1/mn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1")
+#'     "https://knb.ecoinformatics.org/knb/d1/mn/v1/object/doi:1234/_030MXTI009R00_20030812.40.1",
+#'     "http://www.w3.org/ns/prov#used")
 #' # Create a relationshp with the subject as a blank node with an automatically assigned blank 
 #' # node id
 #' dp <- insertRelationship(dp, subjectID=NA_character_, objectIDs="thing6", 
@@ -455,6 +455,93 @@ setMethod("insertRelationship", signature("DataPackage"),
   x@relations[["updated"]] <- TRUE
   return(x)
 })
+
+#' Remove relationships of objects in a DataPackage
+#' @description Use this function to remove all or a subset of the relationships that have previously been added in a data package. 
+#' @details Remove a relationship of the form "subject -> predicate -> object", as defined by the Resource Description Framework (RDF), i.e.
+#' an RDF triple. If neither subjectID nor predicate are provided, then all relationships are removed.  If one or both
+#' are provided, they are used to select matching triples to be removed.
+#' Note: This method updates the passed-in DataPackage object.
+#' @param x A DataPackage object
+#' @param subjectID The identifier of the subject of the relationships to be removed
+#' @param predicate The identifier of the predicate of the relationships to be removed
+#' @param ... (Additional parameters)
+#' @return the updated DataPackage object
+#' @seealso \code{\link{DataPackage-class}}
+#' @export
+setGeneric("removeRelationships", function(x, ...) {
+    standardGeneric("removeRelationships")
+})
+
+#' @rdname removeRelationships
+#' @export
+#' @examples
+#' dp <- new("DataPackage")
+#' # Create a relationship
+#' dp <- insertRelationship(dp, "/Users/smith/scripts/genFields.R",
+#'     "https://knb.org/data_20030812.40.1",
+#'     "http://www.w3.org/ns/prov#used")
+#' # Create a relationshp with the subject as a blank node with an automatically assigned blank 
+#' # node id
+#' dp <- insertRelationship(dp, subjectID=NA_character_, objectIDs="thing6", 
+#'     predicate="http://myns.org/wasThing")
+#' # Create a relationshp with the subject as a blank node with a user assigned blank node id
+#' dp <- insertRelationship(dp, subjectID="urn:uuid:bc9e160e-ca21-47d5-871b-4a4820fe4451", 
+#'       objectIDs="thing7", predicate="http://myns.org/hadThing")
+#' # Create multiple relationships with the same subject, predicate, but different objects
+#' dp <- insertRelationship(dp, subjectID="https://myns.org/subject1", 
+#'       objectIDs=c("thing4", "thing5"), predicate="http://myns.org/hadThing")
+#' # Create multiple relationships with subject and object types specified
+#' dp <- insertRelationship(dp, subjectID="orcid.org/0000-0002-2192-403X", 
+#'     objectIDs="http://www.example.com/home", predicate="http://myns.org/hadHome",
+#'                    subjectType="uri", objectType="literal")
+#' nrow(getRelationships(dp)) 
+#' dp <- removeRelationships(dp, predicate='http://myns.org/wasThing')
+#' nrow(getRelationships(dp)) 
+#' dp <- removeRelationships(dp, subjectID='orcid.org/0000-0002-2192-403X')
+#' nrow(getRelationships(dp)) 
+#' dp <- removeRelationships(dp, subjectID='https://myns.org/subject1', 
+#'     predicate='http://myns.org/hadThing')
+#' nrow(getRelationships(dp)) 
+#' dp <- removeRelationships(dp)
+#' nrow(getRelationships(dp)) 
+setMethod("removeRelationships", signature("DataPackage"), 
+            function(x, subjectID=NA_character_, predicate=NA_character_) {
+              
+                # Argument has to be character
+                stopifnot(is.character(subjectID))
+                stopifnot(is.character(predicate))
+
+                # Get access to the relations data frame
+                if (has.key("relations", x@relations)) {
+                    relations <- x@relations[["relations"]]
+                } else {
+                    # There are no relations, so nothing to be removed
+                    warning("No relationships exist, so can not remove relationships as specified.")
+                }
+                
+                # Delete some of the relationships, depending on whether subject and predicate are provided
+                if (is.na(subjectID) && is.na(predicate)) {
+                    # Delete all relationships because no subject or predicate was indicated
+                    relations <- data.frame()
+                } else if (is.na(subjectID)) {
+                    # Delete only relationships matching predicate
+                    relations <- relations[!relations$predicate==predicate,]
+                } else if (is.na(predicate)) {
+                    # Delete only relationships matching subjectID
+                    relations <- relations[!relations$subject==subjectID,]
+                } else {
+                    # Delete relationships matching both subjectID and predicate
+                    relations <- relations[!(relations$subject==subjectID & relations$predicate==predicate),]
+                }
+                
+                # Assign the modified relations data frame to the class slot
+                x@relations[["relations"]] <- relations 
+                
+                # Set the relationships (resource map) to updated status.
+                x@relations[["updated"]] <- TRUE
+                return(x)
+            })
 
 #' Record derivation relationships between objects in a DataPackage
 #' @description Record a derivation relationship that expresses that a target object has been derived from a source object.
