@@ -44,6 +44,7 @@
 #' }
 #' @import redland
 #' @import uuid
+#' @import XML
 #' @section Methods:
 #' \itemize{
 #'  \item{\code{\link[=ResourceMap-initialize]{initialize}}}{: Initialize a ResourceMap object.}
@@ -444,101 +445,113 @@ setMethod("getTriples", "ResourceMap", function(x, filter=TRUE, identifiers=list
   
     relations <- data.frame(row.names=NULL, stringsAsFactors=F)
     
-    # Get the aggregation URI for use in qualifying certain relationships that we wan to skip.
-    # s: <https://cn-stage-2.test.dataone.org/cn/v2/resolve/urn:uuid:63ac03cb-6fea-4013-8fc7-25d2ff5cc8cb#aggregation> 
-    # p: <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> i
-    # o: <http://www.openarchives.org/ore/terms/Aggregation> 
-   
-    # s: <https://cn-stage-2.test.dataone.org/cn/v2/resolve/urn:uuid:63ac03cb-6fea-4013-8fc7-25d2ff5cc8cb> 
-    # p: <http://purl.org/dc/terms/identifier> 
-    # o: "urn:uuid:63ac03cb-6fea-4013-8fc7-25d2ff5cc8cb"^^<http://www.w3.org/2001/XMLSchema#string>
-    
+
+    # See ./inst/extdata/sparql-query-result.xml to see an example SPARQL qeury that
+    # getTriples can parse.
     parser <- new("Parser", x@world)
     # Query the RDF model with a SPARQL query that should return all triples
     queryString <- 'SELECT ?s ?p ?o WHERE { ?s ?p ?o . }'
     query <- new("Query", x@world, queryString, base_uri=NULL, query_language="sparql", query_uri=NULL)
-    queryResult <- executeQuery(query, x@model)
+
+    # Create a data frame from the results
+    resultStr <- redland::getResults(query, x@model, "rdfxml")
+    doc <- xmlInternalTreeParse(resultStr, asText=TRUE)
+    rdfStmtNodes <- getNodeSet(doc, "//rs:solution/rdf:Description")
     
     # Retrieve query results and check the actual result count against the expected count
-    result <- getNextResult(queryResult)
-    first <- TRUE
     # Remove a creator id if filtering and it is found
     creatorId <- NA_character_
     creatorFound <- FALSE
-    while(!is.null(result)) {
-        # Can't get next result at the end of the loop because 'next' is used.
-        if(first) first <- FALSE else result <- getNextResult(queryResult)
-        if(is.null(result)) break
-        subject <- result$s
-        predicate <- result$p
-        object <- result$o
-        what <- result$d
+    
+    subject <- NA_character_
+    predicate <- NA_character_
+    object <- NA_character_
+    objectType <- NA_character_
+    subjectType <- NA_character_
+    dataTypeURI <- NA_character_
+    
+    # Loop over the RDF statements of the SPARQL query result
+    for (stmt in rdfStmtNodes) {
+        bindings <- xmlChildren(stmt)
+        
+        subject <- NA_character_
+        predicate <- NA_character_
+        object <- NA_character_
         objectType <- NA_character_
-        subjectType <- NA_character_
+        subjectType <- NA_character_ 
         dataTypeURI <- NA_character_
-        #cat(sprintf("s: %s p: %s o: %s\n", subject, predicate, object))
-        # Remove leading '<' and trailing '>" from the result. The result is returned as
-        # RDF NTriples, so annotations to the terms denotes the type. (see https://www.w3.org/TR/n-triples/)
-        if(grepl("^<.*>$", subject, perl=TRUE))   {
-            subject   <- gsub("^<", "", subject, perl=TRUE)
-            subject   <- gsub(">$", "", subject, perl=TRUE)
-            subjectType <- "uri"
-        } else if(grepl("^_:", subject, perl=TRUE)) {
-            # Remove the colon from the blank node identifier, as this will be an illigal XML name
-            # when the relationships are serialized to RDF/XML
-            subject <- gsub("^_:", "_", subject, perl=TRUE)
-            subjectType <- "blank"
-        } else {
-            # Subject type can only be 'uri' or 'blank'. If the subject is not surrounded by
-            # '<', '>' and doesn't start with the N-Triples '_:', then it is some non-standard blank
-            # node name.
-            subjectType <- "blank"
-        }
         
-        # The predicate is always a 'uri'
-        if(grepl("^<.*>$", predicate, perl=TRUE)) {
-            predicate <- gsub("^<", "", predicate, perl=TRUE)
-            predicate <- gsub(">$", "", predicate, perl=TRUE)
-        } else {
-            warning(sprintf("Invalid predicate %s, not valid N-Triples value.", predicate))
-        }
-        
-        # Parse object and determine its type. The object may be appended with language designation
-        # e.g. "@en" or a data type, e.g. "^^<xsd:dateTime>"
-        if(grepl("^<", object, perl=TRUE)) {
-            object <- gsub("^<", "", object, perl=TRUE)
-            object <- gsub(">$", "", object, perl=TRUE)
-            objectType <- "uri"
-        } else if(grepl("^\"", object, perl=TRUE)) {
-            # The object might contain a data type appended to it with the string "^^" separating
-            # the object and the data type
-            if(grepl("^^", object, fixed=TRUE)) {
-                strResult <- strsplit(object, '^^', fixed=TRUE)
-                object <- strResult[[1]][[1]]
-                dataTypeURI <- strResult[[1]][[2]]
-                #cat(sprintf("object: %s\n objectType: %s\n", object, objectType))
-                dataTypeURI <- gsub("^<", "", dataTypeURI, perl=TRUE)
-                dataTypeURI <- gsub(">$", "", dataTypeURI, perl=TRUE)
+        # Loop over the bindings, i.e. subject, predicate, object
+        for (binding in bindings) {
+            nodeName <- xmlName(binding)
+            nodeValue <- NA_character_
+            nodeType <- NA_character_
+            RDFnodeType <- NA_character_
+            # Loop over attributes for this binding object (RDF node) 
+            for (node in xmlChildren(binding[['Description']])) {
+                
+                # Need to set subject, predicate, object, subjectType, objectType, dataTypeURI
+                name <- xmlName(node)
+                # The 'value' of the node can either be in an attribute (e.g. 'rdf:nodeId="_:1234") or
+                # in the xml element value`
+                value <- xmlValue(node)
+                attrs <- xmlAttrs(node)
+                
+                if(grepl("value", name)) {
+                    if (any(grepl("resource", names(attrs)))) {
+                        RDFnodeType <- "uri"
+                        nodeValue <- attrs[["resource"]]
+                    } else if (any(grepl("nodeID", names(attrs)))) {
+                        RDFnodeType <- "blank"
+                        nodeValue <- attrs[["nodeID"]]
+                    } else if (any(grepl("datatype", names(attrs)))) {
+                        RDFnodeType <- "literal"
+                        nodeValue <- value
+                        dataTypeURI <- attrs[["datatype"]]
+                    } else {
+                        RDFnodeType <- "literal"
+                        nodeValue <- value
+                    }
+                } else if (grepl("variable", name)) {
+                    # The variables from the SPARQL query
+                    if(value == "s") {
+                       nodeType <- "subject" 
+                    } else if (value == "o") {
+                        nodeType <- "object"
+                    } else if (value == "p") {
+                        nodeType <- "predicate"
+                    } else {
+                        warning("Unknown RDF node type: %s\n", value)
+                    }
+                    
+                }
             }
-            object <- gsub('^"', "", object, perl=TRUE)
-            object <- gsub('"$', "", object, perl=TRUE)
-            objectType <- "literal"
-        } else if(grepl("^_:", object, perl=TRUE)) {
-            object <- gsub("^_:", "_", object, perl=TRUE)
-            objectType <- "blank"
-        } else {
-            # Object type can be 'uri', 'blank' or 'literal'. If the object is not surrounded by
-            # '<', '>' or '"', and doesn't start with the N-Triples '_:', then it is some non-standard blank
-            # node name.
-            objectType <- "blank"
+            
+            # All the info for this triple should now be set, sa assign the
+            # subject, predicate, object. Note that 'dataTypeURI' should also be
+            # set, if found in the triple
+            if(nodeType == "subject") {
+                subject <- nodeValue
+                subjectType <- RDFnodeType
+            } else if (nodeType == "object") {
+                object <- nodeValue
+                objectType <- RDFnodeType
+            } else if (nodeType == "predicate") {
+                predicate <- nodeValue
+            } else {
+                warning("Cannot determine RDF node type for node: %s\n", name)
+            }
         }
-
+        
+        #cat(sprintf("s: %s p: %s o: %s\n", subject, predicate, object))
+        
         # Filter DataONE packaging statements that may have been inserted during 'createFromTriples'
         # Filtering this way is much easier than filtering in SPARQL!
         # This method of filtering assumes that the namespaces have been expanded, which appears
-        # to happen during hthe redland parsing. This is advantageous, as then we don't need
+        # to happen during the redland parsing. This is advantageous, as then we don't need
         # to determine what namespaces existing in the resource map, and any namespace prefix
         # to uri mapping that was in effect. Also, the filtering can use the expanded names.
+        
         if(filter) { 
             if((predicate == DCtitle) && (object == "DataONE Aggregation")) {
                 next
@@ -627,8 +640,6 @@ setMethod("getTriples", "ResourceMap", function(x, filter=TRUE, identifiers=list
     rm(parser)
     freeQuery(query)
     rm(query)
-    freeQueryResults(queryResult)
-    rm(queryResult)
     
     return(base::unique(relations))
   

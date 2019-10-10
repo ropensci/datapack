@@ -1,0 +1,559 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rs="http://www.w3.org/2001/sw/DataAccess/tests/result-set#">
+  <rs:ResultSet>
+    <rs:resultVariable>o</rs:resultVariable>
+    <rs:resultVariable>p</rs:resultVariable>
+    <rs:resultVariable>s</rs:resultVariable>
+    <rs:solution>
+      <rdf:Description>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3A9fcf1700-e1d7-4c19-b795-6690425e3513"/>
+            <rs:variable>s</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://www.openarchives.org/ore/terms/describes"/>
+            <rs:variable>p</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3A9fcf1700-e1d7-4c19-b795-6690425e3513#aggregation"/>
+            <rs:variable>o</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+      </rdf:Description>
+    </rs:solution>
+    <rs:solution>
+      <rdf:Description>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="urn:uuid:c994e155-b730-4707-8825-4fd1347d24f1"/>
+            <rs:variable>s</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <rs:variable>p</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://purl.dataone.org/provone/2015/01/15/ontology#Execution"/>
+            <rs:variable>o</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+      </rdf:Description>
+    </rs:solution>
+    <rs:solution>
+      <rdf:Description>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3A0f33c9d6-57db-46ab-83e9-c1b808d7fdc6"/>
+            <rs:variable>s</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://www.w3.org/ns/prov#wasDerivedFrom"/>
+            <rs:variable>p</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3Ae1f9f28a-c7ee-4e67-acb5-ca9796fd9fd8"/>
+            <rs:variable>o</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+      </rdf:Description>
+    </rs:solution>
+    <rs:solution>
+      <rdf:Description>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="urn:uuid:c994e155-b730-4707-8825-4fd1347d24f1"/>
+            <rs:variable>s</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://purl.org/dc/terms/identifier"/>
+            <rs:variable>p</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:uuid:c994e155-b730-4707-8825-4fd1347d24f1</rs:value>
+            <rs:variable>o</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+      </rdf:Description>
+    </rs:solution>
+    <rs:solution>
+      <rdf:Description>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3A0f33c9d6-57db-46ab-83e9-c1b808d7fdc6"/>
+            <rs:variable>s</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://purl.org/dc/terms/identifier"/>
+            <rs:variable>p</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:uuid:0f33c9d6-57db-46ab-83e9-c1b808d7fdc6</rs:value>
+            <rs:variable>o</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+      </rdf:Description>
+    </rs:solution>
+    <rs:solution>
+      <rdf:Description>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3A615206e1-e172-43e7-99ec-3de618690460"/>
+            <rs:variable>s</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <rs:variable>p</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://purl.dataone.org/provone/2015/01/15/ontology#Program"/>
+            <rs:variable>o</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+      </rdf:Description>
+    </rs:solution>
+    <rs:solution>
+      <rdf:Description>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3A9fcf1700-e1d7-4c19-b795-6690425e3513#aggregation"/>
+            <rs:variable>s</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <rs:variable>p</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://www.openarchives.org/ore/terms/Aggregation"/>
+            <rs:variable>o</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+      </rdf:Description>
+    </rs:solution>
+    <rs:solution>
+      <rdf:Description>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3A9fcf1700-e1d7-4c19-b795-6690425e3513"/>
+            <rs:variable>s</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://purl.org/dc/terms/identifier"/>
+            <rs:variable>p</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:uuid:9fcf1700-e1d7-4c19-b795-6690425e3513</rs:value>
+            <rs:variable>o</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+      </rdf:Description>
+    </rs:solution>
+    <rs:solution>
+      <rdf:Description>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3A0f33c9d6-57db-46ab-83e9-c1b808d7fdc6"/>
+            <rs:variable>s</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <rs:variable>p</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://purl.dataone.org/provone/2015/01/15/ontology#Data"/>
+            <rs:variable>o</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+      </rdf:Description>
+    </rs:solution>
+    <rs:solution>
+      <rdf:Description>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:nodeID="r1570556175r60221r1"/>
+            <rs:variable>s</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://www.w3.org/ns/prov#hadPlan"/>
+            <rs:variable>p</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3A615206e1-e172-43e7-99ec-3de618690460"/>
+            <rs:variable>o</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+      </rdf:Description>
+    </rs:solution>
+    <rs:solution>
+      <rdf:Description>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3Ae1f9f28a-c7ee-4e67-acb5-ca9796fd9fd8"/>
+            <rs:variable>s</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <rs:variable>p</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://purl.dataone.org/provone/2015/01/15/ontology#Data"/>
+            <rs:variable>o</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+      </rdf:Description>
+    </rs:solution>
+    <rs:solution>
+      <rdf:Description>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3A0f33c9d6-57db-46ab-83e9-c1b808d7fdc6"/>
+            <rs:variable>s</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://www.w3.org/ns/prov#wasGeneratedBy"/>
+            <rs:variable>p</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="urn:uuid:c994e155-b730-4707-8825-4fd1347d24f1"/>
+            <rs:variable>o</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+      </rdf:Description>
+    </rs:solution>
+    <rs:solution>
+      <rdf:Description>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3A0f33c9d6-57db-46ab-83e9-c1b808d7fdc6"/>
+            <rs:variable>s</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://www.openarchives.org/ore/terms/isAggregatedBy"/>
+            <rs:variable>p</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3A9fcf1700-e1d7-4c19-b795-6690425e3513#aggregation"/>
+            <rs:variable>o</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+      </rdf:Description>
+    </rs:solution>
+    <rs:solution>
+      <rdf:Description>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3A615206e1-e172-43e7-99ec-3de618690460"/>
+            <rs:variable>s</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://purl.org/dc/terms/identifier"/>
+            <rs:variable>p</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:uuid:615206e1-e172-43e7-99ec-3de618690460</rs:value>
+            <rs:variable>o</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+      </rdf:Description>
+    </rs:solution>
+    <rs:solution>
+      <rdf:Description>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3Ae1f9f28a-c7ee-4e67-acb5-ca9796fd9fd8"/>
+            <rs:variable>s</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://www.openarchives.org/ore/terms/isAggregatedBy"/>
+            <rs:variable>p</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3A9fcf1700-e1d7-4c19-b795-6690425e3513#aggregation"/>
+            <rs:variable>o</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+      </rdf:Description>
+    </rs:solution>
+    <rs:solution>
+      <rdf:Description>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="urn:uuid:c994e155-b730-4707-8825-4fd1347d24f1"/>
+            <rs:variable>s</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://www.w3.org/ns/prov#qualifiedAssociation"/>
+            <rs:variable>p</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:nodeID="r1570556175r60221r1"/>
+            <rs:variable>o</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+      </rdf:Description>
+    </rs:solution>
+    <rs:solution>
+      <rdf:Description>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3A9fcf1700-e1d7-4c19-b795-6690425e3513#aggregation"/>
+            <rs:variable>o</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3A615206e1-e172-43e7-99ec-3de618690460"/>
+            <rs:variable>s</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://www.openarchives.org/ore/terms/isAggregatedBy"/>
+            <rs:variable>p</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+      </rdf:Description>
+    </rs:solution>
+    <rs:solution>
+      <rdf:Description>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3A9fcf1700-e1d7-4c19-b795-6690425e3513"/>
+            <rs:variable>s</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <rs:variable>p</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://www.openarchives.org/ore/terms/ResourceMap"/>
+            <rs:variable>o</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+      </rdf:Description>
+    </rs:solution>
+    <rs:solution>
+      <rdf:Description>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:nodeID="r1570556175r60221r1"/>
+            <rs:variable>s</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <rs:variable>p</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://www.w3.org/ns/prov#Association"/>
+            <rs:variable>o</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+      </rdf:Description>
+    </rs:solution>
+    <rs:solution>
+      <rdf:Description>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3A9fcf1700-e1d7-4c19-b795-6690425e3513#aggregation"/>
+            <rs:variable>s</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://www.openarchives.org/ore/terms/aggregates"/>
+            <rs:variable>p</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3A0f33c9d6-57db-46ab-83e9-c1b808d7fdc6"/>
+            <rs:variable>o</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+      </rdf:Description>
+    </rs:solution>
+    <rs:solution>
+      <rdf:Description>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3A9fcf1700-e1d7-4c19-b795-6690425e3513#aggregation"/>
+            <rs:variable>s</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://www.openarchives.org/ore/terms/aggregates"/>
+            <rs:variable>p</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3A615206e1-e172-43e7-99ec-3de618690460"/>
+            <rs:variable>o</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+      </rdf:Description>
+    </rs:solution>
+    <rs:solution>
+      <rdf:Description>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3A9fcf1700-e1d7-4c19-b795-6690425e3513#aggregation"/>
+            <rs:variable>s</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://www.openarchives.org/ore/terms/aggregates"/>
+            <rs:variable>p</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3Ae1f9f28a-c7ee-4e67-acb5-ca9796fd9fd8"/>
+            <rs:variable>o</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+      </rdf:Description>
+    </rs:solution>
+    <rs:solution>
+      <rdf:Description>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="urn:uuid:c994e155-b730-4707-8825-4fd1347d24f1"/>
+            <rs:variable>s</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://www.w3.org/ns/prov#used"/>
+            <rs:variable>p</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3Ae1f9f28a-c7ee-4e67-acb5-ca9796fd9fd8"/>
+            <rs:variable>o</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+      </rdf:Description>
+    </rs:solution>
+    <rs:solution>
+      <rdf:Description>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3Ae1f9f28a-c7ee-4e67-acb5-ca9796fd9fd8"/>
+            <rs:variable>s</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://purl.org/dc/terms/identifier"/>
+            <rs:variable>p</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:uuid:e1f9f28a-c7ee-4e67-acb5-ca9796fd9fd8</rs:value>
+            <rs:variable>o</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+      </rdf:Description>
+    </rs:solution>
+    <rs:solution>
+      <rdf:Description>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3A9fcf1700-e1d7-4c19-b795-6690425e3513#aggregation"/>
+            <rs:variable>s</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value rdf:resource="http://purl.org/dc/elements/1.1/title"/>
+            <rs:variable>p</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+        <rs:binding>
+          <rdf:Description>
+            <rs:value>DataONE Aggregation</rs:value>
+            <rs:variable>o</rs:variable>
+          </rdf:Description>
+        </rs:binding>
+      </rdf:Description>
+    </rs:solution>
+  </rs:ResultSet>
+</rdf:RDF>
