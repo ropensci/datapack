@@ -1,9 +1,9 @@
 context("ResourceMap")
 test_that("datapack library loads", {
-  library(datapack)
+  expect_true(library(datapack, logical.return=TRUE))
 })
 test_that("ResourceMap initialization", {
-  library(datapack)
+  expect_true(library(datapack, logical.return=TRUE))
   resMap <- new("ResourceMap")
 
 })
@@ -89,8 +89,16 @@ test_that("Resource map parsing works", {
            "urn:uuid:615206e1-e172-43e7-99ec-3de618690460",
            "urn:uuid:e1f9f28a-c7ee-4e67-acb5-ca9796fd9fd8")
  
+  relations <- data.frame(row.names=NULL, stringsAsFactors=F)
+  
+  parser <- new("Parser", resMap@world)
+  # Query the RDF model with a SPARQL query that should return all triples
+  queryString <- 'SELECT ?s ?p ?o WHERE { ?s ?p ?o . }'
+  queryObj <- new("Query", resMap@world, queryString, base_uri=NULL, query_language="sparql", query_uri=NULL)
+  
   relations <- getTriples(resMap, identifiers=ids)
-  freeResourceMap(resMap)
+  
+  status <- freeResourceMap(resMap)
   
   execId <- relations[relations$object == datapack:::provONEexecution,'subject']
   expect_match(execId, "urn:uuid:c994e155-b730-4707-8825-4fd1347d24f1")
@@ -103,4 +111,26 @@ test_that("Resource map parsing works", {
   expect_match(relations[relations$predicate == datapack:::provWasDerivedFrom,'subject'], "urn:uuid:0f33c9d6-57db-46ab-83e9-c1b808d7fdc6")
   expect_match(relations[relations$predicate == datapack:::provWasDerivedFrom,'object'], "urn:uuid:e1f9f28a-c7ee-4e67-acb5-ca9796fd9fd8")
   
+  
+  # Another test of parsing a DataONE resource map
+  
+  resMap <- new("ResourceMap") 
+  resMap <- parseRDF(resMap, rdf=system.file("./extdata/hcdb-resmap.xml", package="datapack"),
+                     asText=FALSE)
+  
+  relations <- data.frame(row.names=NULL, stringsAsFactors=F)
+  
+  parser <- new("Parser", resMap@world)
+  # Query the RDF model with a SPARQL query that should return all triples
+  queryString <- 'SELECT ?s ?p ?o WHERE { ?s ?p ?o . }'
+  queryObj <- new("Query", resMap@world, queryString, base_uri=NULL, query_language="sparql", query_uri=NULL)
+  
+  relations <- getTriples(resMap, filter=FALSE)
+  
+  status <- freeResourceMap(resMap)
+  
+  #execId <- relations[relations$object == datapack:::provONEexecution,'subject']
+  
+  expect_match(relations[relations$predicate == datapack:::foafName, 'object'], "DataONE R Client")
+      
 })
