@@ -1,7 +1,7 @@
 context("DataObject")
 
 test_that("datapack library loads", {
-    library(datapack)
+    expect_true(library(datapack, logical.return = TRUE))
 })
 
 test_that("DataObject constructors work", {
@@ -70,12 +70,12 @@ test_that("DataObject accessPolicy methods", {
     
     # Public access should not be present at first
     canRead <- canRead(do, "uid=anybody,DC=somedomain,DC=org")
-    expect_that(canRead, is_false())
+    expect_false(canRead)
     
     # Test that setting public access works
     do <- setPublicAccess(do)
     isPublic <- hasAccessRule(do@sysmeta, "public", "read")
-    expect_that(isPublic, is_true())
+    expect_true(isPublic)
     
     # Test that custom access rules can be added to sysmeta of a DataObject
     accessRules <- data.frame(subject=c("uid=smith,ou=Account,dc=example,dc=com", 
@@ -88,7 +88,7 @@ test_that("DataObject accessPolicy methods", {
     
     # Public access should now be possible
     canRead <- canRead(do, "uid=anybody,DC=somedomain,DC=org")
-    expect_that(canRead, is_true())
+    expect_true(canRead)
     
     # Test that an access policy can be cleared, i.e. all access rules removed.
     do <- clearAccessPolicy(do)

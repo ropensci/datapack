@@ -1,7 +1,7 @@
 context("DataPackage")
 
 test_that("datapack library loads", {
-    library(datapack)
+    expect_true(library(datapack, logical.return = TRUE))
 })
 
 test_that("datapack initialization works", {
@@ -288,7 +288,7 @@ test_that("Package serialization works", {
   serializationId <- sprintf("%s%s", "resourceMap1", UUIDgenerate())
   filePath <- file.path(sprintf("%s/%s.rdf", tempdir(), serializationId))
   status <- serializePackage(dp, filePath, id=serializationId)
-  expect_that(file.exists(filePath), is_true())
+  expect_true(file.exists(filePath))
   found <- grep("wasDerivedFrom", readLines(filePath))
   expect_that(found, is_more_than(0))
   unlink(filePath)
@@ -303,14 +303,14 @@ test_that("Package serialization works", {
   # First compare ids
   dpIds <- getIdentifiers(dp)
   dpNewIds <- getIdentifiers(dpNew)
-  expect_that(identical(dpIds, dpNewIds, ignore.environment = TRUE), is_true())
+  expect_true(identical(dpIds, dpNewIds, ignore.environment = TRUE))
   # Compare relationships
   dpRelations <- getRelationships(dp)
   dpNewRelations <-getRelationships(dpNew)
-  expect_that(identical(dpRelations, dpNewRelations, ignore.environment = TRUE), is_true())
+  expect_true(identical(dpRelations, dpNewRelations, ignore.environment = TRUE))
   # Compare each data object
   for (id in getIdentifiers(dp)) {
-    expect_that(identical(getData(dp, id), getData(dpNew, id)), is_true())
+    expect_true(identical(getData(dp, id), getData(dpNew, id)))
   }
   unlink(dpFile)
   
@@ -332,7 +332,7 @@ test_that("Package serialization works with minimal DataPackage", {
     serializationId <- sprintf("%s%s", "resourceMap1", UUIDgenerate())
     filePath <- file.path(sprintf("%s/%s.rdf", tempdir(), serializationId))
     status <- serializePackage(dp, filePath, id=serializationId)
-    expect_that(file.exists(filePath), is_true())
+    expect_true(file.exists(filePath))
     found <- grep(mdId, readLines(filePath))
     expect_that(found, is_more_than(0))
     unlink(filePath)
@@ -401,8 +401,8 @@ test_that("BagIt serialization works", {
                      dataTypeURIs="http://www.w3.org/2001/XMLSchema#string")
   
  bagitFile <- serializeToBagIt(dp) 
- expect_that(file.exists(bagitFile), is_true())
- expect_that(file.info(bagitFile)[['size']] > 0, is_true())
+ expect_true(file.exists(bagitFile))
+ expect_true(file.info(bagitFile)[['size']] > 0)
 
 }) 
 
