@@ -9,8 +9,8 @@
 describeWorkflow(x, ...)
 
 \S4method{describeWorkflow}{DataPackage}(x, sources = list(),
-  program = NA_character_, derivations = list(), insertDerivations = TRUE,
-  ...)
+  program = NA_character_, derivations = list(),
+  insertDerivations = TRUE, ...)
 }
 \arguments{
 \item{x}{The \code{DataPackage} to add provenance relationships to.}

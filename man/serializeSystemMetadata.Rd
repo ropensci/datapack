@@ -8,7 +8,8 @@
 \usage{
 serializeSystemMetadata(x, ...)
 
-\S4method{serializeSystemMetadata}{SystemMetadata}(x, version = "v1", ...)
+\S4method{serializeSystemMetadata}{SystemMetadata}(x, version = "v1",
+  ...)
 }
 \arguments{
 \item{x}{The SystemMetadata instance to be serialized.}

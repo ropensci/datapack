@@ -8,8 +8,8 @@
 \usage{
 parseRDF(x, rdf, ...)
 
-\S4method{parseRDF}{ResourceMap}(x, rdf, asText = FALSE, name = "rdfxml",
-  mimeType = "application/rdf+xml", ...)
+\S4method{parseRDF}{ResourceMap}(x, rdf, asText = FALSE,
+  name = "rdfxml", mimeType = "application/rdf+xml", ...)
 }
 \arguments{
 \item{x}{ResourceMap}

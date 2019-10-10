@@ -8,8 +8,8 @@
 \usage{
 setValue(x, ...)
 
-\S4method{setValue}{DataPackage}(x, name, value, identifiers = NA_character_,
-  ...)
+\S4method{setValue}{DataPackage}(x, name, value,
+  identifiers = NA_character_, ...)
 }
 \arguments{
 \item{x}{A DataPackage instance}

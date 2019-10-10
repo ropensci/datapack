@@ -15,8 +15,8 @@ removeAccessRule(x, ...)
 
 \S4method{removeAccessRule}{DataObject}(x, y, ...)
 
-\S4method{removeAccessRule}{DataPackage}(x, y, permission = NA_character_,
-  identifiers = list(), ...)
+\S4method{removeAccessRule}{DataPackage}(x, y,
+  permission = NA_character_, identifiers = list(), ...)
 }
 \arguments{
 \item{x}{The object instance to which to remove the rule}

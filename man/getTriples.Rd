@@ -8,8 +8,8 @@
 \usage{
 getTriples(x, ...)
 
-\S4method{getTriples}{ResourceMap}(x, filter = TRUE, identifiers = list(),
-  ...)
+\S4method{getTriples}{ResourceMap}(x, filter = TRUE,
+  identifiers = list(), ...)
 }
 \arguments{
 \item{x}{ResourceMap}

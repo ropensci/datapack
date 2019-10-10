@@ -61,6 +61,7 @@ This is assigned after a package is uploaded or downloaded from a repository.}
  \item{\code{\link{insertRelationship}}}{: Insert relationships between objects in a DataPackage.}
  \item{\code{\link{removeAccessRule}}}{: Remove an access rule from DataObject in a DataPackage.}
  \item{\code{\link{removeMember}}}{: Remove the specified DataObject from a DataPackage.}
+ \item{\code{\link{removeRelationships}}}{: Remove relationships of objects in a DataPackage.}
  \item{\code{\link{replaceMember}}}{: Replace the raw data or file associated with a DataObject.}
  \item{\code{\link{selectMember}}}{: Select package members based on slot values.}
  \item{\code{\link{serializePackage}}}{: Create an OAI-ORE resource map from the DataPackage.}

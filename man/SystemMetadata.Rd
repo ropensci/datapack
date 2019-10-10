@@ -4,7 +4,6 @@
 \name{SystemMetadata}
 \alias{SystemMetadata}
 \alias{SystemMetadata,XMLInternalElementNode-method}
-\alias{SystemMetadata}
 \title{Create DataONE SystemMetadata object}
 \usage{
 SystemMetadata(...)

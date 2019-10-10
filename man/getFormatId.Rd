@@ -4,7 +4,6 @@
 \name{getFormatId}
 \alias{getFormatId}
 \alias{getFormatId,DataObject-method}
-\alias{getFormatId}
 \title{Get the FormatId of the DataObject}
 \usage{
 getFormatId(x, ...)

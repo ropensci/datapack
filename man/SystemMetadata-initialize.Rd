@@ -6,18 +6,21 @@
 \alias{SystemMetadata-initialize}
 \title{Initialize a DataONE SystemMetadata object with default values or values passed in to the constructor.}
 \usage{
-\S4method{initialize}{SystemMetadata}(.Object, identifier = NA_character_,
-  formatId = NA_character_, size = NA_real_, checksum = NA_character_,
+\S4method{initialize}{SystemMetadata}(.Object,
+  identifier = NA_character_, formatId = NA_character_,
+  size = NA_real_, checksum = NA_character_,
   checksumAlgorithm = "SHA-1", submitter = NA_character_,
   rightsHolder = NA_character_, accessPolicy = data.frame(subject =
   character(), permission = character()), replicationAllowed = TRUE,
   numberReplicas = 3, obsoletes = NA_character_,
   obsoletedBy = NA_character_, archived = FALSE,
-  dateUploaded = NA_character_, dateSysMetadataModified = NA_character_,
-  originMemberNode = NA_character_, authoritativeMemberNode = NA_character_,
-  preferredNodes = list(), blockedNodes = list(),
-  seriesId = NA_character_, mediaType = NA_character_,
-  fileName = NA_character_, mediaTypeProperty = list())
+  dateUploaded = NA_character_,
+  dateSysMetadataModified = NA_character_,
+  originMemberNode = NA_character_,
+  authoritativeMemberNode = NA_character_, preferredNodes = list(),
+  blockedNodes = list(), seriesId = NA_character_,
+  mediaType = NA_character_, fileName = NA_character_,
+  mediaTypeProperty = list())
 }
 \arguments{
 \item{.Object}{The object being initialized}
