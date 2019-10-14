@@ -38,7 +38,7 @@ Note: if you wish to build the required *redland* package from source before ins
 
 ## Installing on Ubuntu
 
-For ubuntu, install the required Redland C libraries by entering the following commands 
+For Ubuntu, install the required Redland C libraries by entering the following commands 
 in a terminal window:
 
 ```

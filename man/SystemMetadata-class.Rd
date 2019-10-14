@@ -16,7 +16,7 @@ access policy, replication policy, and related metadata.
 
 \item{\code{identifier}}{value of type \code{"character"}, the identifier of the object that this system metadata describes.}
 
-\item{\code{replicationAllowed}}{value of type \code{"logical"}, for replication policy allows replicants.}
+\item{\code{replicationAllowed}}{value of type \code{"logical"}, replication policy allows replicas.}
 
 \item{\code{numberReplicas}}{value of type \code{"numeric"}, for number of supported replicas.}
 

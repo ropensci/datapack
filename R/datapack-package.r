@@ -8,7 +8,7 @@
 #' be transported and loaded into a single composite file.  The methods in
 #' this package provide a convenient way
 #' to load data from common repositories such as DataONE into the R environment, 
-#' and to document, serialize, and save data from R to data repositories workdwide. 
+#' and to document, serialize, and save data from R to data repositories worldwide. 
 #' A data package is represented as an instance of the S4 class \code{\link[=DataPackage-class]{DataPackage}}, which 
 #' consists of one or more instances of the S4 DataObject class, which in turn contains
 #' an instance of the S4 SystemMetadata class.  The SystemMetadata

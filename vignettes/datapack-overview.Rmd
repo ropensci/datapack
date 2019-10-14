@@ -11,7 +11,7 @@ vignette: >
 
 ## Overview
 
-The *datapack* R package provides an abstraction for collating multile data 
+The *datapack* R package provides an abstraction for collating multiple data 
 objects of different types and metadata describing those objects into a bundle that can be transported and loaded using a single composite file.  It is primarily meant as
 a container to bundle together files for transport to or from DataONE data repositories.
 
@@ -187,7 +187,7 @@ sciObjRaw <- getData(dp, sciId)
 
 To get access to the full instance of the DataObject class representing a data object, 
 use the `datapack::getMember` function and pass in the identifier of the desired object, 
-which will return an instance of hte DataObject class:
+which will return an instance of the DataObject class:
 ```{r}
 mySciObj <- getMember(dp, sciId)
 ```
@@ -216,7 +216,7 @@ the following typical provenance properties:
 - `prov:wasGeneratedBy`: for asserting that when a program (such as an R script) was executed
   that it generated one or more derived data objects as outputs
   
-Figure 2. A DataPackge with provenance relationships.
+Figure 2. A DataPackage with provenance relationships.
 
 ![](package-diagram-with-prov.png)
 
@@ -231,7 +231,7 @@ getRelationships(dp, condense=TRUE)
 
 In that example, the `sciObj2` DataObject is added to the package using the `addMember` call, 
 and the metadata object `metadataObj` is passed in to the function as well.  This
-tells the DataPackage that `metadataId cito:documents sciId2`. The `cito:documents` relationship is defined by the [Citation Typing Ontology](http://vocab.ox.ac.uk/index) (CITO)).
+tells the DataPackage that `metadataId cito:documents sciId2`. The `cito:documents` relationship is defined by the [Citation Typing Ontology](http://purl.org/spar/cito) (CITO)).
 
 ## Asserting data provenance relationships between objects
 
@@ -298,7 +298,7 @@ relations <- getRelationships(dp, condense=TRUE)
 relations[grepl("cito:documents", relations$predicate),]
 ```
 
-Relationships can be fully specified using the URI of the concept, as shown in the following statement that adds a provenence relationship between two objects in the example package:
+Relationships can be fully specified using the URI of the concept, as shown in the following statement that adds a provenance relationship between two objects in the example package:
 
 ```{r, eval=F}
 dp <- insertRelationship(dp, subjectID=sciId2, objectIDs=sciId,
@@ -370,7 +370,7 @@ bagitFilename <- serializeToBagIt(dp)
 ```
 
 The variable `bagitFilename` contains the file path to the temporary BagIt file.
-This file should be copied to another location before quiting or restarting R:
+This file should be copied to another location before quitting or restarting R:
 
 ```{r, eval=F}
 file.copy(bagitFilename, "~/myPackageFile.zip")

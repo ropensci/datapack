@@ -45,7 +45,7 @@ specifying the permissions to add for each \code{subject}.
 Note that when \code{addAccessRule} is called with a `DataPackage` argument, the 
 additional parameter \code{identifiers} can be used:
 \itemize{
-  \item{identifiers A list of \code{character} values containing package member identifiers that the access rule will be appliced to (all members is the default)}.
+  \item{identifiers A list of \code{character} values containing package member identifiers that the access rule will be applied to (all members is the default)}.
 }
 }
 \examples{

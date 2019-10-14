@@ -16,7 +16,7 @@ serializeSystemMetadata(x, ...)
 
 \item{...}{(Not currently used)}
 
-\item{version}{A character string representing the DataONE API version that this system will be used with (eg. "v1", "v2").}
+\item{version}{A character string representing the DataONE API version that this system will be used with (e.g. "v1", "v2").}
 }
 \value{
 A character value of the filename that the XML representation of the SystemMetadata object was written to.

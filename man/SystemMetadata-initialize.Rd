@@ -41,7 +41,7 @@
 
 \item{accessPolicy}{value of type \code{"data.frame"} containing (subject, permission) tuples to constitute the access authorization rules.}
 
-\item{replicationAllowed}{value of type \code{"logical"}, for replication policy allows replicants.}
+\item{replicationAllowed}{value of type \code{"logical"}, for replication policy allows replicas.}
 
 \item{numberReplicas}{value of type \code{"numeric"}, for number of supported replicas.}
 

@@ -26,7 +26,7 @@
 #' @aliases SystemMetadata-class
 #' @slot serialVersion value of type \code{"numeric"}, the current version of this system metadata; only update the current version
 #' @slot identifier value of type \code{"character"}, the identifier of the object that this system metadata describes.
-#' @slot replicationAllowed value of type \code{"logical"}, for replication policy allows replicants.
+#' @slot replicationAllowed value of type \code{"logical"}, replication policy allows replicas.
 #' @slot numberReplicas value of type \code{"numeric"}, for number of supported replicas.
 #' @slot preferredNodes value of type \code{"list"}, of preferred member nodes.
 #' @slot blockedNodes value of type \code{"list"}, of blocked member nodes.
@@ -105,7 +105,7 @@ setClass("SystemMetadata", slots = c(
 #' @param submitter value of type \code{"character"}, the Distinguished Name or identifier of the person submitting the object.
 #' @param rightsHolder value of type \code{"character"}, the Distinguished Name or identifier of the person who holds access rights to the object.
 #' @param accessPolicy value of type \code{"data.frame"} containing (subject, permission) tuples to constitute the access authorization rules.
-#' @param replicationAllowed value of type \code{"logical"}, for replication policy allows replicants.
+#' @param replicationAllowed value of type \code{"logical"}, for replication policy allows replicas.
 #' @param numberReplicas value of type \code{"numeric"}, for number of supported replicas.
 #' @param preferredNodes list of \code{"character"}, each of which is the node identifier for a node to which a replica should be sent.
 #' @param blockedNodes list of \code{"character"}, each of which is the node identifier for a node blocked from housing replicas.
@@ -341,7 +341,7 @@ setGeneric("serializeSystemMetadata", function(x, ...) {
   standardGeneric("serializeSystemMetadata")
 })
 #' @rdname serializeSystemMetadata
-#' @param version A character string representing the DataONE API version that this system will be used with (eg. "v1", "v2").
+#' @param version A character string representing the DataONE API version that this system will be used with (e.g. "v1", "v2").
 #' @return the character string representing a SystemMetadata object
 #' @examples 
 #' library(XML)
@@ -534,7 +534,7 @@ setGeneric("removeAccessRule", function(x, ...) {
 })
 #' @rdname removeAccessRule
 #' @param y The subject of the rule to be removed, or a data.frame containing access rules.
-#' @param permission THe permission to remove, if parameter \code{x} is a character string containing a \code{subject}.
+#' @param permission The permission to remove, if parameter \code{x} is a character string containing a \code{subject}.
 #' @return The SystemMetadata object with the updated access policy.
 #' @examples 
 #' #

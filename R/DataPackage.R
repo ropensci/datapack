@@ -78,7 +78,7 @@
 #'  \item{\code{\link{serializeToBagIt}}}{: Serialize A DataPackage into a BagIt Archive File.}
 #'  \item{\code{\link{setPublicAccess}}}{: Set the access policy to readable by anyone for DataObject in a DataPackage.}
 #'  \item{\code{\link{setValue}}}{: Set values for selected DataPackage members}
-#'  \item{\code{\link{show}}}{: Print DataPackage information in a formated view.}
+#'  \item{\code{\link{show}}}{: Print DataPackage information in a formatted view.}
 #'  \item{\code{\link{updateMetadata}}}{: Update selected elements of the XML content of a DataObject in a DataPackage}
 #'  \item{\code{\link{updateRelationships}}}{: Update package relationships by replacing an old identifier with a new one.}
 #' }
@@ -715,7 +715,7 @@ setMethod("containsId", signature("DataPackage"), function(x, identifier) {
 })
 
 #' Remove the Specified Member from the Package
-#' @description Given the identifier of a DataObject in a DataPackge, delete the DataObject
+#' @description Given the identifier of a DataObject in a DataPackage, delete the DataObject
 #' from the DataPackage.
 #' @param x a DataPackage object
 #' @param ... (Not yet used)
@@ -1276,7 +1276,7 @@ setMethod("setPublicAccess", signature("DataPackage"), function(x, identifiers=l
 #' @details Note that when \code{addAccessRule} is called with a `DataPackage` argument, the 
 #' additional parameter \code{identifiers} can be used:
 #' \itemize{
-#'   \item{identifiers A list of \code{character} values containing package member identifiers that the access rule will be appliced to (all members is the default)}.
+#'   \item{identifiers A list of \code{character} values containing package member identifiers that the access rule will be applied to (all members is the default)}.
 #' }
 #' @return The DataPackage with updated DataObject access policies
 #' @seealso \code{\link{DataPackage-class}}
@@ -1396,7 +1396,7 @@ setMethod("hasAccessRule", signature("DataPackage"), function(x, subject, permis
 #' @rdname removeAccessRule
 #' @return The Datapackage with members having updated access policies.
 #' @param identifiers A list of \code{character} values containing package member identifiers that the access rule will be 
-#' appliced to (default is all package members).
+#' applied to (default is all package members).
 #' @seealso \code{\link{DataPackage-class}}
 #' @examples 
 #' # 
@@ -1469,7 +1469,7 @@ setGeneric("serializePackage", function(x, ...) {
 #' The resolveURI string value is prepended to DataPackage member identifiers in the resulting resource map. 
 #' If no resolveURI value is specified, then 'https://cn.dataone.org/cn/v1/resolve' is used.
 #' @param file The file to which the ResourceMap will be serialized
-#' @param id A unique identifier for the serialization. The default value is the id assinged 
+#' @param id A unique identifier for the serialization. The default value is the id assigned
 #' to the DataPackage when it was created.
 #' @param syntaxName The name of the syntax to use for serialization - default is "rdfxml"
 #' @param mimeType The mimetype of the serialized output - the default is "application/rdf+xml"
@@ -1960,7 +1960,7 @@ setMethod("describeWorkflow", signature("DataPackage"), function(x, sources=list
 
 #' Update package relationships by replacing an old identifier with a new one.
 #' @description When package members are updated, they receive a new identifier (replaceMember). It is therefor
-#' necessary to update the package relationships to update occurences of the old identifier
+#' necessary to update the package relationships to update occurrences of the old identifier
 #' with the new one when the old identifier appears in the "subject" or "object" of a 
 #' relationship.
 #' @param x A DataPackage object

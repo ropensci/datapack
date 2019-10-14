@@ -21,7 +21,7 @@ serializePackage(x, ...)
 
 \item{file}{The file to which the ResourceMap will be serialized}
 
-\item{id}{A unique identifier for the serialization. The default value is the id assinged 
+\item{id}{A unique identifier for the serialization. The default value is the id assigned
 to the DataPackage when it was created.}
 
 \item{syntaxName}{The name of the syntax to use for serialization - default is "rdfxml"}
