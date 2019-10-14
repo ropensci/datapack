@@ -1,3 +1,15 @@
+Version 1.3.2
+-------------
+BUGS
+
+* Ensure that a 'dc:creator' element is always present (#93)
+* Ensure that the resource map dcterms:modified time is always present/updated. (#93)
+* Ensure that a DataPackage is marked as updated after addAccessRule, setPublicAccess, clearAccessPolicy methods called (#92).
+* Remove dependency on redland::getNextResult (#110)
+
+NEW FEATURES
+* Added function removeRelationships() which can remove all or specified relationships from a DataPackage (#99)
+
 Version 1.3.1
 -------------
 
