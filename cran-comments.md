@@ -15,6 +15,7 @@
 * Ensure that a DataPackage is marked as updated after addAccessRule, setPublicAccess, clearAccessPolicy methods called (#92).
 * Remove dependency on redland::getNextResult (#110)
 * Added function removeRelationsships() which can remove all or specified relationships from a DataPackage (#99)
+
 ## R CMD check results
 
 * There were no ERRORs or WARNINGs or NOTES.
