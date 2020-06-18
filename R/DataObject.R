@@ -43,6 +43,7 @@
 #' @slot dataURL A character value for the URL used to load data into this DataObject
 #' @slot updated A hash containing logical values which indicate if system metadata or the data object have been updated since object creation.
 #' @slot oldId A character string containing the previous identifier used, before a \code{"replaceMember"} call.
+#' @slot relativeFilePath A character string holding the relative path of the data item
 #' @rdname DataObject-class
 #' @keywords classes
 #' @import methods
@@ -90,7 +91,8 @@ setClass("DataObject", slots = c(
     filename                = "character",
     dataURL                 = "character",
     updated                 = "hash",
-    oldId                   = "character")
+    oldId                   = "character",
+    relativeFilePath        = "character")
 )
 
 ##########################
@@ -122,16 +124,18 @@ setClass("DataObject", slots = c(
 #' @param mediaType The When specified, indicates the IANA Media Type (aka MIME-Type) of the object. The value should include the media type and subtype (e.g. text/csv).
 #' @param mediaTypeProperty A list, indicates IANA Media Type properties to be associated with the parameter \code{"mediaType"}
 #' @param dataURL A character string containing a URL to remote data (a repository) that this DataObject represents.
+#' @param relativeFilePath A string that denotes where the file should go if the package is downloaded
 #' @import digest
 #' @import uuid
 #' @examples
 #' data <- charToRaw("1,2,3\n4,5,6\n")
 #' do <- new("DataObject", "id1", dataobj=data, "text/csv", 
-#'   "uid=jones,DC=example,DC=com", "urn:node:KNB")
+#'   "uid=jones,DC=example,DC=com", "urn:node:KNB", filepath="data/rasters/data.tiff)
 #' @seealso \code{\link{DataObject-class}}
 setMethod("initialize", "DataObject", function(.Object, id=NA_character_, dataobj=NA, format=NA_character_, user=NA_character_, 
                                                mnNodeId=NA_character_, filename=NA_character_, seriesId=NA_character_,
-                                               mediaType=NA_character_, mediaTypeProperty=list(), dataURL=NA_character_) {
+                                               mediaType=NA_character_, mediaTypeProperty=list(), dataURL=NA_character_,
+                                               relativeFilePath=NA_character_) {
   
     # If no value has been passed in for 'id', then create a UUID for it.
     if (class(id) != "SystemMetadata" && is.na(id)) {
@@ -218,6 +222,7 @@ setMethod("initialize", "DataObject", function(.Object, id=NA_character_, dataob
     # downloaded from a data repository
     .Object@updated <- hash( keys=c("sysmeta", "data"), values=c(FALSE, FALSE))
     .Object@oldId <- NA_character_
+    .Object@relativeFilePath <- relativeFilePath
     return(.Object)
 })
 
