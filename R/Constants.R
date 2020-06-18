@@ -32,6 +32,7 @@ provWasGeneratedBy       <- sprintf("%s%s", provNS, "wasGeneratedBy")
 provAssociation          <- sprintf("%s%s", provNS, "Association")
 provWasAssociatedWith    <- sprintf("%s%s", provNS, "wasAssociatedWith")
 provAgent                <- sprintf("%s%s", provNS, "Agent")
+provAtLocation           <- sprintf("%s%s", provNS, "atLocation")
 provONE_NS               <- "http://purl.dataone.org/provone/2015/01/15/ontology#"
 provONEprogram           <- sprintf("%s%s", provONE_NS, "Program")
 provONEexecution         <- sprintf("%s%s", provONE_NS, "Execution")
