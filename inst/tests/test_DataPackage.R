@@ -391,10 +391,12 @@ test_that("BagIt serialization works", {
   
   user <- "smith"
   data <- charToRaw("1,2,3\n4,5,6")
+  doInFilePath = "myDir/textFile1.csv"
+  doOutFilePath = "myDir/textFile2.csv"
   node <- "urn:node:KNB"
   md1 <- new("DataObject", id=mdId, dataobj=charToRaw(someEML), format="eml://ecoinformatics.org/eml-2.1.1", user=user, mnNodeId=node)
-  doIn <- new("DataObject", id=doInId, dataobj=data, format="text/csv", user=user, mnNodeId=node)
-  doOut <- new("DataObject", id=doOutId, filename=csvfile, format="text/csv", user=user, mnNodeId=node)
+  doIn <- new("DataObject", id=doInId, dataobj=data, format="text/csv", user=user, mnNodeId=node, relativeFilePath=doInFilePath)
+  doOut <- new("DataObject", id=doOutId, filename=csvfile, format="text/csv", user=user, mnNodeId=node, relativeFilePath=doOutFilePath)
   dp <- addMember(dp, md1)
   dp <- addMember(dp, doIn)
   dp <- addMember(dp, doOut)
@@ -415,6 +417,9 @@ test_that("BagIt serialization works", {
  expect_true(file.exists(bagitFile))
  expect_true(file.info(bagitFile)[['size']] > 0)
 
+ zipFileNames = unzip(bagitFile, list=TRUE)$Name
+ expect_true(paste("data/",doInFilePath, sep="") %in% zipFileNames )
+ expect_true(paste("data/", doOutFilePath, sep="") %in% zipFileNames)
 }) 
 
 test_that("Adding provenance relationships to a DataPackage via describeWorkflow works", {

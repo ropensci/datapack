@@ -1641,13 +1641,31 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=NA_cha
     dataObj <- getMember(x, identifiers[idNum])
     # Was the DataObject created with the 'file' arg, i.e. data not in the DataObject,
     # but at a specified file out on disk?
+    
+    # Set the path to the file
+    relFile <- paste(bagDir, "/data/", sep="")
+    # If the user described the path of the file, use it
+    if (!is.na(dataObj@relativeFilePath)) {
+        relFile <- paste(relFile, dataObj@relativeFilePath, sep = "")
+    } else if (!is.na(dataObj@filename)) {
+        # Otherwise, if they specified a filename use that
+        relFile <- paste(relFile, dataObj@filename, sep = "")
+    } else {
+        # If the filename wasn't specified, use the identifier
+        relFile <- paste(relFile, getIdentifier(dataObj), sep="")
+    }
+    
+    # Create the directory if it doesn't exist
+    if(!file.exists(dirname(relFile))) {
+        dir.create(dirname(relFile))
+    }
+    
     if(!is.na(dataObj@filename)) {
       if(file.exists(dataObj@filename)) {
-        relFile <- sprintf("data/%s", basename(dataObj@filename))
-        file.copy(dataObj@filename, sprintf("%s/%s", bagDir, relFile))
+        file.copy(dataObj@filename, relFile)
         # Add this data pacakge member to the bagit files
         pidMap <- c(pidMap, sprintf("%s %s", identifiers[idNum], relFile))
-        thisMd5 <- digest(sprintf("%s/%s", bagDir, relFile), algo="md5", file=TRUE)
+        thisMd5 <- digest(relFile, algo="md5", file=TRUE)
         manifest <- c(manifest, sprintf("%s %s", as.character(thisMd5), relFile))  
       } else {
         stop(sprintf("Error serializing to BagIt format, data object \"%s\", uses file %s but this file doesn't exist", dataObj@filename, identifiers[idNum]))
@@ -1658,13 +1676,12 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=NA_cha
       con <- file(tf, "wb")
       writeBin(getData(dataObj), con)
       close(con)
-      relFile <- sprintf("data/%s", getIdentifier(dataObj))
-      file.copy(tf, sprintf("%s/%s", bagDir, relFile))
+      file.copy(tf, relFile)
       unlink(tf)
       rm(tf)
       # Add this data pacakge member to the bagit files
       pidMap <- c(pidMap, sprintf("%s %s", identifiers[idNum], relFile))
-      thisMd5 <- digest(sprintf("%s/%s", bagDir, relFile), algo="md5", file=TRUE)
+      thisMd5 <- digest(relFile, algo="md5", file=TRUE)
       manifest <- c(manifest, sprintf("%s %s", as.character(thisMd5), relFile))
     }
   }
