@@ -325,6 +325,10 @@ setMethod("addMember", signature("DataPackage"), function(x, do, mo=NA_character
             insertRelationship(x, getIdentifier(mo), getIdentifier(iObj))
         }
     }
+    # If the object's path was documented, add it to the resource map
+    if (!is.na(iObj@relativeFilePath)){
+        insertRelationship(x, getIdentifier(iObj), iObj@relativeFilePath, "http://www.w3.org/ns/prov#atLocation")
+    }
     return(x)
 })
 

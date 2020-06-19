@@ -62,6 +62,17 @@ test_that("datapack methods work", {
     rm(rdo)
     rm(rdata)
     
+    # Test that a DataObject with a file path gets the file path placed in the resource map
+    relativePath <- "./data/raster/data.tiff"
+    newId <- "testID"
+    do <- new("DataObject", newId, data, format, user, node, relativeFilePath=relativePath)
+    dpkg <- new("DataPackage")
+    dpkg <- addMember(dpkg, do)
+    relations <- getRelationships(dpkg)
+    expect_match(relations[relations$subject == newId, 'predicate'], "atLocation")
+    rm(do)
+    rm(dpkg)
+    
     # Test if we can associate a science object with a metadata object without calling
     # insertRelationships directly
     dpkg <- new("DataPackage")
@@ -586,18 +597,29 @@ test_that("removeMember works", {
     # relationships are.
     dp <- new("DataPackage")
     inputs <- list()
+    regressionPath <- "./extdata/pkg-example/logit-regression-example.R"
     doProg <- new("DataObject", format="application/R", 
-                  filename=system.file("./extdata/pkg-example/logit-regression-example.R", package="datapack"))
+                  filename=system.file(regressionPath, package="datapack"),
+                  relativeFilePath=regressionPath)
     dp <- addMember(dp, doProg)
     progId <- getIdentifier(doProg)
     
+    binaryPath <- "./extdata/pkg-example/binary.csv"
     doIn <- new("DataObject", format="text/csv", 
-                filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"))
+                filename=system.file(binaryPath, package="datapack"), relativeFilePath=binaryPath)
     dp <- addMember(dp, doIn)
     inputs[[length(inputs)+1]] <- doIn
+    relations <- getRelationships(dp, quiet=quietOn)
+
     dp <- describeWorkflow(dp, sources=inputs, program=doProg)
     relations <- getRelationships(dp, quiet=quietOn)
-    expect_match(relations[relations$subject == getIdentifier(doIn),'object'], 'Data')
+    
+    objectRelations = relations[relations$subject == getIdentifier(doIn),'object']
+    for(objectRelation in objectRelations) {
+        expect_true((objectRelation == 'http://purl.dataone.org/provone/2015/01/15/ontology#Data') | 
+                        (objectRelation == binaryPath))
+    }
+    
     execId <- relations[relations$object == datapack:::provONEexecution,'subject']
     expect_match(relations[relations$predicate == datapack:::provUsed,'object'], getIdentifier(doIn))
     expect_match(relations[relations$predicate == datapack:::provUsed,'subject'], execId)
