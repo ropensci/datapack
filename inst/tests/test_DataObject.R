@@ -55,6 +55,15 @@ test_that("DataObject constructors work", {
     sha1_get_data <- digest(data2, algo="sha1", serialize=FALSE, file=FALSE)
     expect_match(sha1_get_data, sha1)
     unlink(tf)
+    
+    # Test that the constructor works for a data path, with a few different forms
+    relativeFilePath="./data/rasters/test.csv"
+    do <- new("DataObject", sm, data, filename="test.csv", relativeFilePath=relativeFilePath)
+    expect_that(do@relativeFilePath, equals(relativeFilePath))
+    
+    relativeFilePath="data/rasters/test.csv"
+    do <- new("DataObject", sm, data, filename="test.csv", relativeFilePath=relativeFilePath)
+    expect_that(do@relativeFilePath, equals(relativeFilePath))
 })
 test_that("DataObject accessPolicy methods", {
     library(datapack)

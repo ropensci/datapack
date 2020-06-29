@@ -10,7 +10,8 @@
   dataobj = NA, format = NA_character_, user = NA_character_,
   mnNodeId = NA_character_, filename = NA_character_,
   seriesId = NA_character_, mediaType = NA_character_,
-  mediaTypeProperty = list(), dataURL = NA_character_)
+  mediaTypeProperty = list(), dataURL = NA_character_,
+  relativeFilePath = NA_character_)
 }
 \arguments{
 \item{.Object}{the DataObject instance to be initialized}
@@ -34,6 +35,8 @@
 \item{mediaTypeProperty}{A list, indicates IANA Media Type properties to be associated with the parameter \code{"mediaType"}}
 
 \item{dataURL}{A character string containing a URL to remote data (a repository) that this DataObject represents.}
+
+\item{relativeFilePath}{A string that denotes where the file should go when the package is downloaded.}
 }
 \description{
 When initializing a DataObject using passed in data, one can either pass 
@@ -52,8 +55,8 @@ downloaded from a repository.
 }
 \examples{
 data <- charToRaw("1,2,3\\n4,5,6\\n")
-do <- new("DataObject", "id1", dataobj=data, "text/csv", 
-  "uid=jones,DC=example,DC=com", "urn:node:KNB")
+do <- new("DataObject", "id1", dataobj=data, "text/csv",
+  "uid=jones,DC=example,DC=com", "urn:node:KNB", relativeFilePath="./miscData/rawData.txt")
 }
 \seealso{
 \code{\link{DataObject-class}}

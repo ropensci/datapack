@@ -62,6 +62,17 @@ test_that("datapack methods work", {
     rm(rdo)
     rm(rdata)
     
+    # Test that a DataObject with a file path gets the file path placed in the resource map
+    relativePath <- "./data/raster/data.tiff"
+    newId <- "testID"
+    do <- new("DataObject", newId, data, format, user, node, relativeFilePath=relativePath)
+    dpkg <- new("DataPackage")
+    dpkg <- addMember(dpkg, do)
+    relations <- getRelationships(dpkg)
+    expect_match(relations[relations$subject == newId, 'predicate'], "atLocation")
+    rm(do)
+    rm(dpkg)
+    
     # Test if we can associate a science object with a metadata object without calling
     # insertRelationships directly
     dpkg <- new("DataPackage")
@@ -380,10 +391,12 @@ test_that("BagIt serialization works", {
   
   user <- "smith"
   data <- charToRaw("1,2,3\n4,5,6")
+  doInFilePath = "myDir/textFile1.csv"
+  doOutFilePath = "myDir/textFile2.csv"
   node <- "urn:node:KNB"
   md1 <- new("DataObject", id=mdId, dataobj=charToRaw(someEML), format="eml://ecoinformatics.org/eml-2.1.1", user=user, mnNodeId=node)
-  doIn <- new("DataObject", id=doInId, dataobj=data, format="text/csv", user=user, mnNodeId=node)
-  doOut <- new("DataObject", id=doOutId, filename=csvfile, format="text/csv", user=user, mnNodeId=node)
+  doIn <- new("DataObject", id=doInId, dataobj=data, format="text/csv", user=user, mnNodeId=node, relativeFilePath=doInFilePath)
+  doOut <- new("DataObject", id=doOutId, filename=csvfile, format="text/csv", user=user, mnNodeId=node, relativeFilePath=doOutFilePath)
   dp <- addMember(dp, md1)
   dp <- addMember(dp, doIn)
   dp <- addMember(dp, doOut)
@@ -404,6 +417,9 @@ test_that("BagIt serialization works", {
  expect_true(file.exists(bagitFile))
  expect_true(file.info(bagitFile)[['size']] > 0)
 
+ zipFileNames = unzip(bagitFile, list=TRUE)$Name
+ expect_true(paste("data/",doInFilePath, sep="") %in% zipFileNames )
+ expect_true(paste("data/", doOutFilePath, sep="") %in% zipFileNames)
 }) 
 
 test_that("Adding provenance relationships to a DataPackage via describeWorkflow works", {
@@ -586,18 +602,29 @@ test_that("removeMember works", {
     # relationships are.
     dp <- new("DataPackage")
     inputs <- list()
+    regressionPath <- "./extdata/pkg-example/logit-regression-example.R"
     doProg <- new("DataObject", format="application/R", 
-                  filename=system.file("./extdata/pkg-example/logit-regression-example.R", package="datapack"))
+                  filename=system.file(regressionPath, package="datapack"),
+                  relativeFilePath=regressionPath)
     dp <- addMember(dp, doProg)
     progId <- getIdentifier(doProg)
     
+    binaryPath <- "./extdata/pkg-example/binary.csv"
     doIn <- new("DataObject", format="text/csv", 
-                filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"))
+                filename=system.file(binaryPath, package="datapack"), relativeFilePath=binaryPath)
     dp <- addMember(dp, doIn)
     inputs[[length(inputs)+1]] <- doIn
+    relations <- getRelationships(dp, quiet=quietOn)
+
     dp <- describeWorkflow(dp, sources=inputs, program=doProg)
     relations <- getRelationships(dp, quiet=quietOn)
-    expect_match(relations[relations$subject == getIdentifier(doIn),'object'], 'Data')
+    
+    objectRelations = relations[relations$subject == getIdentifier(doIn),'object']
+    for(objectRelation in objectRelations) {
+        expect_true((objectRelation == 'http://purl.dataone.org/provone/2015/01/15/ontology#Data') | 
+                        (objectRelation == binaryPath))
+    }
+    
     execId <- relations[relations$object == datapack:::provONEexecution,'subject']
     expect_match(relations[relations$predicate == datapack:::provUsed,'object'], getIdentifier(doIn))
     expect_match(relations[relations$predicate == datapack:::provUsed,'subject'], execId)

@@ -22,7 +22,7 @@ data repositories.
 ## Create a Single Object 
 The *datapack* DataObject class is a wrapper that contains both data and system metadata that describes the data. 
 The data can be either R `raw` data or a data file, for example a CSV file. The system metadata includes attributes such as the 
-object identifier, type, size, checksum, owner, version relationship to other objects, access rules, and other critical metadata. 
+object identifier, type, size, checksum, owner, version relationship to other objects, access rules, and other critical metadata. The DataObject class also holds additional metadata about the data file. For example, where the file should go when someone downlaodeds the package. This is often times the same as the filepath however, care should be taken to not include any drive letters or unnecessary folders.
 
 The following example shows how to create a DataObject from a CSV file:
 
@@ -31,7 +31,7 @@ library(datapack)
 library(uuid)
 csvfile <- system.file("extdata/sample-data.csv", package="datapack")
 myId <- paste("urn:uuid:", UUIDgenerate(), sep="")
-myObj <- new("DataObject", id=myId, format="text/csv", filename=csvfile)
+myObj <- new("DataObject", id=myId, format="text/csv", filename=csvfile, relativeFilePath="extdata/sample-data.csv")
 ```
 
 The DataObject `myObj` now contains the CSV data as well as the system-level 
