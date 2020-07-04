@@ -1588,161 +1588,134 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=NA_cha
                                                                  syntaxURI=NA_character_,
                                                                  resolveURI=NA_character_, 
                                                                  creator=NA_character_, ...) {
-  cwd <- getwd()
-  on.exit(expr = setwd(cwd))
-  pidMap <- character()
-  manifest <- character()
-  # Create a temp working area where the BagIt directory structure will be created
-  tmpDir <- tempdir()
-  bagDir <- sprintf("%s/bag", tmpDir)
-  if(file.exists(bagDir)) {
-    unlink(bagDir, recursive=TRUE)
-  } 
-  dir.create(bagDir)
-  payloadDir <- sprintf("%s/data", bagDir)
-  if(!file.exists(payloadDir)) dir.create(payloadDir)
-  
-  # Create a ResourceMap object and serialize it to the specified file
-  if(is.na(mapId)) {
-    mapId <- sprintf("urn:uuid:%s", UUIDgenerate())
-  }
-  if(is.na(syntaxName)) {
-    syntaxName="rdfxml"
-  }
-  if(is.na(mimeType)) {
-    mimeType <- "application/rdf+xml"
-  }
-  if(is.na(resolveURI)) {
-    resolveURI <- ""
-  }
-  tmpFile <- tempfile()
-  serializePackage(x, file=tmpFile, id=mapId, syntaxName=syntaxName, namespaces=namespaces,
-                   mimeType=mimeType, resolveURI=resolveURI, creator=creator)
-  # Add resource map to the pid map
-  #relFile <- sprintf("data/%s.rdf", resMapId)
-  # Windows doesn't allow colons in filenames, so substitute for "_"
-  relFile <- file.path("data", paste0(gsub(":", "_", mapId), ".rdf"))
-  #resMapFilepath <- sprintf("%s/%s", bagDir, relFile)
-  resMapFilepath <- file.path(bagDir, relFile)
-  file.copy(tmpFile, resMapFilepath)
-  pidMap <- c(pidMap, sprintf("%s %s", mapId, relFile))
-  # Add resource map to the manifrest
-  resMapMd5 <- digest(resMapFilepath, algo="md5", file=TRUE)
-  manifest <- c(manifest, sprintf("%s %s", resMapMd5, relFile)) 
-  
-  # Create bagit.txt  
-  bagit <- sprintf("BagIt-Version: 0.97\nTag-File-Character-Encoding: UTF-8")
-  writeLines(bagit, sprintf("%s/bagit.txt", bagDir))
-  
-   # Populate './data" directory by copying each DataPackage member from a filename
-  # if that was specified, or from an in-memober object.
-  identifiers <- getIdentifiers(x)
-  for(idNum in seq_along(identifiers)) {
-    dataObj <- getMember(x, identifiers[idNum])
-    # Was the DataObject created with the 'file' arg, i.e. data not in the DataObject,
-    # but at a specified file out on disk?
+    cwd <- getwd()
+    on.exit(expr = setwd(cwd))
     
-    # Set the path to the file
-    relFile <- paste(bagDir, "/data/", sep="")
-    # If the user described the path of the file, use it
-    if (!is.na(dataObj@relativeFilePath)) {
-        relFile <- paste(relFile, dataObj@relativeFilePath, sep = "")
-    } else if (!is.na(dataObj@filename)) {
-        # Otherwise, if they specified a filename use that
-        relFile <- paste(relFile, dataObj@filename, sep = "")
+    # Create a temp working area where the BagIt directory structure will be created
+    tmpDir <- tempdir()
+    bagDir <- sprintf("%s/bag", tmpDir)
+    if(file.exists(bagDir)) {
+        unlink(bagDir, recursive=TRUE)
+    }
+    dir.create(bagDir)
+    payloadDir <- sprintf("%s/data", bagDir)
+    if(!file.exists(payloadDir)) dir.create(payloadDir)
+    metadataDir <- sprintf("%s/metadata", bagDir)
+    if(!file.exists(metadataDir)) dir.create(metadataDir)
+    sysMetaDir <-sprintf("%s/sysmeta", metadataDir)
+    if(!file.exists(sysMetaDir)) dir.create(sysMetaDir)
+    
+    # Create bagit.txt
+    bagitFileText <- sprintf("BagIt-Version: 0.97\nTag-File-Character-Encoding: UTF-8")
+    writeLines(bagitFileText, sprintf("%s/bagit.txt", bagDir))
+
+    # Create a ResourceMap object and serialize it
+    if(is.na(mapId)) {
+        mapId <- sprintf("urn:uuid:%s", UUIDgenerate())
+    }
+    if(is.na(syntaxName)) {
+        syntaxName="rdfxml"
+    }
+    if(is.na(mimeType)) {
+        mimeType <- "application/rdf+xml"
+    }
+    if(is.na(resolveURI)) {
+        resolveURI <- ""
+    }
+    tmpFile <- tempfile()
+    serializePackage(x, file=tmpFile, id=mapId, syntaxName=syntaxName, namespaces=namespaces,
+                     mimeType=mimeType, resolveURI=resolveURI, creator=creator)
+    
+    relFile <- file.path("oai-ore.xml")
+
+    resMapFilepath <- file.path(metadataDir, relFile)
+    file.copy(tmpFile, resMapFilepath)
+    # Add resource map to the manifrest
+    resMapMd5 <- digest(resMapFilepath, algo="md5", file=TRUE)
+    manifestFileTextLine <- sprintf("%s %s", resMapMd5, gsub(".*bag/", "", resMapFilepath))
+    writeLines(manifestFileTextLine, sprintf("%s/%s", bagDir, "tagmanifest-md5.txt"))
+
+    identifiers <- getIdentifiers(x)
+    # Get each member of the package and each corresponding system metadata file
+    # Write them both to the bag, in their respective directories
+    for(idNum in seq_along(identifiers)) {
+        dataObj <- getMember(x, identifiers[idNum])
+        systemMetadata <- dataObj@sysmeta
+
+        # Determine the filename and path of the data object.
+        if (!is.na(dataObj@relativeFilePath)) {
+            dataObjectLocation <- paste(payloadDir, dataObj@relativeFilePath, sep = "/")
+        } else if (!is.na(dataObj@filename)) {
+            # Otherwise, if they specified a filename use that
+            dataObjectLocation <- paste(payloadDir, dataObj@filename, sep = "/")
+        } else {
+            # If the filename wasn't specified, use the identifier
+            dataObjectLocation <- paste(payloadDir, getIdentifier(dataObj), sep="/")
+        }
+        if(grepl("eml://ecoinformatics.org", getFormatId(dataObj), fixed = TRUE)) {
+            # If it's an EML document put it in the metadata/ folder
+            dataObjectLocation <- paste(metadataDir, 'eml.xml', sep="/")
+            write_to_bag(objectToWrite=dataObj, objectPath=dataObjectLocation, bagDir=bagDir,
+                         isSystemMetadata=FALSE, isScienceMetadata=TRUE)
+        } else {
+            # Write the data object
+            write_to_bag(objectToWrite=dataObj, objectPath=dataObjectLocation, bagDir=bagDir)
+        }
+        # Set the data's system metadata location
+        systemMetadatatLocation <- paste(sysMetaDir, systemMetadata@identifier, sep="/")
+        systemMetadatatLocation <- paste(systemMetadatatLocation, 'xml', sep=".")
+        write_to_bag(objectToWrite=systemMetadata, objectPath=systemMetadatatLocation, bagDir=bagDir, isSystemMetadata=TRUE)
+    }
+
+    dataInfo <- file.info(list.files(payloadDir, full.names=TRUE, recursive=TRUE))
+    payloadBytes <- sum(dataInfo[['size']])
+    tagInfo <- file.info(list.files(metadataDir, full.names=TRUE, recursive=TRUE))
+    tagBytes <- sum(tagInfo[['size']])
+    bagBytes = tagBytes + payloadBytes
+    # Convert the value returned from file.info (bytes) into a more
+    # human readable form.
+    # Size is displayed in bytes
+    if(bagBytes < 1024) {
+        bagSize <- bagBytes
+        sizeUnits <- "B"
+    } else if (bagBytes < 1000000) {
+        # Size is displayed in Kilobytes
+        bagSize <- bagBytes / 1024.0
+        sizeUnits <- "KB"
+    } else if (bagBytes < 1000000000) {
+        # Size is displayed in megabytes
+        bagSize <- bagBytes / 1000000.0
+        sizeUnits <- "MB"
     } else {
-        # If the filename wasn't specified, use the identifier
-        relFile <- paste(relFile, getIdentifier(dataObj), sep="")
+        # Size is displayed in terabytes
+        bagSize <- bagBytes / 1000000000.0
+        sizeUnits <- "GB"
     }
-    
-    # Create the directory if it doesn't exist
-    if(!file.exists(dirname(relFile))) {
-        dir.create(dirname(relFile))
-    }
-    
-    if(!is.na(dataObj@filename)) {
-      if(file.exists(dataObj@filename)) {
-        file.copy(dataObj@filename, relFile)
-        # Add this data pacakge member to the bagit files
-        pidMap <- c(pidMap, sprintf("%s %s", identifiers[idNum], relFile))
-        thisMd5 <- digest(relFile, algo="md5", file=TRUE)
-        manifest <- c(manifest, sprintf("%s %s", as.character(thisMd5), relFile))  
-      } else {
-        stop(sprintf("Error serializing to BagIt format, data object \"%s\", uses file %s but this file doesn't exist", dataObj@filename, identifiers[idNum]))
-      }
-    } else {
-      # Must be an in-memory data object
-      tf <- tempfile()
-      con <- file(tf, "wb")
-      writeBin(getData(dataObj), con)
-      close(con)
-      file.copy(tf, relFile)
-      unlink(tf)
-      rm(tf)
-      # Add this data pacakge member to the bagit files
-      pidMap <- c(pidMap, sprintf("%s %s", identifiers[idNum], relFile))
-      thisMd5 <- digest(relFile, algo="md5", file=TRUE)
-      manifest <- c(manifest, sprintf("%s %s", as.character(thisMd5), relFile))
-    }
-  }
-  
-  #fInfo <- file.info(sprintf("%s", payloadDir))
-  fInfo <- file.info(list.files(payloadDir, full.names=TRUE, recursive=TRUE))
-  #fInfo <- file.info(list.files(payloadDir), all.files=TRUE, recursive=TRUE)
-  bagBytes <- sum(fInfo[['size']])
-  # Convert the value returned from file.info (bytes) into a more 
-  # human readable form.
-  # Size is displayed in bytes
-  if(bagBytes < 1024) {
-    bagSize <- bagBytes
-    sizeUnits <- "B"
-  } else if (bagBytes < 1000000) {
-    # Size is displayed in Kilobytes
-    bagSize <- bagBytes / 1024.0
-    sizeUnits <- "KB"
-  } else if (bagBytes < 1000000000) {
-    # Size is displayed in megabytes
-    bagSize <- bagBytes / 1000000.0
-    sizeUnits <- "MB"
-  } else {
-    # Size is displayed in terabytes
-    bagSize <- bagBytes / 1000000000.0 
-    sizeUnits <- "GB"
-  }
-  
-  bagInfo <- sprintf("Payload-Oxum: %d.%d\nBagging-Date: %s\nBag-Size: %f %s",
+
+    bagInfo <- sprintf("Payload-Oxum: %d.%d\nBagging-Date: %s\nBag-Size: %f %s",
                        bagBytes, length(list.files(payloadDir)),
                        format(Sys.time(), format="%Y-%m-%d"), 
                        bagSize, sizeUnits)
-  
-  writeLines(bagInfo, sprintf("%s/%s", bagDir, "bag-info.txt"))
-  # Create pid-mapping.txt  
-  writeLines(pidMap, sprintf("%s/%s", bagDir, "pid-mapping.txt"))
-  # Create bag-info.txt
-  
-  # create manifest-md5.txt
-  writeLines(manifest, sprintf("%s/%s", bagDir, "manifest-md5.txt"))
-  
-  # Create tagmanifest-md5.txt
-  tagManifest <- character()
-  #tagFiles <- c("bag-info.txt", "bagit.txt", "pid-mapping.txt", "tagmanifest-md5.txt")
-  tagFiles <- c("bag-info.txt", "bagit.txt", "pid-mapping.txt")
-  for (i in seq_along(tagFiles)) {
-    thisFile <- tagFiles[i]  
-    thisMd5 <- digest(sprintf("%s/%s", bagDir, thisFile), algo="md5", file=TRUE)
-    tagManifest <- c(tagManifest, sprintf("%s %s", thisMd5, thisFile))
-  }
-  
-  writeLines(tagManifest, sprintf("%s/%s", bagDir, "tagmanifest-md5.txt"))
-  zipFile <- tempfile(fileext=".zip")
-  # Now zip up the directory struction 
-  setwd(normalizePath(bagDir))
-  if(normalizePath(getwd()) != normalizePath(bagDir)) {
-    stop(sprintf("Unable to set working directory to the BagIt dir: %s", bagDir))
-  }
-  zip(zipFile, files=list.files(recursive=TRUE), flags="-q")
-  # Return the zip filename
-  return(zipFile)
+
+    # Create bag-info.txt
+    writeLines(bagInfo, sprintf("%s/%s", bagDir, "bag-info.txt"))
+
+    # Add the minimum required tag files
+    tagFiles <- c("bag-info.txt", "bagit.txt")
+    for (i in seq_along(tagFiles)) {
+        thisFile <- tagFiles[i]
+        thisMd5 <- digest(sprintf("%s/%s", bagDir, thisFile), algo="md5", file=TRUE)
+        write(sprintf("%s %s", thisMd5, thisFile),file=sprintf("%s/%s", bagDir, "tagmanifest-md5.txt"),append=TRUE)
+    }
+    zipFile <- tempfile(fileext=".zip")
+    # Now zip up the directory 
+    setwd(normalizePath(bagDir))
+    if(normalizePath(getwd()) != normalizePath(bagDir)) {
+        stop(sprintf("Unable to set working directory to the BagIt dir: %s", bagDir))
+    }
+    zip(zipFile, files=list.files(recursive=TRUE), flags="-q")
+    # Return the zip filename
+    return(zipFile)
 })
 
 #' @title Add data derivation information to a DataPackage
@@ -2225,4 +2198,57 @@ condenseStr <- function(inStr, newLength) {
     str2 <- substr(inStr, strLen-(len2-1), strLen)
     newStr <- sprintf("%s...%s", str1, str2)
     return(newStr)
+}
+
+# Writes a data object or system metadata object to a bag
+# When writing system metadata documents, asTag should be true
+write_to_bag <- function(objectToWrite, objectPath, bagDir, isSystemMetadata=FALSE, isScienceMetadata=FALSE) {
+    # Create the directory if it doesn't exist
+    if(!file.exists(dirname(objectPath))) {
+        dir.create(dirname(objectPath))
+    }
+
+    # Gives a relative path to the file in the bag. ex: data/myFile.csv rather than c:/exp/bag/data/myFile.csv
+    relativeBagPath <- gsub(".*bag/", "", objectPath)
+    objectIdentifier <- NULL
+    if (isSystemMetadata) {
+        # Otherwise it is metadata and comes from memory
+        sysmetaXML <- serializeSystemMetadata(objectToWrite, version="v2")
+        objectIdentifier <- objectToWrite@identifier
+        objectPath <- gsub(":", "_", objectPath)
+        fileConn<-file(objectPath)
+        writeLines(sysmetaXML, fileConn)
+        close(fileConn)
+    } else {
+        # Determine whether the bytes of the file are on disk or in memory. Each way is handled differently
+        if(!is.na(objectToWrite@filename)) {
+            if(file.exists(objectToWrite@filename)) {
+                file.copy(objectToWrite@filename, objectPath)
+                objectIdentifier <- getIdentifier(objectToWrite)
+            } else {
+                stop(sprintf("Error serializing to BagIt format, data object \"%s\", uses file %s but this file doesn't exist", objectToWrite, objectToWrite@filename))
+            }
+        } else {
+            # Must be an in-memory data object
+            objectPath <- gsub(":", "_", objectPath)
+            tf <- tempfile()
+            con <- file(tf, "wb")
+            writeBin(getData(objectToWrite), con)
+            close(con)
+            file.copy(tf, objectPath)
+            unlink(tf)
+            rm(tf)
+        }
+    }
+
+    # Add this data pacakge member to the bagit tag files
+    objectMd5 <- digest(objectPath, algo="md5", file=TRUE)
+    manifestLine <- sprintf("%s %s", as.character(objectMd5), objectPath <- gsub(":", "_", relativeBagPath))
+
+    # Write the new records to the appropriate bag files
+    if (isSystemMetadata | isScienceMetadata) {
+        write(manifestLine,file=sprintf("%s/%s", bagDir, "tagmanifest-md5.txt"),append=TRUE)
+    } else {
+        write(manifestLine,file=sprintf("%s/%s", bagDir, "manifest-md5.txt"),append=TRUE)
+    }
 }

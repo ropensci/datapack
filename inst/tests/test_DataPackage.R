@@ -352,10 +352,6 @@ test_that("Package serialization works with minimal DataPackage", {
     expect_equal(nrow(rels), 0)
 })
 
-
-
-
-
 test_that("BagIt serialization works", {
   
   library(uuid)
@@ -384,43 +380,63 @@ test_that("BagIt serialization works", {
   </eml:eml>"'
   
   dp <- new("DataPackage")
-  mdId <- "scimetaId"
-  doInId <- "scidataId"
-  doOutId <- paste0("urn:uuid:", UUIDgenerate())
-  executionId <- "execution1"
-  
+  emlId <- paste0("urn:uuid:", UUIDgenerate())
+  firstDataFileId <- paste0("urn:uuid:", UUIDgenerate())
+  secondDataFileId <- paste0("urn:uuid:", UUIDgenerate())
+  packageFileIds = list(emlId, firstDataFileId, secondDataFileId)
   user <- "smith"
   data <- charToRaw("1,2,3\n4,5,6")
-  doInFilePath = "myDir/textFile1.csv"
-  doOutFilePath = "myDir/textFile2.csv"
+  firstFilePath = "myDir/textFile1.csv"
+  secondFilePath = "myDir/textFile2.csv"
   node <- "urn:node:KNB"
-  md1 <- new("DataObject", id=mdId, dataobj=charToRaw(someEML), format="eml://ecoinformatics.org/eml-2.1.1", user=user, mnNodeId=node)
-  doIn <- new("DataObject", id=doInId, dataobj=data, format="text/csv", user=user, mnNodeId=node, relativeFilePath=doInFilePath)
-  doOut <- new("DataObject", id=doOutId, filename=csvfile, format="text/csv", user=user, mnNodeId=node, relativeFilePath=doOutFilePath)
-  dp <- addMember(dp, md1)
+  emlDataObject <- new("DataObject", id=emlId, dataobj=charToRaw(someEML), format="eml://ecoinformatics.org/eml-2.1.1", user=user, mnNodeId=node)
+  doIn <- new("DataObject", id=firstDataFileId, dataobj=data, format="text/csv", user=user, mnNodeId=node, relativeFilePath=firstFilePath)
+  doOut <- new("DataObject", id=secondDataFileId, filename=csvfile, format="text/csv", user=user, mnNodeId=node, relativeFilePath=secondFilePath)
+  dp <- addMember(dp, emlDataObject)
   dp <- addMember(dp, doIn)
   dp <- addMember(dp, doOut)
   
-  # Insert metadata document <-> relationships
-  dp <- insertRelationship(dp, subjectID=mdId, objectIDs=c(doOutId))
+  bagitFile <- serializeToBagIt(dp)
   
-  # Insert a typical provenance relationship
-  dp <- insertRelationship(dp, subjectID=doOutId, objectIDs=doInId, predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
-  dp <- insertRelationship(dp, subjectID=executionId, objectIDs=doInId, predicate="http://www.w3.org/ns/prov#used")
-  dp <- insertRelationship(dp, subjectID=doOutId, objectIDs=executionId, predicate="http://www.w3.org/ns/prov#wasGeneratedBy")
-  dp <- insertRelationship(dp, subjectID="urn:uuid:abcd", objectIDs="Wed Mar 18 06:26:44 PDT 2015", 
-                     predicate="http://www.w3.org/ns/prov#startedAt", subjectType="uri", 
-                     objectTypes="literal",
-                     dataTypeURIs="http://www.w3.org/2001/XMLSchema#string")
+  # Basic sanity checks
+  expect_true(file.exists(bagitFile))
+  expect_true(file.info(bagitFile)[['size']] > 0)
   
- bagitFile <- serializeToBagIt(dp) 
- expect_true(file.exists(bagitFile))
- expect_true(file.info(bagitFile)[['size']] > 0)
+  zipFileNames = unzip(bagitFile, list=TRUE)$Name
+  # Check that the required tag files are present
+  requiredBagFiles <- list("bagit.txt", "bag-info.txt", "manifest-md5.txt", "tagmanifest-md5.txt")
+  for (requiredFile in requiredBagFiles) {
+      expect_true(requiredFile %in% zipFileNames)
+  }
+  # Check that the data files are present
+  dataFiles <- list(firstFilePath, secondFilePath)
+  # Check that the data files are in the manifest
+  manifestData <- read.table(unz(bagitFile, "manifest-md5.txt"), nrows=10, header=F, quote="\"", sep=" ")
+  # Get the second column (file names)
+  manifestData <- manifestData[[2]]
+  for (dataFile in dataFiles) {
+      expect_true(paste("data/",dataFile, sep="") %in% zipFileNames )
+      expect_true(paste("data/",dataFile, sep="") %in% manifestData )
+  }
 
- zipFileNames = unzip(bagitFile, list=TRUE)$Name
- expect_true(paste("data/",doInFilePath, sep="") %in% zipFileNames )
- expect_true(paste("data/", doOutFilePath, sep="") %in% zipFileNames)
-}) 
+  # Check that the system metata are present
+  # The Data Objects should have system metadata assigned to them.
+  # We want the IDs of those for testing
+  tagManifestData <- read.table(unz(bagitFile, "tagmanifest-md5.txt"), nrows=10, header=F, quote="\"", sep=" ")
+  tagManifestData <- tagManifestData[[2]]
+  for (packageFileId in packageFileIds) {
+      updatedObject <- getMember(dp, packageFileId)
+      # Remember to sanatize the filename
+      sysmetaName <- gsub(":", "_", updatedObject@sysmeta@identifier)
+      expect_true(paste("metadata/sysmeta/", sysmetaName, ".xml", sep="") %in% zipFileNames )
+      expect_true(paste("metadata/sysmeta/", sysmetaName, ".xml", sep="") %in% tagManifestData )
+  }
+
+  # Check that the rdf is present
+  expect_true("metadata/oai-ore.xml" %in% zipFileNames)
+  # Check that the EML document is present
+  expect_true("metadata/eml.xml" %in% zipFileNames)
+})
 
 test_that("Adding provenance relationships to a DataPackage via describeWorkflow works", {
     
