@@ -11,7 +11,7 @@
   mnNodeId = NA_character_, filename = NA_character_,
   seriesId = NA_character_, mediaType = NA_character_,
   mediaTypeProperty = list(), dataURL = NA_character_,
-  relativeFilePath = NA_character_)
+  targetPath = NA_character_)
 }
 \arguments{
 \item{.Object}{the DataObject instance to be initialized}
@@ -36,7 +36,7 @@
 
 \item{dataURL}{A character string containing a URL to remote data (a repository) that this DataObject represents.}
 
-\item{relativeFilePath}{A string that denotes where the file should go when the package is downloaded.}
+\item{targetPath}{A string that denotes where the file should go in a downloaded package}
 }
 \description{
 When initializing a DataObject using passed in data, one can either pass 
@@ -52,11 +52,6 @@ Changes to the object are not detected and will result in unexpected results. Al
 is used to specify the data source, then \code{'filename'} argument may also be specified, but in this case 
 the value \code{'filename'} parameter is used to tell DataONE the filename to create when this file is
 downloaded from a repository.
-}
-\examples{
-data <- charToRaw("1,2,3\\n4,5,6\\n")
-do <- new("DataObject", "id1", dataobj=data, "text/csv",
-  "uid=jones,DC=example,DC=com", "urn:node:KNB", relativeFilePath="./miscData/rawData.txt")
 }
 \seealso{
 \code{\link{DataObject-class}}

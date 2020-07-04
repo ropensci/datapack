@@ -326,8 +326,8 @@ setMethod("addMember", signature("DataPackage"), function(x, do, mo=NA_character
         }
     }
     # If the object's path was documented, add it to the resource map
-    if (!is.na(iObj@relativeFilePath)){
-        insertRelationship(x, getIdentifier(iObj), iObj@relativeFilePath, "http://www.w3.org/ns/prov#atLocation")
+    if (!is.na(iObj@targetPath)){
+        insertRelationship(x, getIdentifier(iObj), iObj@targetPath, "http://www.w3.org/ns/prov#atLocation")
     }
     return(x)
 })
@@ -1643,8 +1643,8 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=NA_cha
         systemMetadata <- dataObj@sysmeta
 
         # Determine the filename and path of the data object.
-        if (!is.na(dataObj@relativeFilePath)) {
-            dataObjectLocation <- paste(payloadDir, dataObj@relativeFilePath, sep = "/")
+        if (!is.na(dataObj@targetPath)) {
+            dataObjectLocation <- paste(payloadDir, dataObj@targetPath, sep = "/")
         } else if (!is.na(dataObj@filename)) {
             # Otherwise, if they specified a filename use that
             dataObjectLocation <- paste(payloadDir, dataObj@filename, sep = "/")

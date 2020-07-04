@@ -40,7 +40,7 @@ contents of the data or file as a raw value (but this will read all of the data 
 
 \item{\code{oldId}}{A character string containing the previous identifier used, before a \code{"replaceMember"} call.}
 
-\item{\code{relativeFilePath}}{A character string holding the relative path of the data item}
+\item{\code{targetPath}}{A character string holding the path of where the file should be in an exported package.}
 }}
 
 \section{Methods}{
@@ -58,27 +58,6 @@ contents of the data or file as a raw value (but this will read all of the data 
 }
 }
 
-\examples{
-data <- charToRaw("1,2,3\\n4,5,6\\n")
-do <- new("DataObject", "id1", dataobj=data, "text/csv", 
-  "uid=jones,DC=example,DC=com", "urn:node:KNB")
-getIdentifier(do)
-getFormatId(do)
-getData(do)
-canRead(do, "uid=anybody,DC=example,DC=com")
-do <- setPublicAccess(do)
-canRead(do, "public")
-canRead(do, "uid=anybody,DC=example,DC=com")
-# Also can create using a file for storage, rather than memory
-\dontrun{
-tf <- tempfile()
-con <- file(tf, "wb")
-writeBin(data, con)
-close(con)
-do <- new("DataObject", "id1", format="text/csv", user="uid=jones,DC=example,DC=com", 
-  mnNodeId="urn:node:KNB", filename=tf)
-}
-}
 \seealso{
 \code{\link{datapack}}
 }

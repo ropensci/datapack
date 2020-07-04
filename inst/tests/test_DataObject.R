@@ -57,13 +57,13 @@ test_that("DataObject constructors work", {
     unlink(tf)
     
     # Test that the constructor works for a data path, with a few different forms
-    relativeFilePath="./data/rasters/test.csv"
-    do <- new("DataObject", sm, data, filename="test.csv", relativeFilePath=relativeFilePath)
-    expect_that(do@relativeFilePath, equals(relativeFilePath))
+    targetPath="./data/rasters/test.csv"
+    do <- new("DataObject", sm, data, filename="test.csv", targetPath=targetPath)
+    expect_that(do@targetPath, equals(targetPath))
     
-    relativeFilePath="data/rasters/test.csv"
-    do <- new("DataObject", sm, data, filename="test.csv", relativeFilePath=relativeFilePath)
-    expect_that(do@relativeFilePath, equals(relativeFilePath))
+    targetPath="data/rasters/test.csv"
+    do <- new("DataObject", sm, data, filename="test.csv", targetPath=targetPath)
+    expect_that(do@targetPath, equals(targetPath))
 })
 test_that("DataObject accessPolicy methods", {
     library(datapack)
