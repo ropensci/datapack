@@ -388,6 +388,7 @@ test_that("BagIt serialization works", {
   data <- charToRaw("1,2,3\n4,5,6")
   firstFilePath = "myDir/textFile1.csv"
   secondFilePath = "myDir/textFile2.csv"
+  
   node <- "urn:node:KNB"
   emlDataObject <- new("DataObject", id=emlId, dataobj=charToRaw(someEML), format="eml://ecoinformatics.org/eml-2.1.1", user=user, mnNodeId=node)
   doIn <- new("DataObject", id=firstDataFileId, dataobj=data, format="text/csv", user=user, mnNodeId=node, targetPath=firstFilePath)
@@ -415,8 +416,8 @@ test_that("BagIt serialization works", {
   # Get the second column (file names)
   manifestData <- manifestData[[2]]
   for (dataFile in dataFiles) {
-      expect_true(paste("data/",dataFile, sep="") %in% zipFileNames )
-      expect_true(paste("data/",dataFile, sep="") %in% manifestData )
+      expect_true(file.path("data",dataFile) %in% zipFileNames )
+      expect_true(file.path("data",dataFile) %in% manifestData )
   }
 
   # Check that the system metata are present
@@ -424,18 +425,19 @@ test_that("BagIt serialization works", {
   # We want the IDs of those for testing
   tagManifestData <- read.table(unz(bagitFile, "tagmanifest-md5.txt"), nrows=10, header=F, quote="\"", sep=" ")
   tagManifestData <- tagManifestData[[2]]
+  
   for (packageFileId in packageFileIds) {
       updatedObject <- getMember(dp, packageFileId)
       # Remember to sanatize the filename
       sysmetaName <- gsub(":", "_", updatedObject@sysmeta@identifier)
-      expect_true(paste("metadata/sysmeta/", sysmetaName, ".xml", sep="") %in% zipFileNames )
-      expect_true(paste("metadata/sysmeta/", sysmetaName, ".xml", sep="") %in% tagManifestData )
+      expect_true(file.path("metadata", "sysmeta", paste(sysmetaName, ".xml", sep="")) %in% zipFileNames )
+      expect_true(file.path("metadata", "sysmeta", paste(sysmetaName, ".xml", sep="")) %in% tagManifestData )
   }
 
   # Check that the rdf is present
-  expect_true("metadata/oai-ore.xml" %in% zipFileNames)
+  expect_true(file.path("metadata", "oai-ore.xml") %in% zipFileNames)
   # Check that the EML document is present
-  expect_true("metadata/eml.xml" %in% zipFileNames)
+  expect_true(file.path("metadata", "eml.xml") %in% zipFileNames)
 })
 
 test_that("Adding provenance relationships to a DataPackage via describeWorkflow works", {
