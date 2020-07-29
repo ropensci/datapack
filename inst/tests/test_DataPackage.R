@@ -457,7 +457,7 @@ test_that("BagIt serialization works", {
   # We want the IDs of those for testing
   tagManifestData <- read.table(unz(bagitFile, "tagmanifest-md5.txt"), header=F, quote="\"", sep=" ")
   tagManifestData <- tagManifestData[[2]]
-  print(tagManifestData)
+  
   for (packageFileId in packageFileIds) {
       updatedObject <- getMember(dp, packageFileId)
       # Remember to sanitize the file name
