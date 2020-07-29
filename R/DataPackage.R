@@ -1507,26 +1507,9 @@ setMethod("serializePackage", signature("DataPackage"), function(x, file,
                                                                  namespaces=data.frame(namespace=character(), prefix=character(), stringsAsFactors=FALSE),
                                                                  syntaxURI=NA_character_, resolveURI=NA_character_,
                                                                  creator=NA_character_) {
-  # Get the relationships stored in this datapackage.
-  relations <- getRelationships(x)
-  
-  # Create a ResourceMap object and serialize it to the specified file  
-  #
-  # If a serialization id was not specified, then use the id assigned to the DataPackage when it
-  # was created. If a DataPackage id was not assigned, then create a unique id.
-  if(is.na(id)) {
-    if(is.na(x@sysmeta@identifier) || is.null(x@sysmeta@identifier)) {
-      id <- sprintf("urn:uuid:%s", UUIDgenerate())
-    } else {
-      id <- x@sysmeta@identifier
-    }
-  }
-  
-  # Create a resource map from previously stored triples, for example, from the relationships in a DataPackage
-  resMap <- new("ResourceMap", id)
-  resMap <- createFromTriples(resMap, relations=relations, identifiers=getIdentifiers(x), resolveURI=resolveURI, 
-                              externalIdentifiers=x@externalIds, creator=creator)  
+  resMap <- getResourceMap(x, id, creator, resolveURI)
   status <- serializeRDF(resMap, file, syntaxName, mimeType, namespaces, syntaxURI)
+
   freeResourceMap(resMap)
   rm(resMap)
   return(status)
@@ -1594,10 +1577,10 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=NA_cha
     # Create a temp working area where the BagIt directory structure will be created
     tmpDir <- tempdir()
     bagDir <- file.path(tmpDir, "bag")
-
     if(file.exists(bagDir)) {
         unlink(bagDir, recursive=TRUE)
     }
+    # Create the bag directories
     dir.create(bagDir)
     payloadDir <- file.path(bagDir, "data")
     if(!file.exists(payloadDir)) dir.create(payloadDir)
@@ -1628,7 +1611,6 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=NA_cha
                      mimeType=mimeType, resolveURI=resolveURI, creator=creator)
     
     relFile <- file.path("oai-ore.xml")
-
     resMapFilepath <- file.path(metadataDir, relFile)
     file.copy(tmpFile, resMapFilepath)
     # Add resource map to the manifrest
@@ -1637,6 +1619,28 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=NA_cha
     writeLines(manifestFileTextLine, file.path(bagDir, "tagmanifest-md5.txt"))
 
     identifiers <- getIdentifiers(x)
+    # Get a resource map so that it can be queried for science metadata
+    resMap <- getResourceMap(x)
+    # Check to see if the user supplied any science metadata
+    science_metadata_uris <- get_science_metadata(resMap)
+    # The number that's appended to the filename if multiple documents exist
+    scienceMetadataCount <- 1
+    # URLEncode each URI
+    metadata_ids <- list()
+    for (uri_element in science_metadata_uris) {
+        metadata_ids<- c(metadata_ids, RCurl::curlUnescape(uri_element))
+    }
+
+    # Determines whether or not an object is in a list of URIs
+    in_uri <- function(object_id, uri_list) {
+        for (uri in uri_list) {
+            if (grepl(object_id, uri, fixed=TRUE)) {
+                return (TRUE)
+            }
+        }
+        return (FALSE)
+    }
+
     # Get each member of the package and each corresponding system metadata file
     # Write them both to the bag, in their respective directories
     for(idNum in seq_along(identifiers)) {
@@ -1648,18 +1652,27 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=NA_cha
             dataObjectLocation <- file.path(payloadDir, dataObj@targetPath)
         } else if (!is.na(dataObj@filename)) {
             # Otherwise, if they specified a filename use that
-            dataObjectLocation <-file.path(payloadDir, dataObj@filename)
+            # The filename slot is a full path, only get the filename portion of it
+            dataObjectLocation <-file.path(payloadDir, basename(dataObj@filename))
         } else {
-            # If the filename wasn't specified, use the identifier
+            # If the file name wasn't specified, use the identifier
             dataObjectLocation <- file.path(payloadDir, getIdentifier(dataObj))
         }
-        if(grepl("eml://ecoinformatics.org", getFormatId(dataObj), fixed = TRUE)) {
-            # If it's an EML document put it in the metadata/ folder
-            dataObjectLocation <- file.path(metadataDir, 'eml.xml')
-            write_to_bag(objectToWrite=dataObj, objectPath=dataObjectLocation, bagDir=bagDir,
+        object_id = getIdentifier(dataObj)
+        # Check if the object is a science metadata document by checking if its identifier is in the list of
+        # science metadata identifiers
+        if(in_uri(object_id=object_id, uri_list=metadata_ids)) {
+            science_metadata_filename <- file.path(metadataDir, 'science-metadata.xml')
+            if (file.exists(science_metadata_filename)) {
+                # If one was already written, then append (1), (2), (3), etc to the file name
+                science_metadata_filename <- file.path(metadataDir, sprintf('science-metadata(%d).xml', scienceMetadataCount))
+                # Add 1 to the count so that the next number is one higher
+                scienceMetadataCount <- scienceMetadataCount+1
+            }
+            write_to_bag(objectToWrite=dataObj, objectPath=science_metadata_filename, bagDir=bagDir,
                          isSystemMetadata=FALSE, isScienceMetadata=TRUE)
         } else {
-            # Write the data object
+            # Otherwise it's a plain data object and should also be included in the bag
             write_to_bag(objectToWrite=dataObj, objectPath=dataObjectLocation, bagDir=bagDir)
         }
         # Set the data's system metadata location
@@ -1699,7 +1712,6 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=NA_cha
 
     # Create bag-info.txt
     writeLines(bagInfo, file.path(bagDir, "bag-info.txt"))
-
     # Add the minimum required tag files
     tagFiles <- c("bag-info.txt", "bagit.txt")
     for (i in seq_along(tagFiles)) {
@@ -1708,7 +1720,7 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=NA_cha
         write(sprintf("%s %s", thisMd5, thisFile),file=file.path(bagDir, "tagmanifest-md5.txt"),append=TRUE)
     }
     zipFile <- tempfile(fileext=".zip")
-    # Now zip up the directory 
+    # Now zip up the directory
     setwd(normalizePath(bagDir))
     if(normalizePath(getwd()) != normalizePath(bagDir)) {
         stop(sprintf("Unable to set working directory to the BagIt dir: %s", bagDir))
@@ -2205,14 +2217,18 @@ condenseStr <- function(inStr, newLength) {
 write_to_bag <- function(objectToWrite, objectPath, bagDir, isSystemMetadata=FALSE, isScienceMetadata=FALSE) {
     # Create the directory if it doesn't exist
     if(!file.exists(dirname(objectPath))) {
-        dir.create(dirname(objectPath))
+        # Use recursive because objectPath can include intermediate paths
+        # that might not exist. For example, ./data/special_data/measurements.
+        dir.create(dirname(objectPath), recursive=TRUE)
     }
 
     # Gives a relative path to the file in the bag. ex: data/myFile.csv rather than c:/exp/bag/data/myFile.csv
     relativeBagPath <- gsub(paste(".*bag", .Platform$file.sep, sep=""), "", objectPath)
     objectIdentifier <- NULL
+
+    # Handle writing the file to disk. This is done differently for system metadata objects, data objects
+    # in memory and objects that already exist on disk.
     if (isSystemMetadata) {
-        # Otherwise it is metadata and comes from memory
         sysmetaXML <- serializeSystemMetadata(objectToWrite, version="v2")
         objectIdentifier <- objectToWrite@identifier
         objectPath <- gsub(":", "_", objectPath)
@@ -2241,14 +2257,69 @@ write_to_bag <- function(objectToWrite, objectPath, bagDir, isSystemMetadata=FAL
         }
     }
 
-    # Add this data pacakge member to the bagit tag files
+    # Add this data package member to the top level bag metadata files
     objectMd5 <- digest(objectPath, algo="md5", file=TRUE)
     manifestLine <- sprintf("%s %s", as.character(objectMd5), objectPath <- gsub(":", "_", relativeBagPath))
-
     # Write the new records to the appropriate bag files
     if (isSystemMetadata | isScienceMetadata) {
         write(manifestLine,file=file.path(bagDir, "tagmanifest-md5.txt"),append=TRUE)
     } else {
         write(manifestLine,file=file.path(bagDir, "manifest-md5.txt"),append=TRUE)
     }
+}
+
+# Returns the package's resource map
+getResourceMap <- function(x, id=NA_character_, creator=NA_character_, resolveURI=NA_character_) {
+    # Get the relationships stored in this datapackage.
+    relations <- getRelationships(x)
+    # Create a ResourceMap object and serialize it to the specified file
+    #
+    # If a serialization id was not specified, then use the id assigned to the DataPackage when it
+    # was created. If a DataPackage id was not assigned, then create a unique id.
+    if(is.na(id)) {
+        if(is.na(x@sysmeta@identifier) || is.null(x@sysmeta@identifier)) {
+            id <- sprintf("urn:uuid:%s", UUIDgenerate())
+        } else {
+            id <- x@sysmeta@identifier
+        }
+    }
+
+    # Create a resource map from previously stored triples, for example, from the relationships in a DataPackage
+    resMap <- new("ResourceMap", id)
+    resMap <- createFromTriples(resMap, relations=relations, identifiers=getIdentifiers(x), resolveURI=resolveURI,
+                                externalIdentifiers=x@externalIds, creator=creator)
+    return(resMap)
+}
+
+# Finds the identifiers of any science metadata documents in the package by querying
+# a resource map.
+get_science_metadata <- function(resMap) {
+
+query_result <- tryCatch(
+    {
+    # Query that finds all subjects that document another object. Note that
+    # the cito namespace is required.
+    queryString <- 'PREFIX cito: <http://purl.org/spar/cito/> SELECT ?s WHERE { ?s cito:documents ?o . }'
+    query <- new("Query", resMap@world, queryString, base_uri=NULL, query_language="sparql", query_uri=NULL)
+    
+    # Create a data frame from the results
+    querytResult <- redland::getResults(query, resMap@model, "rdfxml")
+    # Transform the results into xml
+    doc <- xmlInternalTreeParse(querytResult, asText=TRUE)
+    # Get the solutions of the query
+    rdfStmtNodes <- getNodeSet(doc, "//rs:solution/rdf:Description/rs:binding/rdf:Description/rs:value")
+    # Create a list to hold the identifiers of the science metadata objects that the query found
+    science_metadata_ids <- list()
+    for (science_metadata_uri in rdfStmtNodes) {
+        # Get the string value of the solution
+        science_metadata_uri <- xmlGetAttr(science_metadata_uri, "rdf:resource")
+        science_metadata_ids <- c(science_metadata_ids, science_metadata_uri)
+    }
+    # Make sure that there aren't any duplicate identifiers
+    return (unique(science_metadata_ids))
+    },
+    error=function() {
+        return (list())
+    })
+    return (query_result)
 }

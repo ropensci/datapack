@@ -381,54 +381,86 @@ test_that("BagIt serialization works", {
   
   dp <- new("DataPackage")
   emlId <- paste0("urn:uuid:", UUIDgenerate())
+  secondEmlId <- paste0("urn:uuid:", UUIDgenerate())
+  thirdEmlId <- paste0("urn:uuid:", UUIDgenerate())
   firstDataFileId <- paste0("urn:uuid:", UUIDgenerate())
+  extraScienceMetadataId <- paste0("urn:uuid:", UUIDgenerate())
   secondDataFileId <- paste0("urn:uuid:", UUIDgenerate())
-  packageFileIds = list(emlId, firstDataFileId, secondDataFileId)
+  thirdDataFileId <- paste0("urn:uuid:", UUIDgenerate())
+  fourthDataFileId <- paste0("urn:uuid:", UUIDgenerate())
+  fifthDataFileId <- paste0("urn:uuid:", UUIDgenerate())
+
+  packageFileIds = list(emlId, secondEmlId, thirdEmlId, firstDataFileId,
+                        extraScienceMetadataId, secondDataFileId,
+                        thirdDataFileId, fourthDataFileId, fifthDataFileId)
   user <- "smith"
   data <- charToRaw("1,2,3\n4,5,6")
-  firstFilePath = "myDir/textFile1.csv"
-  secondFilePath = "myDir/textFile2.csv"
+  firstFilePath = "my_data/textFile1.csv"
+  secondFilePath = "my_data/textFile2.csv"
+  thirdFilePath = "more-data/textFile3.csv"
+  fifthFilePath = "misc_data/data.csv"
   
   node <- "urn:node:KNB"
+
   emlDataObject <- new("DataObject", id=emlId, dataobj=charToRaw(someEML), format="eml://ecoinformatics.org/eml-2.1.1", user=user, mnNodeId=node)
-  doIn <- new("DataObject", id=firstDataFileId, dataobj=data, format="text/csv", user=user, mnNodeId=node, targetPath=firstFilePath)
-  doOut <- new("DataObject", id=secondDataFileId, filename=csvfile, format="text/csv", user=user, mnNodeId=node, targetPath=secondFilePath)
+  secondEmlDataObject <- new("DataObject", id=secondEmlId, dataobj=charToRaw(someEML), format="eml://ecoinformatics.org/eml-2.1.1", user=user, mnNodeId=node)
+  # An unused EML file, used to test that it gets put in ./data/
+  thirdEmlDataObject <- new("DataObject", id=thirdEmlId, dataobj=charToRaw(someEML), format="eml://ecoinformatics.org/eml-2.1.1", user=user, mnNodeId=node)
+  # Content Standard for Digital Geospatial Metadata, Biological Data Profile, version 001.1-1999 Science Metatdata file
+  extraScienceMetadata <- new("DataObject", id=extraScienceMetadataId, dataobj=charToRaw(someEML), format="FGDC-STD-001.1-1999", user=user, mnNodeId=node)
+  thirdEmlDataObject <- new("DataObject", id=thirdEmlId, dataobj=charToRaw(someEML), format="eml://ecoinformatics.org/eml-2.1.1", user=user, mnNodeId=node)
+  firstDataFile <- new("DataObject", id=firstDataFileId, dataobj=data, format="text/csv", user=user, mnNodeId=node, targetPath=firstFilePath)
+  secondDataFile <- new("DataObject", id=secondDataFileId, filename=csvfile, format="text/csv", user=user, mnNodeId=node, targetPath=secondFilePath)
+  thirdDataFile <- new("DataObject", id=thirdDataFileId, filename=csvfile, format="text/csv", user=user, mnNodeId=node, targetPath=thirdFilePath)
+  fourthDataFile <- new("DataObject", id=fourthDataFileId, filename=csvfile, format="text/csv", user=user, mnNodeId=node)
+  # Is described by the FGDC metadata file
+  fifthDataFile <- new("DataObject", id=fifthDataFileId, dataobj=data, format="text/csv", user=user, mnNodeId=node, targetPath=fifthFilePath)
+
+  # Add all of the EML and data objects
   dp <- addMember(dp, emlDataObject)
-  dp <- addMember(dp, doIn)
-  dp <- addMember(dp, doOut)
-  
+  dp <- addMember(dp, secondEmlDataObject)
+  dp <- addMember(dp, thirdEmlDataObject)
+  dp <- addMember(dp, extraScienceMetadata)
+  dp <- addMember(dp, firstDataFile, mo=emlDataObject)
+  dp <- addMember(dp, secondDataFile, mo=secondEmlDataObject)
+  dp <- addMember(dp, thirdDataFile)
+  dp <- addMember(dp, fourthDataFile)
+  dp <- addMember(dp, fifthDataFile, mo=extraScienceMetadata)
+
+  # Make note of which data files have a path set
+  dataFilesWithPath <- list(firstFilePath, secondFilePath, thirdFilePath, fifthFilePath)
+
   bagitFile <- serializeToBagIt(dp)
-  
+
   # Basic sanity checks
   expect_true(file.exists(bagitFile))
   expect_true(file.info(bagitFile)[['size']] > 0)
-  
+
   zipFileNames = unzip(bagitFile, list=TRUE)$Name
   # Check that the required tag files are present
   requiredBagFiles <- list("bagit.txt", "bag-info.txt", "manifest-md5.txt", "tagmanifest-md5.txt")
   for (requiredFile in requiredBagFiles) {
       expect_true(requiredFile %in% zipFileNames)
   }
-  # Check that the data files are present
-  dataFiles <- list(firstFilePath, secondFilePath)
+
   # Check that the data files are in the manifest
   manifestData <- read.table(unz(bagitFile, "manifest-md5.txt"), nrows=10, header=F, quote="\"", sep=" ")
   # Get the second column (file names)
   manifestData <- manifestData[[2]]
-  for (dataFile in dataFiles) {
-      expect_true(file.path("data",dataFile) %in% zipFileNames )
-      expect_true(file.path("data",dataFile) %in% manifestData )
+  for (dataFile in dataFilesWithPath) {
+      expect_true(file.path("data",dataFile) %in% zipFileNames)
+      expect_true(file.path("data",dataFile) %in% manifestData)
   }
 
   # Check that the system metata are present
   # The Data Objects should have system metadata assigned to them.
   # We want the IDs of those for testing
-  tagManifestData <- read.table(unz(bagitFile, "tagmanifest-md5.txt"), nrows=10, header=F, quote="\"", sep=" ")
+  tagManifestData <- read.table(unz(bagitFile, "tagmanifest-md5.txt"), header=F, quote="\"", sep=" ")
   tagManifestData <- tagManifestData[[2]]
-  
+  print(tagManifestData)
   for (packageFileId in packageFileIds) {
       updatedObject <- getMember(dp, packageFileId)
-      # Remember to sanatize the filename
+      # Remember to sanitize the file name
       sysmetaName <- gsub(":", "_", updatedObject@sysmeta@identifier)
       expect_true(file.path("metadata", "sysmeta", paste(sysmetaName, ".xml", sep="")) %in% zipFileNames )
       expect_true(file.path("metadata", "sysmeta", paste(sysmetaName, ".xml", sep="")) %in% tagManifestData )
@@ -436,8 +468,9 @@ test_that("BagIt serialization works", {
 
   # Check that the rdf is present
   expect_true(file.path("metadata", "oai-ore.xml") %in% zipFileNames)
-  # Check that the EML document is present
-  expect_true(file.path("metadata", "eml.xml") %in% zipFileNames)
+  # Check that the EML documents are present
+  expect_true(file.path("metadata", "science-metadata.xml") %in% zipFileNames)
+  expect_true(file.path("metadata", "science-metadata(1).xml") %in% zipFileNames)
 })
 
 test_that("Adding provenance relationships to a DataPackage via describeWorkflow works", {
@@ -830,4 +863,3 @@ test_that("DataPackage member selection, set, get methods", {
     vals <- getValue(dp, name="sysmeta@rightsHolder")
     expect_true(all(vals == "orcid.org/0000-0002-2192-403X"))
 })
-
