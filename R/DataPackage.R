@@ -2297,11 +2297,15 @@ get_science_metadata <- function(resMap) {
 
 query_result <- tryCatch(
     {
-    # Query that finds all subjects that document another object. Note that
-    # the cito namespace is required.
-    queryString <- 'PREFIX cito: <http://purl.org/spar/cito/> SELECT ?s WHERE { ?s cito:documents ?o . }'
+    # Query that finds all subjects that document another object. If ?o is unused, a warning is raised;
+    # use o by performing a sanity check that the object being documented is also documentedBy the science metadata
+    # object.
+    queryString <- 'PREFIX  cito: <http://purl.org/spar/cito/> 
+        SELECT ?s WHERE {
+            ?s cito:documents ?o .
+            ?o cito:isDocumentedBy ?s .
+        }'
     query <- new("Query", resMap@world, queryString, base_uri=NULL, query_language="sparql", query_uri=NULL)
-    
     # Create a data frame from the results
     querytResult <- redland::getResults(query, resMap@model, "rdfxml")
     # Transform the results into xml
