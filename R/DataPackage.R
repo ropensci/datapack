@@ -1685,23 +1685,22 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=NA_cha
     tagInfo <- file.info(list.files(metadataDir, full.names=TRUE, recursive=TRUE))
     tagBytes <- sum(tagInfo[['size']])
     bagBytes = tagBytes + payloadBytes
-    # Convert the value returned from file.info (bytes) into a more
-    # human readable form.
-    # Size is displayed in bytes
-    if(bagBytes < 1024) {
+    # Convert the value returned from file.info (bytes) into a more human readable form.
+    # Use SI convention for defining size
+    if(bagBytes < 1e3) {
         bagSize <- bagBytes
         sizeUnits <- "B"
-    } else if (bagBytes < 1000000) {
+    } else if (bagBytes < 1e6) {
         # Size is displayed in Kilobytes
-        bagSize <- bagBytes / 1024.0
+        bagSize <- bagBytes / 1e3
         sizeUnits <- "KB"
-    } else if (bagBytes < 1000000000) {
+    } else if (bagBytes < 1e9) {
         # Size is displayed in megabytes
-        bagSize <- bagBytes / 1000000.0
+        bagSize <- bagBytes / 1e6
         sizeUnits <- "MB"
     } else {
         # Size is displayed in terabytes
-        bagSize <- bagBytes / 1000000000.0
+        bagSize <- bagBytes / 1e9
         sizeUnits <- "GB"
     }
 
