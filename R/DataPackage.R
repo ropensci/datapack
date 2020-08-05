@@ -412,7 +412,7 @@ setMethod("insertRelationship", signature("DataPackage"),
     # Validationa (https://www.w3.org/RDF/Validator/). Node ids starting with numeric characters or containing 
     # colons do not pass validation (note that blank node identifiers such as '_:b1' do not pass validattion).
     if (is.na(subjectID)) {
-      subjectID <- sprintf("_%s", UUIDgenerate())
+      subjectID <- sprintf("_%s", uuid::UUIDgenerate())
       subjectType <- "blank"
     }
     
@@ -423,7 +423,7 @@ setMethod("insertRelationship", signature("DataPackage"),
       i <- i + 1
       # Generate a blank node identifier if id is not specified
       if (is.na(obj)) {
-        obj <- sprintf("_%s", UUIDgenerate())
+        obj <- sprintf("_%s", uuid::UUIDgenerate())
         objectTypes[i] <- "blank"
       }
       
@@ -872,7 +872,7 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
         # so assign a new id if they are.
         if(newObj@oldId == getIdentifier(newObj)) {
             if(is.na(newId)) {
-                newId <- sprintf("urn:uuid:%s", UUIDgenerate())
+                newId <- sprintf("urn:uuid:%s", uuid::UUIDgenerate())
                 newObj@sysmeta@identifier <- newId
             } else {
                 newObj@sysmeta@identifier <- newId
@@ -1595,7 +1595,7 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=NA_cha
 
     # Create a ResourceMap object and serialize it
     if(is.na(mapId)) {
-        mapId <- sprintf("urn:uuid:%s", UUIDgenerate())
+        mapId <- sprintf("urn:uuid:%s", uuid::UUIDgenerate())
     }
     if(is.na(syntaxName)) {
         syntaxName="rdfxml"
@@ -1669,15 +1669,15 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=NA_cha
                 # Add 1 to the count so that the next number is one higher
                 scienceMetadataCount <- scienceMetadataCount+1
             }
-            write_to_bag(objectToWrite=dataObj, objectPath=science_metadata_filename, bagDir=bagDir,
+            writeToBag(objectToWrite=dataObj, objectPath=science_metadata_filename, bagDir=bagDir,
                          isSystemMetadata=FALSE, isScienceMetadata=TRUE)
         } else {
             # Otherwise it's a plain data object and should also be included in the bag
-            write_to_bag(objectToWrite=dataObj, objectPath=dataObjectLocation, bagDir=bagDir)
+            writeToBag(objectToWrite=dataObj, objectPath=dataObjectLocation, bagDir=bagDir)
         }
         # Set the data's system metadata location
         systemMetadatatLocation <- file.path(sysMetaDir, paste(systemMetadata@identifier, '.xml', sep=""))
-        write_to_bag(objectToWrite=systemMetadata, objectPath=systemMetadatatLocation, bagDir=bagDir, isSystemMetadata=TRUE)
+        writeToBag(objectToWrite=systemMetadata, objectPath=systemMetadatatLocation, bagDir=bagDir, isSystemMetadata=TRUE)
     }
 
     dataInfo <- file.info(list.files(payloadDir, full.names=TRUE, recursive=TRUE))
@@ -1910,9 +1910,9 @@ setMethod("describeWorkflow", signature("DataPackage"), function(x, sources=list
             
         # Currently we have to have a prov:execution associated with each R script, so that metacatui will
         # render the used and gen files with the R script, via the qualified association and hadPlan, OK!
-        executionId <- sprintf("urn:uuid:%s", UUIDgenerate())
+        executionId <- sprintf("urn:uuid:%s", uuid::UUIDgenerate())
         # Qualified association to link the execution and each of the program (plan)
-        associationId <- sprintf("_%s", UUIDgenerate())
+        associationId <- sprintf("_%s", uuid::UUIDgenerate())
         
         planId <- scriptId
         # Qualified association
@@ -2213,7 +2213,7 @@ condenseStr <- function(inStr, newLength) {
 
 # Writes a data object or system metadata object to a bag
 # When writing system metadata documents, asTag should be true
-write_to_bag <- function(objectToWrite, objectPath, bagDir, isSystemMetadata=FALSE, isScienceMetadata=FALSE) {
+writeToBag <- function(objectToWrite, objectPath, bagDir, isSystemMetadata=FALSE, isScienceMetadata=FALSE) {
     # Create the directory if it doesn't exist
     if(!file.exists(dirname(objectPath))) {
         # Use recursive because objectPath can include intermediate paths
@@ -2277,7 +2277,7 @@ getResourceMap <- function(x, id=NA_character_, creator=NA_character_, resolveUR
     # was created. If a DataPackage id was not assigned, then create a unique id.
     if(is.na(id)) {
         if(is.na(x@sysmeta@identifier) || is.null(x@sysmeta@identifier)) {
-            id <- sprintf("urn:uuid:%s", UUIDgenerate())
+            id <- sprintf("urn:uuid:%s", uuid::UUIDgenerate())
         } else {
             id <- x@sysmeta@identifier
         }
