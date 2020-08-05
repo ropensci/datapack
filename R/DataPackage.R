@@ -327,7 +327,7 @@ setMethod("addMember", signature("DataPackage"), function(x, do, mo=NA_character
     }
     # If the object's path was documented, add it to the resource map
     if (!is.na(iObj@targetPath)){
-        insertRelationship(x, getIdentifier(iObj), iObj@targetPath, "http://www.w3.org/ns/prov#atLocation")
+        insertRelationship(x, getIdentifier(iObj), iObj@targetPath, provAtLocation)
     }
     return(x)
 })
@@ -392,10 +392,10 @@ setMethod("insertRelationship", signature("DataPackage"),
   # If a predicate wasn't provided, then insert the default relationship of 
   # subjectID -> documents -> objectID; objectID -> documentedBy -> subjectID
   if (is.na(predicate)) {
-    insertRelationship(x, subjectID, objectIDs, "http://purl.org/spar/cito/documents")
+    insertRelationship(x, subjectID, objectIDs, citoDocuments)
     
     for (obj in objectIDs) {
-      insertRelationship(x, obj, subjectID, "http://purl.org/spar/cito/isDocumentedBy")
+      insertRelationship(x, obj, subjectID, citoIsDocumentedBy)
     }
   } else {
     # Append new relationships to previously stored ones.
