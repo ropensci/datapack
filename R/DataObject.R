@@ -557,16 +557,16 @@ setMethod("updateXML", signature("DataObject"), function(x, xpath=NA_character_,
         x@data <- charToRaw(metadata)
         x@filename <- NA_character_
         x@sysmeta@size <- length(x@data)
-        x@sysmeta@checksum <- digest(x@data, algo="sha1", serialize=FALSE, file=FALSE)
-        x@sysmeta@checksumAlgorithm <- "SHA-1"
+        x@sysmeta@checksum <- digest(x@data, algo="sha256", serialize=FALSE, file=FALSE)
+        x@sysmeta@checksumAlgorithm <- "SHA-256"
     } else {
         # Read the file from disk and return the contents as raw
         x@data <- raw()
         x@filename <- newfile
         fileinfo <- file.info(newfile)
         x@sysmeta@size <- fileinfo$size
-        x@sysmeta@checksum <- digest(newfile, algo="sha1", serialize=FALSE, file=TRUE)
-        x@sysmeta@checksumAlgorithm <- "SHA-1"
+        x@sysmeta@checksum <- digest(newfile, algo="sha256", serialize=FALSE, file=TRUE)
+        x@sysmeta@checksumAlgorithm <- "SHA-256"
     }
     
     return(x)
