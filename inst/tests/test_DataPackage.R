@@ -397,7 +397,7 @@ test_that("BagIt serialization works", {
   data <- charToRaw("1,2,3\n4,5,6")
   firstFilePath = "my_data/textFile1.csv"
   secondFilePath = "my_data/textFile2.csv"
-  thirdFilePath = "more-data/textFile3.csv"
+  thirdFilePath = "more-data\textFile3.csv"
   fifthFilePath = "misc_data/data.csv"
   
   node <- "urn:node:KNB"
