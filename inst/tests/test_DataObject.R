@@ -162,3 +162,19 @@ test_that("DataObject updateXML method", {
     expect_match(newURL, URL)
 })
 
+test_that("sanitizePath is correctly sanitizing file paths", {
+    library(datapack)
+
+    drivePath <- "c:/test/myFile.csv"
+    drivePathExpected <-"c_/test/myFile.csv"
+    
+    traversalPath <- "data/../moreData/../../rasters/myFile.csv"
+    traversalPathExpected <- "data/_/moreData/_/_/rasters/myFile.csv"
+    
+    specialCharacterPath <- "geo-data/?home/%APPDATA/myFile.csv"
+    specialCharacterPathExpexted <- "geo-data/_home/_APPDATA/myFile.csv"
+    
+    expect_equal(sanitizePath(drivePath) , drivePathExpected)
+    expect_equal(sanitizePath(traversalPath),traversalPathExpected)
+    expect_equal(sanitizePath(specialCharacterPath), specialCharacterPathExpexted)
+})
