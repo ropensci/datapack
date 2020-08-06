@@ -36,7 +36,7 @@
 
 \item{dataURL}{A character string containing a URL to remote data (a repository) that this DataObject represents.}
 
-\item{targetPath}{A string that denotes where the file should go in a downloaded package}
+\item{targetPath}{An optional character string that denotes where the file should go in a downloaded package}
 }
 \description{
 When initializing a DataObject using passed in data, one can either pass 

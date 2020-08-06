@@ -43,7 +43,7 @@
 #' @slot dataURL A character value for the URL used to load data into this DataObject
 #' @slot updated A hash containing logical values which indicate if system metadata or the data object have been updated since object creation.
 #' @slot oldId A character string containing the previous identifier used, before a \code{"replaceMember"} call.
-#' @slot targetPath A character string holding the path of where the file is placed in a downloaded package.
+#' @slot targetPath An optional character string holding the path of where the file is placed in a downloaded package.
 #' @rdname DataObject-class
 #' @keywords classes
 #' @import methods
@@ -126,7 +126,7 @@ setClass("DataObject", slots = c(
 #' @param mediaType The When specified, indicates the IANA Media Type (aka MIME-Type) of the object. The value should include the media type and subtype (e.g. text/csv).
 #' @param mediaTypeProperty A list, indicates IANA Media Type properties to be associated with the parameter \code{"mediaType"}
 #' @param dataURL A character string containing a URL to remote data (a repository) that this DataObject represents.
-#' @param targetPath A string that denotes where the file should go in a downloaded package
+#' @param targetPath An optional string that denotes where the file should go in a downloaded package
 #' @import digest
 #' @import uuid
 #' @examples
