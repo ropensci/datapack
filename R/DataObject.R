@@ -43,7 +43,7 @@
 #' @slot dataURL A character value for the URL used to load data into this DataObject
 #' @slot updated A hash containing logical values which indicate if system metadata or the data object have been updated since object creation.
 #' @slot oldId A character string containing the previous identifier used, before a \code{"replaceMember"} call.
-#' @slot targetPath A character string holding the path of where the file should be in an exported package.
+#' @slot targetPath A character string holding the path of where the file is placed in a downloaded package.
 #' @rdname DataObject-class
 #' @keywords classes
 #' @import methods
@@ -224,7 +224,7 @@ setMethod("initialize", "DataObject", function(.Object, id=NA_character_, dataob
     # downloaded from a data repository
     .Object@updated <- hash( keys=c("sysmeta", "data"), values=c(FALSE, FALSE))
     .Object@oldId <- NA_character_
-    .Object@targetPath <- targetPath
+    .Object@targetPath <- sanitizePath(targetPath)
     return(.Object)
 })
 
@@ -626,4 +626,13 @@ setMethod("show", "DataObject",
               }
           }
 )
-          
+
+# Sanitizes a string that should represent a path to a file
+sanitizePath <- function(targetPath) {
+    # List of things that shouldn't be in a path
+    blacklist <- list( '$', '?', '%', '*', ':', '|', '"', '<', '>', ' ', '..')
+    for (blacklistCharacter in blacklist) {
+        targetPath <- gsub(blacklistCharacter, '_', targetPath, fixed=TRUE)
+    }
+    return(targetPath)
+}
