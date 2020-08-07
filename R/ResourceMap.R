@@ -444,7 +444,6 @@ setGeneric("getTriples", function(x, ...) { standardGeneric("getTriples")} )
 setMethod("getTriples", "ResourceMap", function(x, filter=TRUE, identifiers=list(), ...) {
   
     relations <- data.frame(row.names=NULL, stringsAsFactors=F)
-    
 
     # See ./inst/extdata/sparql-query-result.xml to see an example SPARQL qeury that
     # getTriples can parse.
@@ -460,8 +459,11 @@ setMethod("getTriples", "ResourceMap", function(x, filter=TRUE, identifiers=list
     
     # Retrieve query results and check the actual result count against the expected count
     # Remove a creator id if filtering and it is found
-    creatorId <- NA_character_
-    creatorFound <- FALSE
+    
+    # Was a dcterms:creator found (this is the current term specified by the OAI-ORE specification)
+    dctermsCreatorNodeId <- NA_character_
+    # Was a dc:creator found (this term is of older usage and will be removed if found)
+    dcCreatorNodeId <- NA_character_
     
     subject <- NA_character_
     predicate <- NA_character_
@@ -523,7 +525,6 @@ setMethod("getTriples", "ResourceMap", function(x, filter=TRUE, identifiers=list
                     } else {
                         warning("Unknown RDF node type: %s\n", value)
                     }
-                    
                 }
             }
             
@@ -556,12 +557,6 @@ setMethod("getTriples", "ResourceMap", function(x, filter=TRUE, identifiers=list
             if((predicate == DCtitle) && (object == "DataONE Aggregation")) {
                 next
             } else if((predicate == RDFtype) && (object == OREresourceMap)) {
-                next
-            } else if(object == DCTERMSagent) {
-                creatorId <- subject
-                next
-            } else if(predicate == DCTERMScreator) {
-                creatorId <- subject
                 next
             } else if(predicate == DCTERMSmodified) {
                 next
@@ -600,19 +595,21 @@ setMethod("getTriples", "ResourceMap", function(x, filter=TRUE, identifiers=list
                 # Remove the identification of the agent that created this package as this
                 # will be re-declared if the package is uploaded again by the R client.
                 next
-            } else if(grepl(foafName, predicate, fixed=TRUE) && grepl("DataONE Java Client Library", object, fixed=TRUE)) {
+            } else if (predicate == otherCreator && objectType == "blank") {
+                # Remove the package creator triples that were entered with the older creator name (dc:creator)
+                dcCreatorNodeId <- object
                 next
-            } else if(!is.na(creatorId) && subject == creatorId) {
-                # Have to check for this triple after all other records have been processed, as
-                # creatorId may have been discovered after this record was encountered.
-                # i.e. these three triples show how the DataONE R client implements the creator (dc:Agent), and the
-                # first of these triples is the tough one to find (have to find 2nd or 3rd first)
-                # <rdf:Description rdf:nodeID="_3665ab04-9351-4aad-9552-961b6c94600e"> <foaf:name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">DataONE R Client</foaf:name> </rdf:Description>    
-                # <rdf:Description rdf:about="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3A743ec6eb-14b2-4529-a568-a4fe8f4f5e7f">  <dc:creator rdf:nodeID="_3665ab04-9351-4aad-9552-961b6c94600e"/> </rdf:Description> 
-                # <rdf:Description rdf:nodeID="_3665ab04-9351-4aad-9552-961b6c94600e"> <rdf:type rdf:resource="http://purl.org/dc/terms/Agent"/>
-                creatorFound <- TRUE
+            } else if (predicate == DCTERMScreator && objectType == "blank") {
+                # Remote the package creator triples that were entered with the newer, OAI-ORE specified name
+                # The package creator should be entered as a statement declaring the package creator: 
+                #      <rdf:Description rdf:about="https://cn.dataone.org/cn/v2/resolve/urn%3Auuid%3A743ec6eb-14b2-4529-a568-a4fe8f4f5e7f">  <dcterms:creator rdf:nodeID="_3665ab04-9351-4aad-9552-961b6c94600e"/> </rdf:Description> 
+                # The blank node declared in the first triple contains additional information about the creator, for example:
+                #      <rdf:Description rdf:nodeID="_3665ab04-9351-4aad-9552-961b6c94600e"> <foaf:name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">DataONE R Client</foaf:name> </rdf:Description>    
+                #      <rdf:Description rdf:nodeID="_3665ab04-9351-4aad-9552-961b6c94600e"> <rdf:type rdf:resource="http://purl.org/dc/terms/Agent"/>
+                dctermsCreatorNodeId <- object
                 next
             }
+            
             # Modify all other entries such that any package member identifier is 'demoted' to a local identifier.
             id <- checkIdMatch(subject, pattern='%s$', identifiers)
             if(!is.na(id)) subject <- id
@@ -621,19 +618,29 @@ setMethod("getTriples", "ResourceMap", function(x, filter=TRUE, identifiers=list
         }
         
         if(nrow(relations) == 0) {
+            # Add the first relationship to the output relations
             relations <- data.frame(subject=subject, predicate=predicate, object=object, 
                                     subjectType=subjectType, objectType=objectType,
                                     dataTypeURI=dataTypeURI, row.names = NULL, stringsAsFactors = FALSE)
         } else {
+            # Add additional relationships to the output relations
             relations <- rbind(relations, data.frame(subject=subject, predicate=predicate, object=object, 
                                                      subjectType=subjectType, objectType=objectType,
                                                      dataTypeURI=dataTypeURI, row.names = NULL, stringsAsFactors = FALSE))
         }
     }
     
-    # Didn't find the creator triple declaring the foaf name
-    if(!is.na(creatorId) && !creatorFound) {
-        relations <- relations[!(relations$subject == creatorId),]
+    # Found a dc:creator, remove it and any associated tripes (from the blank node)
+    if(!is.na(dcCreatorNodeId)) {
+        relations <- relations[!(relations$subject == dcCreatorNodeId),]
+        relations <- relations[!(relations$predicate == otherCreator),]
+    }
+    
+    # Found a dcterms:creator, remove it and any associated triples (from the blank node)
+    # Note: a new dcterms:creator will be added to the resource map before being uploaded
+    if(!is.na(dctermsCreatorNodeId)) {
+        relations <- relations[!(relations$subject == dctermsCreatorNodeId),]
+        relations <- relations[!(relations$predicate == DCTERMScreator),]
     }
     
     freeParser(parser)
