@@ -57,13 +57,13 @@ test_that("DataObject constructors work", {
     unlink(tf)
     
     # Test that the constructor works for a data path, with a few different forms
-    relativeFilePath="./data/rasters/test.csv"
-    do <- new("DataObject", sm, data, filename="test.csv", relativeFilePath=relativeFilePath)
-    expect_that(do@relativeFilePath, equals(relativeFilePath))
+    targetPath="./data/rasters/test.csv"
+    do <- new("DataObject", sm, data, filename="test.csv", targetPath=targetPath)
+    expect_that(do@targetPath, equals(targetPath))
     
-    relativeFilePath="data/rasters/test.csv"
-    do <- new("DataObject", sm, data, filename="test.csv", relativeFilePath=relativeFilePath)
-    expect_that(do@relativeFilePath, equals(relativeFilePath))
+    targetPath="data/rasters/test.csv"
+    do <- new("DataObject", sm, data, filename="test.csv", targetPath=targetPath)
+    expect_that(do@targetPath, equals(targetPath))
 })
 test_that("DataObject accessPolicy methods", {
     library(datapack)
@@ -162,3 +162,19 @@ test_that("DataObject updateXML method", {
     expect_match(newURL, URL)
 })
 
+test_that("sanitizePath is correctly sanitizing file paths", {
+    library(datapack)
+
+    drivePath <- "c:/test/myFile.csv"
+    drivePathExpected <-"c_/test/myFile.csv"
+    
+    traversalPath <- "data/../moreData/../../rasters/myFile.csv"
+    traversalPathExpected <- "data/_/moreData/_/_/rasters/myFile.csv"
+    
+    specialCharacterPath <- "geo-data/?home/%APPDATA/myFile.csv"
+    specialCharacterPathExpexted <- "geo-data/_home/_APPDATA/myFile.csv"
+    
+    expect_equal(sanitizePath(drivePath) , drivePathExpected)
+    expect_equal(sanitizePath(traversalPath),traversalPathExpected)
+    expect_equal(sanitizePath(specialCharacterPath), specialCharacterPathExpexted)
+})

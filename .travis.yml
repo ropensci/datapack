@@ -5,3 +5,6 @@ addons:
   apt:
     packages:
       - librdf0-dev
+os:
+  - linux
+  - osx

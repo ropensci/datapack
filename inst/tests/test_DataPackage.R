@@ -65,7 +65,7 @@ test_that("datapack methods work", {
     # Test that a DataObject with a file path gets the file path placed in the resource map
     relativePath <- "./data/raster/data.tiff"
     newId <- "testID"
-    do <- new("DataObject", newId, data, format, user, node, relativeFilePath=relativePath)
+    do <- new("DataObject", newId, data, format, user, node, targetPath=relativePath)
     dpkg <- new("DataPackage")
     dpkg <- addMember(dpkg, do)
     relations <- getRelationships(dpkg)
@@ -352,10 +352,6 @@ test_that("Package serialization works with minimal DataPackage", {
     expect_equal(nrow(rels), 0)
 })
 
-
-
-
-
 test_that("BagIt serialization works", {
   
   library(uuid)
@@ -384,43 +380,98 @@ test_that("BagIt serialization works", {
   </eml:eml>"'
   
   dp <- new("DataPackage")
-  mdId <- "scimetaId"
-  doInId <- "scidataId"
-  doOutId <- paste0("urn:uuid:", UUIDgenerate())
-  executionId <- "execution1"
-  
+  emlId <- paste0("urn:uuid:", UUIDgenerate())
+  secondEmlId <- paste0("urn:uuid:", UUIDgenerate())
+  thirdEmlId <- paste0("urn:uuid:", UUIDgenerate())
+  firstDataFileId <- paste0("urn:uuid:", UUIDgenerate())
+  extraScienceMetadataId <- paste0("urn:uuid:", UUIDgenerate())
+  secondDataFileId <- paste0("urn:uuid:", UUIDgenerate())
+  thirdDataFileId <- paste0("urn:uuid:", UUIDgenerate())
+  fourthDataFileId <- paste0("urn:uuid:", UUIDgenerate())
+  fifthDataFileId <- paste0("urn:uuid:", UUIDgenerate())
+
+  packageFileIds = list(emlId, secondEmlId, thirdEmlId, firstDataFileId,
+                        extraScienceMetadataId, secondDataFileId,
+                        thirdDataFileId, fourthDataFileId, fifthDataFileId)
   user <- "smith"
   data <- charToRaw("1,2,3\n4,5,6")
-  doInFilePath = "myDir/textFile1.csv"
-  doOutFilePath = "myDir/textFile2.csv"
+  firstFilePath = "my_data/textFile1.csv"
+  secondFilePath = "my_data/textFile2.csv"
+  thirdFilePath = "more-data\textFile3.csv"
+  fifthFilePath = "misc_data/data.csv"
+  
   node <- "urn:node:KNB"
-  md1 <- new("DataObject", id=mdId, dataobj=charToRaw(someEML), format="eml://ecoinformatics.org/eml-2.1.1", user=user, mnNodeId=node)
-  doIn <- new("DataObject", id=doInId, dataobj=data, format="text/csv", user=user, mnNodeId=node, relativeFilePath=doInFilePath)
-  doOut <- new("DataObject", id=doOutId, filename=csvfile, format="text/csv", user=user, mnNodeId=node, relativeFilePath=doOutFilePath)
-  dp <- addMember(dp, md1)
-  dp <- addMember(dp, doIn)
-  dp <- addMember(dp, doOut)
-  
-  # Insert metadata document <-> relationships
-  dp <- insertRelationship(dp, subjectID=mdId, objectIDs=c(doOutId))
-  
-  # Insert a typical provenance relationship
-  dp <- insertRelationship(dp, subjectID=doOutId, objectIDs=doInId, predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
-  dp <- insertRelationship(dp, subjectID=executionId, objectIDs=doInId, predicate="http://www.w3.org/ns/prov#used")
-  dp <- insertRelationship(dp, subjectID=doOutId, objectIDs=executionId, predicate="http://www.w3.org/ns/prov#wasGeneratedBy")
-  dp <- insertRelationship(dp, subjectID="urn:uuid:abcd", objectIDs="Wed Mar 18 06:26:44 PDT 2015", 
-                     predicate="http://www.w3.org/ns/prov#startedAt", subjectType="uri", 
-                     objectTypes="literal",
-                     dataTypeURIs="http://www.w3.org/2001/XMLSchema#string")
-  
- bagitFile <- serializeToBagIt(dp) 
- expect_true(file.exists(bagitFile))
- expect_true(file.info(bagitFile)[['size']] > 0)
 
- zipFileNames = unzip(bagitFile, list=TRUE)$Name
- expect_true(paste("data/",doInFilePath, sep="") %in% zipFileNames )
- expect_true(paste("data/", doOutFilePath, sep="") %in% zipFileNames)
-}) 
+  emlDataObject <- new("DataObject", id=emlId, dataobj=charToRaw(someEML), format="eml://ecoinformatics.org/eml-2.1.1", user=user, mnNodeId=node)
+  secondEmlDataObject <- new("DataObject", id=secondEmlId, dataobj=charToRaw(someEML), format="eml://ecoinformatics.org/eml-2.1.1", user=user, mnNodeId=node)
+  # An unused EML file, used to test that it gets put in ./data/
+  thirdEmlDataObject <- new("DataObject", id=thirdEmlId, dataobj=charToRaw(someEML), format="eml://ecoinformatics.org/eml-2.1.1", user=user, mnNodeId=node)
+  # Content Standard for Digital Geospatial Metadata, Biological Data Profile, version 001.1-1999 Science Metatdata file
+  extraScienceMetadata <- new("DataObject", id=extraScienceMetadataId, dataobj=charToRaw(someEML), format="FGDC-STD-001.1-1999", user=user, mnNodeId=node)
+  thirdEmlDataObject <- new("DataObject", id=thirdEmlId, dataobj=charToRaw(someEML), format="eml://ecoinformatics.org/eml-2.1.1", user=user, mnNodeId=node)
+  firstDataFile <- new("DataObject", id=firstDataFileId, dataobj=data, format="text/csv", user=user, mnNodeId=node, targetPath=firstFilePath)
+  secondDataFile <- new("DataObject", id=secondDataFileId, filename=csvfile, format="text/csv", user=user, mnNodeId=node, targetPath=secondFilePath)
+  thirdDataFile <- new("DataObject", id=thirdDataFileId, filename=csvfile, format="text/csv", user=user, mnNodeId=node, targetPath=thirdFilePath)
+  fourthDataFile <- new("DataObject", id=fourthDataFileId, filename=csvfile, format="text/csv", user=user, mnNodeId=node)
+  # Is described by the FGDC metadata file
+  fifthDataFile <- new("DataObject", id=fifthDataFileId, dataobj=data, format="text/csv", user=user, mnNodeId=node, targetPath=fifthFilePath)
+
+  # Add all of the EML and data objects
+  dp <- addMember(dp, emlDataObject)
+  dp <- addMember(dp, secondEmlDataObject)
+  dp <- addMember(dp, thirdEmlDataObject)
+  dp <- addMember(dp, extraScienceMetadata)
+  dp <- addMember(dp, firstDataFile, mo=emlDataObject)
+  dp <- addMember(dp, secondDataFile, mo=secondEmlDataObject)
+  dp <- addMember(dp, thirdDataFile)
+  dp <- addMember(dp, fourthDataFile)
+  dp <- addMember(dp, fifthDataFile, mo=extraScienceMetadata)
+
+  # Make note of which data files have a path set
+  dataFilesWithPath <- list(firstFilePath, secondFilePath, thirdFilePath, fifthFilePath)
+
+  bagitFile <- serializeToBagIt(dp)
+
+  # Basic sanity checks
+  expect_true(file.exists(bagitFile))
+  expect_true(file.info(bagitFile)[['size']] > 0)
+
+  zipFileNames = unzip(bagitFile, list=TRUE)$Name
+  # Check that the required tag files are present
+  requiredBagFiles <- list("bagit.txt", "bag-info.txt", "manifest-md5.txt", "tagmanifest-md5.txt")
+  for (requiredFile in requiredBagFiles) {
+      expect_true(requiredFile %in% zipFileNames)
+  }
+
+  # Check that the data files are in the manifest
+  manifestData <- read.table(unz(bagitFile, "manifest-md5.txt"), nrows=10, header=F, quote="\"", sep=" ")
+  # Get the second column (file names)
+  manifestData <- manifestData[[2]]
+  for (dataFile in dataFilesWithPath) {
+      expect_true(file.path("data",dataFile) %in% zipFileNames)
+      expect_true(file.path("data",dataFile) %in% manifestData)
+  }
+
+  # Check that the system metata are present
+  # The Data Objects should have system metadata assigned to them.
+  # We want the IDs of those for testing
+  tagManifestData <- read.table(unz(bagitFile, "tagmanifest-md5.txt"), header=F, quote="\"", sep=" ")
+  tagManifestData <- tagManifestData[[2]]
+  
+  for (packageFileId in packageFileIds) {
+      updatedObject <- getMember(dp, packageFileId)
+      # Remember to sanitize the file name
+      sysmetaName <- gsub(":", "_", updatedObject@sysmeta@identifier)
+      expect_true(file.path("metadata", "sysmeta", paste(sysmetaName, ".xml", sep="")) %in% zipFileNames )
+      expect_true(file.path("metadata", "sysmeta", paste(sysmetaName, ".xml", sep="")) %in% tagManifestData )
+  }
+
+  # Check that the rdf is present
+  expect_true(file.path("metadata", "oai-ore.xml") %in% zipFileNames)
+  # Check that the EML documents are present
+  expect_true(file.path("metadata", "science-metadata.xml") %in% zipFileNames)
+  expect_true(file.path("metadata", "science-metadata(1).xml") %in% zipFileNames)
+})
 
 test_that("Adding provenance relationships to a DataPackage via describeWorkflow works", {
     
@@ -605,13 +656,13 @@ test_that("removeMember works", {
     regressionPath <- "./extdata/pkg-example/logit-regression-example.R"
     doProg <- new("DataObject", format="application/R", 
                   filename=system.file(regressionPath, package="datapack"),
-                  relativeFilePath=regressionPath)
+                  targetPath=regressionPath)
     dp <- addMember(dp, doProg)
     progId <- getIdentifier(doProg)
     
     binaryPath <- "./extdata/pkg-example/binary.csv"
     doIn <- new("DataObject", format="text/csv", 
-                filename=system.file(binaryPath, package="datapack"), relativeFilePath=binaryPath)
+                filename=system.file(binaryPath, package="datapack"), targetPath=binaryPath)
     dp <- addMember(dp, doIn)
     inputs[[length(inputs)+1]] <- doIn
     relations <- getRelationships(dp, quiet=quietOn)
@@ -812,4 +863,3 @@ test_that("DataPackage member selection, set, get methods", {
     vals <- getValue(dp, name="sysmeta@rightsHolder")
     expect_true(all(vals == "orcid.org/0000-0002-2192-403X"))
 })
-
