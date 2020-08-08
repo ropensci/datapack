@@ -630,9 +630,9 @@ setMethod("show", "DataObject",
 # Sanitizes a string that should represent a path to a file
 sanitizePath <- function(targetPath) {
     # List of things that shouldn't be in a path
-    blacklist <- list( '$', '?', '%', '*', ':', '|', '"', '<', '>', ' ', '..')
-    for (blacklistCharacter in blacklist) {
-        targetPath <- gsub(blacklistCharacter, '_', targetPath, fixed=TRUE)
+    filterList <- list( '$', '?', '%', '*', ':', '|', '"', '<', '>', ' ', '..')
+    for (filterCharacter in filterList) {
+        targetPath <- gsub(filterCharacter, '_', targetPath, fixed=TRUE)
     }
     return(targetPath)
 }
