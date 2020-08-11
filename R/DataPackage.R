@@ -2305,23 +2305,18 @@ query_result <- tryCatch(
             ?o cito:isDocumentedBy ?s .
         }'
     query <- new("Query", resMap@world, queryString, base_uri=NULL, query_language="sparql", query_uri=NULL)
-    # Create a data frame from the results
-    querytResult <- redland::getResults(query, resMap@model, "rdfxml")
-    # Transform the results into xml
-    doc <- xmlInternalTreeParse(querytResult, asText=TRUE)
-    # Get the solutions of the query
-    rdfStmtNodes <- getNodeSet(doc, "//rs:solution/rdf:Description/rs:binding/rdf:Description/rs:value")
-    # Create a list to hold the identifiers of the science metadata objects that the query found
-    science_metadata_ids <- list()
-    for (science_metadata_uri in rdfStmtNodes) {
-        # Get the string value of the solution
-        science_metadata_uri <- xmlGetAttr(science_metadata_uri, "rdf:resource")
-        science_metadata_ids <- c(science_metadata_ids, science_metadata_uri)
-    }
+    querytResult <- redland::getResults(query, resMap@model, "csv")
+    
+    # Use the csv format when parsing the results
+    outpath <- tempfile()
+    writeLines(getResults(query, resMap@model, "csv"), outpath)
+    # The first row in the file is the 'subject' string from the query; don't read it
+    scince_metadata_uris <- read.csv(outpath, skip = 1)
+
     # Make sure that there aren't any duplicate identifiers
-    return (unique(science_metadata_ids))
+    return (unique(scince_metadata_uris))
     },
-    error=function() {
+    error=function(cond) {
         return (list())
     })
     return (query_result)
