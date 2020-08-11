@@ -1622,19 +1622,19 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=NA_cha
     # Get a resource map so that it can be queried for science metadata
     resMap <- getResourceMap(x)
     # Check to see if the user supplied any science metadata
-    science_metadata_uris <- get_science_metadata(resMap)
+    scienceMetadataUris <- get_science_metadata(resMap)
     # The number that's appended to the filename if multiple documents exist
     scienceMetadataCount <- 1
     # URLEncode each URI
-    metadata_ids <- list()
-    for (uri_element in science_metadata_uris) {
-        metadata_ids<- c(metadata_ids, RCurl::curlUnescape(uri_element))
+    metadataIds <- list()
+    for (uriElement in scienceMetadataUris) {
+        metadataIds<- c(metadataIds, RCurl::curlUnescape(uriElement))
     }
 
     # Determines whether or not an object is in a list of URIs
-    in_uri <- function(object_id, uri_list) {
-        for (uri in uri_list) {
-            if (grepl(object_id, uri, fixed=TRUE)) {
+    in_uri <- function(objectId, uriList) {
+        for (uri in uriList) {
+            if (grepl(objectId, uri, fixed=TRUE)) {
                 return (TRUE)
             }
         }
@@ -1658,18 +1658,18 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=NA_cha
             # If the file name wasn't specified, use the identifier
             dataObjectLocation <- file.path(payloadDir, getIdentifier(dataObj))
         }
-        object_id = getIdentifier(dataObj)
+        objectId = getIdentifier(dataObj)
         # Check if the object is a science metadata document by checking if its identifier is in the list of
         # science metadata identifiers
-        if(in_uri(object_id=object_id, uri_list=metadata_ids)) {
-            science_metadata_filename <- file.path(metadataDir, 'science-metadata.xml')
-            if (file.exists(science_metadata_filename)) {
+        if(in_uri(objectId=objectId, uriList=metadataIds)) {
+            scienceMetadataFilename <- file.path(metadataDir, 'science-metadata.xml')
+            if (file.exists(scienceMetadataFilename)) {
                 # If one was already written, then append (1), (2), (3), etc to the file name
-                science_metadata_filename <- file.path(metadataDir, sprintf('science-metadata(%d).xml', scienceMetadataCount))
+                scienceMetadataFilename <- file.path(metadataDir, sprintf('science-metadata(%d).xml', scienceMetadataCount))
                 # Add 1 to the count so that the next number is one higher
                 scienceMetadataCount <- scienceMetadataCount+1
             }
-            writeToBag(objectToWrite=dataObj, objectPath=science_metadata_filename, bagDir=bagDir,
+            writeToBag(objectToWrite=dataObj, objectPath=scienceMetadataFilename, bagDir=bagDir,
                          isSystemMetadata=FALSE, isScienceMetadata=TRUE)
         } else {
             # Otherwise it's a plain data object and should also be included in the bag
@@ -2214,6 +2214,7 @@ condenseStr <- function(inStr, newLength) {
 # Writes a data object or system metadata object to a bag
 # When writing system metadata documents, asTag should be true
 writeToBag <- function(objectToWrite, objectPath, bagDir, isSystemMetadata=FALSE, isScienceMetadata=FALSE) {
+    
     # Create the directory if it doesn't exist
     if(!file.exists(dirname(objectPath))) {
         # Use recursive because objectPath can include intermediate paths
@@ -2231,6 +2232,7 @@ writeToBag <- function(objectToWrite, objectPath, bagDir, isSystemMetadata=FALSE
         sysmetaXML <- serializeSystemMetadata(objectToWrite, version="v2")
         objectIdentifier <- objectToWrite@identifier
         objectPath <- gsub(":", "_", objectPath)
+
         writeLines(sysmetaXML, objectPath)
     } else {
         # Determine whether the bytes of the file are on disk or in memory. Each way is handled differently
@@ -2253,6 +2255,8 @@ writeToBag <- function(objectToWrite, objectPath, bagDir, isSystemMetadata=FALSE
             rm(tf)
         }
     }
+    
+    # Write the system metadata, if it exists
 
     # Add this data package member to the top level bag metadata files
     objectMd5 <- digest(objectPath, algo="md5", file=TRUE)
@@ -2292,7 +2296,7 @@ getResourceMap <- function(x, id=NA_character_, creator=NA_character_, resolveUR
 # a resource map.
 get_science_metadata <- function(resMap) {
 
-query_result <- tryCatch(
+retrieveScienceMetadata <- tryCatch(
     {
     # Query that finds all subjects that document another object. If ?o is unused, a warning is raised;
     # use o by performing a sanity check that the object being documented is also documentedBy the science metadata
@@ -2309,13 +2313,13 @@ query_result <- tryCatch(
     outpath <- tempfile()
     writeLines(getResults(query, resMap@model, "csv"), outpath)
     # The first row in the file is the 'subject' string from the query; don't read it
-    scince_metadata_uris <- read.csv(outpath, skip = 1)
+    scinceMetadataUris <- read.csv(outpath, skip = 1)
 
     # Make sure that there aren't any duplicate identifiers
-    return (unique(scince_metadata_uris))
+    return (unique(scinceMetadataUris))
     },
     error=function(cond) {
         return (list())
     })
-    return (query_result)
+    return (retrieveScienceMetadata)
 }
