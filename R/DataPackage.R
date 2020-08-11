@@ -2231,9 +2231,7 @@ writeToBag <- function(objectToWrite, objectPath, bagDir, isSystemMetadata=FALSE
         sysmetaXML <- serializeSystemMetadata(objectToWrite, version="v2")
         objectIdentifier <- objectToWrite@identifier
         objectPath <- gsub(":", "_", objectPath)
-        fileConn<-file(objectPath)
-        writeLines(sysmetaXML, fileConn)
-        close(fileConn)
+        writeLines(sysmetaXML, objectPath)
     } else {
         # Determine whether the bytes of the file are on disk or in memory. Each way is handled differently
         if(!is.na(objectToWrite@filename)) {
