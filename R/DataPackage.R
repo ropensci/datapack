@@ -1584,11 +1584,12 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=NA_cha
     dir.create(bagDir)
     payloadDir <- file.path(bagDir, "data")
     if(!file.exists(payloadDir)) dir.create(payloadDir)
+
     metadataDir <- file.path(bagDir, "metadata")
     if(!file.exists(metadataDir)) dir.create(metadataDir)
     sysMetaDir <- file.path(metadataDir, "sysmeta")
     if(!file.exists(sysMetaDir)) dir.create(sysMetaDir)
-    
+
     # Create bagit.txt
     bagitFileText <- sprintf("BagIt-Version: 0.97\nTag-File-Character-Encoding: UTF-8")
     writeLines(bagitFileText, file.path(bagDir, "bagit.txt"))
@@ -1613,7 +1614,7 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=NA_cha
     relFile <- file.path("oai-ore.xml")
     resMapFilepath <- file.path(metadataDir, relFile)
     file.copy(tmpFile, resMapFilepath)
-    # Add resource map to the manifrest
+    # Add resource map to the manifest
     resMapMd5 <- digest(resMapFilepath, algo="md5", file=TRUE)
     manifestFileTextLine <- sprintf("%s %s", resMapMd5, gsub(paste(".*bag", .Platform$file.sep, sep=""), "", resMapFilepath))
     writeLines(manifestFileTextLine, file.path(bagDir, "tagmanifest-md5.txt"))
@@ -1641,26 +1642,25 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=NA_cha
         return (FALSE)
     }
 
-    # Get each member of the package and each corresponding system metadata file
-    # Write them both to the bag, in their respective directories
+    # Get each member of the package and write it to disk
     for(idNum in seq_along(identifiers)) {
         dataObj <- getMember(x, identifiers[idNum])
         systemMetadata <- dataObj@sysmeta
-
-        # Determine the filename and path of the data object.
+        # Determine the file name and path of the data object.
         if (!is.na(dataObj@targetPath)) {
             dataObjectLocation <- file.path(payloadDir, dataObj@targetPath)
-        } else if (!is.na(dataObj@filename)) {
-            # Otherwise, if they specified a filename use that
-            # The filename slot is a full path, only get the filename portion of it
-            dataObjectLocation <-file.path(payloadDir, basename(dataObj@filename))
+        } else if (!is.na(systemMetadata@fileName)) {
+            # Otherwise, if they specified a file name use that
+            # The file name slot is a full path, only get the file name portion of it
+            dataObjectLocation <-file.path(payloadDir, basename(systemMetadata@fileName))
         } else {
             # If the file name wasn't specified, use the identifier
             dataObjectLocation <- file.path(payloadDir, getIdentifier(dataObj))
         }
-        objectId = getIdentifier(dataObj)
+        
         # Check if the object is a science metadata document by checking if its identifier is in the list of
         # science metadata identifiers
+        objectId = getIdentifier(dataObj)
         if(in_uri(objectId=objectId, uriList=metadataIds)) {
             scienceMetadataFilename <- file.path(metadataDir, 'science-metadata.xml')
             if (file.exists(scienceMetadataFilename)) {
@@ -1669,15 +1669,12 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=NA_cha
                 # Add 1 to the count so that the next number is one higher
                 scienceMetadataCount <- scienceMetadataCount+1
             }
-            writeToBag(objectToWrite=dataObj, objectPath=scienceMetadataFilename, bagDir=bagDir,
-                         isSystemMetadata=FALSE, isScienceMetadata=TRUE)
+            writeToBag(dataObj, scienceMetadataFilename, bagDir, sysMetaDir,
+                       isScienceMetadata=TRUE)
         } else {
-            # Otherwise it's a plain data object and should also be included in the bag
-            writeToBag(objectToWrite=dataObj, objectPath=dataObjectLocation, bagDir=bagDir)
+           # Otherwise it's a plain data object
+           writeToBag(dataObj, dataObjectLocation, bagDir, sysMetaDir)
         }
-        # Set the data's system metadata location
-        systemMetadatatLocation <- file.path(sysMetaDir, paste(systemMetadata@identifier, '.xml', sep=""))
-        writeToBag(objectToWrite=systemMetadata, objectPath=systemMetadatatLocation, bagDir=bagDir, isSystemMetadata=TRUE)
     }
 
     dataInfo <- file.info(list.files(payloadDir, full.names=TRUE, recursive=TRUE))
@@ -1724,8 +1721,9 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=NA_cha
     if(normalizePath(getwd()) != normalizePath(bagDir)) {
         stop(sprintf("Unable to set working directory to the BagIt dir: %s", bagDir))
     }
-    zip(zipFile, files=list.files(recursive=TRUE), flags="-q")
+    zip::zip(zipFile, files=list.files(recursive=TRUE))
     # Return the zip filename
+
     return(zipFile)
 })
 
@@ -2211,41 +2209,32 @@ condenseStr <- function(inStr, newLength) {
     return(newStr)
 }
 
-# Writes a data object or system metadata object to a bag
-# When writing system metadata documents, asTag should be true
-writeToBag <- function(objectToWrite, objectPath, bagDir, isSystemMetadata=FALSE, isScienceMetadata=FALSE) {
-    
+# Writes an object and its system metadata to a bag.
+writeToBag <- function(objectToWrite, objectPath, bagDir, sysMetaDirectory, isScienceMetadata=FALSE) {
+    # Make sure that the path works on the target system
+    objectPath <- getPlatformPath(objectPath)
     # Create the directory if it doesn't exist
     if(!file.exists(dirname(objectPath))) {
         # Use recursive because objectPath can include intermediate paths
-        # that might not exist. For example, ./data/special_data/measurements.
+        # that might not exist. For example, ./data/non-existent-dir/measurements.
         dir.create(dirname(objectPath), recursive=TRUE)
     }
 
-    # Gives a relative path to the file in the bag. ex: data/myFile.csv rather than c:/exp/bag/data/myFile.csv
-    relativeBagPath <- gsub(paste(".*bag", .Platform$file.sep, sep=""), "", objectPath)
+    writeSystemMetadata <- function(sysMetaObject, systemMetadataPath) {
+        sysmetaXML <- serializeSystemMetadata(sysMetaObject, version="v2")
+        writeLines(sysmetaXML, systemMetadataPath)
+    }
     objectIdentifier <- NULL
-
-    # Handle writing the file to disk. This is done differently for system metadata objects, data objects
-    # in memory and objects that already exist on disk.
-    if (isSystemMetadata) {
-        sysmetaXML <- serializeSystemMetadata(objectToWrite, version="v2")
-        objectIdentifier <- objectToWrite@identifier
-        objectPath <- gsub(":", "_", objectPath)
-
-        writeLines(sysmetaXML, objectPath)
-    } else {
-        # Determine whether the bytes of the file are on disk or in memory. Each way is handled differently
-        if(!is.na(objectToWrite@filename)) {
-            if(file.exists(objectToWrite@filename)) {
-                file.copy(objectToWrite@filename, objectPath)
-                objectIdentifier <- getIdentifier(objectToWrite)
+    # Determine whether the bytes of the file are on disk or in memory. Each way is handled differently
+    if(!is.na(objectToWrite@filename)) {
+        if(file.exists(objectToWrite@filename)) {
+            file.copy(objectToWrite@filename, objectPath)
+            objectIdentifier <- getIdentifier(objectToWrite)
             } else {
                 stop(sprintf("Error serializing to BagIt format, data object \"%s\", uses file %s but this file doesn't exist", objectToWrite, objectToWrite@filename))
             }
         } else {
             # Must be an in-memory data object
-            objectPath <- gsub(":", "_", objectPath)
             tf <- tempfile()
             con <- file(tf, "wb")
             writeBin(getData(objectToWrite), con)
@@ -2254,19 +2243,36 @@ writeToBag <- function(objectToWrite, objectPath, bagDir, isSystemMetadata=FALSE
             unlink(tf)
             rm(tf)
         }
-    }
     
-    # Write the system metadata, if it exists
+    # Write the system metadata
+    sysMetaToWrite <- objectToWrite@sysmeta
+    systemMetadataPath <- file.path(sysMetaDirectory,
+                                         paste('sysmeta-', sysMetaToWrite@identifier, '.xml', sep=""))
+    systemMetadataPath<- getPlatformPath(systemMetadataPath)
+    writeSystemMetadata(sysMetaToWrite, systemMetadataPath)
 
-    # Add this data package member to the top level bag metadata files
-    objectMd5 <- digest(objectPath, algo="md5", file=TRUE)
-    manifestLine <- sprintf("%s %s", as.character(objectMd5), objectPath <- gsub(":", "_", relativeBagPath))
-    # Write the new records to the appropriate bag files
-    if (isSystemMetadata | isScienceMetadata) {
-        write(manifestLine,file=file.path(bagDir, "tagmanifest-md5.txt"),append=TRUE)
+    # Get the relative bag path for each file so that absolute paths aren't included
+    bagDir <- getPlatformPath(bagDir)
+    bagDir <- paste(bagDir, .Platform$file.sep, sep="")
+
+    # Add this data and metadata package member to the top level bag metadata files
+    relativeDataPath <- gsub(bagDir, "", objectPath)
+    # Write the non-system metadata documents to the appropriate bag files
+    if (isScienceMetadata) {
+        metaMd5 <- digest(objectPath, algo="md5", file=TRUE)
+        metadataManifestLine <- sprintf("%s %s", as.character(metaMd5), relativeDataPath)
+        write(metadataManifestLine,file=file.path(bagDir, "tagmanifest-md5.txt"),append=TRUE)
     } else {
-        write(manifestLine,file=file.path(bagDir, "manifest-md5.txt"),append=TRUE)
+        objectMd5 <- digest(objectPath, algo="md5", file=TRUE)
+        relativeMetaPath <- gsub(bagDir, "", systemMetadataPath)
+        objectManifestLine <- sprintf("%s %s", as.character(objectMd5), relativeDataPath)
+        write(objectManifestLine,file=file.path(bagDir, "manifest-md5.txt"),append=TRUE)
     }
+    # Write the science metadata associated with the data object or science metadata
+    scienceMetadataMd5 <-  digest(systemMetadataPath, algo="md5", file=TRUE)
+    relativeSysmetaPath <- gsub(bagDir, "", systemMetadataPath)
+    sysmetatadataManifestLine <- sprintf("%s %s", as.character(scienceMetadataMd5), relativeSysmetaPath)
+    write(sysmetatadataManifestLine,file=file.path(bagDir, "tagmanifest-md5.txt"),append=TRUE)
 }
 
 # Returns the package's resource map

@@ -219,12 +219,15 @@ setMethod("initialize", "DataObject", function(.Object, id=NA_character_, dataob
     } else {
         stop("Invalid value for \"identifier\" argument, it must be a character or SystemMetadata value\n")
     }
-    
+
     # Test if this DataObject is brand new, or possibly created from an existing object, i.e.
     # downloaded from a data repository
     .Object@updated <- hash( keys=c("sysmeta", "data"), values=c(FALSE, FALSE))
     .Object@oldId <- NA_character_
-    .Object@targetPath <- sanitizePath(targetPath)
+    if (!is.na(targetPath)) {
+        targetPath <- pathToPOSIX(targetPath)
+    }
+    .Object@targetPath <- targetPath
     return(.Object)
 })
 
@@ -627,12 +630,42 @@ setMethod("show", "DataObject",
           }
 )
 
-# Sanitizes a string that should represent a path to a file
-sanitizePath <- function(targetPath) {
-    # List of things that shouldn't be in a path
-    filterList <- list( '$', '?', '%', '*', ':', '|', '"', '<', '>', ' ', '..')
-    for (filterCharacter in filterList) {
-        targetPath <- gsub(filterCharacter, '_', targetPath, fixed=TRUE)
+getPlatformPath <- function(targetPath) {
+    if(.Platform$OS.type == "windows") {
+        targetPath <- pathToWindows(targetPath)
+    } else {
+        targetPath <-pathToPOSIX(targetPath)
     }
     return(targetPath)
+}
+
+sanitizePath <- function(targetPath, filterList) {
+    filename <- basename(targetPath)
+    path = dirname(targetPath)
+
+    filename <- fs::path_sanitize(filename, "")
+
+    # List of things that shouldn't be in a path
+    for (filterCharacter in filterList) {
+        path <- gsub(filterCharacter, '_', path, fixed=TRUE)
+    }
+    return(c(path, filename))
+}
+
+# Turns a path into a POSIX compliant path
+pathToPOSIX <- function(targetPath) {
+    filterList <- list( '$', '?', '|', '"', '<', '>', '..')
+    pathInformation <- sanitizePath(targetPath, filterList)
+    # Replace any windows-style paths
+    path <- pathInformation[1]
+    path<- gsub('\\\\', '/', path)
+    return(file.path(path, pathInformation[2]))
+}
+
+# Turns a path into a Windows compliant path
+pathToWindows<- function(targetPath) {
+    # List of things that shouldn't be in a path
+    filterList <- list( '?', '*', '|', '"', '<', '>', '..')
+    pathInformation <- sanitizePath(targetPath, filterList)
+    return(file.path(pathInformation[1], pathInformation[2]))
 }

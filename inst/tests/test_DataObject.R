@@ -162,19 +162,26 @@ test_that("DataObject updateXML method", {
     expect_match(newURL, URL)
 })
 
-test_that("sanitizePath is correctly sanitizing file paths", {
+test_that("pathToPOSIX is correctly sanitizing file paths", {
     library(datapack)
 
+    # This is a valid POSIX path; don't filter :
     drivePath <- "c:/test/myFile.csv"
-    drivePathExpected <-"c_/test/myFile.csv"
+    drivePathExpected <-"c:/test/myFile.csv"
     
+    # The '..' characters should be removed
     traversalPath <- "data/../moreData/../../rasters/myFile.csv"
     traversalPathExpected <- "data/_/moreData/_/_/rasters/myFile.csv"
     
+    # The The particular characters aren't allowed in POSIX
     specialCharacterPath <- "geo-data/?home/%APPDATA/myFile.csv"
-    specialCharacterPathExpexted <- "geo-data/_home/_APPDATA/myFile.csv"
+    specialCharacterPathExpexted <- "geo-data/_home/%APPDATA/myFile.csv"
     
-    expect_equal(sanitizePath(drivePath) , drivePathExpected)
-    expect_equal(sanitizePath(traversalPath),traversalPathExpected)
-    expect_equal(sanitizePath(specialCharacterPath), specialCharacterPathExpexted)
+    windowsPath = "c:\\Windows\\System32"
+    windowsPathExpected <- "c:/Windows/System32"
+    
+    expect_equal(pathToPOSIX(drivePath) , drivePathExpected)
+    expect_equal(pathToPOSIX(traversalPath),traversalPathExpected)
+    expect_equal(pathToPOSIX(specialCharacterPath), specialCharacterPathExpexted)
+    expect_equal(pathToPOSIX(windowsPath), windowsPathExpected)
 })
