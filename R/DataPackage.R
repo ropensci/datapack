@@ -899,8 +899,8 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
         newObj@data <- replacement
         newObj@filename <- NA_character_
         newObj@sysmeta@size <- length(newObj@bytes)
-        newObj@sysmeta@checksum <- digest(newObj@bytes, algo="sha1", serialize=FALSE, file=FALSE)
-        newObj@sysmeta@checksumAlgorithm <- "SHA-1"
+        newObj@sysmeta@checksum <- digest(newObj@bytes, algo="sha256", serialize=FALSE, file=FALSE)
+        newObj@sysmeta@checksumAlgorithm <- "SHA-256"
     } else if (class(replacement) == "character") {
         # If 'replacement' is a character string, then it is
         # assumed to be a filename that replaces the DataObjects existing filename
@@ -912,8 +912,8 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
         newObj@sysmeta@fileName <- basename(replacement)
         newObj@data <- raw()
         newObj@sysmeta@size <- fileinfo$size
-        newObj@sysmeta@checksum <- digest(replacement, algo="sha1", serialize=FALSE, file=TRUE)
-        newObj@sysmeta@checksumAlgorithm <- "SHA-1"
+        newObj@sysmeta@checksum <- digest(replacement, algo="sha256", serialize=FALSE, file=TRUE)
+        newObj@sysmeta@checksumAlgorithm <- "SHA-256"
     } else if (class(replacement) != "DataObject") {
         stop(sprintf("Unknown replacement type: %s\n", class(replacement)))
     }

@@ -160,7 +160,7 @@ setMethod("initialize", "DataObject", function(.Object, id=NA_character_, dataob
     if (typeof(id) == "character") {
         smfile <- NA_character_
         size <- 0
-        sha1 <- NA_character_
+        sha256 <- NA_character_
         dmsg("@@ DataObject-class:R initialize as character")
         if(hasDataUrl) {
             .Object@dataURL <- dataURL
@@ -180,7 +180,7 @@ setMethod("initialize", "DataObject", function(.Object, id=NA_character_, dataob
                     smfile <- basename(filename)
                 }
                 size <- length(dataobj)
-                sha1 <- digest(dataobj, algo="sha1", serialize=FALSE, file=FALSE)
+                sha256 <- digest(dataobj, algo="sha256", serialize=FALSE, file=FALSE)
                 .Object@data <- dataobj
                 .Object@filename <- NA_character_
             } else {
@@ -188,7 +188,7 @@ setMethod("initialize", "DataObject", function(.Object, id=NA_character_, dataob
                 fileinfo <- file.info(filename)
                 if(!fileinfo$size > 0) stop(sprintf("The \"filename\" argument value \"%s\" must be for a non-empty file.", filename))
                 size <- fileinfo$size
-                sha1 <- digest(filename, algo="sha1", serialize=FALSE, file=TRUE)
+                sha256 <- digest(filename, algo="sha256", serialize=FALSE, file=TRUE)
                 .Object@data <- as.raw(NULL)
                 .Object@filename <- normalizePath(filename)
                 smfile <- basename(filename)
@@ -198,7 +198,7 @@ setMethod("initialize", "DataObject", function(.Object, id=NA_character_, dataob
         # It's OK to set sysmeta v2 fields here, as they will only get serialized to v2 format if requested. The default is
         # to serialze to v1 format which does not include seriesId, mediaType, fileName.
         .Object@sysmeta <- new("SystemMetadata", identifier=id, formatId=format, size=size, submitter=user, rightsHolder=user, 
-                               checksum=sha1, originMemberNode=mnNodeId, authoritativeMemberNode=mnNodeId, 
+                               checksum=sha256, originMemberNode=mnNodeId, authoritativeMemberNode=mnNodeId, 
                                seriesId=seriesId, mediaType=mediaType, fileName=basename(smfile), 
                                mediaTypeProperty=mediaTypeProperty)
     } else if (typeof(id) == "S4" && class(id) == "SystemMetadata") {
