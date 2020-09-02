@@ -1533,6 +1533,7 @@ setGeneric("serializeToBagIt", function(x, ...) {
 })
 
 #' @rdname serializeToBagIt
+#' @import utils	
 #' @import uuid
 #' @import digest
 #' @param mapId A unique identifier for the package resource map. If not specified, one will be 
@@ -1623,14 +1624,12 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=NA_cha
     # Get a resource map so that it can be queried for science metadata
     resMap <- getResourceMap(x)
     # Check to see if the user supplied any science metadata
-    scienceMetadataUris <- get_science_metadata(resMap)
+    scienceMetadataUris <- getScienceMetadataUris(resMap)
     # The number that's appended to the filename if multiple documents exist
     scienceMetadataCount <- 1
     # URLEncode each URI
-    metadataIds <- list()
-    for (uriElement in scienceMetadataUris) {
-        metadataIds<- c(metadataIds, RCurl::curlUnescape(uriElement))
-    }
+    metadataIds <- lapply(scienceMetadataUris, URLdecode)
+    
 
     # Determines whether or not an object is in a list of URIs
     in_uri <- function(objectId, uriList) {
@@ -1769,6 +1768,7 @@ setGeneric("describeWorkflow", function(x, ...) {
 #'     is TRUE.
 #' @seealso The R 'recordr' package for run-time recording of provenance relationships.
 #' @import uuid
+#' @import utils
 #' @export
 #' @examples
 #' library(datapack)
@@ -2298,9 +2298,9 @@ getResourceMap <- function(x, id=NA_character_, creator=NA_character_, resolveUR
 
 # Finds the identifiers of any science metadata documents in the package by querying
 # a resource map.
-get_science_metadata <- function(resMap) {
+getScienceMetadataUris <- function(resMap) {
 
-retrieveScienceMetadata <- tryCatch(
+    queryResult <- tryCatch(
     {
     # Query that finds all subjects that document another object. If ?o is unused, a warning is raised;
     # use o by performing a sanity check that the object being documented is also documentedBy the science metadata
@@ -2311,19 +2311,15 @@ retrieveScienceMetadata <- tryCatch(
             ?o cito:isDocumentedBy ?s .
         }'
     query <- new("Query", resMap@world, queryString, base_uri=NULL, query_language="sparql", query_uri=NULL)
-    querytResult <- redland::getResults(query, resMap@model, "csv")
-    
-    # Use the csv format when parsing the results
-    outpath <- tempfile()
-    writeLines(getResults(query, resMap@model, "csv"), outpath)
-    # The first row in the file is the 'subject' string from the query; don't read it
-    scinceMetadataUris <- read.csv(outpath, skip = 1)
-
+    queryResult <- redland::getResults(query, resMap@model, "csv")
+    freeQuery(query)
+    result <- read.csv(text=queryResult, stringsAsFactors = FALSE)
+    # Extract the 'subject' column from the relationship csv and place into a list
     # Make sure that there aren't any duplicate identifiers
-    return (unique(scinceMetadataUris))
+    scinceMetadataUris <- unique(result[,'s'])
     },
     error=function(cond) {
-        return (list())
+        list()
     })
-    return (retrieveScienceMetadata)
+    return (queryResult)
 }
