@@ -16,6 +16,10 @@ this package provide a convenient way to load data from common repositories
 such as DataONE into the R environment, and to document, serialize, and save 
 data from R to data repositories worldwide.
 
+> Note that this package ('datapack') is not related to the similarly named rOpenSci package 'DataPackageR'.
+> Documentation from the DataPackageR github repository states that "DataPackageR is used to reproducibly
+> process raw data into packaged, analysis-ready data sets."
+
 ## Installation Notes 
 
 The *datapack* R package requires the R package *redland*. If you are installing on Ubuntu then the Redland C libraries
