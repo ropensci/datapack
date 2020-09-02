@@ -397,7 +397,7 @@ test_that("BagIt serialization works", {
   data <- charToRaw("1,2,3\n4,5,6")
   firstFilePath = "my_data/textFile1.csv"
   secondFilePath = "my_data/textFile2.csv"
-  thirdFilePath = "more-data\textFile3.csv"
+  thirdFilePath = "more-data\\textFile3.csv"
   fifthFilePath = "misc_data/data.csv"
   
   node <- "urn:node:KNB"
@@ -436,7 +436,8 @@ test_that("BagIt serialization works", {
   expect_true(file.exists(bagitFile))
   expect_true(file.info(bagitFile)[['size']] > 0)
 
-  zipFileNames = unzip(bagitFile, list=TRUE)$Name
+  zipFileNames = zip::zip_list(bagitFile)
+  zipFileNames=as.list(zipFileNames[[1]])
   # Check that the required tag files are present
   requiredBagFiles <- list("bagit.txt", "bag-info.txt", "manifest-md5.txt", "tagmanifest-md5.txt")
   for (requiredFile in requiredBagFiles) {
@@ -447,6 +448,7 @@ test_that("BagIt serialization works", {
   manifestData <- read.table(unz(bagitFile, "manifest-md5.txt"), nrows=10, header=F, quote="\"", sep=" ")
   # Get the second column (file names)
   manifestData <- manifestData[[2]]
+  dataFilesWithPath <- lapply(dataFilesWithPath, getPlatformPath)
   for (dataFile in dataFilesWithPath) {
       expect_true(file.path("data",dataFile) %in% zipFileNames)
       expect_true(file.path("data",dataFile) %in% manifestData)
@@ -461,9 +463,11 @@ test_that("BagIt serialization works", {
   for (packageFileId in packageFileIds) {
       updatedObject <- getMember(dp, packageFileId)
       # Remember to sanitize the file name
-      sysmetaName <- gsub(":", "_", updatedObject@sysmeta@identifier)
-      expect_true(file.path("metadata", "sysmeta", paste(sysmetaName, ".xml", sep="")) %in% zipFileNames )
-      expect_true(file.path("metadata", "sysmeta", paste(sysmetaName, ".xml", sep="")) %in% tagManifestData )
+      sysmetaName <- getPlatformPath(updatedObject@sysmeta@identifier)
+      sysmetaName <- gsub("./", "", sysmetaName)
+      fullPath <- file.path("metadata", "sysmeta", paste("sysmeta-", sysmetaName, ".xml", sep=""))
+      expect_true(fullPath %in% zipFileNames )
+      expect_true(fullPath %in% tagManifestData )
   }
 
   # Check that the rdf is present

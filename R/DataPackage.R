@@ -45,6 +45,7 @@
 #' @include SystemMetadata.R
 #' @import hash
 #' @import uuid
+#' @import zip
 #' @rdname DataPackage-class
 #' @aliases DataPackage-class
 #' @slot relations A hash containing provenance relationships of package objects
@@ -1532,7 +1533,6 @@ setGeneric("serializeToBagIt", function(x, ...) {
 })
 
 #' @rdname serializeToBagIt
-#' @import utils
 #' @import uuid
 #' @import digest
 #' @param mapId A unique identifier for the package resource map. If not specified, one will be 
@@ -1722,8 +1722,7 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=NA_cha
         stop(sprintf("Unable to set working directory to the BagIt dir: %s", bagDir))
     }
     zip::zip(zipFile, files=list.files(recursive=TRUE))
-    # Return the zip filename
-
+    # Return the zip file name
     return(zipFile)
 })
 
@@ -1770,7 +1769,6 @@ setGeneric("describeWorkflow", function(x, ...) {
 #'     is TRUE.
 #' @seealso The R 'recordr' package for run-time recording of provenance relationships.
 #' @import uuid
-#' @import utils
 #' @export
 #' @examples
 #' library(datapack)

@@ -23,7 +23,8 @@ Imports:
     redland,
     XML,
     hash,
-    uuid
+    uuid,
+    zip
 Suggests:
     testthat,
     knitr,
@@ -45,4 +46,4 @@ Collate:
     'ResourceMap.R'
     'datapack-package.r'
     'zzz.R'
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1

@@ -630,42 +630,47 @@ setMethod("show", "DataObject",
           }
 )
 
-getPlatformPath <- function(targetPath) {
+# Returns a path in the form of the native OS. When run
+# on Windows, a Windows compliant path is returned. When run on
+# PSOIX, a POSIX compliant path is returned.
+getPlatformPath <- function(filePath) {
     if(.Platform$OS.type == "windows") {
-        targetPath <- pathToWindows(targetPath)
+        filePath <- pathToWindows(filePath)
     } else {
-        targetPath <-pathToPOSIX(targetPath)
+        filePath <-pathToPOSIX(filePath)
     }
-    return(targetPath)
+    return(filePath)
 }
 
-sanitizePath <- function(targetPath, filterList) {
-    filename <- basename(targetPath)
-    path = dirname(targetPath)
+# Turns a path into a POSIX compliant path
+pathToPOSIX <- function(filePath) {
+    filePath <- gsub('\\\\', '/', filePath)
+    filterList <- list( '$', '?', '|', '"', '<', '>', '..')
+    pathInformation <- sanitizePath(filePath, filterList)
+    # Replace any windows-style paths
+    return(file.path(pathInformation[1], pathInformation[2]))
+}
 
+# Turns a path into a Windows compliant path
+pathToWindows<- function(filePath) {
+    # List of things that shouldn't be in a path
+    filterList <- list( '?', '*', '|', '"', '<', '>', '..')
+    pathInformation <- sanitizePath(filePath, filterList)
+    return(file.path(pathInformation[1], pathInformation[2]))
+}
+
+# Takes a path and a list of characters that should be removed
+# and returns the path without the characters. It also sanitizes the
+# file name .
+sanitizePath <- function(filePath, filterList) {
+    filename <- basename(filePath)
+    path = dirname(filePath)
+    
     filename <- fs::path_sanitize(filename, "")
-
+    
     # List of things that shouldn't be in a path
     for (filterCharacter in filterList) {
         path <- gsub(filterCharacter, '_', path, fixed=TRUE)
     }
     return(c(path, filename))
-}
-
-# Turns a path into a POSIX compliant path
-pathToPOSIX <- function(targetPath) {
-    filterList <- list( '$', '?', '|', '"', '<', '>', '..')
-    pathInformation <- sanitizePath(targetPath, filterList)
-    # Replace any windows-style paths
-    path <- pathInformation[1]
-    path<- gsub('\\\\', '/', path)
-    return(file.path(path, pathInformation[2]))
-}
-
-# Turns a path into a Windows compliant path
-pathToWindows<- function(targetPath) {
-    # List of things that shouldn't be in a path
-    filterList <- list( '?', '*', '|', '"', '<', '>', '..')
-    pathInformation <- sanitizePath(targetPath, filterList)
-    return(file.path(pathInformation[1], pathInformation[2]))
 }

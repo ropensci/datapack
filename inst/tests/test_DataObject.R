@@ -167,7 +167,7 @@ test_that("pathToPOSIX is correctly sanitizing file paths", {
 
     # This is a valid POSIX path; don't filter :
     drivePath <- "c:/test/myFile.csv"
-    drivePathExpected <-"c:/test/myFile.csv"
+    drivePathExpected <- "c:/test/myFile.csv"
     
     # The '..' characters should be removed
     traversalPath <- "data/../moreData/../../rasters/myFile.csv"
@@ -177,9 +177,8 @@ test_that("pathToPOSIX is correctly sanitizing file paths", {
     specialCharacterPath <- "geo-data/?home/%APPDATA/myFile.csv"
     specialCharacterPathExpexted <- "geo-data/_home/%APPDATA/myFile.csv"
     
-    windowsPath = "c:\\Windows\\System32"
+    windowsPath <- "c:\\Windows\\System32"
     windowsPathExpected <- "c:/Windows/System32"
-    
     expect_equal(pathToPOSIX(drivePath) , drivePathExpected)
     expect_equal(pathToPOSIX(traversalPath),traversalPathExpected)
     expect_equal(pathToPOSIX(specialCharacterPath), specialCharacterPathExpexted)
