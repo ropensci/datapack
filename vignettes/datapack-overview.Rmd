@@ -31,7 +31,7 @@ library(datapack)
 library(uuid)
 csvfile <- system.file("extdata/sample-data.csv", package="datapack")
 myId <- paste("urn:uuid:", UUIDgenerate(), sep="")
-myObj <- new("DataObject", id=myId, format="text/csv", filename=csvfile, relativeFilePath="extdata/sample-data.csv")
+myObj <- new("DataObject", id=myId, format="text/csv", filename=csvfile, targetPath="extdata/sample-data.csv")
 ```
 
 The DataObject `myObj` now contains the CSV data as well as the system-level 
