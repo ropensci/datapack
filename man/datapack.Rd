@@ -3,7 +3,6 @@
 \docType{package}
 \name{datapack}
 \alias{datapack}
-\alias{datapack-package}
 \title{datapack, a container for packages of data and associated metadata}
 \description{
 The datapack R package provides an abstraction for collating 

@@ -326,8 +326,8 @@ setMethod("addMember", signature("DataPackage"), function(x, do, mo=NA_character
         }
     }
     # If the object's path was documented, add it to the resource map
-    if (!is.na(iObj@relativeFilePath)){
-        insertRelationship(x, getIdentifier(iObj), iObj@relativeFilePath, "http://www.w3.org/ns/prov#atLocation")
+    if (!is.na(iObj@targetPath)){
+        insertRelationship(x, getIdentifier(iObj), iObj@targetPath, provAtLocation)
     }
     return(x)
 })
@@ -1642,47 +1642,31 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=NA_cha
     # Was the DataObject created with the 'file' arg, i.e. data not in the DataObject,
     # but at a specified file out on disk?
     
-    # Set the path to the file
-    relFile <- paste(bagDir, "/data/", sep="")
-    # If the user described the path of the file, use it
-    if (!is.na(dataObj@relativeFilePath)) {
-        relFile <- paste(relFile, dataObj@relativeFilePath, sep = "")
-    } else if (!is.na(dataObj@filename)) {
-        # Otherwise, if they specified a filename use that
-        relFile <- paste(relFile, dataObj@filename, sep = "")
-    } else {
-        # If the filename wasn't specified, use the identifier
-        relFile <- paste(relFile, getIdentifier(dataObj), sep="")
-    }
-    
-    # Create the directory if it doesn't exist
-    if(!file.exists(dirname(relFile))) {
-        dir.create(dirname(relFile))
-    }
-    
     if(!is.na(dataObj@filename)) {
-      if(file.exists(dataObj@filename)) {
-        file.copy(dataObj@filename, relFile)
+        if(file.exists(dataObj@filename)) {
+            relFile <- sprintf("data/%s", basename(dataObj@filename))
+            file.copy(dataObj@filename, sprintf("%s/%s", bagDir, relFile))
+            # Add this data pacakge member to the bagit files
+            pidMap <- c(pidMap, sprintf("%s %s", identifiers[idNum], relFile))
+            thisMd5 <- digest(sprintf("%s/%s", bagDir, relFile), algo="md5", file=TRUE)
+            manifest <- c(manifest, sprintf("%s %s", as.character(thisMd5), relFile))
+        } else {
+            stop(sprintf("Error serializing to BagIt format, data object \"%s\", uses file %s but this file doesn't exist", dataObj@filename, identifiers[idNum]))
+        }
+    } else {
+        # Must be an in-memory data object
+        tf <- tempfile()
+        con <- file(tf, "wb")
+        writeBin(getData(dataObj), con)
+        close(con)
+        relFile <- sprintf("data/%s", getIdentifier(dataObj))
+        file.copy(tf, sprintf("%s/%s", bagDir, relFile))
+        unlink(tf)
+        rm(tf)
         # Add this data pacakge member to the bagit files
         pidMap <- c(pidMap, sprintf("%s %s", identifiers[idNum], relFile))
-        thisMd5 <- digest(relFile, algo="md5", file=TRUE)
-        manifest <- c(manifest, sprintf("%s %s", as.character(thisMd5), relFile))  
-      } else {
-        stop(sprintf("Error serializing to BagIt format, data object \"%s\", uses file %s but this file doesn't exist", dataObj@filename, identifiers[idNum]))
-      }
-    } else {
-      # Must be an in-memory data object
-      tf <- tempfile()
-      con <- file(tf, "wb")
-      writeBin(getData(dataObj), con)
-      close(con)
-      file.copy(tf, relFile)
-      unlink(tf)
-      rm(tf)
-      # Add this data pacakge member to the bagit files
-      pidMap <- c(pidMap, sprintf("%s %s", identifiers[idNum], relFile))
-      thisMd5 <- digest(relFile, algo="md5", file=TRUE)
-      manifest <- c(manifest, sprintf("%s %s", as.character(thisMd5), relFile))
+        thisMd5 <- digest(sprintf("%s/%s", bagDir, relFile), algo="md5", file=TRUE)
+        manifest <- c(manifest, sprintf("%s %s", as.character(thisMd5), relFile))
     }
   }
   
