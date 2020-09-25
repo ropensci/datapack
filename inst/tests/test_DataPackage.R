@@ -63,9 +63,9 @@ test_that("datapack methods work", {
     rm(rdata)
     
     # Test that a DataObject with a file path gets the file path placed in the resource map
-    relativePath <- "./data/raster/data.tiff"
+    targetPath <- "./data/raster/data.tiff"
     newId <- "testID"
-    do <- new("DataObject", newId, data, format, user, node, relativeFilePath=relativePath)
+    do <- new("DataObject", newId, data, format, user, node, targetPath=targetPath)
     dpkg <- new("DataPackage")
     dpkg <- addMember(dpkg, do)
     relations <- getRelationships(dpkg)
@@ -395,8 +395,8 @@ test_that("BagIt serialization works", {
   doOutFilePath = "myDir/textFile2.csv"
   node <- "urn:node:KNB"
   md1 <- new("DataObject", id=mdId, dataobj=charToRaw(someEML), format="eml://ecoinformatics.org/eml-2.1.1", user=user, mnNodeId=node)
-  doIn <- new("DataObject", id=doInId, dataobj=data, format="text/csv", user=user, mnNodeId=node, relativeFilePath=doInFilePath)
-  doOut <- new("DataObject", id=doOutId, filename=csvfile, format="text/csv", user=user, mnNodeId=node, relativeFilePath=doOutFilePath)
+  doIn <- new("DataObject", id=doInId, dataobj=data, format="text/csv", user=user, mnNodeId=node, targetPath=doInFilePath)
+  doOut <- new("DataObject", id=doOutId, filename=csvfile, format="text/csv", user=user, mnNodeId=node, targetPath=doOutFilePath)
   dp <- addMember(dp, md1)
   dp <- addMember(dp, doIn)
   dp <- addMember(dp, doOut)
@@ -605,13 +605,13 @@ test_that("removeMember works", {
     regressionPath <- "./extdata/pkg-example/logit-regression-example.R"
     doProg <- new("DataObject", format="application/R", 
                   filename=system.file(regressionPath, package="datapack"),
-                  relativeFilePath=regressionPath)
+                  targetPath=regressionPath)
     dp <- addMember(dp, doProg)
     progId <- getIdentifier(doProg)
     
     binaryPath <- "./extdata/pkg-example/binary.csv"
     doIn <- new("DataObject", format="text/csv", 
-                filename=system.file(binaryPath, package="datapack"), relativeFilePath=binaryPath)
+                filename=system.file(binaryPath, package="datapack"), targetPath=binaryPath)
     dp <- addMember(dp, doIn)
     inputs[[length(inputs)+1]] <- doIn
     relations <- getRelationships(dp, quiet=quietOn)
