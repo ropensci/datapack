@@ -1,5 +1,5 @@
 ---
-title: "datapack R package overview"
+title: "datapack R Package Overview"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 <!-- output: pdf_document -->
@@ -37,8 +37,6 @@ myObj <- new("DataObject", id=myId, format="text/csv", filename=csvfile, targetP
 The DataObject `myObj` now contains the CSV data as well as the system-level 
 information describing the file, such as its identifier, type, and checksum. 
 The *getData* method can be used to extract the data content of a DataObject. 
-When the package that contains this file is downloaded, the file is placed in
-a zipfile under data/extdata/sample-csv, as specified by targetPath.
 Using the example DataObject:
 
 ```{r}
