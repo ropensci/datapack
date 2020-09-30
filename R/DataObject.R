@@ -643,4 +643,71 @@ setMethod("show", "DataObject",
               }
           }
 )
+
+# DataONE uses different abbreviations for checksum algorithms than the R 'digest' function.
+# Given a DataONE checksum algorithm abbreviation, return the corresponding 'digest' abbreviation,
+# which is needed in the 'digest' function call.
+getChecksumAlgorithmAbbreviation <- function(checksumAlgorithm="SHA-256") {
+    
+    # DataONE and the R 'digest' package have different abbreviations for checksum algorithm designations.
+    # Take a DataONE abbreviation and return the corresponding R 'digest' abbreviation
+    
+    if (tolower(checksumAlgorithm) == "md5") {
+        abbr="md5"
+    }
+    else if (tolower(checksumAlgorithm) == "sha1") {
+        abbr="sha1"
+    }
+    else if (tolower(checksumAlgorithm) == "sha-1") {
+        abbr="sha1"
+    }
+    else if (tolower(checksumAlgorithm) == "sha256") {
+        abbr="shar256"
+    }
+    else if (tolower(checksumAlgorithm) == "sha-256") {
+        abbr="sha256"
+    } else {
+        warning(sprintf("Unknown checksum algorithm %s", checksumAlgorithm))
+    }
+    
+    return(abbr) 
+}
+
+#' Calculate a checksum for the DataObject using the specified checksum algorithm
+#' @description calculates a checksum
+#' @param x A DataObject instance
+#' @return The calculated checksum
+#' @export
+#' @seealso \code{\link{DataObject-class}}
+setGeneric("calculateChecksum", function(x, ...) {
+    standardGeneric("calculateChecksum")
+})
+
+#' @rdname calculateChecksum
+#' @param algo A checksum algorithm
+#' @export
+#' @examples 
+#' library(datapack)
+#' # Create the metadata object with a sample EML file
+#' checksum <- calculateChecksum(do, "SHA-256")
+setMethod("calculateChecksum", signature("DataObject"), function(x, checksumAlgorithm="SHA-256", ...) {
+    abbr <- getChecksumAlgorithmAbbreviation(checksumAlgorithm)
+    
+    if(!is.na(x@dataURL)) {
+        if (tolower(checksumAlgorithm) == x@sysmeta@checksumAlgorithm) {
+            checksum <- x@sysmeta@checksum
+        } else {
+            warning("Unable to calculate checksum for DataObject without local content.")
+        }
+    } else if (length(x@data) > 0) {
+        checksum <- digest(x@data, algo=abbr, serialize=FALSE, file=FALSE)
+    } else if (!is.na(x@filename)) {
+        checksum <- digest(x@filename, algo=abbr, serialize=FALSE, file=TRUE)
+    } else {
+        warning("DataObject does not contain data or a data URL.")
+    }
+    
+    return(checksum)
+    
+})
           
