@@ -1,4 +1,3 @@
-context("ResourceMap")
 test_that("datapack library loads", {
   expect_true(library(datapack, logical.return=TRUE))
 })
@@ -48,20 +47,20 @@ test_that("ResourceMap creation from DataPackage triples", {
   
   relations <- getRelationships(dp)
   # Test if the data frame with retrieved relationships was constructed correctly
-  expect_that(nrow(relations), equals(7))
+  expect_equal(nrow(relations), 7)
   expect_match(relations[relations$subject == mdId, 'predicate'], "documents")
   
   # Now initialize a ResourceMap with the relationships.
   resMapId <- sprintf("resourceMap:%s", UUIDgenerate())  
   resMap <- new("ResourceMap", id=resMapId)
-  expect_that(class(resMap)[[1]], equals("ResourceMap"))
+  expect_equal(class(resMap)[[1]], "ResourceMap")
   resMap <- createFromTriples(resMap, relations, getIdentifiers(dp))
   
   # Serialize the ResourceMap to a file.
   filePath <- sprintf("%s/%s.rdf", tempdir(), resMapId)
   status <- serializeRDF(resMap, filePath)
   found <- grep("wasDerivedFrom", readLines(filePath))
-  expect_that(length(found), is_more_than(0))
+  expect_gt(length(found), 0)
   
   freeResourceMap(resMap)
   rm(resMap)
