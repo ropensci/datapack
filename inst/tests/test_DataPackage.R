@@ -415,9 +415,16 @@ test_that("BagIt serialization works", {
  expect_true(file.exists(bagitFile))
  expect_true(file.info(bagitFile)[['size']] > 0)
 
- zipFileNames = unzip(bagitFile, list=TRUE)$Name
- expect_true(paste("data/",doInFilePath, sep="") %in% zipFileNames )
- expect_true(paste("data/", doOutFilePath, sep="") %in% zipFileNames)
+ # Enable these tests when targetPath will be reflected into the BagIt structure (v1.5.0?)
+ #zipFileNames = unzip(bagitFile, list=TRUE)$Name
+ #expect_true(paste("data/",doInFilePath, sep="") %in% zipFileNames )
+ #expect_true(paste("data/", doOutFilePath, sep="") %in% zipFileNames)o
+ 
+ # Check that the 'atLocation' relationships were added correctly by 'serializeToBagIt()'
+ relationships <- getRelationships(dp)
+ expect_equal(subset(relationships, subject==doInId & predicate == provAtLocation, select=object)[1,'object'], doInFilePath)
+ expect_equal(subset(relationships, subject==doInId & predicate == provAtLocation, select=object)[1,'object'], doInFilePath)
+ 
 }) 
 
 test_that("Adding provenance relationships to a DataPackage via describeWorkflow works", {
