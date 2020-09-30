@@ -21,8 +21,8 @@ test_that("DataObject constructors work", {
     expect_equal(length(do@data), length(data))
     expect_equal(getIdentifier(do), identifier)
     expect_equal(getFormatId(do), format)
-    sha1 <- digest(data, algo="sha1", serialize=FALSE, file=FALSE)
-    sm <- new("SystemMetadata", identifier=identifier, formatId=format, size=length(data), submitter=user, rightsHolder=user, checksum=sha1, originMemberNode=node, authoritativeMemberNode=node)
+    sha <- digest(data, algo="sha256", serialize=FALSE, file=FALSE)
+    sm <- new("SystemMetadata", identifier=identifier, formatId=format, size=length(data), submitter=user, rightsHolder=user, checksum=sha, originMemberNode=node, authoritativeMemberNode=node)
     expect_equal(sm@identifier, identifier)
     
     # Now test the constructor that passes in SystemMetadata and data
@@ -40,8 +40,8 @@ test_that("DataObject constructors work", {
     con <- file(tf, "wb")
     writeBin(data, con)
     close(con)
-    sha1_file <- digest(tf, algo="sha1", serialize=FALSE, file=TRUE)
-    do <- new("DataObject", sm, filename=tf)
+    sha_file <- digest(tf, algo="sha256", serialize=FALSE, file=TRUE)
+    do <- new("DataObject", sm, filename=tf, checksumAlgorith="SHA-256")
     expect_equal(do@sysmeta@serialVersion, 1)
     expect_equal(do@sysmeta@identifier, identifier)
     expect_equal(do@sysmeta@submitter, user)
@@ -50,8 +50,10 @@ test_that("DataObject constructors work", {
     expect_equal(getIdentifier(do), identifier)
     expect_equal(getFormatId(do), format)
     data2 <- getData(do)
-    sha1_get_data <- digest(data2, algo="sha1", serialize=FALSE, file=FALSE)
-    expect_match(sha1_get_data, sha1)
+    sha_get_data <- digest(data2, algo="sha256", serialize=FALSE, file=FALSE)
+    expect_match(sha_get_data, sha)
+    expect_match(sha_file, do@sysmeta@checksum)
+    expect_match(sha_get_data, do@sysmeta@checksum)
     unlink(tf)
     
     # Test that the constructor works for a data path, with a few different forms
