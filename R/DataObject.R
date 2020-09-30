@@ -126,20 +126,19 @@ setClass("DataObject", slots = c(
 #' @param mediaType The When specified, indicates the IANA Media Type (aka MIME-Type) of the object. The value should include the media type and subtype (e.g. text/csv).
 #' @param mediaTypeProperty A list, indicates IANA Media Type properties to be associated with the parameter \code{"mediaType"}
 #' @param dataURL A character string containing a URL to remote data (a repository) that this DataObject represents.
-#' @param targetPath An optional character string that denotes where the file should go in a downloaded package
+#' @param targetPath An optional string that denotes where the file should go in a downloaded package
+#' @param checksumAlgorithm A character string specifying the checksum algorithm to use
 #' @import digest
 #' @import uuid
 #' @examples
 #' data <- charToRaw("1,2,3\n4,5,6\n")
-#' targetPath <- "./rasters/data.tiff"
 #' do <- new("DataObject", "id1", dataobj=data, "text/csv", 
-#'   "uid=jones,DC=example,DC=com", "urn:node:KNB",
-#'    filename="data/rasters/data.tiff", targetPath=targetPath)
+#'   "uid=jones,DC=example,DC=com", "urn:node:KNB", filepath="data/rasters/data.tiff)
 #' @seealso \code{\link{DataObject-class}}
 setMethod("initialize", "DataObject", function(.Object, id=NA_character_, dataobj=NA, format=NA_character_, user=NA_character_, 
                                                mnNodeId=NA_character_, filename=NA_character_, seriesId=NA_character_,
                                                mediaType=NA_character_, mediaTypeProperty=list(), dataURL=NA_character_,
-                                               targetPath=NA_character_) {
+                                               targetPath=NA_character_, checksumAlgorithm="SHA-256") {
   
     # If no value has been passed in for 'id', then create a UUID for it.
     if (class(id) != "SystemMetadata" && is.na(id)) {
@@ -161,6 +160,7 @@ setMethod("initialize", "DataObject", function(.Object, id=NA_character_, dataob
     if (!hasDataUrl && !hasDataObj && !hasFilename) {
         stop("Either the \"dataobj\" parameter containing raw data or the \"filename\" parameter with a file reference to the data\n or the \"xdataURL\" parameter must be provided.")
     }
+    
     if (typeof(id) == "character") {
         smfile <- NA_character_
         size <- 0
@@ -184,25 +184,27 @@ setMethod("initialize", "DataObject", function(.Object, id=NA_character_, dataob
                     smfile <- basename(filename)
                 }
                 size <- length(dataobj)
-                sha256 <- digest(dataobj, algo="sha256", serialize=FALSE, file=FALSE)
                 .Object@data <- dataobj
                 .Object@filename <- NA_character_
+                .Object@dataURL <- NA_character_
             } else {
                 if(!file.exists(filename)) stop(sprintf("The \"filename\" argument value \"%s\" must be for file that exists", filename))
                 fileinfo <- file.info(filename)
                 if(!fileinfo$size > 0) stop(sprintf("The \"filename\" argument value \"%s\" must be for a non-empty file.", filename))
                 size <- fileinfo$size
-                sha256 <- digest(filename, algo="sha256", serialize=FALSE, file=TRUE)
                 .Object@data <- as.raw(NULL)
+                .Object@dataURL <- dataURL
                 .Object@filename <- normalizePath(filename)
                 smfile <- basename(filename)
             }
         } 
+        
+        checksum <- calculateChecksum(.Object, checksumAlgorithm=checksumAlgorithm)
         # Build a SystemMetadata object describing the data
         # It's OK to set sysmeta v2 fields here, as they will only get serialized to v2 format if requested. The default is
         # to serialze to v1 format which does not include seriesId, mediaType, fileName.
         .Object@sysmeta <- new("SystemMetadata", identifier=id, formatId=format, size=size, submitter=user, rightsHolder=user, 
-                               checksum=sha256, originMemberNode=mnNodeId, authoritativeMemberNode=mnNodeId, 
+                               checksum=checksum, checksumAlgorithm=checksumAlgorithm, originMemberNode=mnNodeId, authoritativeMemberNode=mnNodeId, 
                                seriesId=seriesId, mediaType=mediaType, fileName=basename(smfile), 
                                mediaTypeProperty=mediaTypeProperty)
     } else if (typeof(id) == "S4" && class(id) == "SystemMetadata") {
@@ -210,13 +212,25 @@ setMethod("initialize", "DataObject", function(.Object, id=NA_character_, dataob
         if(hasDataObj) {
             if(!is.raw(dataobj[[1]])) stop("The value of the \"dataobj\" parameter must be of type \"raw\"")
             .Object@data <- dataobj
+            .Object@dataURL <- NA_character_
         } else {
             .Object@data <- as.raw(NULL)
+            .Object@dataURL <- NA_character_
         }
         if(hasFilename && file.exists(filename)) {
             .Object@filename <- normalizePath(filename)
+            .Object@dataURL <- NA_character_
         } else {
             .Object@filename <- NA_character_
+            .Object@dataURL <- NA_character_
+        }
+        
+        # Ensure that the checksum and algorithm of the passed in sysmeta matches the requested
+        # values from the parameter list for the DataObject
+        if(tolower(id@checksumAlgorithm) != tolower(checksumAlgorithm)) {
+            checksum <- calculateChecksum(.Object, checksumAlgorithm=checksumAlgorithm)
+            .Object@sysmeta@checksum <- checksum
+            .Object@sysmeta@checksumAlgorithm <- checksumAlgorithm
         }
     } else {
         stop("Invalid value for \"identifier\" argument, it must be a character or SystemMetadata value\n")
@@ -525,6 +539,9 @@ setMethod("updateXML", signature("DataObject"), function(x, xpath=NA_character_,
     metadataDoc <- NA_character_
     nodeSet <- list()
     
+    # Use the existing checksum algorithm for the new (replaced) DataObject content
+    checksumAlgorithm <- x@sysmeta@checksumAlgorithm
+    
     # Get the xml content and update it if the xpath is found
     # Check that the parsing didn't generate an error
     result = tryCatch ({
@@ -555,22 +572,20 @@ setMethod("updateXML", signature("DataObject"), function(x, xpath=NA_character_,
     #write_xml(metadataDoc, filepath)
     
     # See how the data was stored in the previous version of the DataObject and
-    # update that.
+    # create the new, replacement DataObject using the same method (i.e. either internal data or external file)
     if (length(x@data) > 0) {
         metadata <- readChar(newfile, file.info(newfile)$size)
         x@data <- charToRaw(metadata)
         x@filename <- NA_character_
         x@sysmeta@size <- length(x@data)
-        x@sysmeta@checksum <- digest(x@data, algo="sha256", serialize=FALSE, file=FALSE)
-        x@sysmeta@checksumAlgorithm <- "SHA-256"
+        x@sysmeta@checksum <- calculateChecksum(x, checksumAlgorithm=checksumAlgorithm)
     } else {
         # Read the file from disk and return the contents as raw
         x@data <- raw()
         x@filename <- newfile
         fileinfo <- file.info(newfile)
         x@sysmeta@size <- fileinfo$size
-        x@sysmeta@checksum <- digest(newfile, algo="sha256", serialize=FALSE, file=TRUE)
-        x@sysmeta@checksumAlgorithm <- "SHA-256"
+        x@sysmeta@checksum <- calculateChecksum(x, checksumAlgorithm=checksumAlgorithm)
     }
     
     return(x)

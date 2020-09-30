@@ -392,10 +392,10 @@ setMethod("insertRelationship", signature("DataPackage"),
   # If a predicate wasn't provided, then insert the default relationship of 
   # subjectID -> documents -> objectID; objectID -> documentedBy -> subjectID
   if (is.na(predicate)) {
-    insertRelationship(x, subjectID, objectIDs, "http://purl.org/spar/cito/documents")
+    insertRelationship(x, subjectID, objectIDs, citoDocuments)
     
     for (obj in objectIDs) {
-      insertRelationship(x, obj, subjectID, "http://purl.org/spar/cito/isDocumentedBy")
+      insertRelationship(x, obj, subjectID, citoIsDocumentedBy)
     }
   } else {
     # Append new relationships to previously stored ones.
@@ -412,7 +412,7 @@ setMethod("insertRelationship", signature("DataPackage"),
     # Validationa (https://www.w3.org/RDF/Validator/). Node ids starting with numeric characters or containing 
     # colons do not pass validation (note that blank node identifiers such as '_:b1' do not pass validattion).
     if (is.na(subjectID)) {
-      subjectID <- sprintf("_%s", UUIDgenerate())
+      subjectID <- sprintf("_%s", uuid::UUIDgenerate())
       subjectType <- "blank"
     }
     
@@ -423,7 +423,7 @@ setMethod("insertRelationship", signature("DataPackage"),
       i <- i + 1
       # Generate a blank node identifier if id is not specified
       if (is.na(obj)) {
-        obj <- sprintf("_%s", UUIDgenerate())
+        obj <- sprintf("_%s", uuid::UUIDgenerate())
         objectTypes[i] <- "blank"
       }
       
@@ -872,7 +872,7 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
         # so assign a new id if they are.
         if(newObj@oldId == getIdentifier(newObj)) {
             if(is.na(newId)) {
-                newId <- sprintf("urn:uuid:%s", UUIDgenerate())
+                newId <- sprintf("urn:uuid:%s", uuid::UUIDgenerate())
                 newObj@sysmeta@identifier <- newId
             } else {
                 newObj@sysmeta@identifier <- newId
@@ -895,12 +895,13 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
     
     # If replacement is a DataObject, then replace the existing DataObject 'do' with the
     # DataObject 'replacement'
+    algorithm <- x@sysmeta@checksumAlgorithm
     if (is.raw(replacement)) {
         newObj@data <- replacement
         newObj@filename <- NA_character_
         newObj@sysmeta@size <- length(newObj@bytes)
-        newObj@sysmeta@checksum <- digest(newObj@bytes, algo="sha256", serialize=FALSE, file=FALSE)
-        newObj@sysmeta@checksumAlgorithm <- "SHA-256"
+        newObj@sysmeta@checksum <- calculateChecksum(newObj, checksumAlgorithm=algorithm)
+        newObj@sysmeta@checksumAlgorithm <- algorithm
     } else if (class(replacement) == "character") {
         # If 'replacement' is a character string, then it is
         # assumed to be a filename that replaces the DataObjects existing filename
@@ -912,8 +913,8 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
         newObj@sysmeta@fileName <- basename(replacement)
         newObj@data <- raw()
         newObj@sysmeta@size <- fileinfo$size
-        newObj@sysmeta@checksum <- digest(replacement, algo="sha256", serialize=FALSE, file=TRUE)
-        newObj@sysmeta@checksumAlgorithm <- "SHA-256"
+        newObj@sysmeta@checksum <- calculateChecksum(newObj, checksumAlgorithm=algorithm)
+        newObj@sysmeta@checksumAlgorithm <- algorithm
     } else if (class(replacement) != "DataObject") {
         stop(sprintf("Unknown replacement type: %s\n", class(replacement)))
     }
