@@ -1592,7 +1592,7 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=NA_cha
     if(!file.exists(sysMetaDir)) dir.create(sysMetaDir)
 
     # Create bagit.txt
-    bagitFileText <- sprintf("BagIt-Version: 0.97\nTag-File-Character-Encoding: UTF-8")
+    bagitFileText <- sprintf("BagIt-Version: 1.0\nTag-File-Character-Encoding: UTF-8")
     writeLines(bagitFileText, file.path(bagDir, "bagit.txt"))
 
     # Create a ResourceMap object and serialize it
@@ -1640,6 +1640,30 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=NA_cha
         }
         return (FALSE)
     }
+    
+    #' Recursively determines the name for a science metadata object.
+    #' The base file name (eml, datacite, science-metadata, etc) should stay the same.
+    #' Call the method with the base name and the number of existing files to start with.
+    #' This is most likely 0.
+    #' If there's a count defined, add it to the end of the file in ()
+    #' Then call the method again with count += 1
+    #' Eventually a free file name will be found, and then the function returns that name
+    getMetadataName <- function(baseName, count) {
+        if (count > 0) {
+            scienceMetadataFilename <- sprintf('%s(%d).xml', baseName, count)
+        } else {
+            scienceMetadataFilename <- sprintf('%s.xml', baseName)
+        }
+        
+        scienceMetadataPath <- file.path(metadataDir, scienceMetadataFilename)
+        if (file.exists(scienceMetadataPath)) {
+            # If one was already written, then append (1), (2), (3), etc to the file name
+            # Add 1 to the count so that the next number is one higher
+            scienceMetadataCount <- scienceMetadataCount+1
+            return (getMetadataName(baseName, scienceMetadataCount))
+        }
+        return (scienceMetadataFilename)
+    }
 
     # Get each member of the package and write it to disk
     for(idNum in seq_along(identifiers)) {
@@ -1661,14 +1685,11 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=NA_cha
         # science metadata identifiers
         objectId = getIdentifier(dataObj)
         if(in_uri(objectId=objectId, uriList=metadataIds)) {
-            scienceMetadataFilename <- file.path(metadataDir, 'science-metadata.xml')
-            if (file.exists(scienceMetadataFilename)) {
-                # If one was already written, then append (1), (2), (3), etc to the file name
-                scienceMetadataFilename <- file.path(metadataDir, sprintf('science-metadata(%d).xml', scienceMetadataCount))
-                # Add 1 to the count so that the next number is one higher
-                scienceMetadataCount <- scienceMetadataCount+1
-            }
-            writeToBag(dataObj, scienceMetadataFilename, bagDir, sysMetaDir,
+            scienceMetadataFilename <- getFormatFilename(getFormatId(dataObj))
+            scienceMetadataFilename <- getMetadataName(scienceMetadataFilename, 0)
+            print("Writing File.....")
+            print(scienceMetadataFilename)
+            writeToBag(dataObj, file.path(metadataDir, scienceMetadataFilename), bagDir, sysMetaDir,
                        isScienceMetadata=TRUE)
         } else {
            # Otherwise it's a plain data object
@@ -2266,7 +2287,7 @@ writeToBag <- function(objectToWrite, objectPath, bagDir, sysMetaDirectory, isSc
         objectManifestLine <- sprintf("%s %s", as.character(objectMd5), relativeDataPath)
         write(objectManifestLine,file=file.path(bagDir, "manifest-md5.txt"),append=TRUE)
     }
-    # Write the science metadata associated with the data object or science metadata
+    # Write the system metadata associated with the data or science metadata obbject
     scienceMetadataMd5 <-  digest(systemMetadataPath, algo="md5", file=TRUE)
     relativeSysmetaPath <- gsub(bagDir, "", systemMetadataPath)
     sysmetatadataManifestLine <- sprintf("%s %s", as.character(scienceMetadataMd5), relativeSysmetaPath)
@@ -2322,4 +2343,17 @@ getScienceMetadataUris <- function(resMap) {
         list()
     })
     return (queryResult)
+}
+
+getFormatFilename <- function(format) {
+    if (grepl("ecoinformatics", format, fixed = TRUE)) {
+        return('eml')
+    } else if (grepl("openarchives.org/OAI/2.0/oai_dc", format, fixed = TRUE)) {
+        return("dc.xml")
+    } else if (grepl("loc.gov/METS/", format, fixed = TRUE)) {
+        return("mets")
+    } else if (grepl("datacite.org/schema/kernel", format, fixed = TRUE)) {
+        return("datacite")
+    }
+    return("science-metadata")
 }

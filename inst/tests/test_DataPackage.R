@@ -408,7 +408,7 @@ test_that("BagIt serialization works", {
   thirdEmlDataObject <- new("DataObject", id=thirdEmlId, dataobj=charToRaw(someEML), format="eml://ecoinformatics.org/eml-2.1.1", user=user, mnNodeId=node)
   # Content Standard for Digital Geospatial Metadata, Biological Data Profile, version 001.1-1999 Science Metatdata file
   extraScienceMetadata <- new("DataObject", id=extraScienceMetadataId, dataobj=charToRaw(someEML), format="FGDC-STD-001.1-1999", user=user, mnNodeId=node)
-  thirdEmlDataObject <- new("DataObject", id=thirdEmlId, dataobj=charToRaw(someEML), format="eml://ecoinformatics.org/eml-2.1.1", user=user, mnNodeId=node)
+  thirdEmlDataObject <- new("DataObject", id=thirdEmlId, dataobj=charToRaw(someEML), format="http://www.loc.gov/METS/", user=user, mnNodeId=node)
   firstDataFile <- new("DataObject", id=firstDataFileId, dataobj=data, format="text/csv", user=user, mnNodeId=node, targetPath=firstFilePath)
   secondDataFile <- new("DataObject", id=secondDataFileId, filename=csvfile, format="text/csv", user=user, mnNodeId=node, targetPath=secondFilePath)
   thirdDataFile <- new("DataObject", id=thirdDataFileId, filename=csvfile, format="text/csv", user=user, mnNodeId=node, targetPath=thirdFilePath)
@@ -431,7 +431,6 @@ test_that("BagIt serialization works", {
   dataFilesWithPath <- list(firstFilePath, secondFilePath, thirdFilePath, fifthFilePath)
 
   bagitFile <- serializeToBagIt(dp)
-
   # Basic sanity checks
   expect_true(file.exists(bagitFile))
   expect_true(file.info(bagitFile)[['size']] > 0)
@@ -473,8 +472,8 @@ test_that("BagIt serialization works", {
   # Check that the rdf is present
   expect_true(file.path("metadata", "oai-ore.xml") %in% zipFileNames)
   # Check that the EML documents are present
+  expect_true(file.path("metadata", "eml.xml") %in% zipFileNames)
   expect_true(file.path("metadata", "science-metadata.xml") %in% zipFileNames)
-  expect_true(file.path("metadata", "science-metadata(1).xml") %in% zipFileNames)
 })
 
 test_that("Adding provenance relationships to a DataPackage via describeWorkflow works", {
