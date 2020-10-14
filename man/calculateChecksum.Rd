@@ -7,14 +7,14 @@
 \usage{
 calculateChecksum(x, ...)
 
-\S4method{calculateChecksum}{DataObject}(x, checksumAlgorithm = "SHA256")
+\S4method{calculateChecksum}{DataObject}(x, checksumAlgorithm = "SHA256", ...)
 }
 \arguments{
 \item{x}{A DataObject instance}
 
-\item{checksumAlgorithm}{a \code{character} value specifying the checksum algorithm to use (i.e "MD5" or "SHA1" or "SHA256")}
+\item{...}{Additional parameters (not yet used)}
 
-\item{algo}{A checksum algorithm}
+\item{checksumAlgorithm}{a \code{character} value specifying the checksum algorithm to use (i.e "MD5" or "SHA1" or "SHA256")}
 }
 \value{
 The calculated checksum
@@ -22,11 +22,6 @@ The calculated checksum
 \description{
 calculates a checksum
 }
-\examples{
-library(datapack)
-# Create the metadata object with a sample EML file
-checksum <- calculateChecksum(do, checksumAlgorithm="SHA256")
-}
-\seealso{
-\code{\link{DataObject-class}}
+\note{
+this method is intended for internal package use only.
 }

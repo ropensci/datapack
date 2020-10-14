@@ -133,7 +133,7 @@ setClass("DataObject", slots = c(
 #' @examples
 #' data <- charToRaw("1,2,3\n4,5,6\n")
 #' do <- new("DataObject", "id1", dataobj=data, "text/csv", 
-#'   "uid=jones,DC=example,DC=com", "urn:node:KNB", filepath="data/rasters/data.tiff")
+#'   "uid=jones,DC=example,DC=com", "urn:node:KNB", targetPath="data/rasters/data.tiff")
 #' @seealso \code{\link{DataObject-class}}
 setMethod("initialize", "DataObject", function(.Object, id=NA_character_, dataobj=NA, format=NA_character_, user=NA_character_, 
                                                mnNodeId=NA_character_, filename=NA_character_, seriesId=NA_character_,
@@ -676,6 +676,8 @@ getChecksumAlgorithmAbbreviation <- function(checksumAlgorithm="SHA-256") {
 #' Calculate a checksum for the DataObject using the specified checksum algorithm
 #' @description calculates a checksum
 #' @param x A DataObject instance
+#' @param ... Additional parameters (not yet used)
+#' @note this method is intended for internal package use only.
 #' @return The calculated checksum
 setGeneric("calculateChecksum", function(x, ...) {
     standardGeneric("calculateChecksum")
