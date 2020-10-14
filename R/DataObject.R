@@ -677,21 +677,13 @@ getChecksumAlgorithmAbbreviation <- function(checksumAlgorithm="SHA-256") {
 #' @description calculates a checksum
 #' @param x A DataObject instance
 #' @return The calculated checksum
-#' @export
-#' @seealso \code{\link{DataObject-class}}
 setGeneric("calculateChecksum", function(x, ...) {
     standardGeneric("calculateChecksum")
 })
 
 #' @rdname calculateChecksum
-#' @param algo A checksum algorithm
 #' @param checksumAlgorithm a \code{character} value specifying the checksum algorithm to use (i.e "MD5" or "SHA1" or "SHA256")
-#' @export
-#' @examples 
-#' library(datapack)
-#' # Create the metadata object with a sample EML file
-#' checksum <- calculateChecksum(do, checksumAlgorithm="SHA256")
-setMethod("calculateChecksum", signature("DataObject"), function(x, checksumAlgorithm="SHA256") {
+setMethod("calculateChecksum", signature("DataObject"), function(x, checksumAlgorithm="SHA256", ...) {
     abbr <- getChecksumAlgorithmAbbreviation(checksumAlgorithm)
     
     if(!is.na(x@dataURL)) {
