@@ -17,7 +17,8 @@
   mediaType = NA_character_,
   mediaTypeProperty = list(),
   dataURL = NA_character_,
-  targetPath = NA_character_
+  targetPath = NA_character_,
+  checksumAlgorithm = "SHA-256"
 )
 }
 \arguments{
@@ -43,7 +44,9 @@
 
 \item{dataURL}{A character string containing a URL to remote data (a repository) that this DataObject represents.}
 
-\item{targetPath}{An optional character string that denotes where the file should go in a downloaded package}
+\item{targetPath}{An optional string that denotes where the file should go in a downloaded package}
+
+\item{checksumAlgorithm}{A character string specifying the checksum algorithm to use}
 }
 \description{
 When initializing a DataObject using passed in data, one can either pass 
@@ -62,10 +65,8 @@ downloaded from a repository.
 }
 \examples{
 data <- charToRaw("1,2,3\n4,5,6\n")
-targetPath <- "./rasters/data.tiff"
 do <- new("DataObject", "id1", dataobj=data, "text/csv", 
-  "uid=jones,DC=example,DC=com", "urn:node:KNB",
-   filename="data/rasters/data.tiff", targetPath=targetPath)
+  "uid=jones,DC=example,DC=com", "urn:node:KNB", filepath="data/rasters/data.tiff")
 }
 \seealso{
 \code{\link{DataObject-class}}
