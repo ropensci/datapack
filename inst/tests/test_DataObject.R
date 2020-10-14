@@ -30,6 +30,9 @@ test_that("DataObject constructors work", {
     expect_equal(do@sysmeta@serialVersion, 1)
     expect_equal(do@sysmeta@identifier, identifier)
     expect_equal(do@sysmeta@submitter, user)
+    expect_equal(do@sysmeta@checksumAlgorithm, "SHA-256")
+    expect_equal(do@sysmeta@checksum, sha)
+    expect_equal(do@sysmeta@size, length(data))
     expect_equal(do@sysmeta@size, length(data))
     expect_equal(length(do@data), length(data))
     expect_equal(getIdentifier(do), identifier)
@@ -45,6 +48,8 @@ test_that("DataObject constructors work", {
     expect_equal(do@sysmeta@serialVersion, 1)
     expect_equal(do@sysmeta@identifier, identifier)
     expect_equal(do@sysmeta@submitter, user)
+    expect_equal(do@sysmeta@checksumAlgorithm, "SHA-256")
+    expect_equal(do@sysmeta@checksum, sha)
     expect_equal(do@sysmeta@size, length(data))
     expect_equal(file.info(tf)$size, length(data))
     expect_equal(getIdentifier(do), identifier)
@@ -54,6 +59,20 @@ test_that("DataObject constructors work", {
     expect_match(sha_get_data, sha)
     expect_match(sha_file, do@sysmeta@checksum)
     expect_match(sha_get_data, do@sysmeta@checksum)
+    
+    # Verify that the DataObject initialization prepares the sysmeta correctly, if it is not
+    # included in the parameter list.
+    
+    sha_file <- digest(tf, algo="sha1", serialize=FALSE, file=TRUE)
+    do <- new("DataObject", identifier, filename=tf, checksumAlgorith="SHA1")
+    expect_equal(do@sysmeta@checksum, sha_file)
+    expect_equal(do@sysmeta@checksumAlgorithm, "SHA1")
+    
+    sha_file <- digest(tf, algo="md5", serialize=FALSE, file=TRUE)
+    do <- new("DataObject", identifier, filename=tf, checksumAlgorith="MD5")
+    expect_equal(do@sysmeta@checksum, sha_file)
+    expect_equal(do@sysmeta@checksumAlgorithm, "MD5")
+    
     unlink(tf)
     
     # Test that the constructor works for a data path, with a few different forms
