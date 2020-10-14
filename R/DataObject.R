@@ -133,7 +133,7 @@ setClass("DataObject", slots = c(
 #' @examples
 #' data <- charToRaw("1,2,3\n4,5,6\n")
 #' do <- new("DataObject", "id1", dataobj=data, "text/csv", 
-#'   "uid=jones,DC=example,DC=com", "urn:node:KNB", filepath="data/rasters/data.tiff)
+#'   "uid=jones,DC=example,DC=com", "urn:node:KNB", filepath="data/rasters/data.tiff")
 #' @seealso \code{\link{DataObject-class}}
 setMethod("initialize", "DataObject", function(.Object, id=NA_character_, dataobj=NA, format=NA_character_, user=NA_character_, 
                                                mnNodeId=NA_character_, filename=NA_character_, seriesId=NA_character_,
@@ -662,7 +662,7 @@ getChecksumAlgorithmAbbreviation <- function(checksumAlgorithm="SHA-256") {
         abbr="sha1"
     }
     else if (tolower(checksumAlgorithm) == "sha256") {
-        abbr="shar256"
+        abbr="sha256"
     }
     else if (tolower(checksumAlgorithm) == "sha-256") {
         abbr="sha256"
@@ -685,12 +685,13 @@ setGeneric("calculateChecksum", function(x, ...) {
 
 #' @rdname calculateChecksum
 #' @param algo A checksum algorithm
+#' @param checksumAlgorithm a \code{character} value specifying the checksum algorithm to use (i.e "MD5" or "SHA1" or "SHA256")
 #' @export
 #' @examples 
 #' library(datapack)
 #' # Create the metadata object with a sample EML file
-#' checksum <- calculateChecksum(do, "SHA-256")
-setMethod("calculateChecksum", signature("DataObject"), function(x, checksumAlgorithm="SHA-256", ...) {
+#' checksum <- calculateChecksum(do, checksumAlgorithm="SHA256")
+setMethod("calculateChecksum", signature("DataObject"), function(x, checksumAlgorithm="SHA256") {
     abbr <- getChecksumAlgorithmAbbreviation(checksumAlgorithm)
     
     if(!is.na(x@dataURL)) {
