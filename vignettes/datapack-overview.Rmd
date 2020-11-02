@@ -104,7 +104,7 @@ Individual access rules can also be added one at a time.  The access rules are e
 using the unique identifier for an individual, such as their ORCID identity, or whatever
 form the repository supports.
 ```{r}
-myObj <- addAccessRule(myObj, "http://orcid.org/0000-0003-0077-4738", "write")
+myObj <- addAccessRule(myObj, "https://orcid.org/0000-0003-0077-4738", "write")
 myObj@sysmeta@accessPolicy
 ```
 
@@ -124,7 +124,7 @@ myObj@sysmeta@accessPolicy
 ```
 
 The *dataone* R package can be used to upload or download DataObjects to a DataONE Member Node.
-Please see the web page for the [*dataone*](http://github.com/DataONEorg/rdataone) R package and the
+Please see the web page for the [*dataone*](https://github.com/DataONEorg/rdataone) R package and the
 vignettes for more information:
 
 ```{r, eval=FALSE}
@@ -235,7 +235,7 @@ getRelationships(dp, condense=TRUE)
 
 In that example, the `sciObj2` DataObject is added to the package using the `addMember` call, 
 and the metadata object `metadataObj` is passed in to the function as well.  This
-tells the DataPackage that `metadataId cito:documents sciId2`. The `cito:documents` relationship is defined by the [Citation Typing Ontology](http://purl.org/spar/cito) (CITO)).
+tells the DataPackage that `metadataId cito:documents sciId2`. The `cito:documents` relationship is defined by the [Citation Typing Ontology](https://sparontologies.github.io/cito/current/cito.html) (CITO)).
 
 ## Asserting data provenance relationships between objects
 
@@ -310,7 +310,7 @@ Relationships can be fully specified using the URI of the concept, as shown in t
 
 ```{r, eval=F}
 dp <- insertRelationship(dp, subjectID=sciId2, objectIDs=sciId,
-                   predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
+                   predicate="https://www.w3.org/ns/prov#wasDerivedFrom")
 relations <- getRelationships(dp, condense=TRUE)
 relations[grepl("prov:wasDerivedFrom", relations$predicate),]
 ``` 

@@ -10,7 +10,7 @@ Description: Provides a flexible container to transport and manipulate complex
     meta data and ancillary files. Individual data objects have associated system
     level meta data, and data files are linked together using the OAI-ORE standard
     resource map which describes the relationships between the files. The OAI-
-    ORE standard is described at <https://www.openarchives.org/ore>. Data packages
+    ORE standard is described at <https://www.openarchives.org/ore/>. Data packages
     can be serialized and transported as structured files that have been created
     following the BagIt specification. The BagIt specification is described at
     <https://tools.ietf.org/html/draft-kunze-bagit-08>.
@@ -28,9 +28,10 @@ Suggests:
     testthat,
     knitr,
     httr,
-    igraph
+    igraph,
+    rmarkdown
 License: Apache License (== 2.0)
-URL: https://docs.ropensci.org/datapack, https://github.com/ropensci/datapack
+URL: https://docs.ropensci.org/datapack/, https://github.com/ropensci/datapack
 BugReports: https://github.com/ropensci/datapack/issues
 LazyData: true
 VignetteBuilder: knitr
