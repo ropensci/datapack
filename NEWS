@@ -8,7 +8,7 @@ NEW FEATURES
 
 * Use SHA-256 as the default hash algorithm (#117)
 * Added 'checksumAlgorithm' argument to DataObject initialization method  (#117)
-* Update tests for compatibility with testthat 3e (#87)
+* Update tests for compatibility with testthat 3e (#125)
 * Added 'targetPath' argument to DataObject to set 'prov:atLocation' for an object (#109)
 
 Version 1.3.2
@@ -29,7 +29,7 @@ Version 1.3.1
 BUGS
 
 * fixed bug in updateMetadata() that would cause package relationships
-  for the metadata object to be lost.
+  for the metadata object to be lost. 
 
 Version 1.3.0
 -------------
