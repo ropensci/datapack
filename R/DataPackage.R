@@ -102,7 +102,7 @@ setClass("DataPackage", slots = c(
 ## not allow specifying any options that the \code{\link[=initialize-DataPackage]{initialize}} method allows (using new("DataPackage"")
 ## @param ... (Not yet used)
 ## @export
-#setGeneric("DataPackage", function(...) { standardGeneric("DataPackage")} )
+#setGeneric("DataPackage", function(...) standardGeneric("DataPackage") )
 
 initialize_ <- function(.Object, packageId) {
     dmsg("DataPackage-class.R initialize")
@@ -157,13 +157,13 @@ getData_ <- function(x, id) {
 #' @export
 setMethod("getData", signature("DataPackage"), getData_)
 
-#' Get the Count of Objects in the Package
-#' @param x A DataPackage instance
-#' @param ... (not yet used)
-#' @return The number of object in the Package
-#' @seealso \code{\link{DataPackage-class}}
-#' @export
-setGeneric("getSize", function(x, ...) { standardGeneric("getSize")} )
+##' Get the Count of Objects in the Package
+##' @param x A DataPackage instance
+##' @param ... (not yet used)
+##' @return The number of object in the Package
+##' @seealso \code{\link{DataPackage-class}}
+##' @export
+setGeneric("getSize", function(x, ...) standardGeneric("getSize") )
 
 getSize_ <- function(x) {
     return(length(x@objects))
@@ -190,7 +190,7 @@ setMethod("getSize", "DataPackage", getSize_)
 #' @return A list of identifiers
 #' @seealso \code{\link{DataPackage-class}}
 #' @export
-setGeneric("getIdentifiers", function(x, ...) { standardGeneric("getIdentifiers")} )
+setGeneric("getIdentifiers", function(x, ...) standardGeneric("getIdentifiers") )
 
 getIdentifiers_ <- function(x) {
     return(keys(x@objects))
@@ -265,9 +265,7 @@ setMethod("addData", signature("DataPackage", "DataObject"), addData_)
 #' @param ... (Additional parameters)
 #' @seealso \code{\link{DataPackage-class}}
 #' @export
-setGeneric("addMember", function(x, ...) { 
-    standardGeneric("addMember")
-})
+setGeneric("addMember", function(x, ...) standardGeneric("addMember") )
 
 addMember_ <- function(x, do, mo=NA_character_) {
     
@@ -364,9 +362,7 @@ setMethod("addMember", signature("DataPackage"), addMember_)
 #' @return the updated DataPackage object
 #' @seealso \code{\link{DataPackage-class}}
 #' @export
-setGeneric("insertRelationship", function(x, ...) {
-  standardGeneric("insertRelationship")
-})
+setGeneric("insertRelationship", function(x, ...) standardGeneric("insertRelationship") )
 
 insertRelationship_ <- function(x, subjectID, objectIDs, predicate=NA_character_, 
                                 subjectType=NA_character_, objectTypes=NA_character_, dataTypeURIs=NA_character_) {
@@ -487,9 +483,7 @@ setMethod("insertRelationship", signature("DataPackage"), insertRelationship_)
 #' @return the updated DataPackage object
 #' @seealso \code{\link{DataPackage-class}}
 #' @export
-setGeneric("removeRelationships", function(x, ...) {
-    standardGeneric("removeRelationships")
-})
+setGeneric("removeRelationships", function(x, ...) standardGeneric("removeRelationships") )
 
 removeRelationships_ <- function(x, subjectID=NA_character_, predicate=NA_character_) {
     
@@ -601,9 +595,7 @@ setMethod("recordDerivation",  signature("DataPackage"), recordDerivation_)
 #' @param ... (Not yet used)
 #' @seealso \code{\link{DataPackage-class}}
 #' @export
-setGeneric("getRelationships", function(x, ...) {
-  standardGeneric("getRelationships")
-})
+setGeneric("getRelationships", function(x, ...) standardGeneric("getRelationships") )
 
 getRelationships_ <- function(x, condense=F, ...) {
     # Get the relationships stored by insertRelationship
@@ -674,9 +666,7 @@ setMethod("getRelationships", signature("DataPackage"), getRelationships_)
 #' @param x a DataPackage object
 #' @seealso \code{\link{DataPackage-class}}
 #' @export
-setGeneric("plotRelationships", function(x, ...) {
-  standardGeneric("plotRelationships")
-})
+setGeneric("plotRelationships", function(x, ...) standardGeneric("plotRelationships") )
 
 plotRelationships_ <- function(x, col=NULL, ...) {
     rels <- getRelationships(x, condense=TRUE)
@@ -713,9 +703,7 @@ setMethod("plotRelationships", signature(x="DataPackage"), plotRelationships_)
 #' @param ... (Not yet used)
 #' @seealso \code{\link{DataPackage-class}}
 #' @export
-setGeneric("containsId", function(x, ...) {
-    standardGeneric("containsId")
-})
+setGeneric("containsId", function(x, ...) standardGeneric("containsId") )
 
 containsId_ <- function(x, identifier) {
     obj <- x@objects[[identifier]]
@@ -743,9 +731,7 @@ setMethod("containsId", signature("DataPackage"), containsId_)
 #' @param ... (Not yet used)
 #' @seealso \code{\link{DataPackage-class}}
 #' @export 
-    setGeneric("removeMember", function(x, ...) {
-  standardGeneric("removeMember")
-})
+    setGeneric("removeMember", function(x, ...) standardGeneric("removeMember") )
 
 removeMember_ <- function(x, do, removeRelationships=FALSE) {
     
@@ -821,9 +807,7 @@ setMethod("removeMember", signature("DataPackage"), removeMember_)
 #' @param ... (Not yet used)
 #' @seealso \code{\link{DataPackage-class}}
 #' @export 
-setGeneric("replaceMember", function(x, do, ...) {
-  standardGeneric("replaceMember")
-})
+setGeneric("replaceMember", function(x, do, ...) standardGeneric("replaceMember") )
 
 replaceMember_ <- function(x, do, replacement, formatId=NA_character_, 
                            mediaType=NA_character_, mediaTypeProperty=NA_character_,
@@ -971,9 +955,7 @@ setMethod("replaceMember", signature("DataPackage"), replaceMember_)
 #' @param ... (Not yet used)
 #' @seealso \code{\link{DataPackage-class}}
 #' @export 
-setGeneric("updateMetadata", function(x, do, ...) {
-    standardGeneric("updateMetadata")
-})
+setGeneric("updateMetadata", function(x, do, ...) standardGeneric("updateMetadata") )
 
 updateMetadata_ <- function(x, do, xpath, replacement, newId=NA_character_, ...) {
     
@@ -1048,9 +1030,7 @@ setMethod("updateMetadata", signature("DataPackage"), updateMetadata_)
 #' @param ... (Not yet used)
 #' @seealso \code{\link{DataPackage-class}}
 #' @export
-setGeneric("getMember", function(x, ...) {
-    standardGeneric("getMember")
-})
+setGeneric("getMember", function(x, ...) standardGeneric("getMember") )
 
 getMember_ <- function(x, identifier) {
     if (containsId(x, identifier)) {
@@ -1078,9 +1058,7 @@ setMethod("getMember", signature("DataPackage"), getMember_)
 #' @param ... (Not yet used)
 #' @seealso \code{\link{DataPackage-class}}
 #' @export
-setGeneric("selectMember", function(x, ...) {
-    standardGeneric("selectMember")
-})
+setGeneric("selectMember", function(x, ...) standardGeneric("selectMember") )
 
 selectMember_ <- function(x, name, value, as="character") {
     # First look at the top level slot names for a match with 'field'
@@ -1157,9 +1135,7 @@ setMethod("selectMember", signature("DataPackage"), selectMember_)
 #' @param ... (Not yet used)
 #' @seealso \code{\link{DataPackage-class}}
 #' @export
-setGeneric("setValue", function(x, ...) {
-  standardGeneric("setValue")
-})
+setGeneric("setValue", function(x, ...) standardGeneric("setValue") )
 
 setValue_ <- function(x, name, value, identifiers=NA_character_, ...) {
   # First look at the top level slot names for a match with 'field'
@@ -1235,9 +1211,7 @@ setMethod("setValue", signature("DataPackage"), setValue_)
 #' @param ... (Not yet used)
 #' @seealso \code{\link{DataPackage-class}}
 #' @export
-setGeneric("getValue", function(x, ...) {
-    standardGeneric("getValue")
-})
+setGeneric("getValue", function(x, ...) standardGeneric("getValue") )
 
 getValue_ <- function(x, name, identifiers=NA_character_) {
     values <- list()
@@ -1492,9 +1466,7 @@ setMethod("removeAccessRule", signature("DataPackage"), removeAccessRule_)
 #' @param ... Additional arguments
 #' @seealso \code{\link{DataPackage-class}}
 #' @export
-setGeneric("serializePackage", function(x, ...) {
-  standardGeneric("serializePackage")
-})
+setGeneric("serializePackage", function(x, ...) standardGeneric("serializePackage") )
 
 serializePackage_ <- function(x, file, 
                               id = NA_character_,
@@ -1588,9 +1560,7 @@ setMethod("serializePackage", signature("DataPackage"), serializePackage_)
 #' @param ... Additional arguments
 #' @seealso \code{\link{DataPackage-class}}
 #' @export
-setGeneric("serializeToBagIt", function(x, ...) {
-  standardGeneric("serializeToBagIt")
-})
+setGeneric("serializeToBagIt", function(x, ...) standardGeneric("serializeToBagIt") )
 
 serializeToBagIt_ <- function(x, mapId=NA_character_,
                               syntaxName=NA_character_,
@@ -1802,9 +1772,7 @@ setMethod("serializeToBagIt", signature("DataPackage"), serializeToBagIt_)
 #'   
 #' @param x The \code{DataPackage} to add provenance relationships to.
 #' @param ... Additional parameters
-setGeneric("describeWorkflow", function(x, ...) {
-    standardGeneric("describeWorkflow")
-})
+setGeneric("describeWorkflow", function(x, ...) standardGeneric("describeWorkflow") )
 
 describeWorkflow_ <- function(x, sources=list(), 
                               program=NA_character_, 
@@ -2020,9 +1988,7 @@ setMethod("describeWorkflow", signature("DataPackage"), describeWorkflow_)
 #' @param ... (Not yet used)
 #' @seealso \code{\link{DataPackage-class}}
 #' @export
-setGeneric("updateRelationships", function(x, ...) {
-    standardGeneric("updateRelationships")
-})
+setGeneric("updateRelationships", function(x, ...) standardGeneric("updateRelationships") )
 
 updateRelationships_ <- function(x, id, newId, ...) {
     
