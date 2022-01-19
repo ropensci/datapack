@@ -14,7 +14,7 @@ Description: Provides a flexible container to transport and manipulate complex
     can be serialized and transported as structured files that have been created
     following the BagIt specification. The BagIt specification is described at
     <https://tools.ietf.org/html/draft-kunze-bagit-08>.
-Date: 2020-11-03
+Date: 2022-01-18
 Depends:
     R (>= 3.1.1)
 Imports:
@@ -45,4 +45,4 @@ Collate:
     'ResourceMap.R'
     'datapack-package.r'
     'zzz.R'
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
