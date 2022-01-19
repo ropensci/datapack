@@ -1,7 +1,7 @@
 Package: datapack
 Title: A Flexible Container to Transport and Manipulate Data and Associated
     Resources
-Version: 1.4.0
+Version: 1.4.1
 Authors@R: c( person("Matthew B.", "Jones", role = c("aut", "cre"), email = "jones@nceas.ucsb.edu"),
   person("Peter", "Slaughter", role = "aut", email = "slaughter@nceas.ucsb.edu"),
   person("Regents of the University of California", role = c("cph")))
@@ -33,7 +33,6 @@ Suggests:
 License: Apache License (== 2.0)
 URL: https://docs.ropensci.org/datapack/, https://github.com/ropensci/datapack
 BugReports: https://github.com/ropensci/datapack/issues
-LazyData: true
 VignetteBuilder: knitr
 Encoding: UTF-8
 Language: en-US
