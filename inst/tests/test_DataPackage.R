@@ -51,7 +51,7 @@ test_that("datapack methods work", {
     expect_equal(getSize(dpkg), 2)
     expect_equal(getIdentifiers(dpkg)[[1]], id1)
     expect_equal(getIdentifiers(dpkg)[[2]], id2)
-    removeMember(dpkg, id1)
+    dpkg <- removeMember(dpkg, id1)
     expect_equal(getSize(dpkg), 1)
     expect_false(containsId(dpkg, id1))
     rm(do)

@@ -43,12 +43,11 @@
 #' @include dmsg.R
 #' @include DataObject.R
 #' @include SystemMetadata.R
-#' @import hash
 #' @import uuid
 #' @rdname DataPackage-class
 #' @aliases DataPackage-class
-#' @slot relations A hash containing provenance relationships of package objects
-#' @slot objects A hash containing identifiers for objects in the DataPackage
+#' @slot relations A list containing provenance relationships of package objects
+#' @slot objects A list containing identifiers for objects in the DataPackage
 #' @slot sysmeta A SystemMetadata class instance describing the package
 #' @slot externalIds A list containing identifiers for objects associated with the DataPackage
 #' @slot resmapId A character string specifying the identifier for the package resource map. 
@@ -85,8 +84,8 @@
 #' @seealso \code{\link{datapack}}
 #' @export
 setClass("DataPackage", slots = c(
-    relations               = "hash",
-    objects                 = "hash",          # key=identifier, value=DataObject
+    relations               = "list",
+    objects                 = "list",          # key=identifier, value=DataObject
     sysmeta                 = "SystemMetadata", # system metadata about the package
     externalIds             = "list",
     resmapId                = "character" # resource map identifier(s)
@@ -107,7 +106,6 @@ setClass("DataPackage", slots = c(
 #' Initialize a DataPackage object.
 #' @rdname DataPackage-initialize
 #' @aliases DataPackage-initialize
-#' @import hash
 #' @param .Object The object being initialized
 #' @param packageId The package id to assign to the package
 #' @examples
@@ -124,9 +122,9 @@ setMethod("initialize", "DataPackage", function(.Object, packageId) {
         ## set the packageId and instantiate a new SystemMetadata
         .Object@sysmeta@identifier <- packageId
     }
-    .Object@relations = hash()
+    .Object@relations = list()
     .Object@relations[['updated']] <- FALSE
-    .Object@objects = hash()
+    .Object@objects = list()
     .Object@externalIds = list()
     .Object@resmapId <- NA_character_
    return(.Object)
@@ -195,7 +193,7 @@ setGeneric("getIdentifiers", function(x, ...) { standardGeneric("getIdentifiers"
 #' getIdentifiers(dp)
 #' @export
 setMethod("getIdentifiers", "DataPackage", function(x) {
-    return(keys(x@objects))
+    return(names(x@objects))
 })
 
 #' Add a DataObject to the DataPackage
@@ -244,7 +242,7 @@ setMethod("addData", signature("DataPackage", "DataObject"), function(x, do, mo=
       moId <- addMember(x, mo)
     }
     # Now add the CITO "documents" and "isDocumentedBy" relationships
-    insertRelationship(x, getIdentifier(mo), getIdentifier(do))
+    x <- insertRelationship(x, getIdentifier(mo), getIdentifier(do))
   }
   return(x)
 })
@@ -322,12 +320,12 @@ setMethod("addMember", signature("DataPackage"), function(x, do, mo=NA_character
                 x <- addMember(x, mo)
             }
             # Now add the CITO "documents" and "isDocumentedBy" relationships
-            insertRelationship(x, getIdentifier(mo), getIdentifier(iObj))
+            x <- insertRelationship(x, getIdentifier(mo), getIdentifier(iObj))
         }
     }
     # If the object's path was documented, add it to the resource map
     if (!is.na(iObj@targetPath)){
-        insertRelationship(x, getIdentifier(iObj), iObj@targetPath, provAtLocation)
+        x <- insertRelationship(x, getIdentifier(iObj), iObj@targetPath, provAtLocation)
     }
     return(x)
 })
@@ -392,14 +390,14 @@ setMethod("insertRelationship", signature("DataPackage"),
   # If a predicate wasn't provided, then insert the default relationship of 
   # subjectID -> documents -> objectID; objectID -> documentedBy -> subjectID
   if (is.na(predicate)) {
-    insertRelationship(x, subjectID, objectIDs, citoDocuments)
+    x <- insertRelationship(x, subjectID, objectIDs, citoDocuments)
     
     for (obj in objectIDs) {
-      insertRelationship(x, obj, subjectID, citoIsDocumentedBy)
+        x <- insertRelationship(x, obj, subjectID, citoIsDocumentedBy)
     }
   } else {
     # Append new relationships to previously stored ones.
-    if (has.key("relations", x@relations)) {
+    if (!(is.null(x@relations[["relations"]]))) {
       relations <- x@relations[["relations"]]
     } else {
       relations <- data.frame()
@@ -447,8 +445,6 @@ setMethod("insertRelationship", signature("DataPackage"),
       }
     }
     
-    # Use a slot that is a hash, so that we can update the datapackage without having to 
-    # return the datapackage object to the caller (since S4 methods don't pass args by reference)
     x@relations[["relations"]] <- relations
   }
   
@@ -518,7 +514,7 @@ setMethod("removeRelationships", signature("DataPackage"),
                 stopifnot(is.character(predicate))
 
                 # Get access to the relations data frame
-                if (has.key("relations", x@relations)) {
+                if (!(is.null(x@relations[["relations"]]))) {
                     relations <- x@relations[["relations"]]
                 } else {
                     # There are no relations, so nothing to be removed
@@ -600,7 +596,7 @@ setGeneric("getRelationships", function(x, ...) {
 #' @export
 setMethod("getRelationships", signature("DataPackage"), function(x, condense=F, ...) {
   # Get the relationships stored by insertRelationship
-  if (has.key("relations", x@relations)) {
+  if (!(is.null(x@relations[["relations"]]))) {
       relationships <- x@relations[["relations"]]
       # Reorder output data frame by "subject" column
       if (nrow(relationships) > 0) {
@@ -755,7 +751,7 @@ setMethod("removeMember", signature("DataPackage"), function(x, do, removeRelati
         stop(sprintf("Unknown type \"%s\"for parameter '\"do\""), class(do))
     }
     
-    # To delete a hash() entry, set it to NULL
+    # To delete an entry, set it to NULL
     x@objects[[identifier]] <- NULL
     
     relations <- data.frame()
@@ -763,7 +759,7 @@ setMethod("removeMember", signature("DataPackage"), function(x, do, removeRelati
     # will also be removed.
     if(removeRelationships) {
         # Get the current package relationships
-        if (has.key("relations", x@relations)) {
+        if (!(is.null(x@relations[["relations"]]))) {
             relations <- x@relations[["relations"]]
         } else {
             invisible(x)
@@ -788,7 +784,7 @@ setMethod("removeMember", signature("DataPackage"), function(x, do, removeRelati
     }
     
     x@relations[["updated"]] <- TRUE
-    invisible(x)
+    return(x)
 })
 
 #' Replace the raw data or file associated with a DataObject
@@ -930,7 +926,7 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
         newObj@sysmeta@mediaTypeProperty <- mediaTypeProperty
     }
     
-    removeMember(x, do, removeRelationships=FALSE)
+    x <- removeMember(x, do, removeRelationships=FALSE)
     newObj@updated[['data']] <- TRUE
     newObj@updated[['sysmeta']] <- TRUE
     x <- addMember(x, newObj)
@@ -940,7 +936,7 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
         x <- updateRelationships(x, id=id, newId=newId)
     }
     
-    invisible(x)
+    return(x)
 })
 
 #' Update selected elements of the XML content of a DataObject in a DataPackage (aka package member).
@@ -1096,8 +1092,8 @@ setMethod("selectMember", signature("DataPackage"), function(x, name, value, as=
         stop(sprintf("The value for parameter \"as\" must be one of %s", paste0(valid, collapse=", ")))
     }
     matches <- list()
-    if(length(keys(x@objects)) > 0) {
-        for(iKey in keys(x@objects)) {
+    if(length(names(x@objects)) > 0) {
+        for(iKey in names(x@objects)) {
             slotStr <- sprintf("x@objects[[\'%s\']]@%s", iKey, as.character(name))
             testValue <- eval(parse(text=slotStr))
             if(identical(testValue, value) || grepl(as.character(value), testValue, perl=TRUE)) {
@@ -1164,8 +1160,8 @@ setGeneric("setValue", function(x, ...) {
 setMethod("setValue", signature("DataPackage"), function(x, name, value, identifiers=NA_character_, ...) {
   # First look at the top level slot names for a match with 'field'
   matchingIds <- list()
-  if(length(keys(x@objects)) > 0) {
-    for(iKey in keys(x@objects)) {
+  if(length(names(x@objects)) > 0) {
+    for(iKey in names(x@objects)) {
       if(! iKey %in% identifiers) next
       tmpObj <- x@objects[[iKey]]
       # If a list is specified, we have to manualy convert it to a string that can be parsed,
@@ -1229,8 +1225,8 @@ setGeneric("getValue", function(x, ...) {
 setMethod("getValue", signature("DataPackage"), function(x, name, identifiers=NA_character_) {
     values <- list()
     if(is.na(identifiers)) identifiers <- getIdentifiers(x)
-    if(length(keys(x@objects)) > 0) {
-        for(iKey in keys(x@objects)) {
+    if(length(names(x@objects)) > 0) {
+        for(iKey in names(x@objects)) {
             if(! iKey %in% identifiers) next
             value <- NA_character_
             slotStr <- sprintf("value <- x@objects[[\'%s\']]@%s", iKey, as.character(name))
@@ -1262,8 +1258,8 @@ setMethod("getValue", signature("DataPackage"), function(x, name, identifiers=NA
 #' dp <- setPublicAccess(dp)
 setMethod("setPublicAccess", signature("DataPackage"), function(x, identifiers=list()) {
     if(length(identifiers) == 0) identifiers <- getIdentifiers(x)
-    if(length(keys(x@objects)) > 0) {
-        for(iKey in keys(x@objects)) {
+    if(length(names(x@objects)) > 0) {
+        for(iKey in names(x@objects)) {
             if(! iKey %in% identifiers) next
             obj <- getMember(x, identifier=iKey)
             obj <-  setPublicAccess(obj)
@@ -1312,8 +1308,8 @@ setMethod("addAccessRule", signature("DataPackage"), function(x, y, ...) {
    
     if(length(identifiers) == 0) identifiers <- getIdentifiers(x) 
     
-    if(length(keys(x@objects)) > 0) {
-        for(iKey in keys(x@objects)) {
+    if(length(names(x@objects)) > 0) {
+        for(iKey in names(x@objects)) {
             if(! iKey %in% identifiers) next
             obj <- getMember(x, identifier=iKey)
             obj <- addAccessRule(obj, y, ...)
@@ -1348,8 +1344,8 @@ setMethod("addAccessRule", signature("DataPackage"), function(x, y, ...) {
 #' @export
 setMethod("clearAccessPolicy", signature("DataPackage"), function(x, identifiers=list(), ...) {
     if(length(identifiers)==0) identifiers <- getIdentifiers(x)
-    if(length(keys(x@objects)) > 0) {
-        for(iKey in keys(x@objects)) {
+    if(length(names(x@objects)) > 0) {
+        for(iKey in names(x@objects)) {
             if(! iKey %in% identifiers) next
             obj <- getMember(x, identifier=iKey)
             obj <- clearAccessPolicy(obj, ...)
@@ -1433,8 +1429,8 @@ setMethod("hasAccessRule", signature("DataPackage"), function(x, subject, permis
 setMethod("removeAccessRule", signature("DataPackage"), function(x, y, permission=NA_character_, 
                                                               identifiers=list(), ...) {
     if(length(identifiers) == 0) identifiers <- getIdentifiers(x)
-    if(length(keys(x@objects)) > 0) {
-        for(iKey in keys(x@objects)) {
+    if(length(names(x@objects)) > 0) {
+        for(iKey in names(x@objects)) {
             if(! iKey %in% identifiers) next
             obj <- getMember(x, identifier=iKey)
             obj <- removeAccessRule(obj, y, permission=permission, ...)
@@ -1984,7 +1980,7 @@ setGeneric("updateRelationships", function(x, ...) {
 setMethod("updateRelationships", signature("DataPackage"), function(x, id, newId, ...) {
     
    relations <- getRelationships(x) 
-   x@relations = hash()
+   x@relations = list()
    
    if(nrow(relations) > 0) {
      for (irow in seq_len(nrow(relations))) {

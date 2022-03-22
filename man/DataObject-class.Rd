@@ -36,7 +36,7 @@ contents of the data or file as a raw value (but this will read all of the data 
 
 \item{\code{dataURL}}{A character value for the URL used to load data into this DataObject}
 
-\item{\code{updated}}{A hash containing logical values which indicate if system metadata or the data object have been updated since object creation.}
+\item{\code{updated}}{A list containing logical values which indicate if system metadata or the data object have been updated since object creation.}
 
 \item{\code{oldId}}{A character string containing the previous identifier used, before a \code{"replaceMember"} call.}
 

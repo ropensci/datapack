@@ -30,9 +30,9 @@ Packaging model
 \section{Slots}{
 
 \describe{
-\item{\code{relations}}{A hash containing provenance relationships of package objects}
+\item{\code{relations}}{A list containing provenance relationships of package objects}
 
-\item{\code{objects}}{A hash containing identifiers for objects in the DataPackage}
+\item{\code{objects}}{A list containing identifiers for objects in the DataPackage}
 
 \item{\code{sysmeta}}{A SystemMetadata class instance describing the package}
 

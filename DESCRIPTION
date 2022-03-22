@@ -22,7 +22,6 @@ Imports:
     methods,
     redland,
     XML,
-    hash,
     uuid
 Suggests:
     testthat,
