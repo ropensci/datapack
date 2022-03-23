@@ -762,7 +762,7 @@ setMethod("removeMember", signature("DataPackage"), function(x, do, removeRelati
         if (!(is.null(x@relations[["relations"]]))) {
             relations <- x@relations[["relations"]]
         } else {
-            invisible(x)
+            return(x)
         }
         
         newRels <- data.frame()
