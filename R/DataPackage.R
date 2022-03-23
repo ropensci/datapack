@@ -1011,7 +1011,7 @@ setMethod("updateMetadata", signature("DataPackage"), function(x, do, xpath, rep
     newMetaObj <- updateXML(metaObj, xpath=xpath, replacement=replacement)
     x <- replaceMember(x, metaObj, replacement=newMetaObj, newId=newId, ...)
     
-    invisible(x)
+    return(x)
 })
 
 #' Return the Package Member by Identifier
