@@ -1,3 +1,9 @@
+sysmeta_test <- system.file("testfiles/sysmeta.xml", package="datapack")
+sysmeta_test2 <- system.file("testfiles/sysmeta-v2.xml", package="datapack")
+sysmeta_repfalse <- system.file("testfiles/sysmeta-v2-repfalse.xml", package="datapack")
+sysmeta_repfalse_zero_reps <- system.file("testfiles/sysmeta-v2-repfalse-zero-reps.xml", package="datapack")
+sysmeta_updated <- system.file("testfiles/sysmeta-updated.xml", package="datapack")
+
 test_that("datapack library loads", {
 	expect_true(library(datapack, logical.return = TRUE))
 })
@@ -16,7 +22,7 @@ test_that("XML SystemMetadata parsing works", {
   testid <- "doi:10.xxyy/AA/tesdoc123456789"
   sysmeta <- new("SystemMetadata")
   expect_equal(sysmeta@serialVersion, 1)
-  doc <- xmlParseDoc("../testfiles/sysmeta.xml", asText=FALSE)
+  doc <- xmlParseDoc(sysmeta_test, asText=FALSE)
   expect_match(xmlValue(xmlRoot(doc)[["identifier"]]), testid)
   xml <- xmlRoot(doc)
   #getEncoding(doc)
@@ -39,7 +45,7 @@ test_that("XML SystemMetadata parsing works", {
   testid <- "0007f892-0d8f-4451-94e9-94d02ba5dd0d_0"
   sysmeta <- new("SystemMetadata")
   expect_equal(sysmeta@serialVersion, 1)
-  doc <- xmlParseDoc("../testfiles/sysmeta-v2.xml", asText=FALSE)
+  doc <- xmlParseDoc(sysmeta_test2, asText=FALSE)
   expect_match(xmlValue(xmlRoot(doc)[["identifier"]]), testid)
   xml <- xmlRoot(doc)
   sysmeta <- parseSystemMetadata(sysmeta, xmlRoot(xml))
@@ -57,7 +63,7 @@ test_that("XML SystemMetadata parsing works", {
   testid <- "0007f892-0d8f-4451-94e9-94d02ba5dd0d_0"
   sysmeta <- new("SystemMetadata")
   expect_equal(sysmeta@serialVersion, 1)
-  doc <- xmlParseDoc("../testfiles/sysmeta-v2-repfalse.xml", asText=FALSE)
+  doc <- xmlParseDoc(sysmeta_repfalse, asText=FALSE)
   expect_match(xmlValue(xmlRoot(doc)[["identifier"]]), testid)
   xml <- xmlRoot(doc)
   sysmeta <- parseSystemMetadata(sysmeta, xmlRoot(xml))
@@ -67,7 +73,7 @@ test_that("XML SystemMetadata parsing works", {
   testid <- "arctic-data.9794.1"
   sysmeta <- new("SystemMetadata")
   expect_equal(sysmeta@serialVersion, 1)
-  doc <- xmlParseDoc("../testfiles/sysmeta-v2-repfalse-zero-reps.xml", asText=FALSE)
+  doc <- xmlParseDoc(sysmeta_repfalse_zero_reps, asText=FALSE)
   expect_match(xmlValue(xmlRoot(doc)[["identifier"]]), testid)
   xml <- xmlRoot(doc)
   sysmeta <- parseSystemMetadata(sysmeta, xmlRoot(xml))
@@ -80,7 +86,7 @@ test_that("XML SystemMetadata serialization works", {
     testid <- "doi:10.xxyy/AA/tesdoc123456789"
     sysmeta <- new("SystemMetadata")
     expect_equal(sysmeta@serialVersion, 1)
-    xml <- xmlParseDoc("../testfiles/sysmeta.xml", asText=FALSE)
+    xml <- xmlParseDoc(sysmeta_test, asText=FALSE)
     expect_match(xmlValue(xmlRoot(xml)[["identifier"]]), testid)
     sysmeta <- parseSystemMetadata(sysmeta, xmlRoot(xml))
     expect_match(sysmeta@identifier, testid)
@@ -94,7 +100,7 @@ test_that("XML SystemMetadata serialization works", {
     sysmeta <- addAccessRule(sysmeta, "CN=Subject2,O=Google,C=US,DC=cilogon,DC=org", "write")
     xml <- serializeSystemMetadata(sysmeta)
     # Compare the updated, serialized sysmeta with a reference
-    xmlRef <- xmlParseDoc("../testfiles/sysmeta-updated.xml", asText=FALSE)
+    xmlRef <- xmlParseDoc(sysmeta_updated, asText=FALSE)
     sysmetaRef <- new("SystemMetadata")
     sysmetaUpdated <- parseSystemMetadata(sysmetaRef, xmlRoot(xmlRef))
     xmlRef <- serializeSystemMetadata(sysmetaUpdated)
@@ -118,7 +124,7 @@ test_that("XML SystemMetadata serialization works", {
 test_that("SystemMetadata XML constructor works", {
     library(datapack)
     testid <- "doi:10.xxyy/AA/tesdoc123456789"
-    doc <- xmlParseDoc("../testfiles/sysmeta.xml", asText=FALSE)
+    doc <- xmlParseDoc(sysmeta_test, asText=FALSE)
     expect_match(xmlValue(xmlRoot(doc)[["identifier"]]), testid)
     xml <- xmlRoot(doc)
     sysmeta <- SystemMetadata(xmlRoot(xml))
