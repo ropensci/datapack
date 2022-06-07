@@ -4,7 +4,7 @@ Title: A Flexible Container to Transport and Manipulate Data and Associated
 Version: 1.4.1
 Authors@R: c( person("Matthew B.", "Jones", role = c("aut", "cre"), email = "jones@nceas.ucsb.edu"),
   person("Peter", "Slaughter", role = "aut", email = "slaughter@nceas.ucsb.edu"),
-  person("S. Jeanette Clark", role = "ctb", email = "jclark@nceas.ucsb.edu")
+  person("S. Jeanette Clark", role = "ctb", email = "jclark@nceas.ucsb.edu"),
   person("Regents of the University of California", role = c("cph")))
 Description: Provides a flexible container to transport and manipulate complex
     sets of data. These data may consist of multiple data files and associated
