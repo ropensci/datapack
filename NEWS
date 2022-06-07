@@ -3,6 +3,7 @@ Version 1.4.1
 BUGS
 
 * Remove LazyData from DESCRIPTION  (#132)
+* Remove dependency oh hash package (#133)
 
 
 Version 1.4.0
