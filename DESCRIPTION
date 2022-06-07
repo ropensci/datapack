@@ -22,10 +22,9 @@ Imports:
     methods,
     redland,
     XML,
-    hash,
     uuid
 Suggests:
-    testthat,
+    testthat (>= 3.0.0),
     knitr,
     httr,
     igraph,
@@ -46,3 +45,4 @@ Collate:
     'datapack-package.r'
     'zzz.R'
 RoxygenNote: 7.1.2
+Config/testthat/edition: 3

@@ -1,6 +1,6 @@
 ## datapack: A Flexible Container to Transport and Manipulate Data and Associated Resources
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/datapack)](https://cran.r-project.org/package=datapack)
-[![Build Status](https://travis-ci.org/ropensci/datapack.svg?branch=master)](https://travis-ci.org/ropensci/datapack)
+[![R-CMD-check](https://github.com/ropensci/datapack/workflows/R-CMD-check/badge.svg)](https://github.com/ropensci/datapack/actions)
 
 - **Author**: Matthew B. Jones and Peter Slaughter ([NCEAS](https://www.nceas.ucsb.edu))
 - [doi:10.5063/F1QV3JGM](https://doi.org/10.5063/F1QV3JGM)

@@ -125,7 +125,6 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
                                                                   resolveURI=NA_character_, externalIdentifiers=list(), 
                                                                   creator=NA_character_, ...) {
   stopifnot(is.data.frame(relations))
-  stopifnot(all(is.character(identifiers)))
   
   x@relations <- relations
   
