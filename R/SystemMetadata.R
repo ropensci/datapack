@@ -496,11 +496,11 @@ setGeneric("addAccessRule", function(x, ...) {
 #' sysmeta <- addAccessRule(sysmeta, accessRules)
 #' @export
 setMethod("addAccessRule", signature("SystemMetadata"), function(x, y, ...) {
-  if(class(y) == "data.frame") {
+  if(inherits(y, "data.frame")) {
     x@accessPolicy <- rbind(x@accessPolicy, y)
     # Remove duplicate access rules
     x@accessPolicy <- unique(x@accessPolicy)
-  } else if (class(y) == "character") {
+  } else if (inherits(y, "character")) {
     argList <- list(...)
     argListLen <- length(argList)
     # Check for "permission" as named argument, i.e. 'permission="write"'
@@ -556,7 +556,7 @@ setGeneric("removeAccessRule", function(x, ...) {
 #' sysmeta <- removeAccessRule(sysmeta, accessRules)
 #' @export
 setMethod("removeAccessRule", signature("SystemMetadata"), function(x, y, ...) {
-    if(class(y) == "data.frame") {
+    if(inherits(y, "data.frame")) {
         if(nrow(y) == 0) return(x)
         for(i in seq_len(nrow(y))) {
             # Use some temp vars to make the data.frame subset more legible
@@ -566,7 +566,7 @@ setMethod("removeAccessRule", signature("SystemMetadata"), function(x, y, ...) {
             # Subset, removing the row with the subject and rule
             x@accessPolicy <- ap[!(ap$subject==subject & ap$permission==permission),]
         }
-    } else if (class(y) == "character") {
+    } else if (inherits(y, "character")) {
         argList <- list(...)
         argListLen <- length(argList)
         # Check for "permission" as named argument, i.e. 'permission="write"'

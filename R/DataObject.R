@@ -140,7 +140,7 @@ setMethod("initialize", "DataObject", function(.Object, id=NA_character_, dataob
                                                targetPath=NA_character_, checksumAlgorithm="SHA-256") {
   
     # If no value has been passed in for 'id', then create a UUID for it.
-    if (class(id) != "SystemMetadata" && is.na(id)) {
+    if (!inherits(id, "SystemMetadata") && is.na(id)) {
         id <- paste0("urn:uuid:", UUIDgenerate())
     }
     
@@ -206,7 +206,7 @@ setMethod("initialize", "DataObject", function(.Object, id=NA_character_, dataob
                                checksum=checksum, checksumAlgorithm=checksumAlgorithm, originMemberNode=mnNodeId, authoritativeMemberNode=mnNodeId, 
                                seriesId=seriesId, mediaType=mediaType, fileName=basename(smfile), 
                                mediaTypeProperty=mediaTypeProperty)
-    } else if (typeof(id) == "S4" && class(id) == "SystemMetadata") {
+    } else if (typeof(id) == "S4" && inherits(id, "SystemMetadata")) {
         .Object@sysmeta <- id
         if(hasDataObj) {
             if(!is.raw(dataobj[[1]])) stop("The value of the \"dataobj\" parameter must be of type \"raw\"")

@@ -288,14 +288,14 @@ setMethod("addMember", signature("DataPackage"), function(x, do, mo=NA_character
     doList <- list()
     # Special case, if the user passed in a single DataObject for sources or derivations,
     # convert it to a list to facilitate easier processing in tests below.
-    if(class(do) == "DataObject") {
+    if(inherits(do, "DataObject")) {
         doList<- list(do)
     } else {
         doList <- do
     }
     
     if(!missing(mo)) {
-        if(class(mo) == "character") {
+        if(inherits(mo, "character")) {
             if (!containsId(x, mo)) {
                 msg <- sprintf("%s\nPlease specify argument \"mo\" as a \"DataObject\" or first add it to the package using \"addMember\"", 
                                mo)
@@ -304,7 +304,7 @@ setMethod("addMember", signature("DataPackage"), function(x, do, mo=NA_character
             }
             # Convert 'mo' to a DataObject
             mo <- getMember(x, mo)
-        } else if (!class(mo) == "DataObject") {
+        } else if (!inherits(mo, "DataObject")) {
             stop(sprintf("Invalid type \"%s\" for argument \"mo\"\n", mo))
         }
     }
@@ -743,9 +743,9 @@ setMethod("removeMember", signature("DataPackage"), function(x, do, removeRelati
     # Note: the dataone 2.0.1 version did not have a removeRelationships parameter, so in order
     # to maintain the same behaviour as the 2.0.1 release, relationships are not deleted by default.
     identifier <- NA_character_
-    if(class(do) == "DataObject") {
+    if(inherits(do, "DataObject")) {
         identifier <- getIdentifier(do)
-    } else if (class(do) == "character") {
+    } else if (inherits(do, "character")) {
         identifier <- do
     } else {
         stop(sprintf("Unknown type \"%s\"for parameter '\"do\""), class(do))
@@ -837,12 +837,12 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
     # The DataObject to change argument can be either a DataObject or identifier. Determine which one
     # and put the object out of the package so that we can modify it and replace it.
     id <- NA_character_
-    if (class(do) == "DataObject") {
+    if (inherits(do, "DataObject")) {
         id <- getIdentifier(do)
         if(! id  %in% getIdentifiers(x)) {
             stop(sprintf("DataObject for id \"%s\" was not found in the DataPackage", id))
         }
-    } else if (class(do) == "character") {
+    } else if (inherits(do, "character")) {
         id <- do
         if(! id %in% getIdentifiers(x)) {
             stop(sprintf("DataObject for id \"%s\" was not found in the DataPackage\n", id))
@@ -854,7 +854,7 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
     
     # If replacement param is a DataObject, then use it as is, otherwise, use a copy of the
     # old DataObject, and revise it.
-    if(class(replacement) == "DataObject") {
+    if(inherits(replacement, "DataObject")) {
         newObj <- replacement
     } else {
         newObj <- getMember(x, id)
@@ -898,7 +898,7 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
         newObj@sysmeta@size <- length(newObj@bytes)
         newObj@sysmeta@checksum <- calculateChecksum(newObj, checksumAlgorithm=algorithm)
         newObj@sysmeta@checksumAlgorithm <- algorithm
-    } else if (class(replacement) == "character") {
+    } else if (inherits(replacement, "character")) {
         # If 'replacement' is a character string, then it is
         # assumed to be a filename that replaces the DataObjects existing filename
         if(!file.exists(replacement)) {
@@ -911,7 +911,7 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
         newObj@sysmeta@size <- fileinfo$size
         newObj@sysmeta@checksum <- calculateChecksum(newObj, checksumAlgorithm=algorithm)
         newObj@sysmeta@checksumAlgorithm <- algorithm
-    } else if (class(replacement) != "DataObject") {
+    } else if (!inherits(replacement, "DataObject")) {
         stop(sprintf("Unknown replacement type: %s\n", class(replacement)))
     }
     
@@ -982,13 +982,13 @@ setMethod("updateMetadata", signature("DataPackage"), function(x, do, xpath, rep
     # The DataObject to change argument can be either a DataObject or identifier. Determine which one
     # and put the object out of the package so that we can modify it and replace it.
     id <- NA_character_
-    if (class(do) == "DataObject") {
+    if (inherits(do, "DataObject")) {
         id <- getIdentifier(do)
         metaObj <- do
         if(! id  %in% getIdentifiers(x)) {
             stop(sprintf("DataObject for id \"%s\" was not found in the DataPackage", id))
         }
-    } else if (class(do) == "character") {
+    } else if (inherits(do, "character")) {
         id <- do
         metaObj <- getMember(x, id)
         if(! id %in% getIdentifiers(x)) {
@@ -998,7 +998,7 @@ setMethod("updateMetadata", signature("DataPackage"), function(x, do, xpath, rep
         stop(sprintf("Unknown type \"%s\"for parameter '\"do\""), class(do))
     }
     
-    if(class(replacement) != "character") {
+    if(!inherits(replacement, "character")) {
         stop(sprintf("Invalid type \"%s\" for argument \"replacement\", it must be \"character\"",
                      class(replacement)))
     }
@@ -1167,14 +1167,14 @@ setMethod("setValue", signature("DataPackage"), function(x, name, value, identif
       # If a list is specified, we have to manualy convert it to a string that can be parsed,
       # as R strips the 'list' out and we no longer have a list. This technique only works
       # for a list of characters
-      if (class(value) == "list") {
+      if (inherits(value, "list")) {
           saveQuotes <- getOption("useFancyQuotes")
           options(useFancyQuotes = FALSE)
           strList <- paste(dQuote(value), collapse=",")
           strList <- sprintf("list(%s)", strList)
           setStr <- sprintf("x@objects[[\'%s\']]@%s <- %s", iKey, as.character(name), strList)
           options(useFancyQuotes = saveQuotes)
-      } else  if (class(value) == "character") {
+      } else  if (inherits(value, "character")) {
           if(is.na(value)) {
               setStr <- sprintf("x@objects[[\'%s\']]@%s <- as.character(%s)", iKey, as.character(name), value)
           } else {
@@ -1804,8 +1804,8 @@ setMethod("describeWorkflow", signature("DataPackage"), function(x, sources=list
     inIds <- list()
     # Special case, if the user passed in a single DataObject for sources or derivations,
     # convert it to a list to facilitate easier processing in tests below.
-    if(class(sources) == "DataObject") sources <- list(sources)
-    if(class(derivations) == "DataObject") derivations <- list(derivations)
+    if(inherits(sources, "DataObject")) sources <- list(sources)
+    if(inherits(derivations, "DataObject")) derivations <- list(derivations)
     
     # Warn user if they haven't provided enough info to insert any prov relationships
     if(missing(program)) {
@@ -1825,9 +1825,9 @@ setMethod("describeWorkflow", signature("DataPackage"), function(x, sources=list
     if(length(sources) > 0) {
         for (isrc in seq_along(sources)) {
             obj <- sources[[isrc]]
-            if(class(obj) == "DataObject") {
+            if(inherits(obj, "DataObject")) {
                 inIds[[length(inIds)+1]] <- getIdentifier(obj)
-            } else if (class(obj) == "character") {
+            } else if (inherits(obj, "character")) {
                 inIds[[length(inIds)+1]] <- obj
             } else {
                 stop(sprintf("Invalid type \'%s\' for source[[%s]]", class(obj), isrc))
@@ -1843,9 +1843,9 @@ setMethod("describeWorkflow", signature("DataPackage"), function(x, sources=list
     if(length(derivations) > 0) {
         for (idst in seq_along(derivations)) {
             obj <- derivations[[idst]]
-            if(class(obj) == "DataObject") {
+            if(inherits(obj, "DataObject")) {
                 outIds[[length(outIds)+1]] <- getIdentifier(obj)
-            } else if (class(obj) == "character") {
+            } else if (inherits(obj, "character")) {
                 outIds[[length(outIds)+1]] <- obj
             } else {
                 stop(sprintf("Invalid type \'%s\' for derivations[[%s]]", class(obj), idst))
@@ -1853,9 +1853,9 @@ setMethod("describeWorkflow", signature("DataPackage"), function(x, sources=list
         }
     }
     
-    if(class(program) == "DataObject") {
+    if(inherits(program, "DataObject")) {
         scriptId <- getIdentifier(program)
-    } else if (class(program) == "character") {
+    } else if (inherits(program, "character")) {
         if(!is.na(program)) {
             scriptId <- program
         } else {
