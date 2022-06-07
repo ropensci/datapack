@@ -4,6 +4,7 @@ BUGS
 
 * Remove LazyData from DESCRIPTION  (#132)
 * Remove dependency oh hash package (#133)
+* Replace instances of `if (class(...))` with `inherits(...)`
 
 
 Version 1.4.0
