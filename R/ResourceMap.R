@@ -149,8 +149,8 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
   } else {
     # Make sure that identifiers and DataONE URLs conform to the addition constraints that
     # DataONE puts on resource maps, described at purl.dataone.org/architecture/design/DataPackage.html#generating-resource-maps 
-    aggregationId <- sprintf("%s/%s#aggregation", pkgResolveURI, URLencode(x@id, reserved=TRUE))
-    resMapURI <- paste(pkgResolveURI, URLencode(x@id, reserved=TRUE), sep="/")
+    aggregationId <- sprintf("%s/%s#aggregation", pkgResolveURI, utils::URLencode(x@id, reserved=TRUE))
+    resMapURI <- paste(pkgResolveURI,  utils::URLencode(x@id, reserved=TRUE), sep="/")
   }
   
   relations <- unique(relations)
@@ -165,24 +165,24 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
           # Prepend the DataONE Production CN resolve URI to each identifier in the datapackage, when
           # that identifier appears in the subject or object of a triple.
           if (is.element(subjectId, externalIdentifiers) && ! grepl(pkgResolveURI, subjectId)) {
-              subjectId <- URLencode(subjectId, reserved=TRUE)
+              subjectId <-  utils::URLencode(subjectId, reserved=TRUE)
               subjectId <- paste(pkgResolveURI, subjectId, sep="/")
           }
           
           if (is.element(objectId, externalIdentifiers) && ! grepl(pkgResolveURI, objectId)) {
-              objectId <- URLencode(objectId, reserved=TRUE)
+              objectId <-  utils::URLencode(objectId, reserved=TRUE)
               objectId <- paste(pkgResolveURI, objectId, sep="/")
           }
      
           # Prepend the DataONE Production CN resolve URI to each identifier in the datapackage, when
           # that identifier appears in the subject or object of a triple.
           if (is.element(subjectId, identifiers) && ! grepl(pkgResolveURI, subjectId) && ! grepl("^http", subjectId)) {
-              subjectId <- URLencode(subjectId, reserved=TRUE)
+              subjectId <-  utils::URLencode(subjectId, reserved=TRUE)
               subjectId <- paste(pkgResolveURI, subjectId, sep="/")
           }
           
           if (is.element(objectId, identifiers) && ! grepl(pkgResolveURI, objectId) && ! grepl("^http", objectId)) {
-              objectId <- URLencode(objectId, reserved=TRUE)
+              objectId <-  utils::URLencode(objectId, reserved=TRUE)
               objectId <- paste(pkgResolveURI, objectId, sep="/")
           }
           
@@ -200,7 +200,7 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
     # DataONE puts on resource maps, described at purl.dataone.org/architecture/design/DataPackage.html#generating-resource-maps 
     # URLs are encoded, dcterms:identifier is not.
     if (! grepl(pkgResolveURI, id) && ! grepl("http", id)) {
-      URIid <- sprintf("%s/%s", pkgResolveURI, URLencode(id, reserved=TRUE))
+      URIid <- sprintf("%s/%s", pkgResolveURI,  utils::URLencode(id, reserved=TRUE))
     } else {
       URIid <- id
     }
@@ -220,7 +220,7 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
   
   for(id in externalIdentifiers) {
     if (! grepl(pkgResolveURI, id) && ! grepl("http", id)) {
-        URIid <- sprintf("%s/%s", pkgResolveURI, URLencode(id, reserved=TRUE))
+        URIid <- sprintf("%s/%s", pkgResolveURI,  utils::URLencode(id, reserved=TRUE))
     } else {
         URIid <- id
     }
@@ -238,7 +238,7 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
   #statement <- new("Statement", x@world, subject=resMapURI, predicate=DCTERMSmodified, object=currentTime, objectType="literal", datatype_uri=xsdDateTimeURI)
     
   # Add the identifier for the ResourceMap
-  statement <- new("Statement", x@world, subject=resMapURI, predicate=DCTERMSidentifier, object=URLdecode(x@id),
+  statement <- new("Statement", x@world, subject=resMapURI, predicate=DCTERMSidentifier, object= utils::URLdecode(x@id),
                    objectType="literal", datatype_uri=xsdString)
   
   addStatement(x@model, statement)
@@ -658,11 +658,11 @@ setMethod("getTriples", "ResourceMap", function(x, filter=TRUE, identifiers=list
 checkIdMatch <- function(checkStr, pattern, identifiers) {
     if(length(identifiers) > 0) {
         checkStr <- trimws(checkStr, which="both")
-        checkStrDecoded <- URLdecode(checkStr)
+        checkStrDecoded <-  utils::URLdecode(checkStr)
         for(nId in seq_along(identifiers)) {
             thisId <- trimws(identifiers[[nId]], which="both")
-            thisIdDecoded <- URLdecode(thisId)
-            thisIdEncoded <- URLencode(thisId, reserved=TRUE, repeated=TRUE)
+            thisIdDecoded <-  utils::URLdecode(thisId)
+            thisIdEncoded <-  utils::URLencode(thisId, reserved=TRUE, repeated=TRUE)
             if(grepl(sprintf(pattern, thisId), checkStr, perl=TRUE)) {
                 return(thisId)
             }
