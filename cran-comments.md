@@ -3,9 +3,9 @@
 * tested via rhub::check_for_cran()
 
 * tested via devtools::check()
-  * macOS 11.6.2, R 4.1.1
+  * macOS 11.6.2, R 4.2.0
 * tested via win-builder
-  * Windows: x86_64-w64-mingw32 (64-bit) 4.1.2 (2021-11-01)
+  * Windows: x86_64-w64-mingw32 (64-bit) 4.2.0 (2021-11-01)
   * Windows: x86_64-w64-mingw32 (64-bit) using R Under development (unstable) (2022-01-17 r81511 ucrt)
 ## R CMD check results
 
