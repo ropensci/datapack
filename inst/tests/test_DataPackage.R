@@ -1,5 +1,3 @@
-context("DataPackage")
-
 test_that("datapack library loads", {
     expect_true(library(datapack, logical.return = TRUE))
 })
@@ -33,16 +31,16 @@ test_that("datapack methods work", {
     node <- "urn:node:KNB"
     
     dpkg <- new("DataPackage")
-    expect_that(class(dpkg)[[1]], equals("DataPackage"))
-    expect_that(getSize(dpkg), equals(0))
+    expect_equal(class(dpkg)[[1]], "DataPackage")
+    expect_equal(getSize(dpkg), 0)
     do <- new("DataObject", id1, data, format, user, node)
     dpkg <- addMember(dpkg, do)
-    expect_that(getSize(dpkg), equals(1))
-    expect_that(getIdentifiers(dpkg)[[1]], equals(id1))
-    expect_that(containsId(dpkg, id1), equals(TRUE))
-    expect_that(containsId(dpkg, "bad_id"), equals(FALSE))
+    expect_equal(getSize(dpkg), 1)
+    expect_equal(getIdentifiers(dpkg)[[1]], id1)
+    expect_true(containsId(dpkg, id1))
+    expect_equal(containsId(dpkg, "bad_id"), FALSE)
     rdata <- getData(dpkg, id1)
-    expect_that(length(rdata), equals(length(data)))
+    expect_equal(length(rdata), length(data))
     nodata <- getData(dpkg, "bad_id")
     expect_null(nodata)
     rdo <- getMember(dpkg, id1)
@@ -50,12 +48,12 @@ test_that("datapack methods work", {
     expect_match(getIdentifier(do), id1)
     do2 <- new("DataObject", id2, data, format, user, node)
     dpkg <- addMember(dpkg, do2)
-    expect_that(getSize(dpkg), equals(2))
-    expect_that(getIdentifiers(dpkg)[[1]], equals(id1))
-    expect_that(getIdentifiers(dpkg)[[2]], equals(id2))
+    expect_equal(getSize(dpkg), 2)
+    expect_equal(getIdentifiers(dpkg)[[1]], id1)
+    expect_equal(getIdentifiers(dpkg)[[2]], id2)
     removeMember(dpkg, id1)
-    expect_that(getSize(dpkg), equals(1))
-    expect_that(containsId(dpkg, id1), equals(FALSE))
+    expect_equal(getSize(dpkg), 1)
+    expect_false(containsId(dpkg, id1))
     rm(do)
     rm(do2)
     rm(dpkg)
@@ -63,9 +61,10 @@ test_that("datapack methods work", {
     rm(rdata)
     
     # Test that a DataObject with a file path gets the file path placed in the resource map
-    relativePath <- "./data/raster/data.tiff"
+    targetPath <- "./data/raster/data.tiff"
     newId <- "testID"
-    do <- new("DataObject", newId, data, format, user, node, targetPath=relativePath)
+    do <- new("DataObject", newId, data, format, user, node, targetPath=targetPath)
+
     dpkg <- new("DataPackage")
     dpkg <- addMember(dpkg, do)
     relations <- getRelationships(dpkg)
@@ -83,17 +82,17 @@ test_that("datapack methods work", {
     #dpkg <- addMember(dpkg, md)
     do <- new("DataObject", id1, data, format, user, node)
     dpkg <- addMember(dpkg, do, md)
-    expect_that(getSize(dpkg), equals(2))
-    expect_that(containsId(dpkg, id1), equals(TRUE))
-    expect_that(containsId(dpkg, mdId), equals(TRUE))
+    expect_equal(getSize(dpkg), 2)
+    expect_true(containsId(dpkg, id1))
+    expect_true(containsId(dpkg, mdId))
     
     # Test that the addMember() function adds the 'documents' relationship if a metadata object is 
     # specified
     relations <- getRelationships(dpkg)
     expect_match(relations[relations$subject == id1, 'predicate'], "isDocumentedBy")
-    expect_that(relations[relations$subject == id1, 'object'], equals(mdId))
+    expect_equal(relations[relations$subject == id1, 'object'], mdId)
     expect_match(relations[relations$subject == mdId, 'predicate'], "documents")
-    expect_that(relations[relations$subject == mdId, 'object'], equals(id1))
+    expect_equal(relations[relations$subject == mdId, 'object'], id1)
 })
 
 test_that("InsertRelationship methods work", {
@@ -117,9 +116,9 @@ test_that("InsertRelationship methods work", {
   dp <- insertRelationship(dp, subjectID=mdId, objectIDs=c(doId1, doId2))
   relations <- getRelationships(dp, quiet=quietOn)
   # Test if the data frame with relationships was constructed correctly
-  expect_that(nrow(relations), equals(4))
-  expect_that(relations[relations$object == doId1, 'subject'], equals(mdId))
-  expect_that(relations[relations$object == doId2, 'subject'], equals(mdId))
+  expect_equal(nrow(relations), 4)
+  expect_equal(relations[relations$object == doId1, 'subject'], mdId)
+  expect_equal(relations[relations$object == doId2, 'subject'], mdId)
   expect_match(relations[relations$subject == mdId, 'predicate'], 'documents')
   expect_match(relations[relations$subject == doId1, 'predicate'], 'isDocumentedBy')
   rm(dp)
@@ -147,56 +146,56 @@ test_that("InsertRelationship methods work", {
   dp <- insertRelationship(dp, subjectID=doId1, objectIDs=doId2, predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
   # Test if the data frame with retrieved relationships was constructed correctly
   relations <- getRelationships(dp, quiet=quietOn)
-  expect_that(nrow(relations), equals(nrel))
+  expect_equal(nrow(relations), nrel)
   expect_match(relations[relations$subject == doId1, 'predicate'], "wasDerivedFrom")
-  expect_that(relations[relations$subject == doId1, 'object'], equals(doId2))
-  expect_that(relations[relations$subject == doId1, 'subjectType'], equals(as.character(NA)))
-  expect_that(relations[relations$subject == doId1, 'objectType'], equals(as.character(NA)))
+  expect_equal(relations[relations$subject == doId1, 'object'], doId2)
+  expect_equal(relations[relations$subject == doId1, 'subjectType'], as.character(NA))
+  expect_equal(relations[relations$subject == doId1, 'objectType'], as.character(NA))
   
   # Test assingment of subjectType, objectType
   dp <- insertRelationship(dp, subjectID="orcid.org/0000-0002-2192-403X", objectIDs="http://www.example.com/home", predicate="http://www.example.com/hadHome",
                      subjectType="uri", objectType="literal")  
   relations <- getRelationships(dp, quiet=quietOn)
-  expect_that(nrow(relations), equals(nrel <- nrel + 1))
+  expect_equal(nrow(relations), nrel <- nrel + 1)
   expect_match(relations[relations$subject == "orcid.org/0000-0002-2192-403X", 'predicate'], "hadHome")
   expect_match(relations[relations$subject == "orcid.org/0000-0002-2192-403X", 'object'], "www.example.com/home")
-  expect_that(relations[relations$subject == "orcid.org/0000-0002-2192-403X", 'subjectType'], equals("uri"))
-  expect_that(relations[relations$subject == "orcid.org/0000-0002-2192-403X", 'objectType'], equals("literal"))
+  expect_equal(relations[relations$subject == "orcid.org/0000-0002-2192-403X", 'subjectType'], "uri")
+  expect_equal(relations[relations$subject == "orcid.org/0000-0002-2192-403X", 'objectType'], "literal")
   
   # Test that an unspecified objectType (where length(objetIDs) > length(objectTypes)) is set to as.character(NA)
   dp <- insertRelationship(dp, subjectID="urn:uuid:6186b15c-0a4b-4338-a091-1ea68d0fb72d", objectIDs=c("thing1", "thing2", "thing3"), predicate="http://www.myns.org/hadThing", subjectType="blank",
                      objectTypes=c("literal", "literal"))
   relations <- getRelationships(dp, quiet=quietOn)
-  expect_that(nrow(relations), equals(nrel<-nrel + 3))
+  expect_equal(nrow(relations), nrel<-nrel + 3)
   expect_match(relations[relations$object == "thing1", 'predicate'], "hadThing")
   expect_match(relations[relations$object == "thing1", 'subject'], "urn:uuid:6186b15c-0a4b-4338-a091-1ea68d0fb72d")
-  expect_that(relations[relations$object == "thing1", 'subjectType'], equals("blank"))
-  expect_that(relations[relations$object == "thing1", 'objectType'], equals("literal"))
-  expect_that(relations[relations$object == "thing2", 'subjectType'], equals("blank"))
-  expect_that(relations[relations$object == "thing2", 'objectType'], equals("literal"))
-  expect_that(relations[relations$object == "thing3", 'objectType'], equals(as.character(NA)))
+  expect_equal(relations[relations$object == "thing1", 'subjectType'], "blank")
+  expect_equal(relations[relations$object == "thing1", 'objectType'], "literal")
+  expect_equal(relations[relations$object == "thing2", 'subjectType'], "blank")
+  expect_equal(relations[relations$object == "thing2", 'objectType'], "literal")
+  expect_equal(relations[relations$object == "thing3", 'objectType'], as.character(NA))
   
   # Multiple objectTypes, first one 'NA'
   dp <- insertRelationship(dp, subjectID="urn:uuid:ea00e863-861b-4253-9ed5-1c0568ee2373", objectIDs=c("thing4", "thing5"), predicate="http://www.myns.org/hadThing", subjectType="blank",
                      objectTypes=c(NA, "literal"))
   relations <- getRelationships(dp, quiet=quietOn)
-  expect_that(nrow(relations), equals(nrel<-nrel + 2))
-  expect_that(relations[relations$object == "thing4", 'objectType'], equals(as.character(NA)))
-  expect_that(relations[relations$object == "thing5", 'objectType'], equals("literal"))
+  expect_equal(nrow(relations), nrel<-nrel + 2)
+  expect_equal(relations[relations$object == "thing4", 'objectType'], as.character(NA))
+  expect_equal(relations[relations$object == "thing5", 'objectType'], "literal")
   
   # Subject passed in as NA, which means create an "anonymous" blank node for these (software assigns the blank node id, not user)
   dp <- insertRelationship(dp, subjectID=as.character(NA), objectIDs="thing6", predicate="http://www.myns.org/wasThing", objectTypes="literal")
   relations <- getRelationships(dp, quiet=quietOn)
-  expect_that(nrow(relations), equals(nrel<-nrel + 1))
+  expect_equal(nrow(relations), nrel<-nrel + 1)
   expect_match(relations[relations$object == "thing6", 'predicate'], "wasThing")
-  expect_that(relations[relations$object == "thing6", 'subjectType'], equals("blank"))
+  expect_equal(relations[relations$object == "thing6", 'subjectType'], "blank")
   
   # No objectID specified
   dp <- insertRelationship(dp, subjectID="urn:uuid:5743f16c-e038-4ef2-bcca-0418ff631a34", objectIDs=as.character(NA), predicate="http://www.myns.org/gaveThing")
   relations <- getRelationships(dp, quiet=quietOn)
-  expect_that(nrow(relations), equals(nrel <- nrel + 1))
+  expect_equal(nrow(relations), nrel <- nrel + 1)
   expect_match(relations[relations$subject == "urn:uuid:5743f16c-e038-4ef2-bcca-0418ff631a34", 'predicate'], "gaveThing")
-  expect_that(relations[relations$subject == "urn:uuid:5743f16c-e038-4ef2-bcca-0418ff631a34", 'objectType'], equals("blank"))
+  expect_equal(relations[relations$subject == "urn:uuid:5743f16c-e038-4ef2-bcca-0418ff631a34", 'objectType'], "blank")
   
   # Specify dataTypeURIs
   dp <- insertRelationship(dp, subjectID="urn:uuid:abcd", objectIDs="Wed Mar 18 06:26:44 PDT 2015", 
@@ -204,10 +203,10 @@ test_that("InsertRelationship methods work", {
                      objectTypes="literal",
                      dataTypeURIs="http://www.w3.org/2001/XMLSchema#string")
   relations <- getRelationships(dp, quiet=quietOn)
-  expect_that(nrow(relations), equals(nrel <- nrel + 1))
+  expect_equal(nrow(relations), nrel <- nrel + 1)
   expect_match(relations[relations$subject == "urn:uuid:abcd", 'dataTypeURI'], "string")
-  expect_that(relations[relations$subject == "urn:uuid:abcd", 'subjectType'], equals("uri"))
-  expect_that(relations[relations$subject == "urn:uuid:abcd", 'objectType'], equals("literal"))
+  expect_equal(relations[relations$subject == "urn:uuid:abcd", 'subjectType'], "uri")
+  expect_equal(relations[relations$subject == "urn:uuid:abcd", 'objectType'], "literal")
   expect_match(relations[relations$subject == "urn:uuid:abcd", 'predicate'], "startedAt")
 
   rm(dp)
@@ -220,8 +219,8 @@ test_that("InsertRelationship methods work", {
   relations <- getRelationships(dp, quiet=quietOn)
   
   # Test if the data frame with retrieved relationships was constructed correctly
-  expect_that(nrow(relations), equals(3))
-  expect_that(nrow(relations[relations$object == datapack:::provONEdata,]), equals(2))
+  expect_equal(nrow(relations), 3)
+  expect_equal(nrow(relations[relations$object == datapack:::provONEdata,]), 2)
   expect_match(relations[relations$predicate == datapack:::provWasDerivedFrom, 'subject'], derived)
   expect_equal(relations[relations$predicate == datapack:::provWasDerivedFrom, 'object'], source)
 })
@@ -249,15 +248,15 @@ test_that("removeRelationships method works", {
                              subjectType="uri", objectType="literal")
     
     # Now check if deleting various relationships results in the right number of rows
-    expect_that(nrow(getRelationships(dp)), equals(6))
+    expect_equal(nrow(getRelationships(dp)), 6)
     dp <- removeRelationships(dp, predicate='http://myns.org/wasThing')
-    expect_that(nrow(getRelationships(dp)), equals(5))
+    expect_equal(nrow(getRelationships(dp)), 5)
     dp <- removeRelationships(dp, subjectID='orcid.org/0000-0002-2192-403X')
-    expect_that(nrow(getRelationships(dp)), equals(4))
+    expect_equal(nrow(getRelationships(dp)), 4)
     dp <- removeRelationships(dp, subjectID='https://myns.org/subject1', predicate='http://myns.org/hadThing')
-    expect_that(nrow(getRelationships(dp)), equals(2))
+    expect_equal(nrow(getRelationships(dp)), 2)
     dp <- removeRelationships(dp)
-    expect_that(nrow(getRelationships(dp)), equals(0))
+    expect_equal(nrow(getRelationships(dp)), 0)
     
 })
 
@@ -301,7 +300,7 @@ test_that("Package serialization works", {
   status <- serializePackage(dp, filePath, id=serializationId)
   expect_true(file.exists(filePath))
   found <- grep("wasDerivedFrom", readLines(filePath))
-  expect_that(found, is_more_than(0))
+  expect_gt(found, 0)
   unlink(filePath)
   
   # Use R serialize/unserialize functions on entire datapackage
@@ -345,7 +344,7 @@ test_that("Package serialization works with minimal DataPackage", {
     status <- serializePackage(dp, filePath, id=serializationId)
     expect_true(file.exists(filePath))
     found <- grep(mdId, readLines(filePath))
-    expect_that(found, is_more_than(0))
+    expect_gt(found, 0)
     unlink(filePath)
     # Compare relationships
     rels <- getRelationships(dp)
@@ -380,6 +379,7 @@ test_that("BagIt serialization works", {
   </eml:eml>"'
   
   dp <- new("DataPackage")
+
   emlId <- paste0("urn:uuid:", UUIDgenerate())
   secondEmlId <- paste0("urn:uuid:", UUIDgenerate())
   thirdEmlId <- paste0("urn:uuid:", UUIDgenerate())
@@ -399,6 +399,7 @@ test_that("BagIt serialization works", {
   secondFilePath = "my_data/textFile2.csv"
   thirdFilePath = "more-data\\textFile3.csv"
   fifthFilePath = "misc_data/data.csv"
+
   
   node <- "urn:node:KNB"
 
@@ -469,12 +470,26 @@ test_that("BagIt serialization works", {
       expect_true(fullPath %in% tagManifestData )
   }
 
+
   # Check that the rdf is present
   expect_true(file.path("metadata", "oai-ore.xml") %in% zipFileNames)
   # Check that the EML documents are present
   expect_true(file.path("metadata", "eml.xml") %in% zipFileNames)
   expect_true(file.path("metadata", "science-metadata.xml") %in% zipFileNames)
 })
+
+ # Enable these tests when targetPath will be reflected into the BagIt structure (v1.5.0?)
+ #zipFileNames = unzip(bagitFile, list=TRUE)$Name
+ #expect_true(paste("data/",doInFilePath, sep="") %in% zipFileNames )
+ #expect_true(paste("data/", doOutFilePath, sep="") %in% zipFileNames)o
+ 
+ # Check that the 'atLocation' relationships were added correctly by 'serializeToBagIt()'
+ relationships <- getRelationships(dp)
+ expect_equal(subset(relationships, subject==doInId & predicate == provAtLocation, select=object)[1,'object'], doInFilePath)
+ expect_equal(subset(relationships, subject==doInId & predicate == provAtLocation, select=object)[1,'object'], doInFilePath)
+ 
+}) 
+
 
 test_that("Adding provenance relationships to a DataPackage via describeWorkflow works", {
     
@@ -643,8 +658,8 @@ test_that("Adding provenance relationships to a DataPackage via describeWorkflow
     relations <- getRelationships(dp, quiet=quietOn)
     
     # Test if the data frame with retrieved relationships was constructed correctly
-    expect_that(nrow(relations), equals(3))
-    expect_that(nrow(relations[relations$object == datapack:::provONEdata,]), equals(2))
+    expect_equal(nrow(relations), 3)
+    expect_equal(nrow(relations[relations$object == datapack:::provONEdata,]), 2)
     expect_equal(relations[relations$predicate == datapack:::provWasDerivedFrom, 'subject'], derived)
     expect_equal(relations[relations$predicate == datapack:::provWasDerivedFrom, 'object'], source)
 })

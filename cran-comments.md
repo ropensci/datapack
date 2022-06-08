@@ -1,20 +1,30 @@
 ## Test environments
 
-* macOS 10.14.5, R 3.6.1
-* Ubuntu 19.04, R 3.6.1
-* Windows 7, R 3.6.1, R under devel (2019-09-27 77229)
-* Windows (via win-builder): x86_64-w64-mingw32 (64-bit), R version 3.6.1 (2019-07-05)
-* Windows (via win-builder): x86_64-w64-mingw32 (64-bit), R Under development (unstable) (2019-10-10 r77275)
-* Windows (via win-builder): x86_64-w64-mingw32 (64-bit), R version 3.5.3 (2019-03-11)
-* Fedora Linux (via rhub):  R-devel, clang, gfortran
+* tested via rhub::check_for_cran()
+  * Debian, R-devel, clang
+  * Debian, R-devel, GCC
+  * Debian, R-patched, GCC
+  * Fedora Linux, R-devel, clang, gfortran
+  * Fedora Linux, R-devel, GCC
+  * macOS 10.13.6 High Sierra, R-release
+  * macOS 10.13.6 High Sierra, R-release, CRAN's setup
+  * Windows Server 2008 R2 SP1, R-devel, 32/64 bit
+  * Windows Server 2008 R2 SP1, R-release, 32/64 bit
+* tested via devtools::check()
+  * macOS 10.14.6, R 4.0.2
+  * Ubuntu 17.10
+* tested via win-builder
+  * Windows: x86_64-w64-mingw32 (64-bit) R 4.0.2
+  * Windows: x86_64-w64-mingw32 (64-bit) R 3.6.3
+  * Windows: x86_64-w64-mingw32 (64-bit) R devel
 
 ## Changes since last release
 
-* Ensure that a 'dc:creator' element is always present (#93)
-* Ensure that the resource map dcterms:modified time is always present/updated. (#93)
-* Ensure that a DataPackage is marked as updated after addAccessRule, setPublicAccess, clearAccessPolicy methods called (#92).
-* Remove dependency on redland::getNextResult (#110)
-* Added function removeRelationsships() which can remove all or specified relationships from a DataPackage (#99)
+* Use SHA-256 as the default hash algorithm (#117)
+* Added 'checksumAlgorithm' argument to DataObject initialization method  (#117)
+* Handle dc:creator in resource map properly #116
+* Update tests for compatibility with testthat 3e (#87)
+* Added 'targetPath' argument to DataObject to set 'prov:atLocation' for an object (#109)
 
 ## R CMD check results
 

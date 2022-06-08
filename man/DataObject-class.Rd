@@ -58,6 +58,31 @@ contents of the data or file as a raw value (but this will read all of the data 
 }
 }
 
+
+\examples{
+data <- charToRaw("1,2,3\n4,5,6\n")
+targetPath <- "myData/time-trials/trial_data.csv"
+do <- new("DataObject", "id1", dataobj=data, "text/csv", 
+  "uid=jones,DC=example,DC=com", "urn:node:KNB", targetPath=targetPath)
+getIdentifier(do)
+getFormatId(do)
+getData(do)
+canRead(do, "uid=anybody,DC=example,DC=com")
+do <- setPublicAccess(do)
+canRead(do, "public")
+canRead(do, "uid=anybody,DC=example,DC=com")
+# Also can create using a file for storage, rather than memory
+\dontrun{
+tf <- tempfile()
+con <- file(tf, "wb")
+writeBin(data, con)
+close(con)
+targetPath <- "myData/time-trials/trial_data.csv"
+do <- new("DataObject", "id1", format="text/csv", user="uid=jones,DC=example,DC=com", 
+  mnNodeId="urn:node:KNB", filename=tf, targetPath=targetPath)
+}
+}
+
 \seealso{
 \code{\link{datapack}}
 }

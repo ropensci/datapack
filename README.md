@@ -1,11 +1,10 @@
 ## datapack: A Flexible Container to Transport and Manipulate Data and Associated Resources
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/datapack)](https://cran.r-project.org/package=datapack)
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/datapack)](https://cran.r-project.org/package=datapack)
 [![Build Status](https://travis-ci.org/ropensci/datapack.svg?branch=master)](https://travis-ci.org/ropensci/datapack)
-<!-- [![CRAN_Download_Badge](http://cranlogs.r-pkg.org/badges/datapack)](https://cran.rstudio.com/web/packages/datapack/index.html) -->
 
-- **Author**: Matthew B. Jones and Peter Slaughter ([NCEAS](http://www.nceas.ucsb.edu))
-- [doi:10.5063/F1QV3JGM](http://doi.org/10.5063/F1QV3JGM)
-- **License**: [Apache 2](http://opensource.org/licenses/Apache-2.0)
+- **Author**: Matthew B. Jones and Peter Slaughter ([NCEAS](https://www.nceas.ucsb.edu))
+- [doi:10.5063/F1QV3JGM](https://doi.org/10.5063/F1QV3JGM)
+- **License**: [Apache 2](https://opensource.org/licenses/Apache-2.0)
 - [Package source code on Github](https://github.com/ropensci/datapack)
 - [**Submit Bugs and feature requests**](https://github.com/ropensci/datapack/issues)
 
@@ -15,6 +14,10 @@ be transported and loaded into a single composite file.  The methods in
 this package provide a convenient way to load data from common repositories 
 such as DataONE into the R environment, and to document, serialize, and save 
 data from R to data repositories worldwide.
+
+> Note that this package ('datapack') is not related to the similarly named rOpenSci package 'DataPackageR'.
+> Documentation from the DataPackageR github repository states that "DataPackageR is used to reproducibly
+> process raw data into packaged, analysis-ready data sets."
 
 ## Installation Notes 
 
@@ -34,7 +37,7 @@ library(datapack)
 
 The *datapack* R package should be available for use at this point.
 
-Note: if you wish to build the required *redland* package from source before installing *datapack*, please see the redland [installation instructions]( https://github.com/ropensci/redland-bindings/tree/master/R/redland).
+Note: if you wish to build the required *redland* package from source before installing *datapack*, please see the redland [installation instructions](https://github.com/ropensci/redland-bindings/tree/master/R/redland).
 
 ## Installing on Ubuntu
 
@@ -132,6 +135,6 @@ Work on this package was supported by:
 
 Additional support was provided for working group collaboration by the National Center for Ecological Analysis and Synthesis, a Center funded by the University of California, Santa Barbara, and the State of California.
 
-[![nceas_footer](https://www.nceas.ucsb.edu/files/newLogo_0.png)](http://www.nceas.ucsb.edu)
+[![nceas_footer ](https://www.nceas.ucsb.edu/files/newLogo_0.png)](https://www.nceas.ucsb.edu)
 
-[![ropensci_footer](http://ropensci.org/public_images/github_footer.png)](http://ropensci.org)
+[![ropensci_footer](https://ropensci.org/public_images/github_footer.png)](https://ropensci.org/)

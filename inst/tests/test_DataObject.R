@@ -1,5 +1,3 @@
-context("DataObject")
-
 test_that("datapack library loads", {
     expect_true(library(datapack, logical.return = TRUE))
 })
@@ -15,55 +13,77 @@ test_that("DataObject constructors work", {
     
     # Test the constructor that builds a DataObject object
     do <- new("DataObject", identifier, data, filename="test.cvs", format=format, user=user, mnNodeId=node)
-    expect_that(class(do)[[1]], equals("DataObject"))
-    expect_that(do@sysmeta@serialVersion, equals(1))
-    expect_that(do@sysmeta@identifier, equals(identifier))
-    expect_that(do@sysmeta@submitter, equals(user))
-    expect_that(do@sysmeta@size, equals(length(data)))
-    expect_that(length(do@data), equals(length(data)))
-    expect_that(getIdentifier(do), equals(identifier))
-    expect_that(getFormatId(do), equals(format))
-    sha1 <- digest(data, algo="sha1", serialize=FALSE, file=FALSE)
-    sm <- new("SystemMetadata", identifier=identifier, formatId=format, size=length(data), submitter=user, rightsHolder=user, checksum=sha1, originMemberNode=node, authoritativeMemberNode=node)
-    expect_that(sm@identifier, equals(identifier))
+    expect_equal(class(do)[[1]], "DataObject")
+    expect_equal(do@sysmeta@serialVersion, 1)
+    expect_equal(do@sysmeta@identifier, identifier)
+    expect_equal(do@sysmeta@submitter, user)
+    expect_equal(do@sysmeta@size, length(data))
+    expect_equal(length(do@data), length(data))
+    expect_equal(getIdentifier(do), identifier)
+    expect_equal(getFormatId(do), format)
+    sha <- digest(data, algo="sha256", serialize=FALSE, file=FALSE)
+    sm <- new("SystemMetadata", identifier=identifier, formatId=format, size=length(data), submitter=user, rightsHolder=user, checksum=sha, originMemberNode=node, authoritativeMemberNode=node)
+    expect_equal(sm@identifier, identifier)
     
     # Now test the constructor that passes in SystemMetadata and data
     do <- new("DataObject", sm, data, filename="test.csv")
-    expect_that(do@sysmeta@serialVersion, equals(1))
-    expect_that(do@sysmeta@identifier, equals(identifier))
-    expect_that(do@sysmeta@submitter, equals(user))
-    expect_that(do@sysmeta@size, equals(length(data)))
-    expect_that(length(do@data), equals(length(data)))
-    expect_that(getIdentifier(do), equals(identifier))
-    expect_that(getFormatId(do), equals(format))
+    expect_equal(do@sysmeta@serialVersion, 1)
+    expect_equal(do@sysmeta@identifier, identifier)
+    expect_equal(do@sysmeta@submitter, user)
+    expect_equal(do@sysmeta@checksumAlgorithm, "SHA-256")
+    expect_equal(do@sysmeta@checksum, sha)
+    expect_equal(do@sysmeta@size, length(data))
+    expect_equal(do@sysmeta@size, length(data))
+    expect_equal(length(do@data), length(data))
+    expect_equal(getIdentifier(do), identifier)
+    expect_equal(getFormatId(do), format)
     
     # Now test the constructor that passes in SystemMetadata and a filename (not data)
     tf <- tempfile()
     con <- file(tf, "wb")
     writeBin(data, con)
     close(con)
-    sha1_file <- digest(tf, algo="sha1", serialize=FALSE, file=TRUE)
-    do <- new("DataObject", sm, filename=tf)
-    expect_that(do@sysmeta@serialVersion, equals(1))
-    expect_that(do@sysmeta@identifier, equals(identifier))
-    expect_that(do@sysmeta@submitter, equals(user))
-    expect_that(do@sysmeta@size, equals(length(data)))
-    expect_that(file.info(tf)$size, equals(length(data)))
-    expect_that(getIdentifier(do), equals(identifier))
-    expect_that(getFormatId(do), equals(format))
+    sha_file <- digest(tf, algo="sha256", serialize=FALSE, file=TRUE)
+    do <- new("DataObject", sm, filename=tf, checksumAlgorith="SHA-256")
+    expect_equal(do@sysmeta@serialVersion, 1)
+    expect_equal(do@sysmeta@identifier, identifier)
+    expect_equal(do@sysmeta@submitter, user)
+    expect_equal(do@sysmeta@checksumAlgorithm, "SHA-256")
+    expect_equal(do@sysmeta@checksum, sha)
+    expect_equal(do@sysmeta@size, length(data))
+    expect_equal(file.info(tf)$size, length(data))
+    expect_equal(getIdentifier(do), identifier)
+    expect_equal(getFormatId(do), format)
     data2 <- getData(do)
-    sha1_get_data <- digest(data2, algo="sha1", serialize=FALSE, file=FALSE)
-    expect_match(sha1_get_data, sha1)
+    sha_get_data <- digest(data2, algo="sha256", serialize=FALSE, file=FALSE)
+    expect_match(sha_get_data, sha)
+    expect_match(sha_file, do@sysmeta@checksum)
+    expect_match(sha_get_data, do@sysmeta@checksum)
+    
+    # Verify that the DataObject initialization prepares the sysmeta correctly, if it is not
+    # included in the parameter list.
+    
+    sha_file <- digest(tf, algo="sha1", serialize=FALSE, file=TRUE)
+    do <- new("DataObject", identifier, filename=tf, checksumAlgorith="SHA1")
+    expect_equal(do@sysmeta@checksum, sha_file)
+    expect_equal(do@sysmeta@checksumAlgorithm, "SHA1")
+    
+    sha_file <- digest(tf, algo="md5", serialize=FALSE, file=TRUE)
+    do <- new("DataObject", identifier, filename=tf, checksumAlgorith="MD5")
+    expect_equal(do@sysmeta@checksum, sha_file)
+    expect_equal(do@sysmeta@checksumAlgorithm, "MD5")
+    
     unlink(tf)
     
     # Test that the constructor works for a data path, with a few different forms
     targetPath="./data/rasters/test.csv"
     do <- new("DataObject", sm, data, filename="test.csv", targetPath=targetPath)
-    expect_that(do@targetPath, equals(targetPath))
+    expect_equal(do@targetPath, targetPath)
     
     targetPath="data/rasters/test.csv"
     do <- new("DataObject", sm, data, filename="test.csv", targetPath=targetPath)
-    expect_that(do@targetPath, equals(targetPath))
+    expect_equal(do@targetPath, targetPath)
+
 })
 test_that("DataObject accessPolicy methods", {
     library(datapack)
@@ -75,7 +95,7 @@ test_that("DataObject accessPolicy methods", {
     node <- "urn:node:KNB"
     
     do <- new("DataObject", identifier, data, format, user, node, filename="test.csv")
-    expect_that(class(do)[[1]], equals("DataObject"))
+    expect_equal(class(do)[[1]], "DataObject")
     
     # Public access should not be present at first
     canRead <- canRead(do, "uid=anybody,DC=somedomain,DC=org")

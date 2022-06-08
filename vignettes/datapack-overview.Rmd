@@ -1,5 +1,5 @@
 ---
-title: "datapack R package overview"
+title: "datapack R Package Overview"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 <!-- output: pdf_document -->
@@ -22,9 +22,9 @@ data repositories.
 ## Create a Single Object 
 The *datapack* DataObject class is a wrapper that contains both data and system metadata that describes the data. 
 The data can be either R `raw` data or a data file, for example a CSV file. The system metadata includes attributes such as the 
-object identifier, type, size, checksum, owner, version relationship to other objects, access rules, and other critical metadata. The DataObject class also holds additional metadata about the data file. For example, where the file should go when someone downlaodeds the package. This is often times the same as the filepath however, care should be taken to not include any drive letters or unnecessary folders.
+object identifier, type, size, checksum, owner, version relationship to other objects, access rules, and other critical metadata. The DataObject class also holds additional metadata about the data file. For example, where the file should go when the package is downloaded. This is often times the same as the filepath however, care should be taken to not include any drive letters or unnecessary folders.
 
-The following example shows how to create a DataObject from a CSV file:
+The following example shows how to create a DataObject locally from a CSV file:
 
 ```{r}
 library(datapack)
@@ -78,10 +78,12 @@ Each object also is associated with a specific format. To retrieve the format ty
 getFormatId(myObj)
 ```
 
-All system metadata information for a DataObject can be accessed directly from the SystemMetadata object contained in the DataObject:
+### System Metadata
+
+All system metadata information for a DataObject can be accessed directly from the SystemMetadata object contained in the DataObject. To access the `fileName` field, for example:
 
 ```{r}
-str(myObj@sysmeta)
+myObj@sysmeta@fileName
 ```
 
 The system metadata contains access policy information for the DataObject that could be used
@@ -89,6 +91,8 @@ by a data repository that the object is uploaded to. For example, when a DataObj
 uploaded to a [DataONE Member Node](https://www.dataone.org/current-member-nodes), 
 the access policy is applied to the uploaded data
 and controls access to the data on the Member Node by DataONE users.
+
+#### Access Policy
 
 Before the DataObject is uploaded, access can be set so that anyone can read the uploaded data:
 ```{r}
@@ -100,7 +104,7 @@ Individual access rules can also be added one at a time.  The access rules are e
 using the unique identifier for an individual, such as their ORCID identity, or whatever
 form the repository supports.
 ```{r}
-myObj <- addAccessRule(myObj, "http://orcid.org/0000-0003-0077-4738", "write")
+myObj <- addAccessRule(myObj, "https://orcid.org/0000-0003-0077-4738", "write")
 myObj@sysmeta@accessPolicy
 ```
 
@@ -120,7 +124,7 @@ myObj@sysmeta@accessPolicy
 ```
 
 The *dataone* R package can be used to upload or download DataObjects to a DataONE Member Node.
-Please see the web page for the [*dataone*](http://github.com/DataONEorg/rdataone) R package and the
+Please see the web page for the [*dataone*](https://github.com/DataONEorg/rdataone) R package and the
 vignettes for more information:
 
 ```{r, eval=FALSE}
@@ -138,7 +142,7 @@ describes, or `documents` the data granules that the package contains.
 
 ![](package-diagram.png)
 
-This example creates a DataPackage with one DataObject containing metadata and two others containing science data:
+This example creates a DataPackage with one DataObject containing metadata and two others containing science data. First the individual objects are created:
 
 ```{r}
 metadataFile <- system.file("extdata/sample-eml.xml", package="datapack")
@@ -161,11 +165,11 @@ myid <- paste("urn:uuid:", UUIDgenerate(), sep="")
 myid
 ```
 
-Next a DataPackage is created and the DataObjects are added to it:
+Next a DataPackage is created and the DataObjects are added to it. Note the `mo` argument in the `addMember` function when adding the data file. Including this argument specifies that the metadata object documents the data object. More information on relationships between DataObjects is included in the next section.
 ```{r}
 dp <- new("DataPackage")
 dp <- addMember(dp, do = metadataObj)
-dp <- addMember(dp, do = sciObj)
+dp <- addMember(dp, do = sciObj, mo = metadataObj)
 # The second object will be added in the next section 
 ```
 
@@ -222,7 +226,7 @@ Figure 2. A DataPackage with provenance relationships.
 
 ### Linking a metadata file with one or more data files using cito:documents
 
-The fastest way to add the `cito:documents` relationship is to include the metadata object when a science data object is added to the package:
+As mentioned above, the fastest way to add the `cito:documents` relationship is to include the metadata object when a science data object is added to the package:
 
 ```{r}
 dp <- addMember(dp, do = sciObj2, mo = metadataObj)
@@ -231,7 +235,7 @@ getRelationships(dp, condense=TRUE)
 
 In that example, the `sciObj2` DataObject is added to the package using the `addMember` call, 
 and the metadata object `metadataObj` is passed in to the function as well.  This
-tells the DataPackage that `metadataId cito:documents sciId2`. The `cito:documents` relationship is defined by the [Citation Typing Ontology](http://purl.org/spar/cito) (CITO)).
+tells the DataPackage that `metadataId cito:documents sciId2`. The `cito:documents` relationship is defined by the [Citation Typing Ontology](https://sparontologies.github.io/cito/current/cito.html) (CITO)).
 
 ## Asserting data provenance relationships between objects
 
@@ -252,18 +256,22 @@ relationships:
 ```{r}
 dp <- new("DataPackage")
 
+metadataFile <- system.file("extdata/sample-eml.xml", package="datapack")
+metadataId <- "metadataId"
+metadataObj <- new("DataObject", id=metadataId, format="eml://ecoinformatics.org/eml-2.1.0", file=metadataFile)
+
 # This DataObject contains the program script that was executed
 progObj <- new("DataObject", format="application/R", 
            filename=system.file("extdata/pkg-example/logit-regression-example.R", package="datapack"))
-dp <- addMember(dp, progObj)
+dp <- addMember(dp, progObj, mo = metadataObj)
 
 doIn <- new("DataObject", format="text/csv", 
              filename=system.file("./extdata/pkg-example/binary.csv", package="datapack"))
-dp <- addMember(dp, doIn)
+dp <- addMember(dp, doIn, mo = metadataObj)
 
 doOut <- new("DataObject", format="image/png", 
              filename=system.file("./extdata/pkg-example/gre-predicted.png", package="datapack"))
-dp <- addMember(dp, doOut)
+dp <- addMember(dp, doOut, mo = metadataObj)
 
 # The arguments "sources" and "derivations" can also contain lists of "DataObjects"
 dp <- describeWorkflow(dp, sources=doIn, program=progObj, derivations=doOut)
@@ -275,7 +283,7 @@ rels[grepl("prov:", rels$predicate),]
 
 
 
-```{r}
+```{r, message = FALSE, warning = FALSE, fig.width=8, fig.height=8}
 library(igraph)
 plotRelationships(dp)
 ```
@@ -302,7 +310,7 @@ Relationships can be fully specified using the URI of the concept, as shown in t
 
 ```{r, eval=F}
 dp <- insertRelationship(dp, subjectID=sciId2, objectIDs=sciId,
-                   predicate="http://www.w3.org/ns/prov#wasDerivedFrom")
+                   predicate="https://www.w3.org/ns/prov#wasDerivedFrom")
 relations <- getRelationships(dp, condense=TRUE)
 relations[grepl("prov:wasDerivedFrom", relations$predicate),]
 ``` 

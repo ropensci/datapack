@@ -66,7 +66,7 @@
 #' @seealso \code{\link{datapack}}
 #' @examples
 #' data <- charToRaw("1,2,3\n4,5,6\n")
-#' targetPath <- "myData/time-trials/trial_data.csv
+#' targetPath <- "myData/time-trials/trial_data.csv"
 #' do <- new("DataObject", "id1", dataobj=data, "text/csv", 
 #'   "uid=jones,DC=example,DC=com", "urn:node:KNB", targetPath=targetPath)
 #' getIdentifier(do)
@@ -82,7 +82,7 @@
 #' con <- file(tf, "wb")
 #' writeBin(data, con)
 #' close(con)
-#' targetPath <- "myData/time-trials/trial_data.csv
+#' targetPath <- "myData/time-trials/trial_data.csv"
 #' do <- new("DataObject", "id1", format="text/csv", user="uid=jones,DC=example,DC=com", 
 #'   mnNodeId="urn:node:KNB", filename=tf, targetPath=targetPath)
 #' }
@@ -127,17 +127,18 @@ setClass("DataObject", slots = c(
 #' @param mediaTypeProperty A list, indicates IANA Media Type properties to be associated with the parameter \code{"mediaType"}
 #' @param dataURL A character string containing a URL to remote data (a repository) that this DataObject represents.
 #' @param targetPath An optional string that denotes where the file should go in a downloaded package
+#' @param checksumAlgorithm A character string specifying the checksum algorithm to use
 #' @import digest
 #' @import uuid
 #' @examples
 #' data <- charToRaw("1,2,3\n4,5,6\n")
 #' do <- new("DataObject", "id1", dataobj=data, "text/csv", 
-#'   "uid=jones,DC=example,DC=com", "urn:node:KNB", filepath="data/rasters/data.tiff)
+#'   "uid=jones,DC=example,DC=com", "urn:node:KNB", targetPath="data/rasters/data.tiff")
 #' @seealso \code{\link{DataObject-class}}
 setMethod("initialize", "DataObject", function(.Object, id=NA_character_, dataobj=NA, format=NA_character_, user=NA_character_, 
                                                mnNodeId=NA_character_, filename=NA_character_, seriesId=NA_character_,
                                                mediaType=NA_character_, mediaTypeProperty=list(), dataURL=NA_character_,
-                                               targetPath=NA_character_) {
+                                               targetPath=NA_character_, checksumAlgorithm="SHA-256") {
   
     # If no value has been passed in for 'id', then create a UUID for it.
     if (class(id) != "SystemMetadata" && is.na(id)) {
@@ -159,10 +160,11 @@ setMethod("initialize", "DataObject", function(.Object, id=NA_character_, dataob
     if (!hasDataUrl && !hasDataObj && !hasFilename) {
         stop("Either the \"dataobj\" parameter containing raw data or the \"filename\" parameter with a file reference to the data\n or the \"xdataURL\" parameter must be provided.")
     }
+    
     if (typeof(id) == "character") {
         smfile <- NA_character_
         size <- 0
-        sha1 <- NA_character_
+        sha256 <- NA_character_
         dmsg("@@ DataObject-class:R initialize as character")
         if(hasDataUrl) {
             .Object@dataURL <- dataURL
@@ -182,25 +184,27 @@ setMethod("initialize", "DataObject", function(.Object, id=NA_character_, dataob
                     smfile <- basename(filename)
                 }
                 size <- length(dataobj)
-                sha1 <- digest(dataobj, algo="sha1", serialize=FALSE, file=FALSE)
                 .Object@data <- dataobj
                 .Object@filename <- NA_character_
+                .Object@dataURL <- NA_character_
             } else {
                 if(!file.exists(filename)) stop(sprintf("The \"filename\" argument value \"%s\" must be for file that exists", filename))
                 fileinfo <- file.info(filename)
                 if(!fileinfo$size > 0) stop(sprintf("The \"filename\" argument value \"%s\" must be for a non-empty file.", filename))
                 size <- fileinfo$size
-                sha1 <- digest(filename, algo="sha1", serialize=FALSE, file=TRUE)
                 .Object@data <- as.raw(NULL)
+                .Object@dataURL <- dataURL
                 .Object@filename <- normalizePath(filename)
                 smfile <- basename(filename)
             }
         } 
+        
+        checksum <- calculateChecksum(.Object, checksumAlgorithm=checksumAlgorithm)
         # Build a SystemMetadata object describing the data
         # It's OK to set sysmeta v2 fields here, as they will only get serialized to v2 format if requested. The default is
         # to serialze to v1 format which does not include seriesId, mediaType, fileName.
         .Object@sysmeta <- new("SystemMetadata", identifier=id, formatId=format, size=size, submitter=user, rightsHolder=user, 
-                               checksum=sha1, originMemberNode=mnNodeId, authoritativeMemberNode=mnNodeId, 
+                               checksum=checksum, checksumAlgorithm=checksumAlgorithm, originMemberNode=mnNodeId, authoritativeMemberNode=mnNodeId, 
                                seriesId=seriesId, mediaType=mediaType, fileName=basename(smfile), 
                                mediaTypeProperty=mediaTypeProperty)
     } else if (typeof(id) == "S4" && class(id) == "SystemMetadata") {
@@ -208,13 +212,25 @@ setMethod("initialize", "DataObject", function(.Object, id=NA_character_, dataob
         if(hasDataObj) {
             if(!is.raw(dataobj[[1]])) stop("The value of the \"dataobj\" parameter must be of type \"raw\"")
             .Object@data <- dataobj
+            .Object@dataURL <- NA_character_
         } else {
             .Object@data <- as.raw(NULL)
+            .Object@dataURL <- NA_character_
         }
         if(hasFilename && file.exists(filename)) {
             .Object@filename <- normalizePath(filename)
+            .Object@dataURL <- NA_character_
         } else {
             .Object@filename <- NA_character_
+            .Object@dataURL <- NA_character_
+        }
+        
+        # Ensure that the checksum and algorithm of the passed in sysmeta matches the requested
+        # values from the parameter list for the DataObject
+        if(tolower(id@checksumAlgorithm) != tolower(checksumAlgorithm)) {
+            checksum <- calculateChecksum(.Object, checksumAlgorithm=checksumAlgorithm)
+            .Object@sysmeta@checksum <- checksum
+            .Object@sysmeta@checksumAlgorithm <- checksumAlgorithm
         }
     } else {
         stop("Invalid value for \"identifier\" argument, it must be a character or SystemMetadata value\n")
@@ -227,6 +243,7 @@ setMethod("initialize", "DataObject", function(.Object, id=NA_character_, dataob
     if (!is.na(targetPath)) {
         targetPath <- pathToPOSIX(targetPath)
     }
+
     .Object@targetPath <- targetPath
     return(.Object)
 })
@@ -526,6 +543,9 @@ setMethod("updateXML", signature("DataObject"), function(x, xpath=NA_character_,
     metadataDoc <- NA_character_
     nodeSet <- list()
     
+    # Use the existing checksum algorithm for the new (replaced) DataObject content
+    checksumAlgorithm <- x@sysmeta@checksumAlgorithm
+    
     # Get the xml content and update it if the xpath is found
     # Check that the parsing didn't generate an error
     result = tryCatch ({
@@ -556,22 +576,20 @@ setMethod("updateXML", signature("DataObject"), function(x, xpath=NA_character_,
     #write_xml(metadataDoc, filepath)
     
     # See how the data was stored in the previous version of the DataObject and
-    # update that.
+    # create the new, replacement DataObject using the same method (i.e. either internal data or external file)
     if (length(x@data) > 0) {
         metadata <- readChar(newfile, file.info(newfile)$size)
         x@data <- charToRaw(metadata)
         x@filename <- NA_character_
         x@sysmeta@size <- length(x@data)
-        x@sysmeta@checksum <- digest(x@data, algo="sha1", serialize=FALSE, file=FALSE)
-        x@sysmeta@checksumAlgorithm <- "SHA-1"
+        x@sysmeta@checksum <- calculateChecksum(x, checksumAlgorithm=checksumAlgorithm)
     } else {
         # Read the file from disk and return the contents as raw
         x@data <- raw()
         x@filename <- newfile
         fileinfo <- file.info(newfile)
         x@sysmeta@size <- fileinfo$size
-        x@sysmeta@checksum <- digest(newfile, algo="sha1", serialize=FALSE, file=TRUE)
-        x@sysmeta@checksumAlgorithm <- "SHA-1"
+        x@sysmeta@checksum <- calculateChecksum(x, checksumAlgorithm=checksumAlgorithm)
     }
     
     return(x)
@@ -674,3 +692,66 @@ sanitizePath <- function(filePath, filterList) {
     }
     return(c(path, filename))
 }
+
+# DataONE uses different abbreviations for checksum algorithms than the R 'digest' function.
+# Given a DataONE checksum algorithm abbreviation, return the corresponding 'digest' abbreviation,
+# which is needed in the 'digest' function call.
+getChecksumAlgorithmAbbreviation <- function(checksumAlgorithm="SHA-256") {
+    
+    # DataONE and the R 'digest' package have different abbreviations for checksum algorithm designations.
+    # Take a DataONE abbreviation and return the corresponding R 'digest' abbreviation
+    
+    if (tolower(checksumAlgorithm) == "md5") {
+        abbr="md5"
+    }
+    else if (tolower(checksumAlgorithm) == "sha1") {
+        abbr="sha1"
+    }
+    else if (tolower(checksumAlgorithm) == "sha-1") {
+        abbr="sha1"
+    }
+    else if (tolower(checksumAlgorithm) == "sha256") {
+        abbr="sha256"
+    }
+    else if (tolower(checksumAlgorithm) == "sha-256") {
+        abbr="sha256"
+    } else {
+        warning(sprintf("Unknown checksum algorithm %s", checksumAlgorithm))
+    }
+    
+    return(abbr) 
+}
+
+#' Calculate a checksum for the DataObject using the specified checksum algorithm
+#' @description calculates a checksum
+#' @param x A DataObject instance
+#' @param ... Additional parameters (not yet used)
+#' @note this method is intended for internal package use only.
+#' @return The calculated checksum
+setGeneric("calculateChecksum", function(x, ...) {
+    standardGeneric("calculateChecksum")
+})
+
+#' @rdname calculateChecksum
+#' @param checksumAlgorithm a \code{character} value specifying the checksum algorithm to use (i.e "MD5" or "SHA1" or "SHA256")
+setMethod("calculateChecksum", signature("DataObject"), function(x, checksumAlgorithm="SHA256", ...) {
+    abbr <- getChecksumAlgorithmAbbreviation(checksumAlgorithm)
+    
+    if(!is.na(x@dataURL)) {
+        if (tolower(checksumAlgorithm) == x@sysmeta@checksumAlgorithm) {
+            checksum <- x@sysmeta@checksum
+        } else {
+            warning("Unable to calculate checksum for DataObject without local content.")
+        }
+    } else if (length(x@data) > 0) {
+        checksum <- digest(x@data, algo=abbr, serialize=FALSE, file=FALSE)
+    } else if (!is.na(x@filename)) {
+        checksum <- digest(x@filename, algo=abbr, serialize=FALSE, file=TRUE)
+    } else {
+        warning("DataObject does not contain data or a data URL.")
+    }
+    
+    return(checksum)
+    
+})
+          

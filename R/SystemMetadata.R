@@ -127,7 +127,7 @@ setClass("SystemMetadata", slots = c(
 #' 
 setMethod("initialize", signature = "SystemMetadata", definition = function(.Object,
     identifier=NA_character_, formatId=NA_character_, size=NA_real_, checksum=NA_character_, 
-    checksumAlgorithm="SHA-1", submitter=NA_character_, rightsHolder=NA_character_, accessPolicy=data.frame(subject = character(), permission=character()),
+    checksumAlgorithm="SHA-256", submitter=NA_character_, rightsHolder=NA_character_, accessPolicy=data.frame(subject = character(), permission=character()),
     replicationAllowed=TRUE, numberReplicas=3, obsoletes=NA_character_, obsoletedBy=NA_character_, archived=FALSE, 
     dateUploaded=NA_character_, dateSysMetadataModified=NA_character_, 
     originMemberNode=NA_character_, authoritativeMemberNode=NA_character_, preferredNodes=list(), blockedNodes=list(),
