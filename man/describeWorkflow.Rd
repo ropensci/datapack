@@ -83,7 +83,7 @@ dp <- addMember(dp, outObj)
 # Note: 'sources' and 'derivations' can also be lists of "DataObjects" or "DataObject' identifiers
 dp <- describeWorkflow(dp, sources = inObj, program = progObj, derivations = outObj) 
 # View the results
-head(getRelationships(dp))
+utils::head(getRelationships(dp))
 }
 \seealso{
 The R 'recordr' package for run-time recording of provenance relationships.

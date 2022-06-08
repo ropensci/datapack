@@ -24,13 +24,11 @@ serializeToBagIt(x, ...)
 
 \item{...}{Additional arguments}
 
-\item{mapId}{A unique identifier for the package resource map. If not specified, one will be 
-automatically generated.}
+\item{mapId}{A unique identifier for the package resource map. If not specified, one will be automatically generated.}
 
 \item{syntaxName}{The name of the syntax to use for the resource map serialization, defaults to "rdfxml"}
 
-\item{namespaces}{An optional data frame containing one or more namespaces and their associated prefix for 
-the resource map serialization.}
+\item{namespaces}{An optional data frame containing one or more namespaces and their associated prefix for the resource map serialization.}
 
 \item{mimeType}{The mimetype for the resource map serialization, defaults to "application/rdf+xml".}
 
@@ -42,26 +40,33 @@ the resource map serialization.}
 }
 \value{
 The file name that contains the BagIt zip archive.
+Recursively determines the name for a science metadata object.
+The base file name (eml, datacite, science-metadata, etc) should stay the same.
+Call the method with the base name and the number of existing files to start with.
+This is most likely 0.
+If there's a count defined, add it to the end of the file in ()
+Then call the method again with count += 1
+Eventually a free file name will be found, and then the function returns that name
 }
 \description{
 The BagIt packaging format \url{https://tools.ietf.org/html/draft-kunze-bagit-08}
-is used to prepare an archive file that contains the contents of a DataPackage.
+    is used to prepare an archive file that contains the contents of a DataPackage.
 }
 \details{
 A BagIt Archive File is created by copying each member of a DataPackage, and preparing
-files that describe the files in the archive, including information about the size of the files
-and a checksum for each file. An OAI-ORE resource map is automatically created and added to the
-archive. These metadata files and the data files are then packaged into
-a single zip file.
+    files that describe the files in the archive, including information about the size of the files
+    and a checksum for each file. An OAI-ORE resource map is automatically created and added to the
+    archive. These metadata files and the data files are then packaged into
+    a single zip file.
 }
 \examples{
 # Create the first data object
 dp <- new("DataPackage")
-data <- charToRaw("1,2,3\n4,5,6")
+data <- charToRaw("1,2,3,5,6")
 do <- new("DataObject", id="do1", dataobj=data, format="text/csv", user="jsmith")
 dp <- addMember(dp, do)
 # Create a second data object
-data2 <- charToRaw("7,8,9\n4,10,11")
+data2 <- charToRaw("7,8,9,4,10,11")
 do2 <- new("DataObject", id="do2", dataobj=data2, format="text/csv", user="jsmith")
 dp <- addMember(dp, do2)
 # Create a relationship between the two data objects
@@ -74,6 +79,5 @@ bagitFile <- serializeToBagIt(dp, syntaxName="json", mimeType="application/json"
 \seealso{
 \code{\link{DataPackage-class}}
 
-For more information and examples regarding the parameters specifying the creation of the resource map,
-see \link{serializePackage}.
+For more information and examples regarding the parameters specifying the creation of the resource map, see \link{serializePackage}.
 }

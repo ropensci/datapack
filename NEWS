@@ -4,8 +4,11 @@ BUGS
 
 * Remove LazyData from DESCRIPTION  (#132)
 * Remove dependency oh hash package (#133)
-* Replace instances of `if (class(...))` with `inherits(...)`
+* Replace instances of `if (class(...))` with `inherits(...)` (#136)
 
+NEW FEATURES
+
+* Refactor BagIt serialization to match new specification (#109)
 
 Version 1.4.0
 -------------
