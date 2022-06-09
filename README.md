@@ -2,7 +2,7 @@
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/datapack)](https://cran.r-project.org/package=datapack)
 [![R-CMD-check](https://github.com/ropensci/datapack/workflows/R-CMD-check/badge.svg)](https://github.com/ropensci/datapack/actions)
 
-- **Author**: Matthew B. Jones and Peter Slaughter ([NCEAS](https://www.nceas.ucsb.edu))
+- **Author**: Matthew B. Jones and Peter Slaughter and S. Jeanette Clark ([NCEAS](https://www.nceas.ucsb.edu))
 - [doi:10.5063/F1QV3JGM](https://doi.org/10.5063/F1QV3JGM)
 - **License**: [Apache 2](https://opensource.org/licenses/Apache-2.0)
 - [Package source code on Github](https://github.com/ropensci/datapack)
@@ -128,13 +128,16 @@ vignette("upload-data", package="dataone")
 ## Acknowledgements
 Work on this package was supported by:
 
-- NSF-ABI grant #1262458 to C. Gries, M. B. Jones, and S. Collins.
-- NSF-DATANET grants #0830944 and #1430508 to W. Michener, M. B. Jones, D. Vieglais, S. Allard and P. Cruse
-- NSF DIBBS grant #1443062 to T. Habermann and M. B. Jones
-- NSF-PLR grant #1546024 to M. B. Jones, S. Baker-Yeboah, J. Dozier, M. Schildhauer, and A. Budden
+- NSF-ABI grant #[1262458](https://www.nsf.gov/awardsearch/showAward?AWD_ID=1262458) to C. Gries, M. B. Jones, and S. Collins.
+- NSF-DATANET grants #[0830944](https://www.nsf.gov/awardsearch/showAward?AWD_ID=0830944) and #[1430508](https://www.nsf.gov/awardsearch/showAward?AWD_ID=1430508) to W. Michener, M. B. Jones, D. Vieglais, S. Allard and P. Cruse
+- NSF DIBBS grant #[1443062](https://www.nsf.gov/awardsearch/showAward?AWD_ID=1443062) to T. Habermann and M. B. Jones
+- NSF-PLR grant #[1546024](https://www.nsf.gov/awardsearch/showAward?AWD_ID=1546024) to M. B. Jones, S. Baker-Yeboah, J. Dozier, M. Schildhauer, and A. Budden
+- NSF-PLR grant #[2042102](https://www.nsf.gov/awardsearch/showAward?AWD_ID=2042102) to M. B. Jones, A. Budden, J. Dozier, and M. Schildhauer
 
 Additional support was provided for working group collaboration by the National Center for Ecological Analysis and Synthesis, a Center funded by the University of California, Santa Barbara, and the State of California.
 
-[![nceas_footer ](https://www.nceas.ucsb.edu/files/newLogo_0.png)](https://www.nceas.ucsb.edu)
+[![nceas_footer](https://live-ncea-ucsb-edu-v01.pantheonsite.io/sites/default/files/2020-03/NCEAS-full%20logo-4C.png)](https://www.nceas.ucsb.edu)
+
+[![dataone_footer](https://www.dataone.org/sites/all/images/DataONE_LOGO.jpg)](https://www.dataone.org)
 
 [![ropensci_footer](https://ropensci.org/public_images/github_footer.png)](https://ropensci.org/)
