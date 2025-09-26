@@ -6,7 +6,7 @@
 \alias{removeAccessRule,SystemMetadata-method}
 \alias{removeAccessRule,DataObject-method}
 \alias{removeAccessRule,DataPackage-method}
-\title{Remove an access rule from the specified object.}
+\title{Remove an access rule from the specified object}
 \usage{
 removeAccessRule(x, ...)
 
@@ -21,7 +21,7 @@ removeAccessRule(x, ...)
 
 \item{...}{Additional arguments
 \itemize{
-  \item{permission The permission to be remove to subject if x is character (read, write, changePermission)}
+  \item \code{permission}: The permission to be remove to subject if x is character (read, write, changePermission)
 }}
 
 \item{y}{The subject of the rule to be removed, or a data.frame containing access rules.}

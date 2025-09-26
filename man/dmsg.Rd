@@ -2,7 +2,7 @@
 % Please edit documentation in R/dmsg.R
 \name{dmsg}
 \alias{dmsg}
-\title{Print a debugging message to stderr.}
+\title{Print a debugging message to stderr}
 \usage{
 dmsg(msg)
 }
@@ -10,7 +10,7 @@ dmsg(msg)
 \item{msg}{the message to be printed}
 }
 \description{
-Print a debugging message to stderr.
+Print a debugging message to stderr
 }
 \details{
 Only print the message if the option "datapack.debugging_mode" is TRUE.

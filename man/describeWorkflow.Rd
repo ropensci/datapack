@@ -55,10 +55,10 @@ together via a set of derivation relationships between the members of those pack
 Provenance relationships are described following the the ProvONE data model, which
 can be viewed at \url{https://purl.dataone.org/provone-v1-dev}.  In particular, 
 the following relationships are inserted (among others):
-\itemize{
- \item{\code{prov:used}} {indicates which source data was used by a program execution}
- \item{\code{prov:generatedBy}} {indicates which derived data was created by a program execution}
- \item{\code{prov:wasDerivedFrom}} {indicates the source data from which derived data were created using the program}
+\describe{
+ \item{\code{prov:used}}{indicates which source data was used by a program execution}
+ \item{\code{prov:generatedBy}}{indicates which derived data was created by a program execution}
+ \item{\code{prov:wasDerivedFrom}}{indicates the source data from which derived data were created using the program}
 }
 }
 \examples{

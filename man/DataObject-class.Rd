@@ -45,7 +45,7 @@ contents of the data or file as a raw value (but this will read all of the data 
 
 \section{Methods}{
 
-\itemize{
+\describe{
   \item{\code{\link[=DataObject-initialize]{initialize}}}{: Initialize a DataObject}
   \item{\code{\link{addAccessRule}}}{: Add a Rule to the AccessPolicy}
   \item{\code{\link{canRead}}}{: Test whether the provided subject can read an object.}

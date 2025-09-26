@@ -4,7 +4,7 @@
 \alias{setPublicAccess}
 \alias{setPublicAccess,DataObject-method}
 \alias{setPublicAccess,DataPackage-method}
-\title{Add a Rule to the AccessPolicy to make the object publicly readable.}
+\title{Add a Rule to the AccessPolicy to make the object publicly readable}
 \usage{
 setPublicAccess(x, ...)
 

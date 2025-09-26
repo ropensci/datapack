@@ -3,7 +3,7 @@
 \name{getTriples}
 \alias{getTriples}
 \alias{getTriples,ResourceMap-method}
-\title{Get the RDF relationships stored in the ResourceMap.}
+\title{Get the RDF relationships stored in the ResourceMap}
 \usage{
 getTriples(x, ...)
 

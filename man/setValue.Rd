@@ -3,7 +3,7 @@
 \name{setValue}
 \alias{setValue}
 \alias{setValue,DataPackage-method}
-\title{Set values for selected DataPackage members.}
+\title{Set values for selected DataPackage members}
 \usage{
 setValue(x, ...)
 

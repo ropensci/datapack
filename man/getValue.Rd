@@ -3,7 +3,7 @@
 \name{getValue}
 \alias{getValue}
 \alias{getValue,DataPackage-method}
-\title{Get values for selected DataPackage members.}
+\title{Get values for selected DataPackage members}
 \usage{
 getValue(x, ...)
 

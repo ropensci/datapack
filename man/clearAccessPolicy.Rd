@@ -6,7 +6,7 @@
 \alias{clearAccessPolicy,SystemMetadata-method}
 \alias{clearAccessPolicy,DataObject-method}
 \alias{clearAccessPolicy,DataPackage-method}
-\title{Clear the accessPolicy from the specified object.}
+\title{Clear the accessPolicy from the specified object}
 \usage{
 clearAccessPolicy(x, ...)
 

@@ -3,7 +3,7 @@
 \name{initialize,ResourceMap-method}
 \alias{initialize,ResourceMap-method}
 \alias{ResourceMap-initialize}
-\title{Initialize a ResourceMap object.}
+\title{Initialize a ResourceMap object}
 \usage{
 \S4method{initialize}{ResourceMap}(.Object, id = NA_character_)
 }

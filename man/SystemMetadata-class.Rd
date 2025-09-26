@@ -3,7 +3,7 @@
 \docType{class}
 \name{SystemMetadata-class}
 \alias{SystemMetadata-class}
-\title{A DataONE SystemMetadata object containing basic identification, ownership, access policy, replication policy, and related metadata.}
+\title{A DataONE SystemMetadata object containing basic identification, ownership, access policy, replication policy, and related metadata}
 \description{
 A class representing DataONE SystemMetadata, which is core information about objects stored in a repository
 and needed to manage those objects across systems.  SystemMetadata contains basic identification, ownership,
@@ -63,7 +63,7 @@ access policy, replication policy, and related metadata.
 
 \section{Methods}{
 
-\itemize{
+\describe{
  \item{\code{\link[=SystemMetadata-initialize]{initialize}}}{: Initialize a DataONE SystemMetadata object with default values or values passed in to the constructor object}
  \item{\code{\link{SystemMetadata}}}{: Create a SystemMetadata object, with all fields set to the value found in an XML document}
  \item{\code{\link{parseSystemMetadata}}}{: Parse an external XML document and populate a SystemMetadata object with the parsed data}

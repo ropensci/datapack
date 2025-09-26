@@ -3,7 +3,7 @@
 \name{canRead}
 \alias{canRead}
 \alias{canRead,DataObject-method}
-\title{Test whether the provided subject can read an object.}
+\title{Test whether the provided subject can read an object}
 \usage{
 canRead(x, ...)
 

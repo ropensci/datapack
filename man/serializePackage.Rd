@@ -13,8 +13,8 @@ serializePackage(x, ...)
   id = NA_character_,
   syntaxName = "rdfxml",
   mimeType = "application/rdf+xml",
-  namespaces = data.frame(namespace = character(), prefix = character(),
-    stringsAsFactors = FALSE),
+  namespaces = data.frame(namespace = character(), prefix = character(), stringsAsFactors
+    = FALSE),
   syntaxURI = NA_character_,
   resolveURI = NA_character_,
   creator = NA_character_
