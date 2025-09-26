@@ -1,7 +1,6 @@
 #' datapack, a container for packages of data and associated metadata
 #'
 #' @name datapack
-#' @docType package
 #' @author Matthew B. Jones (NCEAS), Peter Slaughter (NCEAS)
 #' @description The datapack R package provides an abstraction for collating 
 #' heterogeneous collections of data objects and metadata into a bundle that can 
@@ -37,7 +36,7 @@
 #' specification is handled by the DataPackage class.
 #' @aliases datapack
 #' @section Classes:
-#' \itemize{
+#' \describe{
 #'  \item{\code{\link{DataPackage-class}}}{: A class representing a data package, which can contain data objects}
 #'  \item{\code{\link{DataObject-class}}}{: DataObject wraps raw data with system-level metadata}
 #'  \item{\code{\link{SystemMetadata-class}{SystemMetadata}}}{: A DataONE SystemMetadata object containing basic identification, ownership, access policy, replication policy, and related metadata.}

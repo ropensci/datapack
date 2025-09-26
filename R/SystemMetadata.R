@@ -18,7 +18,7 @@
 #   limitations under the License.
 #
 
-#' A DataONE SystemMetadata object containing basic identification, ownership, access policy, replication policy, and related metadata.
+#' A DataONE SystemMetadata object containing basic identification, ownership, access policy, replication policy, and related metadata
 #' @description A class representing DataONE SystemMetadata, which is core information about objects stored in a repository
 #' and needed to manage those objects across systems.  SystemMetadata contains basic identification, ownership,
 #' access policy, replication policy, and related metadata.
@@ -49,7 +49,7 @@
 #' @slot fileName value of type \code{"character"}, the name of the file to create when this object is downloaded from DataONE. 
 #' @slot mediaTypeProperty value of type a \code{"list"} of \code{"character"}, IANA Media Type properties for the \code{"mediaType"} argument
 #' @section Methods:
-#' \itemize{
+#' \describe{
 #'  \item{\code{\link[=SystemMetadata-initialize]{initialize}}}{: Initialize a DataONE SystemMetadata object with default values or values passed in to the constructor object}
 #'  \item{\code{\link{SystemMetadata}}}{: Create a SystemMetadata object, with all fields set to the value found in an XML document}
 #'  \item{\code{\link{parseSystemMetadata}}}{: Parse an external XML document and populate a SystemMetadata object with the parsed data}
@@ -90,7 +90,7 @@ setClass("SystemMetadata", slots = c(
     ))
 
 
-#' Initialize a DataONE SystemMetadata object with default values or values passed in to the constructor.
+#' Initialize a DataONE SystemMetadata object with default values or values passed in to the constructor
 #' @description Initialize a SystemMetadata object by providing default values for core information 
 #' needed to manage objects across repository systems. SystemMetadata contains basic identification, ownership,
 #' access policy, replication policy, and related metadata.
@@ -442,7 +442,7 @@ setMethod("serializeSystemMetadata", signature("SystemMetadata"), function(x, ve
   return(xml)
 })
 
-#' @title Validate a SystemMetadata object. 
+#' @title Validate a SystemMetadata object
 #' @description
 #' Validate a system metadata object, ensuring that required fields are present and of the right type.
 #' @param x the instance to be validated
@@ -463,12 +463,12 @@ setGeneric("validate", function(x, ...) {
 #' @return logical, \code{TRUE} if the SystemMetadata object is valid, else a list of strings detailing errors
 setMethod("validate", signature("SystemMetadata"), function(x, ...) validate_function(x))
 
-#' @title Add access rules to the specified object.
+#' @title Add access rules to the specified object
 #' @description Add one or more access rules to the access policy of the specified object.
 #' @param x The object instance to which to add the rules
 #' @param ... Additional arguments
 #' \itemize{
-#'   \item{permission The permission to be applied to subject if x is character (read, write, changePermission)}
+#'   \item \code{permission}: The permission to be applied to subject if x is character (read, write, changePermission)
 #' }
 #' @seealso \code{\link{SystemMetadata-class}}
 #' @export
@@ -520,12 +520,12 @@ setMethod("addAccessRule", signature("SystemMetadata"), function(x, y, ...) {
   return(x)
 })
 
-#' @title Remove an access rule from the specified object.
+#' @title Remove an access rule from the specified object
 #' @description Remove access rules from the access policy of the specified object.
 #' @param x The object instance to which to remove the rule
 #' @param ... Additional arguments
 #' \itemize{
-#'   \item{permission The permission to be remove to subject if x is character (read, write, changePermission)}
+#'   \item \code{permission}: The permission to be remove to subject if x is character (read, write, changePermission)
 #' }
 #' @seealso \code{\link{SystemMetadata-class}}
 #' @export
@@ -620,7 +620,7 @@ setMethod("hasAccessRule", signature("SystemMetadata"), function(x, subject, per
     return(found)
 })
 
-#' @title Clear the accessPolicy from the specified object.
+#' @title Clear the accessPolicy from the specified object
 #' @description Clears the accessPolicy from the specified object by overwriting
 #' all existing access rules set on the object with an empty set.
 #' @param x the instance to clear access rules from.

@@ -18,7 +18,7 @@
 #   limitations under the License.
 #
 
-#' ResourceMap provides methods to create, serialize and deserialize an OAI ORE resource map.
+#' ResourceMap provides methods to create, serialize and deserialize an OAI ORE resource map
 #' @description The Open Archives Initiative Object Reuse and Exchange (OAI-ORE) defines standards for the description
 #' and exchange of aggregations of web resources, such as a DataPackage. A Resource Map describes the objects
 #' in a DataPackage and the relationships between these objects.
@@ -46,7 +46,7 @@
 #' @import uuid
 #' @import XML
 #' @section Methods:
-#' \itemize{
+#' \describe{
 #'  \item{\code{\link[=ResourceMap-initialize]{initialize}}}{: Initialize a ResourceMap object.}
 #'  \item{\code{\link{createFromTriples}}}{: Populate a ResourceMap with RDF relationships from data.frame.}
 #'  \item{\code{\link{getTriples}}}{: Get the RDF relationships stored in the ResourceMap.}
@@ -62,7 +62,7 @@ setClass("ResourceMap", slots = c(relations = "data.frame",
                                   model = "Model",
                                   id = "character"))
 
-#' Initialize a ResourceMap object.
+#' Initialize a ResourceMap object
 #' @description Create a ResourceMap object that contains relationships (RDF triples) of objects in the DataPackage.
 #' @rdname ResourceMap-initialize
 #' @aliases ResourceMap-initialize
@@ -84,7 +84,7 @@ setMethod("initialize", "ResourceMap", function(.Object, id = NA_character_) {
   return(.Object)
 })
 
-#' Populate a ResourceMap with RDF relationships from data.frame.
+#' Populate a ResourceMap with RDF relationships from data.frame
 #' @description RDF relationships are added to a ResourceMap object from a data.frame that
 #' contains RDF triples. For example, relationships can be exported from a DataPackage via
 #' \code{\link{getRelationships}}. The resulting data.frame is then read by \code{createFromTriples}
@@ -287,7 +287,7 @@ setMethod("createFromTriples", signature("ResourceMap"), function(x, relations, 
   return(x)
 })
 
-#' Serialize a ResouceMap.
+#' Serialize a ResouceMap
 #' @description The Redland RDF library is used to serialize the ResourceMap RDF model
 #' to a file as RDF/XML.
 #' @param x a ResourceMap
@@ -373,7 +373,7 @@ setMethod("serializeRDF", signature("ResourceMap"), function(x,
   
 })
 
-#' Free memory used by a ResouceMap.
+#' Free memory used by a ResouceMap
 #' @description The resources allocated by the redland RDF package are freed. The ResourceMap
 #' object should be deleted immediately following this call.
 #' @param x a ResourceMap
@@ -390,7 +390,7 @@ setMethod("freeResourceMap", signature("ResourceMap"), function(x) {
   freeWorld(x@world)
 })
 
-#' Parse an RDF/XML resource map from a file.
+#' Parse an RDF/XML resource map from a file
 #' @description parseRDF reads a file containing an RDF model in RDF/XML format and initializes
 #' a ResourceMap based on this content.
 #' @details This method resets the slot ResourceMap@world so any previously stored triples are discarded, allowing
@@ -422,7 +422,7 @@ setMethod("parseRDF", "ResourceMap", function(x, rdf, asText=FALSE, name="rdfxml
  return(x)
 })
 
-#' Get the RDF relationships stored in the ResourceMap.
+#' Get the RDF relationships stored in the ResourceMap
 #' @description The \code{getTriples} method extracts the RDF relationships from a ResourceMap.
 #' @param x ResourceMap
 #' @export
