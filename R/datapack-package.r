@@ -43,4 +43,9 @@
 #'  \item{\code{\link{SystemMetadata-class}{SystemMetadata}}}{: A DataONE SystemMetadata object containing basic identification, ownership, access policy, replication policy, and related metadata.}
 #'  \item{\code{\link{ResourceMap-class}{ResourceMap}}}{: ResourceMap provides methods to create, serialize and deserialize an OAI ORE resource map.}
 #' }
+#' @keywords internal
+"_PACKAGE"
+
+## usethis namespace: start
+## usethis namespace: end
 NULL

@@ -12,8 +12,8 @@ serializeRDF(x, ...)
   file,
   syntaxName = "rdfxml",
   mimeType = "application/rdf+xml",
-  namespaces = data.frame(namespace = character(), prefix = character(),
-    stringsAsFactors = FALSE),
+  namespaces = data.frame(namespace = character(), prefix = character(), stringsAsFactors
+    = FALSE),
   syntaxURI = NA_character_
 )
 }

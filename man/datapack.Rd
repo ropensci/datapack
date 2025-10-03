@@ -2,6 +2,7 @@
 % Please edit documentation in R/datapack-package.r
 \docType{package}
 \name{datapack}
+\alias{datapack-package}
 \alias{datapack}
 \title{datapack, a container for packages of data and associated metadata}
 \description{
@@ -48,6 +49,16 @@ specification is handled by the DataPackage class.
 }
 }
 
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://docs.ropensci.org/datapack/}
+  \item \url{https://github.com/ropensci/datapack}
+  \item Report bugs at \url{https://github.com/ropensci/datapack/issues}
+}
+
+}
 \author{
 Matthew B. Jones (NCEAS), Peter Slaughter (NCEAS)
 }
+\keyword{internal}
