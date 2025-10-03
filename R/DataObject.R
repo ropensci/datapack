@@ -51,7 +51,7 @@
 #' @include SystemMetadata.R
 #' @aliases DataObject-class
 #' @section Methods:
-#' \itemize{
+#' \describe{
 #'   \item{\code{\link[=DataObject-initialize]{initialize}}}{: Initialize a DataObject}
 #'   \item{\code{\link{addAccessRule}}}{: Add a Rule to the AccessPolicy}
 #'   \item{\code{\link{canRead}}}{: Test whether the provided subject can read an object.}
@@ -404,7 +404,7 @@ setMethod("removeAccessRule", signature("DataObject"), function(x, y, ...) {
     return(x)
 })
 
-#' Add a Rule to the AccessPolicy to make the object publicly readable.
+#' Add a Rule to the AccessPolicy to make the object publicly readable
 #' 
 #' To be called prior to creating the object in DataONE.  When called before 
 #' creating the object, adds a rule to the access policy that makes this object
@@ -467,7 +467,7 @@ setMethod("clearAccessPolicy", signature("DataObject"), function(x, ...) {
     return(x)
 })
 
-#' Test whether the provided subject can read an object.
+#' Test whether the provided subject can read an object
 #' 
 #' Using the AccessPolicy, tests whether the subject has read permission
 #' for the object.  This method is meant work prior to submission to a repository, 

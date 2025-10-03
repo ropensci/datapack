@@ -17,7 +17,7 @@ the objects in the data package.  For example, the data package can document tha
 provides documentation for another (\code{cito:documents}), and that one object was
 derived from another (\code{prov:wasDerivedFrom}) by executing a program that 
 used source data (\code{prov:used}) to create a derived data object 
-{\code{prov:wasGeneratedBy}}.  These relationships are integral to the data package,
+\code{{prov:wasGeneratedBy}}. These relationships are integral to the data package,
 and can be visualized by programs that understand the ProvONE provenance 
 model (see \url{https://purl.dataone.org/provone-v1-dev}). 
 
@@ -44,7 +44,7 @@ This is assigned after a package is uploaded or downloaded from a repository.}
 
 \section{Methods}{
 
-\itemize{
+\describe{
  \item{\code{\link[=DataPackage-initialize]{initialize}}}{: Initialize a DataPackage object.}
  \item{\code{\link{addAccessRule}}}{: Add access rules to DataObjects in a DataPackage.}
  \item{\code{\link{addMember}}}{: Add a DataObject to a DataPackage.}

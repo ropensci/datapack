@@ -6,7 +6,7 @@
 \alias{addAccessRule,SystemMetadata-method}
 \alias{addAccessRule,DataObject-method}
 \alias{addAccessRule,DataPackage-method}
-\title{Add access rules to the specified object.}
+\title{Add access rules to the specified object}
 \usage{
 addAccessRule(x, ...)
 
@@ -21,7 +21,7 @@ addAccessRule(x, ...)
 
 \item{...}{Additional arguments
 \itemize{
-  \item{permission The permission to be applied to subject if x is character (read, write, changePermission)}
+  \item \code{permission}: The permission to be applied to subject if x is character (read, write, changePermission)
 }}
 
 \item{y}{The subject of the rule to be added, or a data frame of subject/permission tuples}
@@ -44,7 +44,7 @@ specifying the permissions to add for each \code{subject}.
 Note that when \code{addAccessRule} is called with a `DataPackage` argument, the 
 additional parameter \code{identifiers} can be used:
 \itemize{
-  \item{identifiers A list of \code{character} values containing package member identifiers that the access rule will be applied to (all members is the default)}.
+  \item \code{identifiers}: A list of \code{character} values containing package member identifiers that the access rule will be applied to (all members is the default).
 }
 }
 \examples{

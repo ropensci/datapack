@@ -3,7 +3,7 @@
 \name{serializeRDF}
 \alias{serializeRDF}
 \alias{serializeRDF,ResourceMap-method}
-\title{Serialize a ResouceMap.}
+\title{Serialize a ResouceMap}
 \usage{
 serializeRDF(x, ...)
 

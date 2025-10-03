@@ -3,7 +3,7 @@
 \name{initialize,DataPackage-method}
 \alias{initialize,DataPackage-method}
 \alias{DataPackage-initialize}
-\title{Initialize a DataPackage object.}
+\title{Initialize a DataPackage object}
 \usage{
 \S4method{initialize}{DataPackage}(.Object, packageId)
 }
@@ -13,7 +13,7 @@
 \item{packageId}{The package id to assign to the package}
 }
 \description{
-Initialize a DataPackage object.
+Initialize a DataPackage object
 }
 \examples{
 # Create a DataPackage with undefined package id (to be set manually later)

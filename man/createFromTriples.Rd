@@ -3,7 +3,7 @@
 \name{createFromTriples}
 \alias{createFromTriples}
 \alias{createFromTriples,ResourceMap-method}
-\title{Populate a ResourceMap with RDF relationships from data.frame.}
+\title{Populate a ResourceMap with RDF relationships from data.frame}
 \usage{
 createFromTriples(x, ...)
 

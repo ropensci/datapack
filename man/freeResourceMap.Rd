@@ -3,7 +3,7 @@
 \name{freeResourceMap}
 \alias{freeResourceMap}
 \alias{freeResourceMap,ResourceMap-method}
-\title{Free memory used by a ResouceMap.}
+\title{Free memory used by a ResouceMap}
 \usage{
 freeResourceMap(x)
 

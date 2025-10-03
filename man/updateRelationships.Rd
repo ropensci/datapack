@@ -3,7 +3,7 @@
 \name{updateRelationships}
 \alias{updateRelationships}
 \alias{updateRelationships,DataPackage-method}
-\title{Update package relationships by replacing an old identifier with a new one.}
+\title{Update package relationships by replacing an old identifier with a new one}
 \usage{
 updateRelationships(x, ...)
 

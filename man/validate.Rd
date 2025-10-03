@@ -3,7 +3,7 @@
 \name{validate}
 \alias{validate}
 \alias{validate,SystemMetadata-method}
-\title{Validate a SystemMetadata object.}
+\title{Validate a SystemMetadata object}
 \usage{
 validate(x, ...)
 

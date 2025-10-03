@@ -31,7 +31,7 @@
 #' provides documentation for another (\code{cito:documents}), and that one object was
 #' derived from another (\code{prov:wasDerivedFrom}) by executing a program that 
 #' used source data (\code{prov:used}) to create a derived data object 
-#' {\code{prov:wasGeneratedBy}}.  These relationships are integral to the data package,
+#' \code{{prov:wasGeneratedBy}}. These relationships are integral to the data package,
 #' and can be visualized by programs that understand the ProvONE provenance 
 #' model (see \url{https://purl.dataone.org/provone-v1-dev}). 
 #' 
@@ -53,7 +53,7 @@
 #' @slot resmapId A character string specifying the identifier for the package resource map. 
 #'               This is assigned after a package is uploaded or downloaded from a repository.
 #' @section Methods:
-#' \itemize{
+#' \describe{
 #'  \item{\code{\link[=DataPackage-initialize]{initialize}}}{: Initialize a DataPackage object.}
 #'  \item{\code{\link{addAccessRule}}}{: Add access rules to DataObjects in a DataPackage.}
 #'  \item{\code{\link{addMember}}}{: Add a DataObject to a DataPackage.}
@@ -103,7 +103,7 @@ setClass("DataPackage", slots = c(
 ## @export
 #setGeneric("DataPackage", function(...) { standardGeneric("DataPackage")} )
 
-#' Initialize a DataPackage object.
+#' Initialize a DataPackage object
 #' @rdname DataPackage-initialize
 #' @aliases DataPackage-initialize
 #' @param .Object The object being initialized
@@ -939,7 +939,7 @@ setMethod("replaceMember", signature("DataPackage"), function(x, do, replacement
     return(x)
 })
 
-#' Update selected elements of the XML content of a DataObject in a DataPackage (aka package member).
+#' Update selected elements of the XML content of a DataObject in a DataPackage (aka package member)
 #' @param x a DataPackage instance
 #' @param do A DataObject instance object, or DataObject identifier
 #' @param ... (Not yet used)
@@ -1117,7 +1117,8 @@ setMethod("selectMember", signature("DataPackage"), function(x, name, value, as=
         return(matches)
     }
 })
-#' Set values for selected DataPackage members.
+
+#' Set values for selected DataPackage members
 #' @description The \code{'setValue'} method is used to modify values stored in DataPackage members.
 #' Each member in a DataPackage is a DataObject which is an R S4 object that contains a set of values (slots).
 #' The available slots are described at \code{help("DataObject-class")}.
@@ -1195,7 +1196,7 @@ setMethod("setValue", signature("DataPackage"), function(x, name, value, identif
   return(x)
 })
 
-#' Get values for selected DataPackage members.
+#' Get values for selected DataPackage members
 #' @description Given a slot name and set of package member identifiers, return slot values.
 #' @param x A DataPackage instance
 #' @param ... (Not yet used)
@@ -1277,7 +1278,7 @@ setMethod("setPublicAccess", signature("DataPackage"), function(x, identifiers=l
 #' @details Note that when \code{addAccessRule} is called with a `DataPackage` argument, the 
 #' additional parameter \code{identifiers} can be used:
 #' \itemize{
-#'   \item{identifiers A list of \code{character} values containing package member identifiers that the access rule will be applied to (all members is the default)}.
+#'   \item \code{identifiers}: A list of \code{character} values containing package member identifiers that the access rule will be applied to (all members is the default).
 #' }
 #' @return The DataPackage with updated DataObject access policies
 #' @seealso \code{\link{DataPackage-class}}
@@ -1756,10 +1757,10 @@ setMethod("serializeToBagIt", signature("DataPackage"), function(x, mapId=NA_cha
 #' Provenance relationships are described following the the ProvONE data model, which
 #' can be viewed at \url{https://purl.dataone.org/provone-v1-dev}.  In particular, 
 #' the following relationships are inserted (among others):
-#' \itemize{
-#'  \item{\code{prov:used}} {indicates which source data was used by a program execution}
-#'  \item{\code{prov:generatedBy}} {indicates which derived data was created by a program execution}
-#'  \item{\code{prov:wasDerivedFrom}} {indicates the source data from which derived data were created using the program}
+#' \describe{
+#'  \item{\code{prov:used}}{indicates which source data was used by a program execution}
+#'  \item{\code{prov:generatedBy}}{indicates which derived data was created by a program execution}
+#'  \item{\code{prov:wasDerivedFrom}}{indicates the source data from which derived data were created using the program}
 #' }
 #'   
 #' @param x The \code{DataPackage} to add provenance relationships to.
@@ -1970,7 +1971,7 @@ setMethod("describeWorkflow", signature("DataPackage"), function(x, sources=list
     return(x)
 })
 
-#' Update package relationships by replacing an old identifier with a new one.
+#' Update package relationships by replacing an old identifier with a new one
 #' @description When package members are updated, they receive a new identifier (replaceMember). It is therefor
 #' necessary to update the package relationships to update occurrences of the old identifier
 #' with the new one when the old identifier appears in the "subject" or "object" of a 

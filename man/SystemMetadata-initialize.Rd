@@ -3,7 +3,7 @@
 \name{initialize,SystemMetadata-method}
 \alias{initialize,SystemMetadata-method}
 \alias{SystemMetadata-initialize}
-\title{Initialize a DataONE SystemMetadata object with default values or values passed in to the constructor.}
+\title{Initialize a DataONE SystemMetadata object with default values or values passed in to the constructor}
 \usage{
 \S4method{initialize}{SystemMetadata}(
   .Object,

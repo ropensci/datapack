@@ -3,7 +3,7 @@
 \name{updateMetadata}
 \alias{updateMetadata}
 \alias{updateMetadata,DataPackage-method}
-\title{Update selected elements of the XML content of a DataObject in a DataPackage (aka package member).}
+\title{Update selected elements of the XML content of a DataObject in a DataPackage (aka package member)}
 \usage{
 updateMetadata(x, do, ...)
 

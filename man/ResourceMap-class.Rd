@@ -3,7 +3,7 @@
 \docType{class}
 \name{ResourceMap-class}
 \alias{ResourceMap-class}
-\title{ResourceMap provides methods to create, serialize and deserialize an OAI ORE resource map.}
+\title{ResourceMap provides methods to create, serialize and deserialize an OAI ORE resource map}
 \description{
 The Open Archives Initiative Object Reuse and Exchange (OAI-ORE) defines standards for the description
 and exchange of aggregations of web resources, such as a DataPackage. A Resource Map describes the objects
@@ -25,7 +25,7 @@ in a DataPackage and the relationships between these objects.
 
 \section{Methods}{
 
-\itemize{
+\describe{
  \item{\code{\link[=ResourceMap-initialize]{initialize}}}{: Initialize a ResourceMap object.}
  \item{\code{\link{createFromTriples}}}{: Populate a ResourceMap with RDF relationships from data.frame.}
  \item{\code{\link{getTriples}}}{: Get the RDF relationships stored in the ResourceMap.}
