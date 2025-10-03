@@ -1,5 +1,11 @@
-Version 1.4.1
--------------
+# datapack 1.4.2
+
+BUGS
+
+* Fix documentation errors due to API changes  (#139)
+
+# datapack 1.4.1
+
 BUGS
 
 * Remove LazyData from DESCRIPTION  (#132)
@@ -10,8 +16,8 @@ NEW FEATURES
 
 * Refactor BagIt serialization to match new specification (#109)
 
-Version 1.4.0
--------------
+# datapack 1.4.0
+
 BUGS
 
 * Handle dc:creator in resource map properly (#116)
@@ -23,8 +29,8 @@ NEW FEATURES
 * Update tests for compatibility with testthat 3e (#125)
 * Added 'targetPath' argument to DataObject to set 'prov:atLocation' for an object (#109)
 
-Version 1.3.2
--------------
+# datapack 1.3.2
+
 BUGS
 
 * Ensure that a 'dc:creator' element is always present (#93)
@@ -35,16 +41,14 @@ BUGS
 NEW FEATURES
 * Added function removeRelationships() which can remove all or specified relationships from a DataPackage (#99)
 
-Version 1.3.1
--------------
+# datapack 1.3.1
 
 BUGS
 
 * fixed bug in updateMetadata() that would cause package relationships
   for the metadata object to be lost. 
 
-Version 1.3.0
--------------
+# datapack 1.3.0
 
 NEW FEATURES
 
@@ -91,8 +95,7 @@ DEPRECATED
 
 - deprecated function addData(), renamed to addMember().
 
-Version 1.2.0
--------------
+# datapack 1.2.0
 
 BUGS
 
@@ -121,12 +124,11 @@ DEPRECATED
 * The method `recordDerivation` is deprecated in this release and may be marked as Defunct and
   removed in a future release (#68)
   
-Version 1.1.0
+# datapack 1.1.0
 
-This version was not released publically.
+This # datapack was not released publically.
 
-Version 1.0.1
--------------
+# datapack 1.0.1
 
 BUGS
 
@@ -137,12 +139,11 @@ BUGS
   <permission> elements together for a <subject> so that the subject does not appear
   under multiple <allow> elements.
   
-Version 1.0.0
--------------
+# datapack 1.0.0
 
 NEW FEATURES
 
-* Initial version (see help topic for 'datapack', e.g. "?datapack")
+* Initial # datapack (see help topic for 'datapack', e.g. "?datapack")
 
 * Provides an API for building and serializing packages of data and associated metadata.
 
