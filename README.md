@@ -138,6 +138,6 @@ Additional support was provided for working group collaboration by the National 
 
 [![nceas_footer](https://live-ncea-ucsb-edu-v01.pantheonsite.io/sites/default/files/2020-03/NCEAS-full%20logo-4C.png)](https://www.nceas.ucsb.edu)
 
-[![dataone_footer](https://www.dataone.org/sites/all/images/DataONE_LOGO.jpg)](https://www.dataone.org)
+[![dataone_footer](https://user-images.githubusercontent.com/6643222/162324180-b5cf0f5f-ae7a-4ca6-87c3-9733a2590634.png)](https://www.dataone.org)
 
 [![ropensci_footer](https://ropensci.org/public_images/github_footer.png)](https://ropensci.org/)
