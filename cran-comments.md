@@ -2,6 +2,7 @@
 
  * macOS Sequoia 15.6.1: aarch64-apple-darwin20 R 4.5.1
  * macOS Ventura 13.7.6: aarch64-apple-darwin20 R 4.4.1
+ * macOS Ventura 13.7.6: aarch64-apple-darwin20 R 4.5.1
  * Windows Server 2022 x64 (build 26100): x86_64-w64-mingw32 R version 4.5.1 (2025-06-13 ucrt)
  * Ubuntu 24.04.3 LTS: x86_64-pc-linux-gnu R version 4.5.1 (2025-06-13)
  * Ubuntu 24.04.3 LTS: x86_64-pc-linux-gnu R version 4.4.3 (2025-02-28)
