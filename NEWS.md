@@ -126,7 +126,7 @@ DEPRECATED
   
 # datapack 1.1.0
 
-This # datapack was not released publically.
+This # datapack was not released publicly.
 
 # datapack 1.0.1
 
