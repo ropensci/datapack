@@ -27,3 +27,7 @@
 ## Downstream dependencies
 
 * revdepcheck:revdep_check() found no problems with the only downstream dependency: `dataone`.
+
+## Notes
+
+Earlier I missed some broken URLs in the checks, which are now fixed.
