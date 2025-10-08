@@ -4,7 +4,7 @@
 
 - **Author**: Matthew B. Jones and Peter Slaughter and S. Jeanette Clark ([NCEAS](https://www.nceas.ucsb.edu))
 - [doi:10.5063/F1QV3JGM](https://doi.org/10.5063/F1QV3JGM)
-- **License**: [Apache 2](https://opensource.org/licenses/Apache-2.0)
+- **License**: [Apache 2](https://opensource.org/license/apache-2-0)
 - [Package source code on Github](https://github.com/ropensci/datapack)
 - [**Submit Bugs and feature requests**](https://github.com/ropensci/datapack/issues)
 

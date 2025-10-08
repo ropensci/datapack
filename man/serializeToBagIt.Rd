@@ -49,7 +49,7 @@ Then call the method again with count += 1
 Eventually a free file name will be found, and then the function returns that name
 }
 \description{
-The BagIt packaging format \url{https://tools.ietf.org/html/draft-kunze-bagit-08}
+The BagIt packaging format \url{https://datatracker.ietf.org/doc/html/draft-kunze-bagit-08}
     is used to prepare an archive file that contains the contents of a DataPackage.
 }
 \details{

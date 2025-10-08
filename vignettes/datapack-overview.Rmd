@@ -88,7 +88,7 @@ myObj@sysmeta@fileName
 
 The system metadata contains access policy information for the DataObject that could be used
 by a data repository that the object is uploaded to. For example, when a DataObject is
-uploaded to a [DataONE Member Node](https://www.dataone.org/current-member-nodes), 
+uploaded to a [DataONE Member Node](https://www.dataone.org/network/), 
 the access policy is applied to the uploaded data
 and controls access to the data on the Member Node by DataONE users.
 

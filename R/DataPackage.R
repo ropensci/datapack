@@ -1514,7 +1514,7 @@ setMethod("serializePackage", signature("DataPackage"), function(x, file,
 })
 
 #' Serialize A DataPackage into a BagIt Archive File
-#' @description The BagIt packaging format \url{https://tools.ietf.org/html/draft-kunze-bagit-08}
+#' @description The BagIt packaging format \url{https://datatracker.ietf.org/doc/html/draft-kunze-bagit-08}
 #'     is used to prepare an archive file that contains the contents of a DataPackage.
 #' @details A BagIt Archive File is created by copying each member of a DataPackage, and preparing
 #'     files that describe the files in the archive, including information about the size of the files
