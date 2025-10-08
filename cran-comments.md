@@ -1,5 +1,6 @@
 ## Test environments
 
+ * Windows Server 2022 x64 (build 20348): x86_64-w64-mingw32 R Under development (unstable) (2025-10-03 r88899 ucrt)
  * macOS Sequoia 15.6.1: aarch64-apple-darwin20 R 4.5.1
  * macOS Ventura 13.7.6: aarch64-apple-darwin20 R 4.4.1
  * macOS Ventura 13.7.6: aarch64-apple-darwin20 R 4.5.1
